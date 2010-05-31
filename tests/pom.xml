@@ -12,11 +12,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
+		<module>org.jboss.tools.vpe.ui.test</module>
 		<module>org.jboss.tools.vpe.html.test</module>
 		<module>org.jboss.tools.vpe.jsp.test</module>
 		<module>org.jboss.tools.vpe.test</module>
 		<module>org.jboss.tools.vpe.ui.bot.test</module>
-		<module>org.jboss.tools.vpe.ui.test</module>
 		<module>org.jboss.tools.vpe.xulrunner.test</module>
 	</modules>
 </project>
