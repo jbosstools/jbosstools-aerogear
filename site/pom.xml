@@ -6,8 +6,9 @@
 		<artifactId>org.jboss.tools.parent.pom</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.jboss.tools</groupId>
-	<artifactId>vpe.site</artifactId> 
+	<groupId>org.jboss.tools.vpe</groupId>
+	<artifactId>site</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>vpe.site</name>
 	<packaging>eclipse-update-site</packaging>
 </project>
