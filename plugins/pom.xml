@@ -17,6 +17,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>org.jboss.tools.vpe.docbook</module>
 		<module>org.jboss.tools.vpe.html</module>
 		<module>org.jboss.tools.vpe.jsp</module>
+		<module>org.jboss.tools.vpe.spring</module>		
 		<module>org.jboss.tools.vpe.resref</module>
 		<module>org.jboss.tools.vpe.ui.palette</module>
 		<module>org.jboss.tools.vpe.xulrunner</module>
