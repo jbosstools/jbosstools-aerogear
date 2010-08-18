@@ -8,7 +8,8 @@
 	<feature url="features/org.jboss.tools.vpe.feature_0.0.0.jar" id="org.jboss.tools.vpe.feature" version="0.0.0">
 		<category name="JBoss Tools vpe Nightly Build Update Site"/>
 	</feature>
-	<feature url="features/org.jboss.tools.xulrunner.feature_0.0.0.jar" id="org.jboss.tools.xulrunner.feature" version="0.0.0">
+	<!-- XulRunner requires version in declaration to avoid include latest 1.9.2 in build -->
+	<feature url="features/org.mozilla.xulrunner.feature_1.9.1.2.jar" id="org.mozilla.xulrunner.feature" version="1.9.1.2">
 		<category name="JBoss Tools vpe Nightly Build Update Site"/>
 	</feature>
 
