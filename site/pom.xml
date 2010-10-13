@@ -7,8 +7,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.vpe</groupId>
-	<artifactId>site</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>vpe.site</artifactId>
 	<name>vpe.site</name>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>eclipse-update-site</packaging>
 </project>
