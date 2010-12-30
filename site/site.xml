@@ -8,6 +8,9 @@
 	<feature url="features/org.jboss.tools.vpe.feature_0.0.0.jar" id="org.jboss.tools.vpe.feature" version="0.0.0">
 		<category name="JBoss Tools vpe Nightly Build Update Site"/>
 	</feature>
+	<feature url="features/org.jboss.tools.vpe.test.feature_0.0.0.jar" id="org.jboss.tools.vpe.test.feature" version="0.0.0">
+		<category name="JBoss Tools VPE Test Nightly Build Update Site"/>
+	</feature>
 	<feature url="features/org.mozilla.xulrunner.feature_0.0.0.jar" id="org.mozilla.xulrunner.feature" version="0.0.0">
 		<category name="JBoss Tools vpe Nightly Build Update Site"/>
 	</feature>
