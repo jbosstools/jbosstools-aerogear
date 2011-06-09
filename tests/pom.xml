@@ -30,7 +30,7 @@
 					<!-- default is 1800 sec = 30 min -->
 					<surefire.timeout>3600</surefire.timeout>
 					<forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
-
+					<appArgLine>-debug -consolelog</appArgLine>
 					<explodedBundles>
 						<bundle>org.jboss.tools.vpe</bundle>
 						<bundle>org.mozilla.xulrunner.cocoa.macosx</bundle>
