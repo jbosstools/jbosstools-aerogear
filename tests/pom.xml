@@ -12,6 +12,7 @@
 	<name>vpe.tests</name>
 	<packaging>pom</packaging>
 	<modules>
+		<module>org.jboss.tools.vpe.docbook.test</module>
 		<module>org.jboss.tools.vpe.ui.test</module>
 		<module>org.jboss.tools.vpe.html.test</module>
 		<module>org.jboss.tools.vpe.spring.test</module>
