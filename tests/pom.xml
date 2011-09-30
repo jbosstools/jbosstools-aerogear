@@ -17,7 +17,7 @@
 			<id>vpe-tests-libs</id>
 			<activation>
 				<property>
-					<name>coverage</name>
+					<name>vpe-coverage</name>
 				</property>
 			</activation>
 			<modules>
@@ -30,7 +30,7 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 				<property>
-					<name>coverage</name>
+					<name>vpe-coverage</name>
 				</property>
 			</activation>
 			<modules>
@@ -49,7 +49,7 @@
 			<id>vpe-tests-coverage-report</id>
 			<activation>
 				<property>
-					<name>coverage</name>
+					<name>vpe-coverage</name>
 				</property>
 			</activation>
 			<modules>
