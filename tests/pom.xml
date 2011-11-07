@@ -34,6 +34,7 @@
 				</property>
 			</activation>
 			<modules>
+				<module>org.jboss.tools.vpe.base.test</module>
 				<module>org.jboss.tools.vpe.docbook.test</module>
 				<module>org.jboss.tools.vpe.ui.test</module>
 				<module>org.jboss.tools.vpe.html.test</module>

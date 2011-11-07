@@ -13,7 +13,6 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.jboss.tools.vpe</module>
-		<module>org.jboss.tools.vpe.base.test</module>
 		<module>org.jboss.tools.vpe.docbook</module>
 		<module>org.jboss.tools.vpe.html</module>
 		<module>org.jboss.tools.vpe.jsp</module>
