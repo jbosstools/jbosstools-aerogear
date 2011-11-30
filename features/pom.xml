@@ -15,5 +15,6 @@
 		<module>org.jboss.tools.vpe.feature</module>
 		<module>org.jboss.tools.vpe.test.feature</module>
 		<module>org.jboss.tools.xulrunner.feature</module>
+		<module>org.jboss.tools.vpe.browsersim.feature</module>
 	</modules>
 </project>
