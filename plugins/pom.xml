@@ -22,5 +22,8 @@
 		<module>org.jboss.tools.vpe.xulrunner</module>
 		<module>org.jboss.tools.xulrunner</module>
 		<module>org.jboss.tools.xulrunner.initializer</module>
+		<module>org.jboss.tools.vpe.browsersim.eclipse</module>
+		<module>org.jboss.tools.vpe.browsersim.browser</module>
+		<module>org.jboss.tools.vpe.browsersim</module>
 	</modules>
 </project>
