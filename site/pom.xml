@@ -10,5 +10,5 @@
 		<artifactId>vpe</artifactId>
 		<version>3.3.0-SNAPSHOT</version>
 	</parent>
-	<packaging>eclipse-update-site</packaging>
+	<packaging>eclipse-repository</packaging>
 </project>
