@@ -37,5 +37,7 @@
 	</feature>
 	<feature url="features/org.jboss.tools.xulrunner.feature_0.0.0.jar" id="org.jboss.tools.xulrunner.feature" version="0.0.0">
 	</feature>
+	<feature url="features/org.jboss.tools.xulrunner.feature.source_0.0.0.jar" id="org.jboss.tools.xulrunner.feature.source" version="0.0.0">
+	</feature>
 
 </site>
