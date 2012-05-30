@@ -21,7 +21,7 @@
 				</property>
 			</activation>
 			<modules>
-				<module>../../build/libs</module>
+				<module>../../build/emma/lib</module>
 			</modules>
 		</profile>
 
@@ -54,7 +54,7 @@
 				</property>
 			</activation>
 			<modules>
-				<module>../../build/reports/emma-coverage</module>
+				<module>../../build/emma/reports</module>
 			</modules>
 		</profile>
 	</profiles>
