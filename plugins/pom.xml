@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.tools.vpe</groupId>
 	<artifactId>plugins</artifactId>
-	<version>3.3.0-SNAPSHOT</version>
+	<version>3.4.0-SNAPSHOT</version>
 	<name>vpe.plugins</name>
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>vpe</artifactId>
-		<version>3.3.0-SNAPSHOT</version>
+		<version>3.4.0-SNAPSHOT</version>
 	</parent>
 	<packaging>pom</packaging>
 	<modules>
