@@ -59,6 +59,10 @@
 		</profile>
 	</profiles>
 
+	<properties>
+		<surefire.timeout>3600</surefire.timeout>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -66,9 +70,6 @@
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
 					<product>org.jboss.tools.tests.product</product>
-					<!-- default is 1800 sec = 30 min -->
-					<surefire.timeout>3600</surefire.timeout>
-					<forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
 					<appArgLine>-debug -consolelog</appArgLine>
 					<explodedBundles>
 						<bundle>org.mozilla.xulrunner.cocoa.macosx</bundle>
