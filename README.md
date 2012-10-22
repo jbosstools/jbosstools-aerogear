@@ -1,5 +1,9 @@
 # The JBoss Tools Visual Page Editing project
 
+## Summary
+
+Visual Page Editing provides an editor that has a source and visual preview for XML based documents, it also contains the BrowserSimulator for editing/viewing your project webpages as mobile browsers would do it. 
+
 ## Install
 
 _JBoss Tools Visual Page Editing_ is part of [JBoss Tools](http://jboss.org/tools) from
