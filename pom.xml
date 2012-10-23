@@ -8,9 +8,8 @@
 		<relativePath>../build/parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.jboss.tools</groupId>
-	<artifactId>vpe</artifactId>
+	<artifactId>vpe.all</artifactId>
 	<version>3.4.0-SNAPSHOT</version>
-	<name>vpe.all</name>
 	<packaging>pom</packaging>
 	<modules>
 		<module>plugins</module>
@@ -18,4 +17,14 @@
 		<module>features</module>
 		<module>site</module>
 	</modules>
+	<profiles>
+		<profile>
+			<id>bootstrap</id>
+			<modules>
+				<module>../xulrunner</module>
+				<module>../jst</module>
+				<module>../base</module>
+			</modules>
+		</profile>
+	</profiles>
 </project>
