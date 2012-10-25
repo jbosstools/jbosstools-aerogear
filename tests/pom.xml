@@ -41,7 +41,6 @@
 				<module>org.jboss.tools.vpe.spring.test</module>
 				<module>org.jboss.tools.vpe.jsp.test</module>
 				<module>org.jboss.tools.vpe.test</module>
-				<module>org.jboss.tools.vpe.ui.bot.test</module>
 				<module>org.jboss.tools.vpe.xulrunner.test</module>
 			</modules>
 		</profile>
