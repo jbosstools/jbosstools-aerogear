@@ -22,9 +22,9 @@
 		<profile>
 			<id>bootstrap</id>
 			<modules>
-				<module>../xulrunner</module>
-				<module>../jst</module>
-				<module>../base</module>
+				<module>../jbosstools-xulrunner</module>
+				<module>../jbosstools-jst</module>
+				<module>../jbosstools-base</module>
 			</modules>
 		</profile>
 	</profiles>
