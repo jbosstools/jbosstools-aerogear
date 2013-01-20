@@ -62911,12 +62911,13 @@ define('ripple/db', function (require, exports, module) {
     function _save(key, value, prefix, callback) {
         var item = _createItem(key, value, prefix);
         _cache[item.id] = item;
-
-        _db.transaction(function (tx) {
+		localStorage['_persistence_' + item.id] = JSON.stringify(item);
+		return callback && callback();
+        /*_db.transaction(function (tx) {
             tx.executeSql('REPLACE INTO persistence (id, key, value, prefix) VALUES (?, ?, ?, ?)', [item.id, item.key, item.value, item.prefix], function () {
                 return callback && callback();
             });
-        });
+        });*/
     }
 
     function _retrieve(key, prefix) {
@@ -62939,23 +62940,26 @@ define('ripple/db', function (require, exports, module) {
     }
 
     function _remove(key, prefix, callback) {
-        delete _cache[_createKey(key, prefix)];
-
-        _db.transaction(function (tx) {
+		var cacheKey = _createKey(key, prefix);
+        delete _cache[cacheKey];
+		delete localStorage['_persistence_' + cacheKey];
+		return callback && callback();
+        /*_db.transaction(function (tx) {
             tx.executeSql('DELETE FROM persistence WHERE key = ? AND prefix = ?', [key, _validateAndSetPrefix(prefix)], function () {
                 return callback && callback();
             });
-        });
+        });*/
     }
 
     function _removeAll(prefix, callback) {
         utils.forEach(_cache, function (value, key) {
             if (!prefix || key.indexOf(prefix) === 0) {
                 delete _cache[key];
+				delete localStorage['_persistence_' + key];
             }
         });
-
-        _db.transaction(function (tx) {
+		return callback && callback();
+        /*_db.transaction(function (tx) {
             if (prefix) {
                 tx.executeSql('DELETE FROM persistence WHERE prefix = ?', [prefix], function () {
                     return callback && callback();
@@ -62965,7 +62969,7 @@ define('ripple/db', function (require, exports, module) {
                     return callback && callback();
                 });
             }
-        });
+        });*/
     }
 
     _self = {
@@ -63005,8 +63009,32 @@ define('ripple/db', function (require, exports, module) {
         initialize: function (previous, baton) {
             baton.take();
 
-            _db = openDatabase('tinyHippos', '1.0', 'tiny Hippos persistence', 2 * 1024 * 1024);
-            _db.transaction(function (tx) {
+            //_db = openDatabase('tinyHippos', '1.0', 'tiny Hippos persistence', 2 * 1024 * 1024);
+			var asdf = function(){console.log(printStackTrace())};
+			_db = {
+				transaction : function(callback) {
+					var tx = {
+						executeSql : function(query, parameters, callback2) {
+console.log(query);
+console.log(parameters);
+
+							var results = {rows : []};
+							return callback2 && callback2(tx, results);
+						}
+					}
+					return callback && callback(tx)
+				}
+				, readTransaction : asdf
+			};
+			
+			utils.forEach(localStorage, function (value, key) {
+				if (key.indexOf('_persistence_') === 0) {
+					var item = JSON.parse(localStorage[key])
+					_cache[item.id] = item;
+				}
+			});
+			baton.pass();
+            /*_db.transaction(function (tx) {
                 tx.executeSql('CREATE TABLE IF NOT EXISTS persistence (id unique, key, value, prefix)');
 
                 tx.executeSql('SELECT id, key, value, prefix FROM persistence', [], function (tx, results) {
@@ -63020,7 +63048,7 @@ define('ripple/db', function (require, exports, module) {
 
                     baton.pass();
                 });
-            });
+            });*/
         }
     };
 
