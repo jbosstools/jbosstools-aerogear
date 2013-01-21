@@ -64139,7 +64139,6 @@ function _createBsPopup(src) {
 
    if (ui.registered("omnibar")) {
         //bsPopup.document.addEventListener("beforeload", function () {
-        	alert(0);
             _boundPopup = false;
             _bindObjectsPopup(bsPopup, bsPopup.document);
             var id = window.setInterval(function () {
