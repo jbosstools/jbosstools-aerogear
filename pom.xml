@@ -18,14 +18,4 @@
 		<module>features</module>
 		<module>site</module>
 	</modules>
-	<profiles>
-		<profile>
-			<id>bootstrap</id>
-			<modules>
-				<module>../jbosstools-xulrunner</module>
-				<module>../jbosstools-jst</module>
-				<module>../jbosstools-base</module>
-			</modules>
-		</profile>
-	</profiles>
 </project>
