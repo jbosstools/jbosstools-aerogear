@@ -13,6 +13,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -30,7 +32,7 @@ public class CordovaSim {
 	public static void main(String[] args) throws Exception {
 		Server server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setPort(6789);
+		connector.setPort(7777);
 		server.addConnector(connector);
 
 		ServletHolder proxyServletHolder = new ServletHolder(new CrossOriginProxyServlet("/proxy/"));
@@ -66,7 +68,7 @@ public class CordovaSim {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.WEBKIT);
-		browser.setUrl("http://localhost:6789/ripple-ui");
+		browser.setUrl("http://localhost:7777/ripple-ui");
 		browser.addOpenWindowListener(new OpenWindowListener() {
 			
 			@Override
@@ -87,6 +89,14 @@ public class CordovaSim {
 				browserSim.devicesListHolder.notifyObservers();
 				
 				event.browser = browserSim.skin.getBrowser();
+				
+				final Browser browser = event.browser;
+				browserSim.skin.getShell().addShellListener(new ShellAdapter() {
+					@Override
+					public void shellClosed(ShellEvent e) {
+						browser.execute("window.closed = true;");
+					}
+				});
 			}
 		});
 		
