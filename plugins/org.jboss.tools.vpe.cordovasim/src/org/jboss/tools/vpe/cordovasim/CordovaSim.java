@@ -1,5 +1,13 @@
 package org.jboss.tools.vpe.cordovasim;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.rewrite.handler.RewriteHandler;
+import org.eclipse.jetty.rewrite.handler.RewriteRegexRule;
+import org.eclipse.jetty.rewrite.handler.Rule;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -24,7 +32,8 @@ import org.jboss.tools.vpe.browsersim.model.DevicesListStorage;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
 
 public class CordovaSim {
-
+	private static final int PORT = 7790;
+	
 	/**
 	 * @param args
 	 * @throws Exception
@@ -32,7 +41,7 @@ public class CordovaSim {
 	public static void main(String[] args) throws Exception {
 		Server server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setPort(7777);
+		connector.setPort(PORT);
 		server.addConnector(connector);
 
 		ServletHolder proxyServletHolder = new ServletHolder(new CrossOriginProxyServlet("/proxy/"));
@@ -44,7 +53,7 @@ public class CordovaSim {
 		rippleResourceHandler.setDirectoriesListed(true);
 		rippleResourceHandler.setWelcomeFiles(new String[] { "index.html" });
 		rippleResourceHandler.setResourceBase("./ripple-ui");
-		ContextHandler rippleContextHandler = new ContextHandler("/ripple-ui");
+		ContextHandler rippleContextHandler = new ContextHandler("/ripple/assets");
 		rippleContextHandler.setHandler(rippleResourceHandler);
 		
 		ResourceHandler wwwResourceHandler = new ResourceHandler();
@@ -52,15 +61,32 @@ public class CordovaSim {
 		wwwResourceHandler.setResourceBase("./www");
 		ContextHandler wwwContextHandler = new ContextHandler("/");
 		wwwContextHandler.setHandler(wwwResourceHandler);
+		
 
 		HandlerList handlers = new HandlerList();
 		handlers.setHandlers(new Handler[] {
-				proxyServletHandler,
-				rippleContextHandler,
 				wwwContextHandler,
+				rippleContextHandler,
+				proxyServletHandler,
 				new DefaultHandler(),
 			});
-		server.setHandler(handlers);
+		
+		RewriteHandler rewriteHandler = new RewriteHandler();
+		rewriteHandler.setRewriteRequestURI(true);
+		rewriteHandler.setRewritePathInfo(true);
+		rewriteHandler.setHandler(handlers);
+		rewriteHandler.addRule(new Rule() {
+			@Override
+			public String matchAndApply(String target, HttpServletRequest request,
+					HttpServletResponse response) throws IOException {
+				if ("true".equals(request.getParameter("enableripple"))) {
+					return "/ripple/assets/index.html";
+				} else {
+					return null;
+				}
+			}
+		});
+		server.setHandler(rewriteHandler);
 
 		server.start();
 		
@@ -68,7 +94,7 @@ public class CordovaSim {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.WEBKIT);
-		browser.setUrl("http://localhost:7777/ripple-ui");
+		browser.setUrl("http://localhost:" + PORT + "/accelerometer.html?enableripple=true");
 		browser.addOpenWindowListener(new OpenWindowListener() {
 			
 			@Override
@@ -110,7 +136,5 @@ public class CordovaSim {
 		
 		server.stop();
 		server.join();
-
 	}
-
 }
