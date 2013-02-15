@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
-import org.eclipse.jetty.rewrite.handler.RewriteRegexRule;
 import org.eclipse.jetty.rewrite.handler.Rule;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -44,10 +43,15 @@ public class CordovaSim {
 		connector.setPort(PORT);
 		server.addConnector(connector);
 
+		ServletHolder userAgentServletHolder = new ServletHolder(new StaticResponseServlet("OK"));
+		ServletHandler userAgentServletHandler = new ServletHandler();
+		userAgentServletHandler.addServletWithMapping(userAgentServletHolder, "/ripple/user-agent");
+		
 		ServletHolder proxyServletHolder = new ServletHolder(new CrossOriginProxyServlet("/proxy/"));
 		proxyServletHolder.setAsyncSupported(true);
 		ServletHandler proxyServletHandler = new ServletHandler();
 		proxyServletHandler.addServletWithMapping(proxyServletHolder, "/proxy/*");
+		
 		
 		ResourceHandler rippleResourceHandler = new ResourceHandler();
 		rippleResourceHandler.setDirectoriesListed(true);
@@ -65,6 +69,7 @@ public class CordovaSim {
 
 		HandlerList handlers = new HandlerList();
 		handlers.setHandlers(new Handler[] {
+				userAgentServletHandler,
 				wwwContextHandler,
 				rippleContextHandler,
 				proxyServletHandler,
