@@ -20,8 +20,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -32,6 +30,7 @@ import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
 
 public class CordovaSim {
 	private static final int PORT = 7790;
+	private static BrowserSim browserSim;
 	
 	/**
 	 * @param args
@@ -102,6 +101,7 @@ public class CordovaSim {
 		browser.setUrl("http://localhost:" + PORT + "/accelerometer.html?enableripple=true");
 		browser.addOpenWindowListener(new OpenWindowListener() {
 			
+
 			@Override
 			public void open(WindowEvent event) {
 				boolean STANDALONE = true;
@@ -109,25 +109,16 @@ public class CordovaSim {
 				if (devicesList == null) {
 					devicesList = DevicesListStorage.loadDefaultDevicesList();
 				}
-				Device defaultDevice = devicesList.getDevices().get(devicesList.getSelectedDeviceIndex());
-				BrowserSim browserSim = new BrowserSim(display, "about:blank", STANDALONE);		
-				
-				browserSim.initDevicesListHolder();
-				browserSim.devicesListHolder.setDevicesList(devicesList);
 
-				browserSim.initSkin(BrowserSim.getSkinClass(defaultDevice, devicesList.getUseSkins()), devicesList.getLocation());
-				
-				browserSim.devicesListHolder.notifyObservers();
-				
-				event.browser = browserSim.skin.getBrowser();
-				
-				final Browser browser = event.browser;
-				browserSim.skin.getShell().addShellListener(new ShellAdapter() {
-					@Override
-					public void shellClosed(ShellEvent e) {
-						browser.execute("window.closed = true;");
-					}
-				});
+				Device defaultDevice = devicesList.getDevices().get(devicesList.getSelectedDeviceIndex());
+				if (browserSim == null || browserSim.skin.getBrowser() == null || browserSim.skin.getBrowser().isDisposed()) {
+					browserSim = new BrowserSim(display, "about:blank", STANDALONE);		
+					browserSim.initDevicesListHolder();
+					browserSim.devicesListHolder.setDevicesList(devicesList);
+					browserSim.initSkin(BrowserSim.getSkinClass(defaultDevice, devicesList.getUseSkins()), devicesList.getLocation());
+					browserSim.devicesListHolder.notifyObservers();
+				}
+				event.browser = browserSim.skin.getBrowser();				
 			}
 		});
 		
