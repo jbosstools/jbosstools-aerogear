@@ -33286,10 +33286,8 @@ function _cleanBody() {
 }
 
 function _post(src) {
-    var event = ripple('event'),
-    bsPopup = _createBsPopup(src);
-    _bindObjects(bsPopup, bsPopup.document);
-
+    var event = ripple('event');
+    _createBsPopup(src);
     _console.log("Initialization Finished (Make it so.)");
 
     // frame.onload = function () {
@@ -33331,7 +33329,7 @@ function _bootstrap() {
 module.exports = {
     bootstrap: _bootstrap,
     inject: function (frameWindow, frameDocument) {
-     // _bindObjects(frameWindow, frameDocument);
+     _bindObjects(frameWindow, frameDocument);
     }
 };
 
