@@ -33266,11 +33266,11 @@ function _bindObjects(win, doc) {
     }
 }
 
-function _createFrame(src) {
-    var frame = document.createElement("iframe");
-    frame.setAttribute("id", "document");
-    frame.src = src;
-    return frame;
+function _createBsPopup(src) {
+    var bsPopup = window.open(src ,'popup',
+        'width=500,height=500,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0');
+    bsPopup.focus();
+    return bsPopup;
 }
 
 function _cleanBody() {
@@ -33287,11 +33287,12 @@ function _cleanBody() {
 
 function _post(src) {
     var event = ripple('event'),
-        frame = _createFrame(src);
+    bsPopup = _createBsPopup(src);
+    _bindObjects(bsPopup, bsPopup.document);
 
     _console.log("Initialization Finished (Make it so.)");
 
-    frame.onload = function () {
+    // frame.onload = function () {
         var bootLoader = document.querySelector("#emulator-booting"),
             id;
         if (bootLoader) {
@@ -33306,10 +33307,7 @@ function _post(src) {
         window.setTimeout(function () {
             window.clearInterval(id);
         }, 1200);
-    };
-
-    // append frame
-    document.getElementById("viewport-container").appendChild(frame);
+//    };
 
     delete tinyHippos.boot;
 }
@@ -33333,7 +33331,7 @@ function _bootstrap() {
 module.exports = {
     bootstrap: _bootstrap,
     inject: function (frameWindow, frameDocument) {
-        _bindObjects(frameWindow, frameDocument);
+     // _bindObjects(frameWindow, frameDocument);
     }
 };
 
