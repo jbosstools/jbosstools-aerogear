@@ -18,6 +18,8 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationAdapter;
+import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -117,17 +119,24 @@ public class CordovaSim {
 					browserSim.devicesListHolder.setDevicesList(devicesList);
 					browserSim.initSkin(BrowserSim.getSkinClass(defaultDevice, devicesList.getUseSkins()), devicesList.getLocation());
 					browserSim.devicesListHolder.notifyObservers();
+					browserSim.skin.getBrowser().addLocationListener(new LocationAdapter() {
+						public void changed(LocationEvent event) {
+							Browser browser = (Browser) event.widget;
+							browser.execute("if (window.opener.ripple) { window.opener.ripple('bootstrap').inject(window, document);}");
+							browser.forceFocus();
+						}
+					});
 				}
 				event.browser = browserSim.skin.getBrowser();				
 			}
 		});
-		
+	
 		shell.open();
 		
 		while (!shell.isDisposed()) {
-			  if (!display.readAndDispatch())
-			    display.sleep();
-			}
+		  if (!display.readAndDispatch())
+		     display.sleep();
+		}
 		display.dispose(); 
 		
 		server.stop();
