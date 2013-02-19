@@ -24,6 +24,7 @@ html, body {
     height : 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    font-family: "Helvetica", Arial, sans-serif;
 }
 
 input, textarea, keygen, select, button, isindex, datagrid {
@@ -113,7 +114,21 @@ input:focus, textarea:focus, isindex:focus, keygen:focus, select:focus {
     user-select: text;
 }
 
+.prefix-with-right-arrow:before {
+    content: '\25BA';
+    padding-right: 3px;
+}
+
 section, header, footer, aside, nav { display: block; }
+
+.small-button{
+    width: 32%;
+}
+
+.small-button span{
+    font-size: 0.7em;
+}
+
 
 /* ------------------------------>
     Top Section */
@@ -592,7 +607,7 @@ section.left { left: 0; }
     position: absolute;
     top: 158px;
     left: 143px;
-    background: url(../images/arrow.png);
+    background: url(images/arrow.png);
     width: 22px;
     height: 30px;
     z-index: 800;
@@ -832,7 +847,6 @@ section.left { left: 0; }
     margin: 0 auto;
     display: none;
     color: #F0F0F0;
-    font-family: Helevetica, Arial;
 }
 
     .error-logo {
@@ -846,7 +860,7 @@ section.left { left: 0; }
     }
 
     .error-hippo {
-        background: url("images/dontPanic.png") no-repeat center;
+        /*background: url("images") no-repeat center;*/
         background-size: 100% 100%;
         position: absolute;
         width: 230px;
@@ -872,7 +886,7 @@ section.left { left: 0; }
     EULA Window */
 
 .eula-window {
-    z-index: 9000;
+    z-index: 10000;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -883,7 +897,7 @@ section.left { left: 0; }
 }
 
 .eula-dialog {
-    z-index: 9001;
+    z-index: 10001;
     position: absolute;
     top: 200px;
     padding: 20px 0 20px 130px;
@@ -1167,7 +1181,7 @@ fieldset {
 #contextMenu {
     height: 100%;
     width: 613px;
-    border-image: url('../images/webworks/bb10/core_crosscutmenu_bg.png') 1 1 1 15 fill / 0 0 0 0 repeat;
+    border-image: url('images/webworks/bb10/core_crosscutmenu_bg.png') 1 1 1 15 fill / 0 0 0 0 repeat;
     -webkit-box-shadow: -10px 0 25px #121212;
     box-shadow: -10px 0 25px #121212;
     -webkit-animation-timing-function: ease-out;
@@ -1273,7 +1287,7 @@ fieldset {
     position: absolute;
     height: 119px;
     width: 121px;
-    background-image: url('../images/webworks/bb10/drag_bar.png');
+    background-image: url('images/webworks/bb10/drag_bar.png');
 }
 
 .showMoreHandleIcon {
@@ -1310,7 +1324,7 @@ fieldset {
 .showContextmenuItem {
     -webkit-transform: translateZ(0) translate(-462px,0);
     transform: translateZ(0) translate(-462px,0);
-    border-image: url('../images/webworks/bb10/core_crosscutmenu_selected.png') 2 1 2 13 / 1 1 1 1;
+    border-image: url('images/webworks/bb10/core_crosscutmenu_selected.png') 2 1 2 13 / 1 1 1 1;
     z-index:101;
 }
 
@@ -1340,44 +1354,91 @@ fieldset {
  * limitations under the License.
  */
 /* ------------------------------>
-    Colt (848x1552) offset (268x84)*/
+    Q10 (848x1552) offset (268x84)*/
 
-.viewport-wrapper-Colt {
+.viewport-wrapper-Q10 {
+    width: 720px;
+    height: 720px;
+    border: none;
+}
+
+.device-wrapper-Q10 {
+    position: relative;
+    padding: 258px 0 0 86px;
+    width: 792px;
+    height: 1285px;
+    margin: 0 auto;
+    border: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    background: url('images/Q10.png') no-repeat;
+    background-size: 886px;
+}
+
+.viewport-wrapper-landscape-Q10 {
+    width: 720px;
+    height: 720px;
+    border: none;
+}
+
+#document {
+    border-radius: 7px;
+}
+
+/*
+ *  Copyright 2011 Research In Motion Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/* ------------------------------>
+    Z10 (848x1552) offset (268x84)*/
+
+.viewport-wrapper-Z10 {
     width: 768px;
     height: 1280px;
     border: none;
 }
 
-.device-wrapper-Colt {
+.device-wrapper-Z10 {
     position: relative;
-    padding: 268px 0 0 84px;
+    padding: 283px 0 0 99px;
     width: 848px;
     height: 1552px;
     margin: 0 auto;
     border: none;
     -webkit-box-shadow: none;
     box-shadow: none;
-    background: url('images/Colt.png') no-repeat;
-    background-size: 940px;
+    background: url('images/Z10.png') no-repeat;
+    background-size: 973px;
 }
 
-.viewport-wrapper-landscape-Colt {
+.viewport-wrapper-landscape-Z10 {
     width: 1280px;
     height: 768px;
     border: none;
 }
 
-.device-wrapper-landscape-Colt {
+.device-wrapper-landscape-Z10 {
     position: relative;
-    padding: 88px 0 0 270px;
+    padding: 106px 0 0 284px;
     width: 1552px;
     height: 848px;
     margin: 0 auto;
     border: none;
     -webkit-box-shadow: none;
     box-shadow: none;
-    background: url('images/Colt-Landscape.png') no-repeat;
-    background-size: 1821px;
+    background: url('images/Z10-Landscape.png') no-repeat;
+    background-size: 1867px;
 }
 
 #document {
