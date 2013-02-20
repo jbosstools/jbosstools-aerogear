@@ -102,8 +102,7 @@ public class CordovaSim {
 		Browser browser = new Browser(shell, SWT.WEBKIT);
 		browser.setUrl("http://localhost:" + PORT + "/accelerometer.html?enableripple=true");
 		browser.addOpenWindowListener(new OpenWindowListener() {
-			
-
+ 			
 			@Override
 			public void open(WindowEvent event) {
 				boolean STANDALONE = true;
@@ -111,26 +110,28 @@ public class CordovaSim {
 				if (devicesList == null) {
 					devicesList = DevicesListStorage.loadDefaultDevicesList();
 				}
-
+				
 				Device defaultDevice = devicesList.getDevices().get(devicesList.getSelectedDeviceIndex());
-				if (browserSim == null || browserSim.skin.getBrowser() == null || browserSim.skin.getBrowser().isDisposed()) {
-					browserSim = new BrowserSim(display, "about:blank", STANDALONE);		
-					browserSim.initDevicesListHolder();
-					browserSim.devicesListHolder.setDevicesList(devicesList);
-					browserSim.initSkin(BrowserSim.getSkinClass(defaultDevice, devicesList.getUseSkins()), devicesList.getLocation());
-					browserSim.devicesListHolder.notifyObservers();
-					browserSim.skin.getBrowser().addLocationListener(new LocationAdapter() {
-						public void changed(LocationEvent event) {
-							Browser browser = (Browser) event.widget;
-							browser.execute("if (window.opener.ripple) { window.opener.ripple('bootstrap').inject(window, document);}");
-							browser.forceFocus();
-						}
-					});
+				if (browserSim != null && browserSim.skin.getShell() != null) {
+					browserSim.skin.getShell().dispose();
 				}
+				browserSim = new BrowserSim(display, "about:blank", STANDALONE);
+				browserSim.initDevicesListHolder();
+				browserSim.devicesListHolder.setDevicesList(devicesList);
+				browserSim.initSkin(BrowserSim.getSkinClass(defaultDevice, devicesList.getUseSkins()), devicesList.getLocation());
+				browserSim.devicesListHolder.notifyObservers();
+				browserSim.skin.getBrowser().addLocationListener(new LocationAdapter() {
+					public void changed(LocationEvent event) {
+						Browser browser = (Browser) event.widget;
+						browser.execute("if (window.opener.ripple) { window.opener.ripple('bootstrap').inject(window, document);}");
+						browser.forceFocus();
+					}
+				});
+				
 				event.browser = browserSim.skin.getBrowser();				
 			}
 		});
-	
+		
 		shell.open();
 		
 		while (!shell.isDisposed()) {
