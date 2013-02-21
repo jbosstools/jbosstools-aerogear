@@ -9,17 +9,18 @@ import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.servlets.ProxyServlet;
 
 public class CrossOriginProxyServlet extends ProxyServlet {
-	private String servletPrefix;
+	private String urlParameterName;
 
-	public CrossOriginProxyServlet(String servletPrefix) {
-		this.servletPrefix = servletPrefix;
+	public CrossOriginProxyServlet(String urlParameterName) {
+		this.urlParameterName = urlParameterName;
 	}
 	
 	@Override
 	protected HttpURI proxyHttpURI(HttpServletRequest request, String uri)
 			throws MalformedURLException {;
-		if (uri.startsWith(servletPrefix)) {
-			return new HttpURI(uri.substring(servletPrefix.length()));				
+		String proxiedUrl = request.getParameter(urlParameterName);
+		if (proxiedUrl != null) {
+			return new HttpURI(proxiedUrl);				
 		} else {
 			return null;
 		}

@@ -31,7 +31,7 @@ import org.jboss.tools.vpe.browsersim.model.DevicesListStorage;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
 
 public class CordovaSim {
-	private static final int PORT = 7790;
+	private static final int PORT = 4400;
 	private static BrowserSim browserSim;
 	
 	/**
@@ -48,10 +48,10 @@ public class CordovaSim {
 		ServletHandler userAgentServletHandler = new ServletHandler();
 		userAgentServletHandler.addServletWithMapping(userAgentServletHolder, "/ripple/user-agent");
 		
-		ServletHolder proxyServletHolder = new ServletHolder(new CrossOriginProxyServlet("/proxy/"));
+		ServletHolder proxyServletHolder = new ServletHolder(new CrossOriginProxyServlet("tinyhippos_rurl"));
 		proxyServletHolder.setAsyncSupported(true);
 		ServletHandler proxyServletHandler = new ServletHandler();
-		proxyServletHandler.addServletWithMapping(proxyServletHolder, "/proxy/*");
+		proxyServletHandler.addServletWithMapping(proxyServletHolder, "/ripple/xhr_proxy");
 		
 		
 		ResourceHandler rippleResourceHandler = new ResourceHandler();
@@ -72,8 +72,8 @@ public class CordovaSim {
 		handlers.setHandlers(new Handler[] {
 				userAgentServletHandler,
 				wwwContextHandler,
-				rippleContextHandler,
 				proxyServletHandler,
+				rippleContextHandler,
 				new DefaultHandler(),
 			});
 		
