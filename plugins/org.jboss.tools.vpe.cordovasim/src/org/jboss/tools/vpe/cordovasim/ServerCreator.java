@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributor:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
 import java.io.IOException;
@@ -16,32 +26,15 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationAdapter;
-import org.eclipse.swt.browser.LocationEvent;
-import org.eclipse.swt.browser.OpenWindowListener;
-import org.eclipse.swt.browser.WindowEvent;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.jboss.tools.vpe.browsersim.model.Device;
-import org.jboss.tools.vpe.browsersim.model.DevicesList;
-import org.jboss.tools.vpe.browsersim.model.DevicesListStorage;
-import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
 
-public class CordovaSim {
-	private static final int PORT = 4400;
-	private static BrowserSim browserSim;
-	
-	/**
-	 * @param args
-	 * @throws Exception
-	 */
-	public static void main(String[] args) throws Exception {
+/**
+ * @author Yahor Radtsevich (yradtsevich)
+ */
+public class ServerCreator {
+	public static Server createServer(String resourceBase, int port) {
 		Server server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setPort(PORT);
+		connector.setPort(port);
 		server.addConnector(connector);
 
 		ServletHolder userAgentServletHolder = new ServletHolder(new StaticResponseServlet("OK"));
@@ -63,7 +56,7 @@ public class CordovaSim {
 		
 		ResourceHandler wwwResourceHandler = new ResourceHandler();
 		wwwResourceHandler.setDirectoriesListed(true);
-		wwwResourceHandler.setResourceBase("./www");
+		wwwResourceHandler.setResourceBase(resourceBase);
 		ContextHandler wwwContextHandler = new ContextHandler("/");
 		wwwContextHandler.setHandler(wwwResourceHandler);
 		
@@ -93,54 +86,7 @@ public class CordovaSim {
 			}
 		});
 		server.setHandler(rewriteHandler);
-
-		server.start();
 		
-		final Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-		Browser browser = new Browser(shell, SWT.WEBKIT);
-		browser.setUrl("http://localhost:" + PORT + "/accelerometer.html?enableripple=true");
-		browser.addOpenWindowListener(new OpenWindowListener() {
- 			
-			@Override
-			public void open(WindowEvent event) {
-				boolean STANDALONE = true;
-				DevicesList devicesList = DevicesListStorage.loadUserDefinedDevicesList(STANDALONE);
-				if (devicesList == null) {
-					devicesList = DevicesListStorage.loadDefaultDevicesList();
-				}
-				
-				Device defaultDevice = devicesList.getDevices().get(devicesList.getSelectedDeviceIndex());
-				if (browserSim != null && browserSim.skin.getShell() != null) {
-					browserSim.skin.getShell().dispose();
-				}
-				browserSim = new BrowserSim(display, "about:blank", STANDALONE);
-				browserSim.initDevicesListHolder();
-				browserSim.devicesListHolder.setDevicesList(devicesList);
-				browserSim.initSkin(BrowserSim.getSkinClass(defaultDevice, devicesList.getUseSkins()), devicesList.getLocation());
-				browserSim.devicesListHolder.notifyObservers();
-				browserSim.skin.getBrowser().addLocationListener(new LocationAdapter() {
-					public void changed(LocationEvent event) {
-						Browser browser = (Browser) event.widget;
-						browser.execute("if (window.opener.ripple) { window.opener.ripple('bootstrap').inject(window, document);}");
-						browser.forceFocus();
-					}
-				});
-				
-				event.browser = browserSim.skin.getBrowser();				
-			}
-		});
-		
-		shell.open();
-		
-		while (!shell.isDisposed()) {
-		  if (!display.readAndDispatch())
-		     display.sleep();
-		}
-		display.dispose(); 
-		
-		server.stop();
-		server.join();
+		return server;
 	}
 }
