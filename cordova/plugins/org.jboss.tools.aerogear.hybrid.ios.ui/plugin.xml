@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.jboss.tools.aerogear.hybrid.ios.ui.IOSLaunchShortcut"
+            id="org.jboss.tools.aerogear.hybrid.ios.ui.launch"
+            label="Run on iOS Emulator"
+            modes="run">
+         <contextualLaunch>
+			<enablement>
+         		<and>
+         		<with variable="selection">
+					<count value="1"/>
+				</with>
+				<systemTest
+          			property="os.name"
+          			value="Mac OS X" />
+				</and>
+         	</enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.jboss.tools.aerogear.hybrid.ios.ui.IOSSimLaunchConfigurationTabGroup"
+            description="iOS simulator"
+            id="org.jboss.tools.aerogear.hybrid.ios.ui.IOSSimlaunchConfigurationTabGroup"
+            type="org.jboss.tools.aerogear.hybrid.ios.core.IOSSimulatorLaunchConfigType">
+      </launchConfigurationTabGroup>
+   </extension>
+
+</plugin>

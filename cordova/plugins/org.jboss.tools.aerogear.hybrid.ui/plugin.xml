@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            canFinishEarly="false"
+            class="org.jboss.tools.aerogear.hybrid.ui.wizard.project.NewHybridProjectWizard"
+            hasPages="true"
+            id="org.jboss.tools.aerogear.hybrid.ui.NewHybridProjectWizard"
+            name="Aerogear Hybrid Application Project"
+            project="true">
+      </wizard>
+   </extension>
+  <extension point="org.eclipse.ui.editors">
+    <editor
+          class="org.jboss.tools.aerogear.hybrid.ui.config.internal.ConfigEditor"
+          default="true"
+          id="org.jboss.tools.aerogear.hybrid.ui.config.internal.ConfigEditor"
+          name="Aerogear Configuration Editor">
+       <contentTypeBinding
+             contentTypeId="org.jboss.tools.aerogear.hybrid.core.configType">
+       </contentTypeBinding>
+    </editor>
+  </extension>
+</plugin>

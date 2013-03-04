@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.jboss.tools.aerogear.hybrid.core;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.jboss.tools.aerogear.hybrid.core.HybridCore
+Bundle-Vendor: %Bundle-Vendor
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.debug.core;bundle-version="[3.7.0,3.9.0)"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: org.jboss.tools.aerogear.hybrid.core,
+ org.jboss.tools.aerogear.hybrid.core.config;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui",
+ org.jboss.tools.aerogear.hybrid.core.natures;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui",
+ org.jboss.tools.aerogear.hybrid.core.target;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui",
+ org.jboss.tools.aerogear.hybrid.core.util;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui"
