@@ -25,11 +25,11 @@ import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 
 import org.eclipse.core.resources.IProject;
-import org.jboss.tools.aerogear.hybrid.core.target.AbstractTargetProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
 
-public class XcodeProjectGenerator extends AbstractTargetProjectGenerator{
+public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 	
 	public XcodeProjectGenerator(IProject project, File generationFolder) {
 		super(project, generationFolder);
