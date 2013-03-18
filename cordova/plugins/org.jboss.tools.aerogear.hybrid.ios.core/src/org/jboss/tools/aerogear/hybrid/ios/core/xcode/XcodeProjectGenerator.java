@@ -10,11 +10,12 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.core.xcode;
 
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.fileCopy;
 import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
+import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.fileCopy;
 import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.StringBufferInputStream;
 
 import org.eclipse.core.resources.IProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
@@ -100,8 +100,8 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 	        reader.close();
 
 	        String content = buffer.toString();
-	        content = content.replace(replaced, replacement); //$NON-NLS-1$
-	        copyStreams(new StringBufferInputStream(content), new FileOutputStream(file));
+	        content = content.replace(replaced, replacement);
+	        copyStreams(new ByteArrayInputStream(content.getBytes()), new FileOutputStream(file));
 	        
 	}
 	
