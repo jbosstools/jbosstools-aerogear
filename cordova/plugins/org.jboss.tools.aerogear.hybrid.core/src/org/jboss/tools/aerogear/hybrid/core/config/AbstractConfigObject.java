@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.config;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -22,20 +25,60 @@ import org.w3c.dom.NodeList;
  * 
  */
 public class AbstractConfigObject {
+	
+	public class Property<T>{
+		public final String name;
+	    private T value;
+	    public Property(String propertyName){
+	    	name = propertyName;
+	    }
+	    
+	    public T getValue() { 
+	    	return value; 
+	    }
 
-	protected String getNodeAttribute(Node node, String name) {
+	    public void setValue(T value) {
+	        T old = this.value;
+	        this.value = value;
+	        if(propertySupport != null)
+	            propertySupport.firePropertyChange(name, old, this.value);
+	    }
+	}
+	
+	
+	protected PropertyChangeSupport propertySupport;
+	Element itemNode;
+	
+	protected AbstractConfigObject(){
+		propertySupport = new PropertyChangeSupport(this);
+	}
+
+	/**
+	 * Returns the value of the attribute on node
+	 * @param node 
+	 * @param namespace
+	 * @param name of the attribute
+	 * @return value of the attribute or null
+	 * @throws IllegalArgumentException- if node is null
+	 */
+	protected String getNodeAttribute(Node node, String namespace,String name) {
+		if(node == null )
+			throw new IllegalArgumentException("Node is null");
+		
 		NamedNodeMap nodeMap = node.getAttributes();
 		if (nodeMap == null) {
 			return null;
 		}
-		Node attribute = nodeMap.getNamedItem(name);
+		Node attribute = nodeMap.getNamedItemNS(namespace, name);
 		if (attribute != null) {
 			return attribute.getNodeValue();
 		}
 		return null;
 	}
 	
-	protected String getTextContent(Node node, String name){
+	protected String getTextContentForTag(Node node, String name){
+		if(node == null )
+			throw new IllegalArgumentException("Node is null" );
 		Element el = (Element)node;
 		NodeList nodes = el.getElementsByTagName(name);
 		if(nodes.getLength()>0){
@@ -44,4 +87,94 @@ public class AbstractConfigObject {
 		return null;
 	}
 
+	protected boolean equalField(Object one, Object two) {
+		if(one == null && two == null )
+			return true;
+		if( one != null && two != null )
+			return one.equals(two);
+		return false;
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener){
+		propertySupport.addPropertyChangeListener(listener);
+	}
+	
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener){
+		propertySupport.addPropertyChangeListener(propertyName, listener);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener listener){
+		propertySupport.removePropertyChangeListener(listener);
+	}
+	
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener){
+		propertySupport.removePropertyChangeListener(propertyName, listener);
+	}
+	
+	/**
+	 * Set the text content value
+	 * 
+	 * @param element
+	 * @param value
+	 * @throws IllegalArgumentException if element is null
+	 */
+	protected void setTextContentValue(Element element, String value ){
+		if(element == null )
+			throw new IllegalArgumentException("Element is null");
+		element.setTextContent(value);
+	}
+	
+	/**
+	 * Sets the text content for a child of element. If tagName child can not 
+	 * be found it creates one 
+	 * 
+	 * @param element
+	 * @param namespace
+	 * @param tagName
+	 * @param value
+	 * @throws IllegalArgumentException if element is null
+	 */
+	protected void setTextContentValueForTag(Element element, String namespace,
+			String tagName, String value) {
+		if ( element == null )
+			throw new IllegalArgumentException("Element is null");
+		
+		NodeList nodes = element.getElementsByTagNameNS(namespace, tagName);
+
+		Node target = null;
+		if (nodes.getLength() < 1) {
+			target = element.getOwnerDocument().createElementNS(namespace,
+					tagName);
+			element.appendChild(target);
+		} else {
+			target = nodes.item(0);
+		}
+		Node firstChild = target.getFirstChild();
+		if (firstChild != null) {
+			firstChild.setNodeValue(value);
+		} else {
+			target.appendChild(element.getOwnerDocument().createTextNode(value));
+		}
+
+	}
+
+	/**
+	 * Sets the value of the attribute Namespace must be null if no namespace is desired. 
+	 * @see Element#setAttributeNS(String, String, String)
+	 * 
+	 * @param element
+	 * @param namespace
+	 * @param attributeName
+	 * @param value
+	 * @throws IllegalArgumentException if element is null
+	 */
+	protected void setAttributeValue(Element element, String namespace, 
+			String attributeName,
+			String value) {
+		if (element == null)
+			throw new IllegalArgumentException("null Element");
+
+		element.setAttributeNS(namespace, attributeName, value);
+	}
+	
 }

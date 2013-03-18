@@ -11,11 +11,22 @@
 package org.jboss.tools.aerogear.hybrid.core.config;
 
 import org.w3c.dom.Node;
-
+/**
+ * Icon tag on a config.xml
+ * 
+ * @author Gorkem Ercan
+ */
 public class Icon extends ImageResourceBase {
 
 	Icon(Node node) {
 		super(node);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null || !(obj instanceof Icon))
+			return false;
+		return super.equals(obj);
 	}
 
 }

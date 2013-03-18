@@ -17,8 +17,9 @@
     <editor
           class="org.jboss.tools.aerogear.hybrid.ui.config.internal.ConfigEditor"
           default="true"
+          icon="icons/cordova16px.png"
           id="org.jboss.tools.aerogear.hybrid.ui.config.internal.ConfigEditor"
-          name="Aerogear Configuration Editor">
+          name="Cordova Configuration Editor">
        <contentTypeBinding
              contentTypeId="org.jboss.tools.aerogear.hybrid.core.configType">
        </contentTypeBinding>

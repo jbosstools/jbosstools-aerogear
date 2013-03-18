@@ -11,7 +11,6 @@
 package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.ui.IPropertyListener;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
 import org.eclipse.wst.sse.ui.StructuredTextEditor;
@@ -24,24 +23,12 @@ import org.w3c.dom.Document;
  *
  */
 public class SourceEditor extends StructuredTextEditor {
-
-    private boolean dirty;
+	
+	IStructuredModel model;
 
     public SourceEditor() {
     }
 
-    @Override
-    protected void createActions() {
-	addListenerObject(new IPropertyListener() {
-	    @Override
-	    public void propertyChanged(Object source, int propId) {
-		if (propId == SourceEditor.PROP_DIRTY) {
-		    dirty = true;
-		}
-	    }
-	});
-	super.createActions();
-    }
 
     /**
      * Gets DOM document from sourceEditor
@@ -53,25 +40,25 @@ public class SourceEditor extends StructuredTextEditor {
 	IDocument doc = getDocumentProvider().getDocument(getEditorInput());
 	Document document = null;
 
-	IStructuredModel model = null;
+	
 	try {
 	    model = StructuredModelManager.getModelManager()
-		    .getExistingModelForRead(doc);
+		    .getExistingModelForEdit(doc);
 	    if ((model != null) && (model instanceof IDOMModel)) {
 		document = ((IDOMModel) model).getDocument();
 	    }
 	} finally {
-	    model.releaseFromRead();
+	   
 	}
 	return document;
     }
 
-    public boolean markedDirty() {
-	return dirty;
-    }
-
-    public void removeMarkedDirty() {
-	dirty = false;
-    }
+    @Override
+	public void dispose() {
+		if (model != null) {
+			model.releaseFromEdit();
+		}
+		super.dispose();
+	}
 
 }

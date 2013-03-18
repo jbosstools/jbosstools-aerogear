@@ -22,5 +22,11 @@
             priority="high">
       </content-type>
    </extension>
-
+   <extension
+         point="org.eclipse.wst.xml.core.catalogContributions">
+      <catalogContribution>
+         <uri name="http://www.w3.org/ns/widgets"
+               uri="res/w3c-xsd/widget.xsd">
+         </uri></catalogContribution>
+   </extension>
 </plugin>

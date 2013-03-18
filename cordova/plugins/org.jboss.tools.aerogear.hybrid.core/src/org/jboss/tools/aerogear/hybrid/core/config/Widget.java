@@ -10,211 +10,391 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.config;
 
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NS_PHONEGAP_1_0;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NS_W3C_WIDGET;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_ATTR_ID;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_ATTR_VERSION;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_ATTR_VIEWMODES;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_AUTHOR;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_CONTENT;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_DESCRIPTION;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_NAME;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_PREFERENCE;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_FEATURE;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_ACCESS;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_PLUGIN;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_ICON;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_SPLASH;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NAME_ATTR_SHORT;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_LICENSE;
+
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.core.runtime.IStatus;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
-
+/**
+ * The root object for the config.xml. 
+ * 
+ * @author Gorkem Ercan
+ *
+ */
 public class Widget extends AbstractConfigObject {
 
+
 	
-	static final String NS_PHONEGAP_1_0 = "http://phonegap.com/ns/1.0";
-	private String id;
-	private String version;
-	private int versionCode;
-	private String name;
-	private String description;
-	private Author author;
-	private List<Preference> preferences;
-	private List<Access> accesses;
-	private List<Feature> features;
-	private List<Plugin> plugins;
-	private List<Icon> icons;
-	private List<Splash> splashes;
+	private Property<String> id = new Property<String>(WIDGET_ATTR_ID);
+	private Property<String> version = new Property<String>(WIDGET_ATTR_VERSION);
+	private Property<String> name = new Property<String>(WIDGET_TAG_NAME);
+	private Property<String> shortname = new Property<String>("shortname");
+	private Property<String> description= new Property<String>(WIDGET_TAG_DESCRIPTION);
+	private Property<String> viewmodes = new Property<String>(WIDGET_ATTR_VIEWMODES);
+	private Property<Author> author = new Property<Author>(WIDGET_TAG_AUTHOR);
+	private Property<Content> content = new Property<Content>(WIDGET_TAG_CONTENT);
+	private Property<License> license = new Property<License>("license");
 	
 
-	Widget (Node node) {
-		id = getNodeAttribute(node, "id");
-		version = getNodeAttribute(node, "version");
-		
-		String vcode = getNodeAttribute(node, "versionCode");
-		if (vcode != null) {
-			try {
-				versionCode = Integer.parseInt(getNodeAttribute(node,
-						"versionCode"));
-			} catch (NumberFormatException nfe) {
-				// TODO: handle invalid versionCode values
-			}
-		}
+	private Property<List<Preference>> preferences = new Property<List<Preference>>("preferences");
+	private Property<List<Access>> accesses = new Property<List<Access>>("accesses");
+	private Property<List<Feature>> features = new Property<List<Feature>>("features");
+	private Property<List<Plugin>> plugins = new Property<List<Plugin>>("plugins");
+	private Property<List<Icon>> icons = new Property<List<Icon>>("icons");
+	private Property<List<Splash>> splashes = new Property<List<Splash>>("splashes");
 	
+	/**
+	 * Creates a new instance from its xml representation.
+	 * @param node
+	 */
+	Widget (Node node) {
+		super();
+		init(node);
+	}
+	/**
+	 * Reloads the xml dom. This causes {@link PropertyChangeListener}s to be triggered 
+	 * for any changed content.
+	 * 
+	 * @param node
+	 */
+	void reload(Node node){
+		init(node);
+	}
+
+	private void init(Node node) {
+		itemNode = (Element)node;
+		id.setValue(getNodeAttribute(node, null, WIDGET_ATTR_ID));
+		version.setValue(getNodeAttribute(node, null, WIDGET_ATTR_VERSION));
+		
 		
 		loadName(node);
 		loadDescription(node);
-		loadAuthor(node);
-		loadPreferences(node);
-		loadAccess(node);
-		loadFeatures(node);
-		loadPlugins(node);
-		loadIcons(node);
-		loadSplashes(node);
-		
+		loadItem(WIDGET_TAG_AUTHOR,null,node, author,Author.class);
+		loadItem(WIDGET_TAG_CONTENT, null, node, content, Content.class);
+		loadItem(WIDGET_TAG_LICENSE,null,node,license,License.class );
+		loadListItem(WIDGET_TAG_PREFERENCE,null,node, preferences, Preference.class);
+		loadListItem(WIDGET_TAG_ACCESS,null, node, accesses, Access.class);
+		loadListItem(WIDGET_TAG_FEATURE, null,node,features, Feature.class);
+		loadListItem(WIDGET_TAG_PLUGIN, null, node, plugins, Plugin.class);
+		loadListItem(WIDGET_TAG_ICON, null, node, icons, Icon.class);
+		loadListItem(WIDGET_TAG_SPLASH,NS_PHONEGAP_1_0, node, splashes, Splash.class);
 	}
 
 
-	private void loadSplashes(Node node) {
-		splashes = new ArrayList<Splash>();
-		Element el = (Element)node;
-		NodeList nodes = el.getElementsByTagNameNS(NS_PHONEGAP_1_0, "splash");
-		for( int i = 0; i< nodes.getLength(); i++ ){
-			Splash splash = new Splash(nodes.item(i));
-			splashes.add(splash);
-		}
-		
-	}
-
-	private void loadIcons(Node node) {
-		icons = new ArrayList<Icon>();
-		Element el = (Element)node;
-		NodeList nodes = el.getElementsByTagName("icon");
-		for(int i=0; i < nodes.getLength() ; i++ ){
-			Icon icon = new Icon(nodes.item(i));
-			icons.add(icon);
-		}
-	}
 	
-
-	private void loadPlugins(Node node) {
-		plugins = new ArrayList<Plugin>();
+	private <T extends AbstractConfigObject> void loadItem(String tagName, String namespace, Node node, Property<T> prop, Class<T> clazz){
 		Element el = (Element)node;
-		NodeList nodes = el.getElementsByTagNameNS(NS_PHONEGAP_1_0,"plugin");
-		for(int i= 0 ; i<nodes.getLength(); i++){
-			Plugin plugin = new Plugin(nodes.item(i));
-			plugins.add(plugin);
-		}
-	}
-
-	private void loadFeatures(Node node) {
-		features = new ArrayList<Feature>();
-		Element el = (Element)node;
-		NodeList nodes = el.getElementsByTagName("feature");
-		for(int i = 0; i < nodes.getLength() ; i++){
-			Feature feature = new Feature(nodes.item(i));
-			features.add(feature);
-		}
-		
-	}
-
-	private void loadAccess(Node node) {
-		accesses = new ArrayList<Access>();
-		Element el = (Element)node;
-		NodeList nodes = el.getElementsByTagName("access");
-		for(int i = 0; i< nodes.getLength() ; i++){
-			Access access = new Access(nodes.item(i));
-			accesses.add(access);
-		}
-		
-	}
-
-	private void loadPreferences(Node node) {
-		preferences = new ArrayList<Preference>();
-		Element el = (Element)node;
-		NodeList nodes = el.getElementsByTagName("preference");
-		for(int i = 0; i< nodes.getLength() ; i++){
-			Preference preference = new Preference(nodes.item(i));
-			preferences.add(preference);
-		}
-		
-	}
-
-	private void loadAuthor(Node node) {
-		Element el = (Element)node;
-		NodeList nodes = el.getElementsByTagName("author");
+		NodeList nodes = el.getElementsByTagNameNS(namespace, tagName);
 		if(nodes.getLength()>0){
-			author = new Author(nodes.item(0));
+			try{
+				prop.setValue(clazz.getDeclaredConstructor(Node.class).newInstance(nodes.item(0)));
+			}catch(Exception e){
+				HybridCore.log(IStatus.ERROR, "Error invoking the Node constructor for config model object", e);
+			}
+		}else{
+			prop.setValue(null);
 		}
 		
 	}
 
 	private void loadDescription(Node node) {
-		description = getTextContent(node, "description");
+		description.setValue(getTextContentForTag(node, WIDGET_TAG_DESCRIPTION));
 	}
 
 	private void loadName(Node node) {
-		name =getTextContent(node, "name");
+		name.setValue(getTextContentForTag(node, WIDGET_TAG_NAME));
+		NodeList nodes = itemNode.getElementsByTagNameNS(NS_W3C_WIDGET, WIDGET_TAG_NAME);
+		if(nodes.getLength() >0 ){
+			shortname.setValue(getNodeAttribute(nodes.item(0),null,NAME_ATTR_SHORT));	
+		}else{
+			shortname.setValue(null);
+		}
+	}
+	
+	private <T extends AbstractConfigObject> void loadListItem(String tagName, String namespaceURI, Node node, Property<List<T>> props, Class<T> clazz){
+		ArrayList<T> items = null; 
+		Element el = (Element)node;
+		
+		NodeList nodes = null;
+		if(namespaceURI != null ){
+			nodes = el.getElementsByTagNameNS(namespaceURI,tagName);
+		}else{
+			nodes = el.getElementsByTagName(tagName);
+		}
+		
+		if (nodes.getLength() > 0) {
+			items = new ArrayList<T>();
+			for (int i = 0; i < nodes.getLength(); i++) {
+				try {
+					T item = clazz.getDeclaredConstructor(Node.class)
+							.newInstance(nodes.item(i));
+					items.add(item);
+				} catch (Exception e) {
+					HybridCore.log(IStatus.ERROR,
+									"Error invoking the Node constructor for config model object",
+									e);
+				}
+			}
+		}
+		props.setValue(items);
 	}
 
 	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+		return id.getValue();
 	}
 
 	public String getVersion() {
-		return version;
+		return version.getValue();
 	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public int getVersionCode() {
-		return versionCode;
-	}
-
-	public void setVersionCode(int versionCode) {
-		this.versionCode = versionCode;
-	}
+	
 
 	public String getName() {
-		return name;
+		return name.getValue();
 	}
-
-	public void setName(String name) {
-		this.name = name;
+	
+	public String getShortname() {
+		return shortname.getValue();
 	}
 
 	public String getDescription() {
-		return description;
+		return description.getValue();
 	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	
+	public String getViewmodes() {
+		return viewmodes.getValue();
 	}
 
 	public Author getAuthor() {
-		return author;
+		return author.getValue();
 	}
-
-	public void setAuthor(Author author) {
-		this.author = author;
+	
+	public Content getContent() {
+		return content.getValue();
+	}
+	
+	public License getLicense(){
+		return license.getValue();
 	}
 	
 	public List<Preference> getPreferences() {
-		return preferences;
+		return preferences.getValue();
 	}
 	
 	public List<Access> getAccesses() {
-		return accesses;
+		return accesses.getValue();
 	}
 	
 	public List<Feature> getFeatures() {
-		return features;
+		return features.getValue();
 	}
 	
 	public List<Plugin> getPlugins() {
-		return plugins;
+		return plugins.getValue();
 	}
 	
 	public List<Icon> getIcons() {
-		return icons;
+		return icons.getValue();
 	}
 	
 	public List<Splash> getSplashes() {
-		return splashes;
+		return splashes.getValue();
 	}
+	
+
+	
+	public void setId(String id) {
+		this.id.setValue(id);
+		setAttributeValue(itemNode, null, WIDGET_ATTR_ID, id);
+	}
+	
+
+	public void setVersion(String version) {
+		this.version.setValue(version);
+		setAttributeValue(itemNode, null, WIDGET_ATTR_VERSION, version);
+	}
+	
+	public void setName(String name) {
+		this.name.setValue(name);
+		setTextContentValueForTag(itemNode, null, WIDGET_TAG_NAME, name);
+		
+	}
+	
+	public void setShortname(String shortname) {		
+		this.shortname.setValue(shortname);
+		NodeList nodes = itemNode.getElementsByTagNameNS(null, WIDGET_TAG_NAME);
+		if(nodes.getLength() >0 ){
+			setAttributeValue((Element)nodes.item(0), null, "short", shortname);	
+		}
+	}
+
+	public void setDescription(String description) {
+		this.description.setValue(description);
+		setTextContentValueForTag(itemNode, NS_W3C_WIDGET, WIDGET_TAG_DESCRIPTION, description);
+	}
+
+	public void setViewmodes(String viewmodes) {
+		this.viewmodes.setValue(viewmodes);
+		setAttributeValue(itemNode, null, WIDGET_ATTR_VIEWMODES, viewmodes);
+	}
+	
+	public void setAuthor(Author author) {
+		setTagObject(author, this.author);
+		this.author.setValue( author);
+	}
+	
+	public void setContent(Content content) {
+		setTagObject(content, this.content);
+		this.content.setValue(content);
+	}
+	
+	public void setLicense( License license ){
+		setTagObject(license, this.license);
+		this.license.setValue(license);
+	}
+	
+	public void addPreference(Preference preference){
+		addItem(preference, preferences);
+	}
+	
+	public void addAccess(Access access ){
+		addItem(access, accesses);
+	}
+	
+	public void addFeature( Feature feature ){
+		addItem(feature,features);
+	}
+	
+	public void addPlugin( Plugin plugin ){
+		addItem(plugin,plugins);
+	}
+	
+	public void addIcon( Icon icon ){
+		addItem(icon,icons);
+	}
+	
+	public void addSplash(Splash splash ){
+		addItem(splash,splashes);
+	}
+	
+	
+	public void removePreference( Preference preference){
+		removeItem(preference, this.preferences);
+	}
+	
+	public void removeAccess( Access access ){
+		removeItem(access, this.accesses);
+	}
+	
+	public void removeFeature( Feature feature ){
+		removeItem(feature, this.features);
+	}
+	
+	public void removePlugin( Plugin plugin ){
+		removeItem(plugin, this.plugins );
+	}
+	
+	public void removeIcon( Icon icon ){
+		removeItem(icon, this.icons);
+	}
+	
+	public void removeSplash( Splash splash ){
+		removeItem(splash, this.splashes);
+	}
+	
+	
+	
+	private <T extends AbstractConfigObject > void removeItem(T object, Property<List<T>> property){
+		if(object == null )
+			return;
+		List<T> oldList = property.getValue();
+		if (oldList.contains(object)){
+			Node removed = this.itemNode.removeChild(object.itemNode);	
+			if(removed != null){
+				List<T> list = new ArrayList<T>(oldList);
+				list.remove(object);
+				property.setValue(list);	
+			}
+			
+		}
+		
+	}
+	
+	
+	private <T extends AbstractConfigObject> void addItem(T object, Property<List<T>> property){
+		if (object == null )
+			return;
+		List<T> objects = new ArrayList<T>();
+		if(property.getValue() == null ){
+			Node newNode = itemNode.appendChild(object.itemNode);
+			if (newNode != null ){
+				objects.add(object);
+			}
+		}else{
+			objects.addAll(property.getValue());
+			Node ref = objects.get(objects.size()-1).itemNode.getNextSibling();
+			
+			Node newNode = itemNode.insertBefore(object.itemNode, ref);
+			if(newNode != null ){
+				objects.add(object);
+			}
+		}
+		property.setValue(objects);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null || !(obj instanceof Widget) ) 
+			return false;
+		if(obj == this )
+			return true;
+
+		Widget that = (Widget) obj;	
+		return equalField(that.getId(), this.getId()) && 
+				equalField(that.getVersion(), this.getVersion());
+	}
+	
+	@Override
+	public int hashCode() {
+		int hash = super.hashCode();
+		if(getId() != null )
+			hash *= getId().hashCode();
+		if(getVersion() != null )
+			hash *= getVersion().hashCode();
+		return hash;
+	}
+	
+	private <T extends AbstractConfigObject > void setTagObject(T object, Property<T> prop){
+		if(object == null ){
+			this.itemNode.removeChild(prop.getValue().itemNode);
+		}else if (prop.getValue() == null ){
+			this.itemNode.appendChild(object.itemNode);
+		}else{
+			this.itemNode.replaceChild(object.itemNode, prop.getValue().itemNode);
+		}
+	}
+	
 }

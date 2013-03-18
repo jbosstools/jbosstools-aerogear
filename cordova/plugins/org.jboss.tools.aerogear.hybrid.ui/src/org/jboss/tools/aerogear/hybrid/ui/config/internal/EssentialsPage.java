@@ -10,9 +10,13 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.PojoProperties;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -27,8 +31,15 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.jboss.tools.aerogear.hybrid.core.config.Author;
+import org.jboss.tools.aerogear.hybrid.core.config.Content;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
-
+/**
+ * MultiEditor page to collect general information on the Cordova application.
+ * 
+ * @author Gorkem Ercan
+ *
+ */
 public class EssentialsPage extends FormPage {
 	private DataBindingContext m_bindingContext;
 	
@@ -40,19 +51,85 @@ public class EssentialsPage extends FormPage {
 	private Text txtEmail;
 	private Text txtUrl;
 	private Text txtVersion;
-	private Text txtVersionCode;
+	private Text txtContentsource;
 	
 
+	//Author look alike class to be able to work the bindings with 
+	//initial null values. 
+	private class DummyAuthor{
+		
+		@SuppressWarnings("unused")
+		public void setHref(String href) {
+			Author a = createAuthor();
+			a.setHref(href);
+
+		}
+
+		@SuppressWarnings("unused")
+		public void setEmail(String email) {
+			Author a = createAuthor();
+			a.setEmail(email);
+		}
+
+		@SuppressWarnings("unused")
+		public void setName(String name) {
+			Author a =createAuthor();
+			a.setName(name);
+		}
+		private Author createAuthor(){
+			Author a = ((ConfigEditor)getEditor()).getWidgetModel().createAuthor(getWidget());
+			getWidget().setAuthor(a);
+			return a;
+		}
+		
+		@SuppressWarnings("unused")
+		public String getName(){ return null; }
+		@SuppressWarnings("unused")
+		public String getEmail(){ return null; }
+		@SuppressWarnings("unused")
+		public String getHref(){ return null;}
+		
+		@SuppressWarnings("unused")
+		public void addPropertyChangeListener(PropertyChangeListener l){
+			//no implementation
+		}
+		@SuppressWarnings("unused")		
+		public void removePropertyChangeListener(PropertyChangeListener l){
+			//no implementation
+		}		
+	}
+
+	// Content look alike to cheat binding
+	private class DummyContent{
+		
+		@SuppressWarnings("unused")
+		public void setSrc(String href ){
+			Content c = ((ConfigEditor)getEditor()).getWidgetModel().createContent(getWidget());
+			getWidget().setContent(c);
+			c.setSrc(href);
+		}
+		@SuppressWarnings("unused")
+		public String getSrc(){return null;}
+		
+		@SuppressWarnings("unused")
+		public void addPropertyChangeListener(PropertyChangeListener l){
+			//no implementation
+		}
+		@SuppressWarnings("unused")		
+		public void removePropertyChangeListener(PropertyChangeListener l){
+			//no implementation
+		}
+		
+	}
+	
 	public EssentialsPage(FormEditor editor) {
-		super(editor, "essentials", "Essentials");
+		super(editor, "essentials", "Overview");
 		formToolkit = editor.getToolkit();
 	}
 	
 	private Widget getWidget(){
 		return ((ConfigEditor)getEditor()).getWidget();
 	}
-	
-	
 	
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
@@ -90,29 +167,27 @@ public class EssentialsPage extends FormPage {
 		txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Label lblVersion = managedForm.getToolkit().createLabel(composite_1, "Version:", SWT.NONE);
-		lblVersion.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		
 		txtVersion = managedForm.getToolkit().createText(composite_1, "New Text", SWT.NONE);
 		txtVersion.setText("");
 		txtVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
-		Label lblVersionCode = managedForm.getToolkit().createLabel(composite_1, "Version Code:", SWT.NONE);
-		lblVersionCode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		
-		txtVersionCode = managedForm.getToolkit().createText(composite_1, "New Text", SWT.NONE);
-		txtVersionCode.setToolTipText("\u00DF");
-		txtVersionCode.setText("");
-		txtVersionCode.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
-		
 		Label lblDescription = managedForm.getToolkit().createLabel(composite_1, "Description:", SWT.NONE);
-		lblDescription.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		
 		txtDescription = managedForm.getToolkit().createText(composite_1, "New Text", SWT.MULTI);
 		txtDescription.setText("");
 		GridData gd_txtDescription = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_txtDescription.heightHint = 100;
 		txtDescription.setLayoutData(gd_txtDescription);
+		
+		Label lblContentSource = new Label(composite_1, SWT.NONE);
+		lblContentSource.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		managedForm.getToolkit().adapt(lblContentSource, true, true);
+		lblContentSource.setText("Content Source:");
+		
+		txtContentsource = managedForm.getToolkit().createText(composite_1, "New Text", SWT.NONE);
+		txtContentsource.setText("");
+		txtContentsource.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Section sctnAuthor = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
 		managedForm.getToolkit().paintBordersFor(sctnAuthor);
@@ -125,7 +200,6 @@ public class EssentialsPage extends FormPage {
 		composite.setLayout(new GridLayout(2, false));
 		
 		Label lblName_1 = managedForm.getToolkit().createLabel(composite, "Name:", SWT.NONE);
-		lblName_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblName_1.setBounds(0, 0, 59, 14);
 		
 		txtAuthorname = managedForm.getToolkit().createText(composite, "New Text", SWT.NONE);
@@ -133,56 +207,105 @@ public class EssentialsPage extends FormPage {
 		txtAuthorname.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Label lblEmail = managedForm.getToolkit().createLabel(composite, "Email:", SWT.NONE);
-		lblEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		
 		txtEmail = managedForm.getToolkit().createText(composite, "New Text", SWT.NONE);
 		txtEmail.setText("");
 		txtEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Label lblUrl = managedForm.getToolkit().createLabel(composite, "URL:", SWT.NONE);
-		lblUrl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		
 		txtUrl = managedForm.getToolkit().createText(composite, "New Text", SWT.NONE);
 		txtUrl.setText("");
 		txtUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		m_bindingContext = initDataBindings();
+		bindAuthor(m_bindingContext); // binding seperately is necessary to be able to work with WindowBuilder
+		bindContent(m_bindingContext);
 		
+	}
+
+	private void bindAuthor(DataBindingContext bindingContext) {
+		//
+		final WritableValue value = new WritableValue();
+		if (getWidget() != null) {
+			Author author = getWidget().getAuthor();
+			if (author == null) {
+				value.setValue(new DummyAuthor());
+			} else {
+				value.setValue(author);
+			}
+			getWidget().addPropertyChangeListener("author",
+					new PropertyChangeListener() {
+
+						@Override
+						public void propertyChange(PropertyChangeEvent evt) {
+							if (evt.getNewValue() == null) {
+								value.setValue(new DummyAuthor());
+							} else {
+								value.setValue(evt.getNewValue());
+							}
+						}
+					});
+		}
+		//
+		IObservableValue observeTextTxtAuthornameObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtAuthorname);
+		IObservableValue authornameGetWidgetObserveValue = BeanProperties.value("name").observeDetail(value);
+		bindingContext.bindValue(observeTextTxtAuthornameObserveWidget, authornameGetWidgetObserveValue, null, null);
+		//
+		IObservableValue observeTextTxtEmailObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtEmail);
+		IObservableValue authoremailGetWidgetObserveValue = BeanProperties.value("email").observeDetail(value);
+		bindingContext.bindValue(observeTextTxtEmailObserveWidget, authoremailGetWidgetObserveValue, null, null);
+		//
+		IObservableValue observeTextTxtUrlObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtUrl);
+		IObservableValue authorhrefGetWidgetObserveValue = BeanProperties.value("href").observeDetail(value);
+		bindingContext.bindValue(observeTextTxtUrlObserveWidget, authorhrefGetWidgetObserveValue, null, null);
 	}
 	protected DataBindingContext initDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
 		//
 		IObservableValue observeTextTxtIdtxtObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtIdtxt);
-		IObservableValue idGetWidgetObserveValue = PojoProperties.value("id").observe(getWidget());
+		IObservableValue idGetWidgetObserveValue = BeanProperties.value("id").observe(getWidget());
 		bindingContext.bindValue(observeTextTxtIdtxtObserveWidget, idGetWidgetObserveValue, null, null);
 		//
 		IObservableValue observeTextTxtNameObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtName);
-		IObservableValue nameGetWidgetObserveValue = PojoProperties.value("name").observe(getWidget());
+		IObservableValue nameGetWidgetObserveValue = BeanProperties.value("name").observe(getWidget());
 		bindingContext.bindValue(observeTextTxtNameObserveWidget, nameGetWidgetObserveValue, null, null);
 		//
 		IObservableValue observeTextTxtDescriptionObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtDescription);
-		IObservableValue descriptionGetWidgetObserveValue = PojoProperties.value("description").observe(getWidget());
+		IObservableValue descriptionGetWidgetObserveValue = BeanProperties.value("description").observe(getWidget());
 		bindingContext.bindValue(observeTextTxtDescriptionObserveWidget, descriptionGetWidgetObserveValue, null, null);
 		//
-		IObservableValue observeTextTxtAuthornameObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtAuthorname);
-		IObservableValue authornameGetWidgetObserveValue = PojoProperties.value("author.name").observe(getWidget());
-		bindingContext.bindValue(observeTextTxtAuthornameObserveWidget, authornameGetWidgetObserveValue, null, null);
-		//
-		IObservableValue observeTextTxtEmailObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtEmail);
-		IObservableValue authoremailGetWidgetObserveValue = PojoProperties.value("author.email").observe(getWidget());
-		bindingContext.bindValue(observeTextTxtEmailObserveWidget, authoremailGetWidgetObserveValue, null, null);
-		//
-		IObservableValue observeTextTxtUrlObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtUrl);
-		IObservableValue authorhrefGetWidgetObserveValue = PojoProperties.value("author.href").observe(getWidget());
-		bindingContext.bindValue(observeTextTxtUrlObserveWidget, authorhrefGetWidgetObserveValue, null, null);
-		//
-		IObservableValue observeTextTxtVersionCodeObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtVersionCode);
-		IObservableValue versionCodeGetWidgetObserveValue = PojoProperties.value("versionCode").observe(getWidget());
-		bindingContext.bindValue(observeTextTxtVersionCodeObserveWidget, versionCodeGetWidgetObserveValue, null, null);
-		//
 		IObservableValue observeTextTxtVersionObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtVersion);
-		IObservableValue versionGetWidgetObserveValue = PojoProperties.value("version").observe(getWidget());
+		IObservableValue versionGetWidgetObserveValue = BeanProperties.value("version").observe(getWidget());
 		bindingContext.bindValue(observeTextTxtVersionObserveWidget, versionGetWidgetObserveValue, null, null);
 		//
 		return bindingContext;
+	}
+
+	private void bindContent(DataBindingContext bindingContext) {
+		final WritableValue value = new WritableValue();
+		if (getWidget() != null) {
+			Content content= getWidget().getContent();
+			if (content == null) {
+				value.setValue(new DummyContent());
+			} else {
+				value.setValue(content);
+			}
+			getWidget().addPropertyChangeListener("content",
+					new PropertyChangeListener() {
+
+						@Override
+						public void propertyChange(PropertyChangeEvent evt) {
+							if (evt.getNewValue() == null) {
+								value.setValue(new DummyContent());
+							} else {
+								value.setValue(evt.getNewValue());
+							}
+						}
+					});
+		}
+		
+		IObservableValue observeTextTxtContentsourceObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtContentsource);
+		IObservableValue contentsrcGetWidgetObserveValue = BeanProperties.value("src").observeDetail(value);
+		bindingContext.bindValue(observeTextTxtContentsourceObserveWidget, contentsrcGetWidgetObserveValue, null, null);
 	}
 }

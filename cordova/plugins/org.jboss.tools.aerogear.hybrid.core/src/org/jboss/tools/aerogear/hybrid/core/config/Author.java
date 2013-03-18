@@ -10,42 +10,83 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.config;
 
-import org.w3c.dom.Node;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.AUTHOR_ATTR_EMAIL;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.AUTHOR_ATTR_HREF;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NS_W3C_WIDGET;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_AUTHOR;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+/**
+ * Author tag on the config.xml
+ * 
+ * @author Gorkem Ercan
+ *
+ */
 public class Author extends AbstractConfigObject {
 	
-	private String href;
-	private String email;
-	private String name;
+	private Property<String> href = new Property<String>(AUTHOR_ATTR_HREF);
+	private Property<String> email = new Property<String>(AUTHOR_ATTR_EMAIL);
+	private Property<String> name = new Property<String>("name");
 
 	Author(Node item) {
-		href = getNodeAttribute(item, "href");
-		email = getNodeAttribute(item, "email");
-		name = item.getTextContent();
+		itemNode = (Element)item;
+		href.setValue(getNodeAttribute(item, null, AUTHOR_ATTR_HREF));
+		email.setValue(getNodeAttribute(item, null,AUTHOR_ATTR_EMAIL));
+		name.setValue(item.getTextContent());
 	}
 
 	public String getHref() {
-		return href;
-	}
-
-	public void setHref(String href) {
-		this.href = href;
+		return href.getValue();
 	}
 
 	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
+		return email.getValue();
 	}
 
 	public String getName() {
-		return name;
+		return name.getValue();
+	}
+	
+	public void setHref(String href) {
+		this.href.setValue( href );
+		setAttributeValue(itemNode, null, "href", href);
+	}
+
+	public void setEmail(String email) {
+		this.email.setValue(email);
+		setAttributeValue(itemNode, null, "email", email);
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name.setValue(name);
+		setTextContentValue(itemNode, name);
+	}	
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null || !(obj instanceof Author))
+			return false;
+		if( obj == this )
+			return true;
+		Author that = (Author) obj;
+		return equalField(that.getEmail(),this.getEmail()) &&
+				equalField(that.getHref(), this.getHref()) &&
+				equalField(that.getName(), this.getName());
 	}
+	
+	@Override
+	public int hashCode() {
+		int hash= super.hashCode();
+		if(getEmail() !=null )
+			hash *= getEmail().hashCode();
+		if(getHref() != null )
+			hash *= getHref().hashCode();
+		if(getName() != null )
+			hash *= getName().hashCode();
+		return hash;
+	}
+
+
 
 }

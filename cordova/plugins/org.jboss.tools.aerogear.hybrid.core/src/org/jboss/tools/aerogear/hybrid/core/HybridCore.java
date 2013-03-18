@@ -17,6 +17,10 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.osgi.service.debug.DebugTrace;
@@ -34,6 +38,7 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	private static BundleContext context;
 	public static boolean DEBUG=false;
 	private static DebugTrace TRACE;
+	private static ILog logger;
 	
 	public static BundleContext getContext() {
 		return context;
@@ -45,6 +50,7 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		HybridCore.context = bundleContext;
+		logger = Platform.getLog(getContext().getBundle());
 		Hashtable<String,Object> props = new Hashtable<String, Object>();
 		props.put(org.eclipse.osgi.service.debug.DebugOptions.LISTENER_SYMBOLICNAME, PLUGIN_ID);
 		context.registerService(DebugOptionsListener.class.getName(), this, props);
@@ -89,9 +95,10 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 		System.out.println(message);//TODO: Remove this eventually?
 		if( !DEBUG ) return;
 		TRACE.trace(null, message);
-	
 	}
 	
-	
+	public static void log(int status, String message, Throwable throwable ){
+		logger.log(new Status(status, message, PLUGIN_ID,throwable));
+	}
 
 }

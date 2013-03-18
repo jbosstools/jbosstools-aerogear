@@ -32,3 +32,5 @@ Export-Package: org.jboss.tools.aerogear.hybrid.ui;x-internal:=true,
  org.jboss.tools.aerogear.hybrid.ui.config.internal;x-internal:=true,
  org.jboss.tools.aerogear.hybrid.ui.wizard.project;x-internal:=true
 Bundle-Vendor: %Bundle-Vendor
+Bundle-ClassPath: .,
+ swing2swt.jar

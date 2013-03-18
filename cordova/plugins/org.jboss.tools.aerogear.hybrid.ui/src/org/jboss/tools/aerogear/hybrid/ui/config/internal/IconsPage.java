@@ -10,106 +10,76 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
+import java.util.Arrays;
+
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.databinding.viewers.ViewerProperties;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Text;
-import org.jboss.tools.aerogear.hybrid.core.config.ImageResourceBase;
+import org.eclipse.ui.forms.widgets.TableWrapData;
+import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.jboss.tools.aerogear.hybrid.core.config.Icon;
+import org.jboss.tools.aerogear.hybrid.core.config.Splash;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.core.databinding.beans.PojoProperties;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class IconsPage extends FormPage {
 	private DataBindingContext m_bindingContext;
 
 	private FormToolkit formToolkit; 
-	private Table table;
-	private Table table_1;
+	private Table iconsTable;
+	private Table splashTable;
 	private Text txtWidth;
 	private Text txtHeight;
 	private Text txtPlatform;
 	private Text txtDensity;
-	private ImageResourceBase currentlySelected;
+	private TableViewer iconsTableViewer;
+	private TableViewer splashTableViewer;
+	private Text txtSplshWidth;
+	private Text txtSplshHeight;
+	private Text txtSplshPlatform;
+	private Text txtSplshDensity;
 	
-	
-	class IconsContentProvider implements IStructuredContentProvider{
-
-		@Override
-		public void dispose() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public Object[] getElements(Object inputElement) {
-			return getWidget().getIcons().toArray();
-		}
-		
-	}
-	
-	class SplashScreensContentProvider implements IStructuredContentProvider{
-
-		@Override
-		public void dispose() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public Object[] getElements(Object inputElement) {
-			return getWidget().getSplashes().toArray();
-		}
-		
-	}
-	
-	class ImageResourceLabelProvider extends LabelProvider implements ITableLabelProvider{
-
-		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			return ((ImageResourceBase)element).getSrc();
-		}
-		
-	}
 	
 	public IconsPage(FormEditor editor) {
 		super(editor, "icons", "Icons && Splash Screen");
@@ -121,120 +91,245 @@ public class IconsPage extends FormPage {
 		final ScrolledForm form = managedForm.getForm();
 		formToolkit.decorateFormHeading( form.getForm());
 		managedForm.getForm().setText(getTitle());
-		ColumnLayout columnLayout = new ColumnLayout();
-		columnLayout.minNumColumns = 2;
-		columnLayout.maxNumColumns = 2;
-		managedForm.getForm().getBody().setLayout(columnLayout);
+		{
+			TableWrapLayout tableWrapLayout = new TableWrapLayout();
+			tableWrapLayout.makeColumnsEqualWidth = true;
+			tableWrapLayout.numColumns = 1;
+			managedForm.getForm().getBody().setLayout(tableWrapLayout);
+		}
 		
 		Section sctnIcons = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
+		TableWrapData twd_sctnIcons = new TableWrapData(TableWrapData.FILL, TableWrapData.TOP, 1, 1);
+		twd_sctnIcons.grabHorizontal = true;
+		sctnIcons.setLayoutData(twd_sctnIcons);
 		managedForm.getToolkit().paintBordersFor(sctnIcons);
 		sctnIcons.setText("Icons");
 		
 		Composite composite = managedForm.getToolkit().createComposite(sctnIcons, SWT.NONE);
 		managedForm.getToolkit().paintBordersFor(composite);
 		sctnIcons.setClient(composite);
-		composite.setLayout(new GridLayout(2, false));
+		composite.setLayout(new GridLayout(3, false));
 		
-		final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
-		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				currentlySelected = (ImageResourceBase) tableViewer.getElementAt(table.getSelectionIndex());
-				updateDetails();
-			}
-		});
-		table = tableViewer.getTable();
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		managedForm.getToolkit().paintBordersFor(table);
-		tableViewer.setContentProvider(new IconsContentProvider());
-		tableViewer.setLabelProvider(new ImageResourceLabelProvider());
-		tableViewer.setInput(getWidget().getIcons());
+		iconsTableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
+
+		iconsTable = iconsTableViewer.getTable();
+		
+		iconsTable.setHeaderVisible(true);
+		GridData gd_iconsTable = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gd_iconsTable.heightHint = 125;
+		iconsTable.setLayoutData(gd_iconsTable);
+		managedForm.getToolkit().paintBordersFor(iconsTable);
 		
 		Composite composite_3 = managedForm.getToolkit().createComposite(composite, SWT.NONE);
+		composite_3.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 1));
 		managedForm.getToolkit().paintBordersFor(composite_3);
 		composite_3.setLayout(new FillLayout(SWT.VERTICAL));
 		
-		Button btnAdd = managedForm.getToolkit().createButton(composite_3, "Add...", SWT.NONE);
+		Button btnIconAdd = managedForm.getToolkit().createButton(composite_3, "Add...", SWT.NONE);
+		btnIconAdd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String src = getImageSrc();
+				Icon icon = WidgetModel.getInstance().createIcon(getWidget());
+				icon.setSrc(src);
+				getWidget().addIcon(icon);
+			}
+		});
 		
-		Button btnRemove = managedForm.getToolkit().createButton(composite_3, "Remove", SWT.NONE);
+		Button btnIconRemove = managedForm.getToolkit().createButton(composite_3, "Remove", SWT.NONE);
+		
+		Group iconDetailGrp = new Group(composite, SWT.NONE);
+		iconDetailGrp.setText("Icon Image Details");
+		iconDetailGrp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		managedForm.getToolkit().adapt(iconDetailGrp);
+		managedForm.getToolkit().paintBordersFor(iconDetailGrp);
+		iconDetailGrp.setLayout(new GridLayout(1, false));
+		
+		Composite imageDetailComposite = managedForm.getToolkit().createComposite(iconDetailGrp, SWT.NONE);
+		managedForm.getToolkit().paintBordersFor(imageDetailComposite);
+		imageDetailComposite.setLayout(new GridLayout(2, false));
+		
+		Label lblWidth = managedForm.getToolkit().createLabel(imageDetailComposite, "Width:", SWT.NONE);
+		
+		txtWidth = managedForm.getToolkit().createText(imageDetailComposite, "New Text", SWT.NONE);
+		txtWidth.setText("");
+		txtWidth.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		
+		Label lblHeight = managedForm.getToolkit().createLabel(imageDetailComposite, "Height:", SWT.NONE);
+		
+		txtHeight = managedForm.getToolkit().createText(imageDetailComposite, "New Text", SWT.NONE);
+		txtHeight.setText("");
+		txtHeight.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		Label lblPlatform = managedForm.getToolkit().createLabel(imageDetailComposite, "Platform:", SWT.NONE);
+		
+		txtPlatform = managedForm.getToolkit().createText(imageDetailComposite, "New Text", SWT.NONE);
+		txtPlatform.setText("");
+		txtPlatform.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		Label lblDensity = managedForm.getToolkit().createLabel(imageDetailComposite, "Density:", SWT.NONE);
+		
+		txtDensity = managedForm.getToolkit().createText(imageDetailComposite, "New Text", SWT.NONE);
+		txtDensity.setText("");
+		txtDensity.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		btnIconRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection = (IStructuredSelection)iconsTableViewer.getSelection();
+				if(selection.isEmpty())
+					return;
+				Icon icon = (Icon)selection.getFirstElement();
+				getWidget().removeIcon(icon);
+			}
+		});
 		
 		Section sctnSplashes = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
+		sctnSplashes.setLayoutData(new TableWrapData(TableWrapData.FILL, TableWrapData.TOP, 1, 1));
 		managedForm.getToolkit().paintBordersFor(sctnSplashes);
 		sctnSplashes.setText("Splash Screens");
 		
 		Composite composite_1 = managedForm.getToolkit().createComposite(sctnSplashes, SWT.NONE);
 		managedForm.getToolkit().paintBordersFor(composite_1);
 		sctnSplashes.setClient(composite_1);
-		composite_1.setLayout(new GridLayout(2, false));
+		composite_1.setLayout(new GridLayout(3, false));
 		
-		final TableViewer tableViewer_1 = new TableViewer(composite_1, SWT.BORDER | SWT.FULL_SELECTION);
-		table_1 = tableViewer_1.getTable();
-		table_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		managedForm.getToolkit().paintBordersFor(table_1);
-		tableViewer_1.setContentProvider(new SplashScreensContentProvider());
-		tableViewer_1.setLabelProvider(new ImageResourceLabelProvider());
-		tableViewer_1.setInput(getWidget().getSplashes());
-		tableViewer_1.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				currentlySelected = (ImageResourceBase) tableViewer_1.getElementAt(table_1.getSelectionIndex());
-				updateDetails();
-			}
-		});
-		
+		splashTableViewer = new TableViewer(composite_1, SWT.BORDER | SWT.FULL_SELECTION);
+		splashTable = splashTableViewer.getTable();
+
+		splashTable.setHeaderVisible(true);
+		GridData gd_splashTable = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gd_splashTable.heightHint = 125;
+		splashTable.setLayoutData(gd_splashTable);
+		managedForm.getToolkit().paintBordersFor(splashTable);
 		
 		Composite composite_4 = managedForm.getToolkit().createComposite(composite_1, SWT.NONE);
+		composite_4.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 1));
 		managedForm.getToolkit().paintBordersFor(composite_4);
 		composite_4.setLayout(new FillLayout(SWT.VERTICAL));
 		
-		Button btnAdd_1 = managedForm.getToolkit().createButton(composite_4, "Add...", SWT.NONE);
+		Button btnSplashAdd = managedForm.getToolkit().createButton(composite_4, "Add...", SWT.NONE);
+		btnSplashAdd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String src = getImageSrc();
+				Splash splash = WidgetModel.getInstance().createSplash(getWidget());
+				splash.setSrc(src);
+				getWidget().addSplash(splash);
+			}
+		});
 		
-		Button btnRemove_1 = managedForm.getToolkit().createButton(composite_4, "Remove", SWT.NONE);
+		Button btnSplashRemove = managedForm.getToolkit().createButton(composite_4, "Remove", SWT.NONE);
+		Group splashDetailGrp = new Group(composite_1, SWT.NONE);
+		splashDetailGrp.setText("Splash Image Details");
+		managedForm.getToolkit().adapt(splashDetailGrp);
+		managedForm.getToolkit().paintBordersFor(splashDetailGrp);
+		splashDetailGrp.setLayout(new GridLayout(1, false));
 		
-		Section sctnImageDetails = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
-		managedForm.getToolkit().paintBordersFor(sctnImageDetails);
-		sctnImageDetails.setText("Image Details");
+		Composite splashDetailComposite = managedForm.getToolkit().createComposite(splashDetailGrp, SWT.NONE);
+		managedForm.getToolkit().paintBordersFor(splashDetailComposite);
+		splashDetailComposite.setLayout(new GridLayout(2, false));
 		
-		Composite composite_2 = managedForm.getToolkit().createComposite(sctnImageDetails, SWT.NONE);
-		managedForm.getToolkit().paintBordersFor(composite_2);
-		sctnImageDetails.setClient(composite_2);
-		composite_2.setLayout(new GridLayout(2, false));
+		Label lblSplshWidth = managedForm.getToolkit().createLabel(splashDetailComposite, "Width:", SWT.NONE);
 		
-		Label lblWidth = managedForm.getToolkit().createLabel(composite_2, "Width:", SWT.NONE);
-		lblWidth.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		txtSplshWidth = managedForm.getToolkit().createText(splashDetailComposite, "New Text", SWT.NONE);
 		
-		txtWidth = managedForm.getToolkit().createText(composite_2, "New Text", SWT.NONE);
-		txtWidth.setText("");
-		txtWidth.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		txtSplshWidth.setText("");
+		txtSplshWidth.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 		
-		Label lblHeight = managedForm.getToolkit().createLabel(composite_2, "Height:", SWT.NONE);
-		lblHeight.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		Label lblSplshHeight = managedForm.getToolkit().createLabel(splashDetailComposite, "Height:", SWT.NONE);
 		
-		txtHeight = managedForm.getToolkit().createText(composite_2, "New Text", SWT.NONE);
-		txtHeight.setText("");
-		txtHeight.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtSplshHeight = managedForm.getToolkit().createText(splashDetailComposite, "New Text", SWT.NONE);
+		txtSplshHeight.setText("");
+		txtSplshHeight.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
-		Label lblPlatform = managedForm.getToolkit().createLabel(composite_2, "Platform:", SWT.NONE);
-		lblPlatform.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		Label lblSplshPlatform = managedForm.getToolkit().createLabel(splashDetailComposite, "Platform:", SWT.NONE);
 		
-		txtPlatform = managedForm.getToolkit().createText(composite_2, "New Text", SWT.NONE);
-		txtPlatform.setText("");
-		txtPlatform.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtSplshPlatform = managedForm.getToolkit().createText(splashDetailComposite, "New Text", SWT.NONE);
+		txtSplshPlatform.setText("");
+		txtSplshPlatform.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
-		Label lblDensity = managedForm.getToolkit().createLabel(composite_2, "Density:", SWT.NONE);
-		lblDensity.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		Label lblSplshDensity = managedForm.getToolkit().createLabel(splashDetailComposite, "Density:", SWT.NONE);
 		
-		txtDensity = managedForm.getToolkit().createText(composite_2, "New Text", SWT.NONE);
-		txtDensity.setText("");
-		txtDensity.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtSplshDensity = managedForm.getToolkit().createText(splashDetailComposite, "New Text", SWT.NONE);
+		txtSplshDensity.setText("");
+		txtSplshDensity.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		btnSplashRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection = (IStructuredSelection)splashTableViewer.getSelection();
+				if(selection.isEmpty())
+					return;
+				Splash splash = (Splash)selection.getFirstElement();
+				getWidget().removeSplash(splash);
+			}
+		});
+
+
+		
 		m_bindingContext = initDataBindings();
 	}
-	
-	private void updateDetails(){
-		String s = currentlySelected.getDensity()==null?"":currentlySelected.getDensity();
-		txtDensity.setText(s);
-		s = currentlySelected.getPlatform() == null? "":currentlySelected.getDensity();
-		txtHeight.setText(Integer.toString(currentlySelected.getHeight()));
-		txtWidth.setText(Integer.toString(currentlySelected.getWidth()));
+
+	private String getImageSrc(){
+		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getSite().getShell(),
+				new WorkbenchLabelProvider(),
+				new WorkbenchContentProvider());
+		dialog.setTitle("Choose image");
+		IProject currentProject = getProject();
+		dialog.setInput(currentProject.getFolder("www"));
+		dialog.addFilter(new ViewerFilter() {
+			
+			@Override
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+			IResource resource = (IResource) element;
+			return resource.getType() == IResource.FOLDER || 
+					Arrays.binarySearch(WidgetModel.ICON_EXTENSIONS,
+							resource.getFileExtension()) >= 0 ;
+			}
+		});
+		
+		dialog.setValidator(new ISelectionStatusValidator() {
+			
+		    @Override
+		    public IStatus validate(Object[] selection) {
+
+			if (selection.length == 0 || selection.length > 1) {
+			    return new Status(IStatus.ERROR,
+				    HybridUI.PLUGIN_ID, "Must have selection");
+			}
+			IResource resource = (IResource) selection[0];
+			if (resource.getType() == IResource.FOLDER) {
+			    return new Status(IStatus.ERROR,
+				    HybridUI.PLUGIN_ID, "Can not select folder");
+			    }
+			return Status.OK_STATUS;
+		    }
+		});
+		
+		if(dialog.open() == Window.OK){
+		    IResource resource = (IResource) dialog.getFirstResult();
+			String src = resource.getProjectRelativePath().toString()
+				    .substring("www".length() + 1);
+			return src;
+			
+		}
+		return null;
+		
+		
 	}
+	
+	private IProject getProject() {
+		IEditorPart editorPart = HybridUI.getDefault().getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		if (editorPart.getEditorInput() instanceof IFileEditorInput) {
+			IFileEditorInput input = (IFileEditorInput) editorPart
+					.getEditorInput();
+			IProject activeProject = input.getFile().getProject();
+			return activeProject;
+		} else {
+			return null;
+		}
+	}
+	
 	
 	private Widget getWidget(){
  		return ((ConfigEditor)getEditor()).getWidget();
@@ -242,21 +337,61 @@ public class IconsPage extends FormPage {
 	protected DataBindingContext initDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
 		//
+		ObservableListContentProvider listContentProvider = new ObservableListContentProvider();
+		IObservableMap observeMap = BeansObservables.observeMap(listContentProvider.getKnownElements(), Icon.class, "src");
+		iconsTableViewer.setLabelProvider(new ObservableMapLabelProvider(observeMap));
+		iconsTableViewer.setContentProvider(listContentProvider);
+		//
+		IObservableList iconsGetWidgetObserveList = BeanProperties.list("icons").observe(getWidget());
+		iconsTableViewer.setInput(iconsGetWidgetObserveList);
+		//
+		ObservableListContentProvider listContentProvider_1 = new ObservableListContentProvider();
+		IObservableMap observeMap_1 = BeansObservables.observeMap(listContentProvider_1.getKnownElements(), Splash.class, "src");
+		splashTableViewer.setLabelProvider(new ObservableMapLabelProvider(observeMap_1));
+		splashTableViewer.setContentProvider(listContentProvider_1);
+		//
+		IObservableList splashesGetWidgetObserveList = BeanProperties.list("splashes").observe(getWidget());
+		splashTableViewer.setInput(splashesGetWidgetObserveList);
+		//
+		IObservableValue observeSingleSelectionIconsTableViewer = ViewerProperties.singleSelection().observe(iconsTableViewer);
+		IObservableValue iconsTableViewerWidthObserveDetailValue = BeanProperties.value(Icon.class, "width", int.class).observeDetail(observeSingleSelectionIconsTableViewer);
 		IObservableValue observeTextTxtWidthObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtWidth);
-		IObservableValue widthCurrentlySelectedObserveValue = PojoProperties.value("width").observe(currentlySelected);
-		bindingContext.bindValue(observeTextTxtWidthObserveWidget, widthCurrentlySelectedObserveValue, null, null);
+		bindingContext.bindValue(iconsTableViewerWidthObserveDetailValue, observeTextTxtWidthObserveWidget, null, null);
 		//
+		IObservableValue observeSingleSelectionIconsTableViewer_1 = ViewerProperties.singleSelection().observe(iconsTableViewer);
+		IObservableValue iconsTableViewerHeightObserveDetailValue = BeanProperties.value(Icon.class, "height", int.class).observeDetail(observeSingleSelectionIconsTableViewer_1);
 		IObservableValue observeTextTxtHeightObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtHeight);
-		IObservableValue heightCurrentlySelectedObserveValue = PojoProperties.value("height").observe(currentlySelected);
-		bindingContext.bindValue(observeTextTxtHeightObserveWidget, heightCurrentlySelectedObserveValue, null, null);
+		bindingContext.bindValue(iconsTableViewerHeightObserveDetailValue, observeTextTxtHeightObserveWidget, null, null);
 		//
+		IObservableValue observeSingleSelectionIconsTableViewer_2 = ViewerProperties.singleSelection().observe(iconsTableViewer);
+		IObservableValue iconsTableViewerPlatformObserveDetailValue = BeanProperties.value(Icon.class, "platform", String.class).observeDetail(observeSingleSelectionIconsTableViewer_2);
 		IObservableValue observeTextTxtPlatformObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtPlatform);
-		IObservableValue platformCurrentlySelectedObserveValue = PojoProperties.value("platform").observe(currentlySelected);
-		bindingContext.bindValue(observeTextTxtPlatformObserveWidget, platformCurrentlySelectedObserveValue, null, null);
+		bindingContext.bindValue(iconsTableViewerPlatformObserveDetailValue, observeTextTxtPlatformObserveWidget, null, null);
 		//
+		IObservableValue observeSingleSelectionIconsTableViewer_3 = ViewerProperties.singleSelection().observe(iconsTableViewer);
+		IObservableValue iconsTableViewerDensityObserveDetailValue = BeanProperties.value(Icon.class, "density", String.class).observeDetail(observeSingleSelectionIconsTableViewer_3);
 		IObservableValue observeTextTxtDensityObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtDensity);
-		IObservableValue densityCurrentlySelectedObserveValue = PojoProperties.value("density").observe(currentlySelected);
-		bindingContext.bindValue(observeTextTxtDensityObserveWidget, densityCurrentlySelectedObserveValue, null, null);
+		bindingContext.bindValue(iconsTableViewerDensityObserveDetailValue, observeTextTxtDensityObserveWidget, null, null);
+		//
+		IObservableValue observeSingleSelectionSplashTableViewer = ViewerProperties.singleSelection().observe(splashTableViewer);
+		IObservableValue splashTableViewerWidthObserveDetailValue = BeanProperties.value(Splash.class, "width", int.class).observeDetail(observeSingleSelectionSplashTableViewer);
+		IObservableValue observeTextTxtSplshWidthObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtSplshWidth);
+		bindingContext.bindValue(splashTableViewerWidthObserveDetailValue, observeTextTxtSplshWidthObserveWidget, null, null);
+		//
+		IObservableValue observeSingleSelectionSplashTableViewer_1 = ViewerProperties.singleSelection().observe(splashTableViewer);
+		IObservableValue splashTableViewerHeightObserveDetailValue = BeanProperties.value(Splash.class, "height", int.class).observeDetail(observeSingleSelectionSplashTableViewer_1);
+		IObservableValue observeTextTxtSplshHeightObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtSplshHeight);
+		bindingContext.bindValue(splashTableViewerHeightObserveDetailValue, observeTextTxtSplshHeightObserveWidget, null, null);
+		//
+		IObservableValue observeSingleSelectionSplashTableViewer_2 = ViewerProperties.singleSelection().observe(splashTableViewer);
+		IObservableValue splashTableViewerPlatformObserveDetailValue = BeanProperties.value(Splash.class, "platform", String.class).observeDetail(observeSingleSelectionSplashTableViewer_2);
+		IObservableValue observeTextTxtSplshPlatformObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtSplshPlatform);
+		bindingContext.bindValue(splashTableViewerPlatformObserveDetailValue, observeTextTxtSplshPlatformObserveWidget, null, null);
+		//
+		IObservableValue observeSingleSelectionSplashTableViewer_3 = ViewerProperties.singleSelection().observe(splashTableViewer);
+		IObservableValue splashTableViewerDensityObserveDetailValue = BeanProperties.value(Splash.class, "density", String.class).observeDetail(observeSingleSelectionSplashTableViewer_3);
+		IObservableValue observeTextTxtSplshDensityObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtSplshDensity);
+		bindingContext.bindValue(splashTableViewerDensityObserveDetailValue, observeTextTxtSplshDensityObserveWidget, null, null);
 		//
 		return bindingContext;
 	}
