@@ -26,6 +26,8 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.camera.HostFileServlet;
+import org.eclipse.jetty.servlets.camera.UploadFileServlet;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -46,6 +48,13 @@ public class ServerCreator {
 		ServletHandler proxyServletHandler = new ServletHandler();
 		proxyServletHandler.addServletWithMapping(proxyServletHolder, "/ripple/xhr_proxy");
 		
+		ServletHolder uploadFileServletHolder = new ServletHolder(new UploadFileServlet());
+		ServletHandler uploadFileServletHandler = new ServletHandler();
+		uploadFileServletHandler.addServletWithMapping(uploadFileServletHolder, "/fileupload");
+		
+		ServletHolder hostFileServletHolder = new ServletHolder(new HostFileServlet());
+		ServletHandler hostFileServletHandler = new ServletHandler();
+		hostFileServletHandler.addServletWithMapping(hostFileServletHolder, "/temp-photo/*");
 		
 		ResourceHandler rippleResourceHandler = new ResourceHandler();
 		rippleResourceHandler.setDirectoriesListed(true);
@@ -67,6 +76,8 @@ public class ServerCreator {
 				wwwContextHandler,
 				proxyServletHandler,
 				rippleContextHandler,
+				uploadFileServletHandler,
+				hostFileServletHandler,
 				new DefaultHandler(),
 			});
 		
