@@ -32,10 +32,10 @@ import org.osgi.framework.Bundle;
 public abstract class AbstractPlatformProjectGenerator {
 
 	private final static String ASSEMBLY_ROOT = "/proj_gen/";
-
 	
 	private IProject project;
 	private File generationRoot;
+
 	/**
 	 * Constructs a project generator. If generationFolder is null generation folder 
 	 * defaults to a folder created under the {@link Bundle} dataFile folder.
@@ -51,6 +51,14 @@ public abstract class AbstractPlatformProjectGenerator {
 		}
 	}
 	
+	
+	/**
+	 * Starts the target platform project generation.
+	 * 
+	 * @param monitor
+	 * @return the location of the generated project
+	 * @throws CoreException
+	 */
 	public File generateNow(IProgressMonitor monitor) throws CoreException{
 		long start = System.currentTimeMillis();
 		try {
@@ -61,11 +69,11 @@ public abstract class AbstractPlatformProjectGenerator {
 			if ( !folder.exists() ){
 				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "No www directory. Can not generate target without www directory"));
 			}
-			directoryCopy(folder.getLocationURI().toURL(), toURL(new File(getDestination(), "www")));
+			directoryCopy(folder.getLocationURI().toURL(), toURL(getPlatformWWWDirectory()));
 			monitor.worked(10);
 			folder = getProject().getFolder("/platforms/ios/");
 			if (folder.exists()){
-				directoryCopy(folder.getLocationURI().toURL() , toURL(new File(getDestination(), "www")));
+				directoryCopy(folder.getLocationURI().toURL() , toURL(getPlatformWWWDirectory()));
 			}
 			monitor.worked(10);
 			replaceCordovaPlatformFiles();
@@ -82,10 +90,39 @@ public abstract class AbstractPlatformProjectGenerator {
 	}
 	
 	
-
+	/**
+	 * Template method to be implemented by the platform implementations. 
+	 * Platform implementations should generate native project files 
+	 * and the CordovaLibrary. This method is called before moving the 
+	 * web artifacts in www directory.
+	 * @throws IOException
+	 */
 	protected abstract void generateNativeFiles() throws IOException;
+	
+	/**
+	 * Returns the short name to be used for defining the target platform 
+	 * such as <i>ios, android</i> etc.
+	 * @return
+	 */
 	protected abstract String getTargetShortName();
+	
+	/**
+	 * Template method to be implemented by the platform implementations. 
+	 * This method is called after the web artifacts are copied to the proper location 
+	 * on the generated project to give platform implementation a chance to replace 
+	 * platform specific Apache Cordova artifacts such as the cordova.js
+	 *  
+	 * @throws IOException
+	 */
 	protected abstract void replaceCordovaPlatformFiles() throws IOException; 
+	
+	/**
+	 * Returns the platform specific location of the www directory. 
+	 * This is used to merge and copy project resources to native project.
+	 * @return File that points to the www directory on native project
+	 */
+	protected abstract File getPlatformWWWDirectory();
+	
 	
 	protected File getDestination(){
 		return new File(generationRoot,getTargetShortName());

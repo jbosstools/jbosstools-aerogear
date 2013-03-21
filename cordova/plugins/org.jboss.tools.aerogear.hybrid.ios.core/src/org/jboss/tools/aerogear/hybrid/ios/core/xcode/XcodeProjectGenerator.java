@@ -81,11 +81,14 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 	@Override
 	protected void replaceCordovaPlatformFiles() throws IOException{
 		File cordovaLib = generateCordovaLib();
-		File www = new File(getDestination(), "www");
-		fileCopy(toURL(new File(cordovaLib,"cordova.ios.js")), toURL(new File(www, "cordova.js")));
+		fileCopy(toURL(new File(cordovaLib,"cordova.ios.js")), toURL(new File(getPlatformWWWDirectory(), "cordova.js")));
 		
 	}
 
+	@Override
+	protected File getPlatformWWWDirectory() {
+		return new File(getDestination(), "www");
+	}
 
 	private void processFile(File file, String replaced, String replacement ) throws IOException{
 		 	BufferedReader reader = null;
@@ -112,6 +115,7 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
             out.write(_byte);
         }
     }
+
 
 
 }
