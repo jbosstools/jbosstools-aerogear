@@ -13,8 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.tools.aerogear.hybrid.core,
- org.jboss.tools.aerogear.hybrid.core.config;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui",
- org.jboss.tools.aerogear.hybrid.core.natures;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui",
- org.jboss.tools.aerogear.hybrid.core.platform;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui",
- org.jboss.tools.aerogear.hybrid.core.util;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui"
+ org.jboss.tools.aerogear.hybrid.core.config;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
+ org.jboss.tools.aerogear.hybrid.core.natures;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
+ org.jboss.tools.aerogear.hybrid.core.platform;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
+ org.jboss.tools.aerogear.hybrid.core.util;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core"
 

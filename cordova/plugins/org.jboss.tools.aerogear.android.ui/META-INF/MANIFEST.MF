@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.jboss.tools.aerogear.android.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.jboss.tools.aerogear.android.ui.AndroidUI
+Bundle-Vendor: %Bundle-Vendor
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.debug.ui,
+ org.jboss.tools.aerogear.hybrid.android.core;bundle-version="1.0.0",
+ org.jboss.tools.aerogear.hybrid.core;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

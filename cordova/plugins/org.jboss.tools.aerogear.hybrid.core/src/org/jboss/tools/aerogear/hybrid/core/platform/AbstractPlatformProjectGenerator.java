@@ -15,8 +15,10 @@ import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -69,11 +71,14 @@ public abstract class AbstractPlatformProjectGenerator {
 			if ( !folder.exists() ){
 				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "No www directory. Can not generate target without www directory"));
 			}
-			directoryCopy(folder.getLocationURI().toURL(), toURL(getPlatformWWWDirectory()));
+			File targetWWW = getPlatformWWWDirectory();
+			Assert.isNotNull(targetWWW,"Platform implementation must return a file location for www directory");
+			
+			directoryCopy(folder.getLocationURI().toURL(), toURL(targetWWW));
 			monitor.worked(10);
 			folder = getProject().getFolder("/platforms/ios/");
 			if (folder.exists()){
-				directoryCopy(folder.getLocationURI().toURL() , toURL(getPlatformWWWDirectory()));
+				directoryCopy(folder.getLocationURI().toURL() , toURL(targetWWW));
 			}
 			monitor.worked(10);
 			replaceCordovaPlatformFiles();
@@ -93,7 +98,7 @@ public abstract class AbstractPlatformProjectGenerator {
 	/**
 	 * Template method to be implemented by the platform implementations. 
 	 * Platform implementations should generate native project files 
-	 * and the CordovaLibrary. This method is called before moving the 
+	 * and the Cordova Library. This method is called before moving the 
 	 * web artifacts in www directory.
 	 * @throws IOException
 	 */
