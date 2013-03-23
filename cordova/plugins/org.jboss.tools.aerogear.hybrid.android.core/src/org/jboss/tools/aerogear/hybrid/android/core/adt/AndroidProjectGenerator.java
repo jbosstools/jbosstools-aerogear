@@ -1,10 +1,18 @@
 package org.jboss.tools.aerogear.hybrid.android.core.adt;
 
+
+import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
+import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.fileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import org.eclipse.core.resources.IProject;
+import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
+import org.osgi.framework.Bundle;
 
 import com.android.ide.eclipse.adt.AdtPlugin;
 import com.android.sdklib.SdkManager;
@@ -51,8 +59,19 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 		final String osSdkFolder = AdtPlugin.getOsSdkFolder();
 		final Logger logger = new Logger();
 		SdkManager sdkmanager = SdkManager.createManager(osSdkFolder,logger );
+		
+		// Create the basic android project
 		ProjectCreator projectCreator = new ProjectCreator(sdkmanager,osSdkFolder, OutputLevel.NORMAL, logger);
+		//TODO: Use config.xml for project name and package values
 		projectCreator.createProject(getDestination().getPath(), this.getProject().getName(), this.getProjectName(), "myApp",sdkmanager.getTargets()[0],false,null);
+		
+		//Move cordova library to libs
+		Bundle bundle = AndroidCore.getContext().getBundle();
+		fileCopy(getTemplateFile("/templates/CordovaLib/cordova-2.5.0.jar"), 
+				toURL(new File(getDestination(),"libs/cordova.jar")));
+		directoryCopy(getTemplateFile("/templates/project/res/"),
+				toURL(new File(getDestination(),"res")));
+	
 	}
 
 	@Override
@@ -62,10 +81,16 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 
 	@Override
 	protected void replaceCordovaPlatformFiles() throws IOException {
-		// TODO Auto-generated method stub
-		
+		fileCopy(getTemplateFile("/templates/CordovaLib/cordova.android.js"), 
+				toURL(new File(getPlatformWWWDirectory(),"cordova.js")));
 	}
 
+	private URL getTemplateFile(String path){
+		Bundle bundle = AndroidCore.getContext().getBundle();
+		return bundle.getEntry(path);
+	}
+	
+	
 	@Override
 	protected File getPlatformWWWDirectory() {
 		return new File(getDestination(),"assets/www");
