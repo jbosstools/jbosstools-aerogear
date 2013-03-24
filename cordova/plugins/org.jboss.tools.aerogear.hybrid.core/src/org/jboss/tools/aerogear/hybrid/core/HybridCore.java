@@ -65,18 +65,15 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 		HybridCore.context = null;
 	}
 	
-	public static List<IProject> getHybridProjects(){
-		ArrayList<IProject> hybrids = new ArrayList<IProject>();
+	public static List<HybridProject> getHybridProjects(){
+		ArrayList<HybridProject> hybrids = new ArrayList<HybridProject>();
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for (IProject project : projects) {
-			try {
-				if(project.hasNature(HybridAppNature.NATURE_ID)){
-					hybrids.add(project);
-				}
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			HybridProject hybridProject = HybridProject.getHybridProject(project);
+			if(hybridProject != null ){
+				hybrids.add(hybridProject);
 			}
+		
 		}
 		return hybrids;
 	}
