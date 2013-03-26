@@ -27039,7 +27039,7 @@ module.exports = {
     panel: {
         domId: "platform-events-container",
         collapsed: true,
-        pane: "right"
+        pane: "left"
     },
     initialize: function () {
         var eventSelect = document.getElementById("platform-events-select"),
