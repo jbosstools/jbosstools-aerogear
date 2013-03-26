@@ -33267,7 +33267,7 @@ function _bindObjects(win, doc) {
 }
 
 function _createBsPopup(src) {
-    var bsPopup = window.open(src ,'popup',
+    var bsPopup = window.open(src ,'bsPopup',
         'width=500,height=500,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0');
     bsPopup.focus();
     return bsPopup;
