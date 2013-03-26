@@ -33132,14 +33132,14 @@ function _validateLayoutType(layoutType) {
 
 function _getContainers() {
     return {
-        device: {
-            div: document.getElementById("device-container"),
-            containerClass: document.getElementById("device-container").getAttribute("class") || ""
-        },
-        viewport: {
-            div: document.getElementById("viewport-container"),
-            containerClass: document.getElementById("viewport-container").getAttribute("class") || ""
-        },
+        // device: {
+        //     div: document.getElementById("device-container"),
+        //     containerClass: document.getElementById("device-container").getAttribute("class") || ""
+        // },
+        // viewport: {
+        //     // div: document.getElementById("viewport-container"),
+        //     // containerClass: document.getElementById("viewport-container").getAttribute("class") || ""
+        // },
         "menu-button": {
             div: document.getElementById(constants.COMMON.MENU_BUTTON),
             containerClass: document.getElementById(constants.COMMON.MENU_BUTTON).getAttribute("class") || ""
@@ -33179,13 +33179,13 @@ function _getDimensions(device, orientation) {
 }
 
 function _formatSkin(containers, dimensions) {
-    containers.device.div.style.width = (dimensions.deviceWidth + 4) + "px";
-    containers.device.div.style.height = (dimensions.deviceHeight + 4) + "px";
+    // containers.device.div.style.width = (dimensions.deviceWidth + 4) + "px";
+    // containers.device.div.style.height = (dimensions.deviceHeight + 4) + "px";
 
-    containers.viewport.div.style.width = dimensions.viewPort.width + "px";
-    containers.viewport.div.style.height = dimensions.viewPort.height + "px";
-    containers.viewport.div.style.padding = dimensions.paddingTop + "px " + (dimensions.deviceWidth - (dimensions.viewPort.width + dimensions.paddingLeft)) + "px " +
-        (dimensions.deviceHeight - (dimensions.viewPort.height + dimensions.paddingTop)) + "px " + dimensions.paddingLeft + "px";
+    // containers.viewport.div.style.width = dimensions.viewPort.width + "px";
+    // containers.viewport.div.style.height = dimensions.viewPort.height + "px";
+    // containers.viewport.div.style.padding = dimensions.paddingTop + "px " + (dimensions.deviceWidth - (dimensions.viewPort.width + dimensions.paddingLeft)) + "px " +
+    //     (dimensions.deviceHeight - (dimensions.viewPort.height + dimensions.paddingTop)) + "px " + dimensions.paddingLeft + "px";
 }
 
 function _setOrientation(layout) {
