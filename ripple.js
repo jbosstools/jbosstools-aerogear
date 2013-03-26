@@ -32831,6 +32831,8 @@ function _processNotification(nType, stateType, message) {
         displayText,
         className,
         notificationIcon,
+        popUpBox = bsPopup.document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS),
+        popUpMsgBox = bsPopup.document.getElementById(constants.NOTIFICATIONS.MESSAGE_TEXT_CONTAINER_CLASS),
         box = document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS),
         msgBox = document.getElementById(constants.NOTIFICATIONS.MESSAGE_TEXT_CONTAINER_CLASS);
 
@@ -32855,15 +32857,50 @@ function _processNotification(nType, stateType, message) {
             className += " ui-state-highlight ui-corner-all";
             notificationIcon = '<span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>';
         }
+
         break;
 
     default:
         exception.raise(exception.types.NotificationStateType, "Unknown StateType == " + stateType.toString());
     }
 
-    msgBox.innerHTML = notificationIcon + displayText;
-    box.setAttribute("class", className);
-    box.setAttribute("style", display);
+    if (!popUpBox) {
+        msgBox.innerHTML = notificationIcon + displayText;
+        box.setAttribute("class", className);
+        // box.setAttribute("style", display); // don't show notification pop-up on the main page
+
+        var notificationPanel = box.cloneNode(true);
+        notificationPanel.setAttribute("style", "position: absolute; width: 70%;" + 
+                                                "background: #333333;" +
+                                                "font-family: \"Helvetica\", Arial, sans-serif;" +
+                                                "color: white;" +
+                                                "min-height: 100px;" +
+                                                "top: 20%;" +
+                                                "left: 10%;" +
+                                                "padding: .5em 1em;" +
+                                                "font-size: 0.92em;" +
+                                                "-webkit-box-shadow: 0 1px 10px rgb(0,0,0);" +
+                                                "box-shadow: 0 1px 10px rgb(0,0,0);" +
+                                                "z-index: 1100;" +
+                                                "display: " + display + ";");
+        var closeButton = notificationPanel.getElementsByClassName(constants.NOTIFICATIONS.CLOSE_BUTTON_CLASS)[0];
+        closeButton.setAttribute("style", "position: relative;" +
+                                          "float: right;" +
+                                          "z-index: 999;" +
+                                          "cursor: pointer;" +
+                                          "padding: 3px 5px;" +
+                                          "-webkit-border-radius: 6px;" +
+                                          "border-radius: 6px;");  
+        closeButton.addEventListener("click", function(){
+            var notificationPanel = bsPopup.document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS);
+            notificationPanel.parentNode.removeChild(notificationPanel);
+        }, false);   
+        bsPopup.document.body.appendChild(notificationPanel); 
+    } else {
+        popUpMsgBox.innerHTML = notificationIcon + displayText;
+        var previousStyle = popUpBox.getAttribute("style"); // XXX have to save previous css
+        popUpBox.setAttribute("style", previousStyle + display);
+    }
 
 }
 
