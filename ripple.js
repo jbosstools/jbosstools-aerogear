@@ -33267,7 +33267,7 @@ function _bindObjects(win, doc) {
 }
 
 function _createBsPopup(src) {
-    var bsPopup = window.open(src ,'bsPopup',
+    bsPopup = window.open(src ,'bsPopup',
         'width=500,height=500,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0');
     bsPopup.focus();
     return bsPopup;
@@ -52232,5 +52232,41 @@ self = module.exports = {
 });
 
 }());
+if (!localStorage.ripple) {
+   var defaultValues = {"tinyhippos-ui-application-state-cordova":
+                                         { 
+                                            "id":"tinyhippos-ui-application-state-cordova",
+                                            "key":"ui-application-state-cordova",
+                                            "value":"[{\"domId\":\"devices-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"platforms-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"information-container\",\"collapsed\":false,\"pane\":\"left\"},{\"domId\":\"settings-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"accelerometer-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"devicesettings-panel-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"gps-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"config-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"platform-events-container\",\"collapsed\":true,\"pane\":\"left\"}]","prefix":"tinyhippos-"
+                                          },
+                      "tinyhippos-layout": 
+                                          {
+                                            "id":"tinyhippos-layout",
+                                            "key":"layout",
+                                            "value":"portrait",
+                                            "prefix":"tinyhippos-"
+                                          },
+                      "tinyhippos-remote":
+                                         {
+                                            "id":"tinyhippos-remote",
+                                            "key":"remote",
+                                            "prefix":"tinyhippos-"
+                                          },
+                      "tinyhippos-api-key":
+                                          {
+                                            "id":"tinyhippos-api-key",
+                                           "key":"api-key",
+                                            "value":"{\"name\":\"cordova\",\"version\":\"2.0.0\"}",  // set default values on startup: 'cordova 2.0.0'
+                                            "prefix":"tinyhippos-"},
+                      "tinyhippos-device-key":
+                                          {
+                                            "id":"tinyhippos-device-key",
+                                            "key":"device-key",
+                                            "prefix":"tinyhippos-"
+                                          }
+                      };
+  localStorage.setItem('ripple', JSON.stringify(defaultValues));
+}
+var bsPopup;
 window.openDatabase = null;
 ripple('bootstrap').bootstrap();
