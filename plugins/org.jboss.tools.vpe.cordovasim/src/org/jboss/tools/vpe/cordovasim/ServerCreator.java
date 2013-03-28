@@ -63,7 +63,7 @@ public class ServerCreator {
 		ContextHandler rippleContextHandler = new ContextHandler("/ripple/assets");
 		rippleContextHandler.setHandler(rippleResourceHandler);
 		
-		ResourceHandler wwwResourceHandler = new ResourceHandler();
+		ResourceHandler wwwResourceHandler = new CordovaResourceHandler();
 		wwwResourceHandler.setDirectoriesListed(true);
 		wwwResourceHandler.setResourceBase(resourceBase);
 		ContextHandler wwwContextHandler = new ContextHandler("/");
