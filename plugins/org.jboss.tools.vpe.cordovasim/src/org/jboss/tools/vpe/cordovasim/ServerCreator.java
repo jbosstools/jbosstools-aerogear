@@ -39,6 +39,7 @@ public class ServerCreator {
 		connector.setReuseAddress(false);
 		connector.setSoLingerTime(0);  // Linux keeps the port blocked without this line
 		connector.setPort(port);
+		connector.setHost("localhost");
 		server.addConnector(connector);
 
 		ServletHolder userAgentServletHolder = new ServletHolder(new StaticResponseServlet("OK"));
