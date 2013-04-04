@@ -27057,8 +27057,18 @@ module.exports = {
         });
 
         jQuery("#platform-events-fire").click(function () {
-            var eventName = document.getElementById("platform-events-select").value,
-                args = spec.events[eventName].args ? document.getElementById("platform-events-args").value : null,
+            var eventName = document.getElementById("platform-events-select").value;
+            firePlatformEvent(eventName);
+        });
+
+
+        window.fireBsBackButton = function () {
+            var eventName = "backbutton";
+            firePlatformEvent(eventName);
+        }
+
+        function firePlatformEvent(eventName) {
+            var args = spec.events[eventName].args ? document.getElementById("platform-events-args").value : null,
                 callback = spec.events[eventName].callback;
 
             _console.log("fired event => " + eventName);
@@ -27069,7 +27079,7 @@ module.exports = {
                 _console.log("Failed to raise: " + eventName);
                 _console.log(e);
             }
-        });
+        }
 
         jQuery(eventSelect).change(function () {
             var argsSelect = jQuery("#platform-events-args"),
@@ -38451,6 +38461,17 @@ ripple.define('platform/cordova/2.0.0/bridge/app', function (ripple, exports, mo
 module.exports = {
     show: function (success) {
         return success && success();
+    },
+
+    overrideBackbutton: function (success, fail, args) { // prevent native code call
+      if(args[0]) {
+            window.bsBackbuttonPressed = function () {
+              fireBsBackButton();
+              return false;
+          } 
+      } else {
+          delete window.bsBackbuttonPressed;
+      }
     }
 };
 
