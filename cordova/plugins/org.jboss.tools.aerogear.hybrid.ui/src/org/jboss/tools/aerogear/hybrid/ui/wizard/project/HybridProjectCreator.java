@@ -83,7 +83,7 @@ public class HybridProjectCreator {
 			try{
 				file.create(url.openStream(), false, null);
 			}catch(IOException ios){
-				new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Could not create config.xml file", ios));
+				throw new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Could not create config.xml file", ios));
 			}
 		}
 	    

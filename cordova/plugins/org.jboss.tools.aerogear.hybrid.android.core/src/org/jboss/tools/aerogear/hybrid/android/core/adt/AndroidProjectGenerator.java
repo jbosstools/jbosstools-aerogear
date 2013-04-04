@@ -1,77 +1,188 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.android.core.adt;
 
 
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_ASSETS;
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_LIBS;
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_RES;
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_SRC;
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_VALUES;
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_XML;
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.FILE_JAR_CORDOVA;
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.FILE_XML_ANDROIDMANIFEST;
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.FILE_XML_STRINGS;
 import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
 import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.fileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.templatedFileCopy;
 import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.osgi.framework.Bundle;
-
-import com.android.ide.eclipse.adt.AdtPlugin;
-import com.android.sdklib.SdkManager;
-import com.android.sdklib.internal.project.ProjectCreator;
-import com.android.sdklib.internal.project.ProjectCreator.OutputLevel;
-import com.android.utils.ILogger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 
 	public AndroidProjectGenerator(IProject project, File generationFolder) {
 		super(project, generationFolder);
 	}
-	class Logger implements ILogger{
 
-		@Override
-		public void error(Throwable arg0, String arg1, Object... arg2) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void info(String arg0, Object... arg1) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void verbose(String arg0, Object... arg1) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void warning(String arg0, Object... arg1) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
 
 	@Override
-	protected void generateNativeFiles() throws IOException {
+	protected void generateNativeFiles() throws CoreException {
 		
-		final String osSdkFolder = AdtPlugin.getOsSdkFolder();
-		final Logger logger = new Logger();
-		SdkManager sdkmanager = SdkManager.createManager(osSdkFolder,logger );
+		
+		AndroidSDKManager sdkManager = new AndroidSDKManager();
+		
+		HybridProject hybridProject = HybridProject.getHybridProject(getProject());
+		Widget widgetModel = hybridProject.getWidget();
 		
 		// Create the basic android project
-		ProjectCreator projectCreator = new ProjectCreator(sdkmanager,osSdkFolder, OutputLevel.NORMAL, logger);
-		//TODO: Use config.xml for project name and package values
-		projectCreator.createProject(getDestination().getPath(), this.getProject().getName(), this.getProjectName(), "myApp",sdkmanager.getTargets()[0],false,null);
+		String packageName = widgetModel.getId();
+		String name = widgetModel.getName();
+		if(name == null || name.isEmpty()){
+			name = getProjectName();
+		}
+		name = name.replaceAll("\\W", "_");// Both activity and project names do not allow spaces on Android.
+		List<AndroidSDK> targets = sdkManager.listTargets();
+		if(targets == null || targets.isEmpty() ){
+			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "No Android targets were found, Please create a target"));
+		}
+		
+		sdkManager.createProject(targets.get(0), name, getDestination(),name, packageName );
 		
 		//Move cordova library to libs
-		Bundle bundle = AndroidCore.getContext().getBundle();
-		fileCopy(getTemplateFile("/templates/CordovaLib/cordova-2.5.0.jar"), 
-				toURL(new File(getDestination(),"libs/cordova.jar")));
-		directoryCopy(getTemplateFile("/templates/project/res/"),
-				toURL(new File(getDestination(),"res")));
+		try{
+			fileCopy(getTemplateFile("/templates/CordovaLib/cordova-2.5.0.jar"), 
+					toURL(new File(getDestination(), DIR_LIBS + File.separator + FILE_JAR_CORDOVA )));
+			directoryCopy(getTemplateFile("/templates/project/res/"),
+					toURL(new File(getDestination(), DIR_RES )));
+			
+			IFile configFile = getProject().getFile(PlatformConstants.DIR_WWW+"/config.xml");
+			File xmldir = new File(getDestination(),DIR_RES+File.separator+DIR_XML+File.separator);
+			if( !xmldir.exists() ){//only config.xml uses xml 
+				xmldir.mkdirs();   //directory make sure it is created
+			}
+			fileCopy(toURL(configFile.getLocation().toFile()), 
+					toURL(new File(xmldir, PlatformConstants.FILE_XML_CONFIG)));
+			
+			updateAppName(name);
+			
+			// Copy templated files 
+			Map<String, String> values = new HashMap<String, String>();
+			values.put("__ID__", packageName);
+			values.put("__PACKAGE__", packageName);// yeap, cordova also uses two different names
+			values.put("__ACTIVITY__", name);
+			values.put("__APILEVEL__", Integer.toString(targets.get(0).getApiLevel()));
+			
+			templatedFileCopy(getTemplateFile("/templates/project/Activity.java"), 
+					toURL(new File(getDestination(), File.separator+DIR_SRC+ File.separator+ 
+							packageName.replace('.', File.separatorChar)+File.separator+name+".java")),
+					values);
+			templatedFileCopy(getTemplateFile("/templates/project/AndroidManifest.xml"), 
+					toURL(new File(getDestination(), FILE_XML_ANDROIDMANIFEST)), values);
+			
+			
+			
+			}
+		catch(IOException e)
+		{
+			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Error generating the native android project", e));
+		}
+	}
 	
+	private void updateAppName( String appName ) throws CoreException{
+	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+	    dbf.setNamespaceAware(true);
+	    DocumentBuilder db;
+
+	    try{
+	    	db = dbf.newDocumentBuilder();
+	    	File strings = new File(getDestination(),DIR_RES+File.separator+DIR_VALUES+File.separator+ FILE_XML_STRINGS);
+	    	Document configDocument = db.parse( strings); 
+	    	XPath xpath = XPathFactory.newInstance().newXPath();
+	    	
+	    	try {
+	    		XPathExpression expr = xpath.compile("//string[@name=\"app_name\"]");
+				Node node = (Node) expr.evaluate( configDocument, XPathConstants.NODE);
+				node.setTextContent(appName);
+				
+			    configDocument.setXmlStandalone(true);
+			    
+			    Source source = new DOMSource(configDocument);
+
+			   
+			    StreamResult result = new StreamResult(strings);
+
+			    // Write the DOM document to the file
+			    TransformerFactory transformerFactory = TransformerFactory
+				    .newInstance();
+			    Transformer xformer = transformerFactory.newTransformer();
+
+			    xformer.transform(source, result);
+				
+			} catch (XPathExpressionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TransformerConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TransformerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	
+	    }
+		catch (ParserConfigurationException e) {
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing /res/values/strings.xml", e));
+		} catch (SAXException e) {
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parsing error on /res/values/strings.xml", e));
+		} catch (IOException e) {
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing /res/values/strings.xml", e));
+		} 
 	}
 
 	@Override
@@ -82,7 +193,7 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 	@Override
 	protected void replaceCordovaPlatformFiles() throws IOException {
 		fileCopy(getTemplateFile("/templates/CordovaLib/cordova.android.js"), 
-				toURL(new File(getPlatformWWWDirectory(),"cordova.js")));
+				toURL(new File(getPlatformWWWDirectory(), PlatformConstants.FILE_JS_CORDOVA )));
 	}
 
 	private URL getTemplateFile(String path){
@@ -93,7 +204,7 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 	
 	@Override
 	protected File getPlatformWWWDirectory() {
-		return new File(getDestination(),"assets/www");
+		return new File(getDestination(), DIR_ASSETS + File.separator +PlatformConstants.DIR_WWW);
 	}
 
 }

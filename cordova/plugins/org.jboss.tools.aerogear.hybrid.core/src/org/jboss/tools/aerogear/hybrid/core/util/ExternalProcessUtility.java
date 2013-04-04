@@ -42,6 +42,14 @@ public class ExternalProcessUtility {
 		IProcess prcs = DebugPlugin.newProcess(launch, process, "Cordova Plugin:  "+ cmd[0]);
 		DebugPlugin.getDefault().getLaunchManager().addLaunch(launch);
 		
+		
+		if(outStreamListener == null && HybridCore.DEBUG){
+			outStreamListener = new TracingStreamListener();
+		}
+		if(errorStreamListener == null && HybridCore.DEBUG){
+			errorStreamListener = new TracingStreamListener();
+		}
+		
 		if( outStreamListener != null ){
 			prcs.getStreamsProxy().getOutputStreamMonitor().addListener(outStreamListener);
 		}
@@ -65,9 +73,18 @@ public class ExternalProcessUtility {
 			DebugPlugin.getDefault().getLaunchManager().addLaunch(launch);
 		}
 		
+		//Set tracing 
+		if(outStreamListener == null && HybridCore.DEBUG){
+			outStreamListener = new TracingStreamListener();
+		}
+		if(errorStreamListener == null && HybridCore.DEBUG){
+			errorStreamListener = new TracingStreamListener();
+		}
+		
 		if( outStreamListener != null ){
 			prcs.getStreamsProxy().getOutputStreamMonitor().addListener(outStreamListener);
 		}
+
 		if( errorStreamListener != null ){
 			prcs.getStreamsProxy().getErrorStreamMonitor().addListener(errorStreamListener);
 		}

@@ -25,6 +25,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
@@ -36,32 +39,36 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 	}
 	
 	@Override
-	protected void generateNativeFiles() throws IOException{
+	protected void generateNativeFiles() throws CoreException{
 		
-		//copyFilesFromBundle(IOSCore.getContext().getBundle(), "/templates/project/", getDestination());
-		generateCordovaLib();
-		
-		Bundle bundle = IOSCore.getContext().getBundle();
-		File destinationDir = getDestination();
-		
-		File prjdir = new File(destinationDir, getProjectName());
-		if( !prjdir.exists() ){//create the project directory
-			prjdir.mkdirs();
+		try{
+			//copyFilesFromBundle(IOSCore.getContext().getBundle(), "/templates/project/", getDestination());
+			generateCordovaLib();
+			
+			Bundle bundle = IOSCore.getContext().getBundle();
+			File destinationDir = getDestination();
+			
+			File prjdir = new File(destinationDir, getProjectName());
+			if( !prjdir.exists() ){//create the project directory
+				prjdir.mkdirs();
+			}
+			directoryCopy(bundle.getEntry("/templates/project/__TESTING__"), toURL(new File(destinationDir, getProjectName()))  );		
+			fileCopy(bundle.getEntry("/templates/project/__TESTING__-Info.plist"), toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Info.plist")));
+			fileCopy(bundle.getEntry("/templates/project/__TESTING__-Prefix.pch"), toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Prefix.pch")));
+			directoryCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj"), toURL(new File(destinationDir, getProjectName()+".xcodeproj")));	
+			
+			processFile(new File(getDestination(),getProjectName()+".xcodeproj/project.pbxproj"), "__TESTING__", getProjectName());
+			processFile(new File(getDestination(),getProjectName()+"/Classes/AppDelegate.h"), "__TESTING__", getProjectName());
+			processFile(new File(getDestination(),getProjectName()+"/Classes/AppDelegate.m"), "__TESTING__", getProjectName());
+			processFile(new File(getDestination(),getProjectName()+"/Classes/MainViewController.h"), "__TESTING__", getProjectName());
+			processFile(new File(getDestination(),getProjectName()+"/Classes/MainViewController.m"), "__TESTING__", getProjectName());
+			processFile(new File(getDestination(),getProjectName()+"/main.m"), "__TESTING__", getProjectName());
+			processFile(new File(getDestination(),getProjectName()+"/"+getProjectName()+"-Info.plist"), "__TESTING__", getProjectName());
+			processFile(new File(getDestination(),getProjectName()+"/"+getProjectName()+"-Prefix.pch"), "__TESTING__", getProjectName());
 		}
-		directoryCopy(bundle.getEntry("/templates/project/__TESTING__"), toURL(new File(destinationDir, getProjectName()))  );		
-		fileCopy(bundle.getEntry("/templates/project/__TESTING__-Info.plist"), toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Info.plist")));
-		fileCopy(bundle.getEntry("/templates/project/__TESTING__-Prefix.pch"), toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Prefix.pch")));
-		directoryCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj"), toURL(new File(destinationDir, getProjectName()+".xcodeproj")));	
-		
-		processFile(new File(getDestination(),getProjectName()+".xcodeproj/project.pbxproj"), "__TESTING__", getProjectName());
-		processFile(new File(getDestination(),getProjectName()+"/Classes/AppDelegate.h"), "__TESTING__", getProjectName());
-		processFile(new File(getDestination(),getProjectName()+"/Classes/AppDelegate.m"), "__TESTING__", getProjectName());
-		processFile(new File(getDestination(),getProjectName()+"/Classes/MainViewController.h"), "__TESTING__", getProjectName());
-		processFile(new File(getDestination(),getProjectName()+"/Classes/MainViewController.m"), "__TESTING__", getProjectName());
-		processFile(new File(getDestination(),getProjectName()+"/main.m"), "__TESTING__", getProjectName());
-		processFile(new File(getDestination(),getProjectName()+"/"+getProjectName()+"-Info.plist"), "__TESTING__", getProjectName());
-		processFile(new File(getDestination(),getProjectName()+"/"+getProjectName()+"-Prefix.pch"), "__TESTING__", getProjectName());
-		
+		catch(IOException e ){
+			throw new CoreException(new Status(IStatus.ERROR,IOSCore.PLUGIN_ID,"Error generating the native iOS project", e));
+		}
 		
 	}
 	

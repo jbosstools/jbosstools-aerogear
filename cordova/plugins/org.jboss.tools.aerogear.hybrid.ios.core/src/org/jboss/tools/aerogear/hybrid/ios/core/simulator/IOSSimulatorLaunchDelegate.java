@@ -14,7 +14,9 @@ import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLau
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_RETINA;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_TALL;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.VAL_DEVICE_FAMILY_IPHONE;
+
 import java.io.File;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -28,6 +30,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
+import org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeBuild;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XcodeProjectGenerator;
@@ -77,7 +80,7 @@ public class IOSSimulatorLaunchDelegate implements
 		if( monitor.isCanceled() ){
 			return false;
 		}
-		monitor.beginTask("Build Cordova project", 2);
+		monitor.beginTask("Build Cordova project for iOS", 2);
 		XcodeProjectGenerator creator = new XcodeProjectGenerator(getProject(configuration),null);
 		SubProgressMonitor generateMonitor = new SubProgressMonitor(monitor, 1);
 		File xcodeProjectDir  = creator.generateNow(generateMonitor);
@@ -109,9 +112,10 @@ public class IOSSimulatorLaunchDelegate implements
 		monitor.done();
 		return true;
 	}
+	
 	private IProject getProject(ILaunchConfiguration configuration){
 		try{
-			String projectName = configuration.getAttribute(IOSSimulatorLaunchConstants.ATTR_BUILD_SCOPE, (String)null);
+			String projectName = configuration.getAttribute(HybridProjectLaunchConfigConstants.ATTR_BUILD_SCOPE, (String)null);
 			if(projectName != null ){
 				 return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			}

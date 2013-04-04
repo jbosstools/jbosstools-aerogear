@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.ui;
 
-import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_BUILD_SCOPE;
+import static org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants.ATTR_BUILD_SCOPE;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_DEVICE_FAMILY;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_SIMULATOR_SDK_DESCRIPTION;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_RETINA;

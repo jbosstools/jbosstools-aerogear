@@ -21,13 +21,8 @@ public interface IOSSimulatorLaunchConstants {
 	/**
 	 * Type id for the IOSSimulator Launch 
 	 */
-	public static final String LAUNCH_CONFIG_TYPE = "org.jboss.tools.aerogear.hybrid.ios.core.IOSSimulatorLaunchConfigType";
+	public static final String ID_LAUNCH_CONFIG_TYPE = "org.jboss.tools.aerogear.hybrid.ios.core.IOSSimulatorLaunchConfigType";
 
-	/**
-	 * Build scope, usually a project name in the workspace
-	 */
-	
-	public static final String ATTR_BUILD_SCOPE = IOSCore.PLUGIN_ID + ".ATTR_BUILD_SCOPE";
 	
 	/**
 	 * Device family attribute passed to ios-sim to select iphone, ipad etc..

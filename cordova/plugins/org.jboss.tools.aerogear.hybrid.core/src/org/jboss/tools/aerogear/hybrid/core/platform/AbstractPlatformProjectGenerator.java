@@ -67,16 +67,18 @@ public abstract class AbstractPlatformProjectGenerator {
 			monitor.beginTask("Generate Native Project", 40);
 			generateNativeFiles();
 			monitor.worked(10);
-			IFolder folder = getProject().getFolder("/www");
+			IFolder folder = getProject().getFolder("/"+PlatformConstants.DIR_WWW);
 			if ( !folder.exists() ){
 				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "No www directory. Can not generate target without www directory"));
 			}
 			File targetWWW = getPlatformWWWDirectory();
 			Assert.isNotNull(targetWWW,"Platform implementation must return a file location for www directory");
-			
-			directoryCopy(folder.getLocationURI().toURL(), toURL(targetWWW));
+			if( !targetWWW.exists() && !targetWWW.mkdirs() ){
+				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, " Unable to create www directory for native project "));
+			}
+			directoryCopy( toURL(folder.getLocation().toFile()), toURL(targetWWW));
 			monitor.worked(10);
-			folder = getProject().getFolder("/platforms/ios/");
+			folder = getProject().getFolder("/platforms/"+getTargetShortName());
 			if (folder.exists()){
 				directoryCopy(folder.getLocationURI().toURL() , toURL(targetWWW));
 			}
@@ -102,7 +104,7 @@ public abstract class AbstractPlatformProjectGenerator {
 	 * web artifacts in www directory.
 	 * @throws IOException
 	 */
-	protected abstract void generateNativeFiles() throws IOException;
+	protected abstract void generateNativeFiles() throws CoreException;
 	
 	/**
 	 * Returns the short name to be used for defining the target platform 

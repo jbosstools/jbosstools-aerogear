@@ -10,16 +10,22 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.util;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -46,16 +52,17 @@ public final class FileUtils {
 	 * 
 	 * @param source - directory on the file system or jar file
 	 * @param destination - a directory on the file system
+	 * @throws IllegalArgumentException 
+	 * 		<ul>
+	 * 			<li>source or destination is null or not a file</li>
+	 *  		<li>destination is not a file URL</li>
+	 *  	</ul>
 	 */
 	public static void directoryCopy (URL source, URL destination ) throws IOException{
-		if( source == null || destination == null )
-			return;
+		checkCanCopy(source, destination);
+		
 		source = getFileURL(source);
 		destination = getFileURL(destination);
-		if (!isFile(destination))
-			return;
-		
-
 		File dstFile = new File(destination.getFile());
 		if(!dstFile.exists() && !dstFile.mkdir() ){
 				return;
@@ -82,21 +89,25 @@ public final class FileUtils {
 	 * 
 	 * @param source - file on the file system or jar file
 	 * @param destination - a file on the file system
+	 * @throws IOException
+	 * @throws IllegalArgumentException 
+	 * 		<ul>
+	 * 			<li>source or destination is null or not a file</li>
+	 *  		<li>destination is not a file URL</li>
+	 *  	</ul>
 	 */
 	public static void fileCopy(URL source, URL destination) throws IOException {
-		if( source == null || destination == null )
-			return;
+		checkCanCopy(source, destination);
+
 		source = getFileURL(source);
 		destination = getFileURL(destination);
-		if(!isFile(destination))
-			return;
-		
 		File dstFile = new File(destination.getFile());
+		if( !dstFile.exists() && !dstFile.createNewFile()){
+			return;
+		}
+
 		if("file".equals(source.getProtocol())){
 			File srcFile = new File(source.getFile());
-			if( !dstFile.exists() && !dstFile.createNewFile()){
-				return;
-			}
 			copyFile(srcFile, dstFile);
 			
 		}else if("jar".equals(source.getProtocol())){
@@ -108,6 +119,70 @@ public final class FileUtils {
 		}	
 
 	}
+	
+	/**
+	 * Copies the contents of a source file to the destination file. 
+	 * It replaces the value pairs passed on the templatesValues while 
+	 * copying. 
+	 * 
+	 * @param source  file on the file system or jar file
+	 * @param destination file on the file system
+	 * @param templateValues value pairs to be replaced
+	 * @throws IOException
+	 * @throws IllegalArgumentException 
+	 * 		<ul>
+	 * 			<li>source or destination is null or not a file</li>
+	 *  		<li>destination is not a file URL</li>
+	 *  	</ul>	 
+	 */
+	public static void templatedFileCopy(URL source, URL destination, Map<String, String> templateValues) throws IOException{
+		checkCanCopy(source, destination);
+		if (templateValues == null )
+			throw new IllegalArgumentException("Template values can not be null");
+		
+		source = getFileURL(source);
+		destination = getFileURL(destination);
+		File dstFile = new File(destination.getFile());
+		BufferedReader in = null;
+		BufferedWriter out = null;
+		try{
+			out = new BufferedWriter(new FileWriter(dstFile));
+	
+			if("file".equals(source.getProtocol())){
+				File srcFile = new File(source.getFile());
+				in = new BufferedReader(new FileReader(srcFile));
+			}
+			else if("jar".equals(source.getProtocol())){
+				ZipFile zipFile = getZipFile(source);
+				String file = source.getFile();
+				int exclamation = file.indexOf('!');
+				String jarLocation = file.substring(exclamation + 2); // remove jar separator !/ 
+				ZipEntry zipEntry = zipFile.getEntry(jarLocation);
+				if(zipEntry == null ){
+					throw new IllegalArgumentException(source + " can not be found on the zip file");
+				}
+				InputStream zipStream = zipFile.getInputStream(zipEntry);
+				in = new BufferedReader(new InputStreamReader(zipStream));
+			}
+			
+			 String line;
+	         while ((line = in.readLine()) != null) {
+	                 for (Map.Entry<String, String> entry : templateValues.entrySet()) {
+	                     line = line.replace(entry.getKey(), entry.getValue());
+	                 }
+	                 out.write(line);
+	                 out.newLine();
+             }
+		}finally{
+			if (out != null)
+				out.close();
+			if (in != null )
+				in.close();
+		}
+		
+		
+	}
+	
 	
 
 	/**
@@ -127,6 +202,14 @@ public final class FileUtils {
 		}
 	}
 
+	private static void checkCanCopy(URL source, URL destination ){
+		if(source == null || destination == null )
+			throw new IllegalArgumentException("null source or destination value");
+		source = getFileURL(source);
+		destination = getFileURL(destination);
+		if(!isFile(destination))
+			throw new IllegalArgumentException("destination is not a file URL");
+	}
 	
 	private static boolean isFile(URL url){
 		return "file".equals(url.getProtocol());

@@ -36,7 +36,7 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	public static final String PLUGIN_ID = "org.jboss.tools.earogear.hybrid.core";
 	
 	private static BundleContext context;
-	public static boolean DEBUG=false;
+	public static boolean DEBUG = true;
 	private static DebugTrace TRACE;
 	private static ILog logger;
 	
@@ -85,7 +85,7 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	public void optionsChanged(DebugOptions options) {
 		if(TRACE==null)
 			TRACE = options.newDebugTrace(PLUGIN_ID);
-		DEBUG = options.getBooleanOption(PLUGIN_ID+"/debug", false);	
+		DEBUG = options.getBooleanOption(PLUGIN_ID+"/debug", true);	
 	}
 	
 	public static void trace( String message){
