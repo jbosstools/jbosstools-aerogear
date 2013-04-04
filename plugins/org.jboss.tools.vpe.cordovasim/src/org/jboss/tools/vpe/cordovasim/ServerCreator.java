@@ -65,7 +65,8 @@ public class ServerCreator {
 		ResourceHandler rippleResourceHandler = new ResourceHandler();
 		rippleResourceHandler.setDirectoriesListed(true);
 		rippleResourceHandler.setWelcomeFiles(new String[] { "index.html" });
-		rippleResourceHandler.setResourceBase("./ripple-ui");
+		String ripplePath = ServerCreator.class.getClassLoader().getResource("ripple").toExternalForm();
+		rippleResourceHandler.setResourceBase(ripplePath);
 		ContextHandler rippleContextHandler = new ContextHandler("/ripple/assets");
 		rippleContextHandler.setHandler(rippleResourceHandler);
 		
