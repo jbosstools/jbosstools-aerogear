@@ -93,9 +93,8 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		// Start ADB Server
 		AndroidSDKManager sdk = new AndroidSDKManager();
 		sdk.startADBServer();
-		// Do we have any devices to run on?
-		List<String> devices = sdk.listDevices();
-		if (devices == null || devices.isEmpty() ){
+		// Do we have any devices to run on?	
+		if ( !deviceReady() ){
 			// No devices lets start an emulator.
 			// Check if we have an AVD
 			List<String> avds = sdk.listAVDs();
@@ -107,6 +106,18 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		}
 		monitor.done();
 		return true;
+	}
+	
+	private boolean deviceReady() throws CoreException{
+		AndroidSDKManager sdk = new AndroidSDKManager();
+		List<AndroidDevice> devices = sdk.listDevices();
+		if(devices == null ) 
+			return false;
+		for (AndroidDevice androidDevice : devices) {
+			if(androidDevice.getState() == AndroidDevice.STATE_DEVICE )
+				return true;
+		}
+		return false;
 	}
 	
 	//TODO: duplicated form IOSLaunchDelegate... move both to a common utility.

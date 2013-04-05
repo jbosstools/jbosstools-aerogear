@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.ant.launching.IAntLaunchConstants;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
+import org.eclipse.core.internal.registry.OffsetTable;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -56,7 +57,7 @@ public class AndroidSDKManager {
 			buffer.append(text);
 		}
 		
-		public List<String> getDeviceList(){
+		public List<AndroidDevice> getDeviceList(){
 
 			if (buffer == null || buffer.length() < 1)
 				return null;
@@ -64,12 +65,24 @@ public class AndroidSDKManager {
 			StringReader reader = new StringReader(buffer.toString());
 			BufferedReader read = new BufferedReader(reader);
 			String line =null;
-			ArrayList<String> list = new ArrayList<String>();
+			ArrayList<AndroidDevice> list = new ArrayList<AndroidDevice>();
 			try{
 				while ((line = read.readLine()) != null) {
 					if(line.isEmpty() || line.contains("List of devices attached"))
 						continue;
-					list.add(line.substring(0, line.indexOf('\t')).trim());
+					String[] values = line.split("\t");
+					if(values.length == 2){
+						AndroidDevice device = new AndroidDevice();
+						device.setSerialNumber(values[0].trim());
+						if("device".equals(values[1].trim())){
+							device.setState(AndroidDevice.STATE_DEVICE);
+						}
+						else if("offline".equals(values[1].trim())){
+							device.setState(AndroidDevice.STATE_OFFLINE);
+						}
+						list.add(device);
+					}
+					
 				}
 			}
 			catch (IOException e) {
@@ -215,7 +228,7 @@ public class AndroidSDKManager {
 		return parser.getSDKList();
 	}
 	
-	public List<String> listDevices() throws CoreException{
+	public List<AndroidDevice> listDevices() throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		DeviceListParser parser = new DeviceListParser();
 		processUtility.execSync("adb devices", null, parser, parser, 
