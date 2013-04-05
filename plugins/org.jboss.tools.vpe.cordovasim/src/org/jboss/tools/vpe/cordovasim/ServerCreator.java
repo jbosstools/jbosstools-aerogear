@@ -36,6 +36,8 @@ public class ServerCreator {
 	public static Server createServer(String resourceBase, int port) {
 		Server server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();
+		connector.setReuseAddress(false);
+		connector.setSoLingerTime(0);  // Linux keeps the port blocked without this line
 		connector.setPort(port);
 		server.addConnector(connector);
 
