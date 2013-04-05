@@ -15,15 +15,17 @@ import java.io.File;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationAdapter;
-import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeEvent;
+import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeListener;
+import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
 import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
+
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -48,37 +50,47 @@ public class CordovaSimRunner {
 		final Display display = Display.getDefault();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		Browser browser = new Browser(shell, SWT.WEBKIT);
+		final Browser browser = new Browser(shell, SWT.WEBKIT);
 		browser.setUrl("http://localhost:" + PORT + "/" + file.getName() + "?enableripple=true");
 		browser.addOpenWindowListener(new OpenWindowListener() {
- 			
+			private Browser oldBrowser;
+			
 			@Override
 			public void open(WindowEvent event) {
-				if (browserSim != null && browserSim.getBrowser().getShell() != null) { //XXX
+				if (browserSim == null || browserSim.getBrowser().isDisposed() || browserSim.getBrowser().getShell().isDisposed()){ 
+					createBrowserSim(browser);
+				} else if (oldBrowser == browserSim.getBrowser()) {
 					browserSim.getBrowser().getShell().dispose();
+					createBrowserSim(browser);
+					browserSim.getBrowser().addLocationListener(new RippleInjector());
+				} else if (oldBrowser != browserSim.getBrowser()) {
+					browserSim.getBrowser().addLocationListener(new RippleInjector());
 				}
-				browserSim = new BrowserSim("about:blank");
-				browserSim.open();
-				browserSim.getBrowser().addLocationListener(new LocationAdapter() {
-					public void changed(LocationEvent event) {
-						Browser browser = (Browser) event.widget;
-						browser.execute("if (window.opener.ripple) { window.opener.ripple('bootstrap').inject(window, document);}");
-						browser.forceFocus();
-					}
-				});
-				event.browser = browserSim.getBrowser();				
+				event.browser = browserSim.getBrowser();
+				oldBrowser = browserSim.getBrowser();
 			}
 		});
 		
 		shell.open();
-		
 		while (!shell.isDisposed()) {
 		  if (!display.readAndDispatch())
 		     display.sleep();
 		}
 		display.dispose(); 
-		
+
 		server.stop();
 		server.join();
+	} 
+	
+	private static void createBrowserSim(final Browser browser) {
+		browserSim = new BrowserSim("about:blank");
+		browserSim.open();
+		browserSim.addSkinChangeListener(new SkinChangeListener() {
+			@Override
+			public void skinChanged(SkinChangeEvent event) {
+				browser.refresh();
+			}
+		});
+		browserSim.getBrowser().addLocationListener(new RippleInjector());
 	}
 }
