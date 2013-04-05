@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.eclipse.ant.launching.IAntLaunchConstants;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
-import org.eclipse.core.internal.registry.OffsetTable;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -34,10 +33,9 @@ import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
-import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectConventions;
 import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
-import org.jboss.tools.aerogear.hybrid.core.util.TracingStreamListener;
+import org.jboss.tools.aerogear.hybrid.core.util.TextDetectingStreamListener;
 
 /**
  * Wrapper around the Android CommandLine tools.
@@ -249,8 +247,16 @@ public class AndroidSDKManager {
 		command.append(" install");
 		command.append(" -r ");
 		command.append("\"").append(apkFile.getPath()).append("\"");
-
-		processUtility.execSync(command.toString(), null, null	, null, new NullProgressMonitor(), null, null);
+		TextDetectingStreamListener listener = new TextDetectingStreamListener("Success");
+		processUtility.execSync(command.toString(), null,listener, listener, new NullProgressMonitor(), null, null);
+		if (!listener.isTextDetected()){
+			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "APK installation did not succeed"));
+		}
+	}
+	
+	public void waitForDevice() throws CoreException{
+		ExternalProcessUtility processUtility = new ExternalProcessUtility();
+		processUtility.execSync("adb wait-for-device", null, null, null, new NullProgressMonitor(), null, null);
 	}
 	
 	public void startApp(String component) throws CoreException{

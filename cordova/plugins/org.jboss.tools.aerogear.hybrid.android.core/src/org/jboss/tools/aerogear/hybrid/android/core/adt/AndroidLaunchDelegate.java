@@ -103,6 +103,8 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			}
 			//start the emulator.
 			sdk.startEmulator(avds.get(0));
+			// wait for it to come online 
+			sdk.waitForDevice();
 		}
 		monitor.done();
 		return true;

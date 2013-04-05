@@ -22,6 +22,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
+import org.jboss.tools.aerogear.hybrid.core.util.TextDetectingStreamListener;
 
 /**
  * Wrapper around the xcodebuild command line tool.
@@ -29,17 +30,6 @@ import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
  *
  */
 public class XCodeBuild {
-
-	private class BuildSuccessListener implements IStreamListener{
-		boolean buildSuccess = false;
-		@Override
-		public void streamAppended(String text, IStreamMonitor monitor) {
-			
-			if(text.contains("** BUILD SUCCEEDED **")){
-				buildSuccess = true;
-			}
-		}		
-	}
 	
 	private class SDKListParser implements IStreamListener{
 		ArrayList<XCodeSDK> sdkList=new ArrayList<XCodeSDK>(5);
@@ -108,10 +98,10 @@ public class XCodeBuild {
 				return false;
 			}
 			monitor.worked(1);
-			BuildSuccessListener listener = new BuildSuccessListener();
+			TextDetectingStreamListener listener = new TextDetectingStreamListener("** BUILD SUCCEEDED **");
 			processUtility.execSync(cmdString.toString(), xcodeProject,
 					listener, listener, monitor, null, launchConfiguration);
-			return listener.buildSuccess;
+			return listener.isTextDetected();
 		} finally {
 
 			monitor.done();
