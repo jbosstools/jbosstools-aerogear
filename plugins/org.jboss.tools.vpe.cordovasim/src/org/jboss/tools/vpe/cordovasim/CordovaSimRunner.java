@@ -20,12 +20,12 @@ import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.jboss.tools.vpe.browsersim.ui.events.ExitListener;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeEvent;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeListener;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
 import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
-
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -89,6 +89,13 @@ public class CordovaSimRunner {
 			@Override
 			public void skinChanged(SkinChangeEvent event) {
 				browser.refresh();
+			}
+		});
+		browserSim.addExitListener(new ExitListener() {
+			
+			@Override
+			public void exit() {
+				browser.getShell().dispose();
 			}
 		});
 		browserSim.getBrowser().addLocationListener(new RippleInjector());
