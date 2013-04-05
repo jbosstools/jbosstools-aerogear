@@ -11,6 +11,8 @@
 package org.jboss.tools.vpe.cordovasim;
 
 import java.io.File;
+import java.net.BindException;
+import java.text.MessageFormat;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
@@ -26,6 +28,7 @@ import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeListener;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
 import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
+import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -43,45 +46,60 @@ public class CordovaSimRunner {
 		BrowserSimArgs browserSimArgs = BrowserSimArgs.parseArgs(args);
 		BrowserSim.isStandalone = browserSimArgs.isStandalone();
 		File file = new File(browserSimArgs.getPath());
-		
-		Server server = ServerCreator.createServer(file.getParent(), PORT);// XXX
-		server.start();
-		
-		final Display display = Display.getDefault();
-		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-		final Browser browser = new Browser(shell, SWT.WEBKIT);
-		browser.setUrl("http://localhost:" + PORT + "/" + file.getName() + "?enableripple=true");
-		browser.addOpenWindowListener(new OpenWindowListener() {
-			private Browser oldBrowser;
-			
-			@Override
-			public void open(WindowEvent event) {
-				if (browserSim == null || browserSim.getBrowser().isDisposed() || browserSim.getBrowser().getShell().isDisposed()){ 
-					createBrowserSim(browser);
-				} else if (oldBrowser == browserSim.getBrowser()) {
-					browserSim.getBrowser().getShell().dispose();
-					createBrowserSim(browser);
-					browserSim.getBrowser().addLocationListener(new RippleInjector());
-				} else if (oldBrowser != browserSim.getBrowser()) {
-					browserSim.getBrowser().addLocationListener(new RippleInjector());
-				}
-				event.browser = browserSim.getBrowser();
-				oldBrowser = browserSim.getBrowser();
-			}
-		});
-		
-		shell.open();
-		while (!shell.isDisposed()) {
-		  if (!display.readAndDispatch())
-		     display.sleep();
-		}
-		display.dispose(); 
+		Server server = null;
+		try {
+			server = ServerCreator.createServer(file.getParent(), PORT);// XXX
+			server.start();
 
-		server.stop();
-		server.join();
-	} 
+			final Display display = Display.getDefault();
+			Shell shell = new Shell(display);
+			shell.setLayout(new FillLayout());
+			final Browser browser = new Browser(shell, SWT.WEBKIT);
+			browser.setUrl("http://localhost:" + PORT + "/" + file.getName() + "?enableripple=true");
+			browser.addOpenWindowListener(new OpenWindowListener() {
+				private Browser oldBrowser;
+
+				@Override
+				public void open(WindowEvent event) {
+					if (browserSim == null || browserSim.getBrowser().isDisposed()
+							|| browserSim.getBrowser().getShell().isDisposed()) {
+						createBrowserSim(browser);
+					} else if (oldBrowser == browserSim.getBrowser()) {
+						browserSim.getBrowser().getShell().dispose();
+						createBrowserSim(browser);
+						browserSim.getBrowser().addLocationListener(new RippleInjector());
+					} else if (oldBrowser != browserSim.getBrowser()) {
+						browserSim.getBrowser().addLocationListener(new RippleInjector());
+					}
+					event.browser = browserSim.getBrowser();
+					oldBrowser = browserSim.getBrowser();
+				}
+			});
+
+			shell.open();
+			while (!shell.isDisposed()) {
+				if (!display.readAndDispatch())
+					display.sleep();
+			}
+			display.dispose();
+		} catch (BindException e) {
+			showErrorMessage();
+		} finally {
+			if (server != null) {
+				server.stop();
+				server.join();
+			}
+		}
+	}
 	
+	private static void showErrorMessage() throws Exception {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		String message = MessageFormat.format(Messages.ExceptionNotifier_PORT_IN_USE, PORT);
+		ExceptionNotifier.showErrorMessage(shell, message);
+		display.dispose();
+	}
+
 	private static void createBrowserSim(final Browser browser) {
 		browserSim = new BrowserSim("about:blank");
 		browserSim.open();
@@ -100,4 +118,5 @@ public class CordovaSimRunner {
 		});
 		browserSim.getBrowser().addLocationListener(new RippleInjector());
 	}
+	
 }
