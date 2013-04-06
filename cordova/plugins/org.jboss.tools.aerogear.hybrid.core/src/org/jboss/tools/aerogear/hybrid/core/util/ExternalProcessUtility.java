@@ -43,13 +43,11 @@ public class ExternalProcessUtility {
 		DebugPlugin.getDefault().getLaunchManager().addLaunch(launch);
 		
 		
-		if(outStreamListener == null && HybridCore.DEBUG){
-			outStreamListener = new TracingStreamListener();
+		if(HybridCore.DEBUG){
+			outStreamListener = new TracingStreamListener(outStreamListener);
+			errorStreamListener = new TracingStreamListener(errorStreamListener);
 		}
-		if(errorStreamListener == null && HybridCore.DEBUG){
-			errorStreamListener = new TracingStreamListener();
-		}
-		
+
 		if( outStreamListener != null ){
 			prcs.getStreamsProxy().getOutputStreamMonitor().addListener(outStreamListener);
 		}
@@ -74,11 +72,9 @@ public class ExternalProcessUtility {
 		}
 		
 		//Set tracing 
-		if(outStreamListener == null && HybridCore.DEBUG){
-			outStreamListener = new TracingStreamListener();
-		}
-		if(errorStreamListener == null && HybridCore.DEBUG){
-			errorStreamListener = new TracingStreamListener();
+		if(HybridCore.DEBUG){
+			outStreamListener = new TracingStreamListener(outStreamListener);
+			errorStreamListener = new TracingStreamListener(outStreamListener);
 		}
 		
 		if( outStreamListener != null ){
