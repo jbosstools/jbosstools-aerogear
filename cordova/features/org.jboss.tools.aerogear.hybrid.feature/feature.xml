@@ -9,7 +9,7 @@
       %description
    </description>
 
-   <copyright >
+   <copyright>
       %copyright
    </copyright>
 
@@ -40,6 +40,20 @@
 
    <plugin
          id="org.jboss.tools.aerogear.hybrid.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.jboss.tools.aerogear.hybrid.android.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.jboss.tools.aerogear.hybrid.android.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

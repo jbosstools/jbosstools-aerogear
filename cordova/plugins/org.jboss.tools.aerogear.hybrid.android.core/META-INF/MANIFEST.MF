@@ -12,6 +12,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.tools.aerogear.hybrid.android.core,
- org.jboss.tools.aerogear.hybrid.android.core.adt;x-friends:="org.jboss.tools.aerogear.android.ui"
+ org.jboss.tools.aerogear.hybrid.android.core.adt;x-friends:="org.jboss.tools.aerogear.hybrid.android.ui"
 Import-Package: org.eclipse.ant.launching,
  org.eclipse.core.externaltools.internal

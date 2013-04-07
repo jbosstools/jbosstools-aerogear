@@ -16,6 +16,11 @@ Releases are yet to come! But you can get the nightly builds from staging p2 upd
 
 > http://download.jboss.org/jbosstools/builds/staging/jbosstools-aerogear_master/all/repo/
 
+### Requirements 
+* [iOS SDK](http://developer.apple.com) with the latest Xcode including the Xcode Command Line Tools
+* [Android SDK](http://developer.android.com) with the absolute latest updates for all Android SDK components. Also the SDK's _tools_ and _platform-tools_ directories on your system path
+
+
 ## Get the code
 
 The easiest way to get started with the code is to [create your own fork](http://help.github.com/forking/), 
