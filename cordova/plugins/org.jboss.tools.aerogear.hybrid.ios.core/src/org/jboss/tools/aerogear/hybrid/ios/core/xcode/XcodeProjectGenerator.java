@@ -12,17 +12,12 @@ package org.jboss.tools.aerogear.hybrid.ios.core.xcode;
 
 import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
 import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.fileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.templatedFileCopy;
 import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -53,18 +48,37 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 				prjdir.mkdirs();
 			}
 			directoryCopy(bundle.getEntry("/templates/project/__TESTING__"), toURL(new File(destinationDir, getProjectName()))  );		
-			fileCopy(bundle.getEntry("/templates/project/__TESTING__-Info.plist"), toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Info.plist")));
-			fileCopy(bundle.getEntry("/templates/project/__TESTING__-Prefix.pch"), toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Prefix.pch")));
 			directoryCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj"), toURL(new File(destinationDir, getProjectName()+".xcodeproj")));	
 			
-			processFile(new File(getDestination(),getProjectName()+".xcodeproj/project.pbxproj"), "__TESTING__", getProjectName());
-			processFile(new File(getDestination(),getProjectName()+"/Classes/AppDelegate.h"), "__TESTING__", getProjectName());
-			processFile(new File(getDestination(),getProjectName()+"/Classes/AppDelegate.m"), "__TESTING__", getProjectName());
-			processFile(new File(getDestination(),getProjectName()+"/Classes/MainViewController.h"), "__TESTING__", getProjectName());
-			processFile(new File(getDestination(),getProjectName()+"/Classes/MainViewController.m"), "__TESTING__", getProjectName());
-			processFile(new File(getDestination(),getProjectName()+"/main.m"), "__TESTING__", getProjectName());
-			processFile(new File(getDestination(),getProjectName()+"/"+getProjectName()+"-Info.plist"), "__TESTING__", getProjectName());
-			processFile(new File(getDestination(),getProjectName()+"/"+getProjectName()+"-Prefix.pch"), "__TESTING__", getProjectName());
+			HashMap<String, String > values = new HashMap<String, String>();
+			values.put("__TESTING__", getProjectName());
+			
+			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__-Info.plist"), 
+					toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Info.plist")), 
+					values);
+			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__-Prefix.pch"),
+					toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Prefix.pch")),
+					values);
+			
+			
+			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj/project.pbxproj"),
+					toURL(new File(destinationDir, getProjectName()+".xcodeproj/project.pbxproj")), 
+					values);
+			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/AppDelegate.h"),
+					toURL(new File(destinationDir, getProjectName()+"/Classes/AppDelegate.h")),
+					values);
+			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/AppDelegate.m"),
+					toURL(new File(destinationDir, getProjectName()+"/Classes/AppDelegate.m")),
+					values);
+			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/MainViewController.h"),
+					toURL(new File(destinationDir, getProjectName()+"/Classes/MainViewController.h")),
+					values);			
+			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/MainViewController.m"),
+					toURL(new File(destinationDir, getProjectName()+"/Classes/MainViewController.m")),
+					values);
+			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/main.m"),
+					toURL(new File(destinationDir, getProjectName()+"/main.m")),
+					values);
 		}
 		catch(IOException e ){
 			throw new CoreException(new Status(IStatus.ERROR,IOSCore.PLUGIN_ID,"Error generating the native iOS project", e));
@@ -96,33 +110,5 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 	protected File getPlatformWWWDirectory() {
 		return new File(getDestination(), "www");
 	}
-
-	private void processFile(File file, String replaced, String replacement ) throws IOException{
-		 	BufferedReader reader = null;
-	        StringBuffer buffer = null;
-
-	        reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-	        buffer = new StringBuffer();
-	        String line = null;
-	        while ((line = reader.readLine()) != null) {
-	            buffer.append(line).append("\n"); //$NON-NLS-1$
-	        }
-	        reader.close();
-
-	        String content = buffer.toString();
-	        content = content.replace(replaced, replacement);
-	        copyStreams(new ByteArrayInputStream(content.getBytes()), new FileOutputStream(file));
-	        
-	}
-	
-	 private void copyStreams(InputStream in, OutputStream out)
-            throws IOException {
-        int _byte = -1;
-        while ((_byte = in.read()) != -1) {
-            out.write(_byte);
-        }
-    }
-
-
 
 }

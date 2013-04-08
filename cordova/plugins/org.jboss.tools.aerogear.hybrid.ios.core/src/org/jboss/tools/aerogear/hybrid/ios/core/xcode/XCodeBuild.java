@@ -78,14 +78,14 @@ public class XCodeBuild {
 	
 	public boolean runBuild(IProject project, File xcodeProject, 
 			ILaunchConfiguration launchConfiguration,IProgressMonitor monitor)throws CoreException
- {
+	{
 		try {
 			monitor.beginTask("Running XCcode build", 10);
 			// xcodebuild -project $PROJECT_NAME.xcodeproj -arch i386 -target
 			// $PROJECT_NAME -configuration Release -sdk $SDK clean build
 			// VALID_ARCHS="i386" CONFIGURATION_BUILD_DIR="$PROJECT_PATH/build"
 			StringBuilder cmdString = new StringBuilder("xcodebuild -project ");
-			cmdString.append(project.getName()).append(".xcodeproj");
+			cmdString.append("\"").append(project.getName()).append(".xcodeproj").append("\"");
 
 			// TODO: target should come from config.xml
 			cmdString.append(" -arch i386 -target ").append(project.getName());
