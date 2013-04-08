@@ -36,7 +36,7 @@ import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
  */
 public class CordovaSimRunner {
 	private static final int PORT = 4400;
-	private static BrowserSim browserSim;
+	private static CustomBrowserSim browserSim;
 	
 	/**
 	 * @param args
@@ -101,7 +101,7 @@ public class CordovaSimRunner {
 	}
 
 	private static void createBrowserSim(final Browser browser) {
-		browserSim = new BrowserSim("about:blank");
+		browserSim = new CustomBrowserSim("about:blank");
 		browserSim.open();
 		browserSim.addSkinChangeListener(new SkinChangeListener() {
 			@Override
