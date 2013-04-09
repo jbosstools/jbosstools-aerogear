@@ -9,30 +9,28 @@
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
-import org.jboss.tools.vpe.browsersim.browser.BrowserSimBrowser;
+
+import org.eclipse.swt.widgets.Menu;
 import org.jboss.tools.vpe.browsersim.model.preferences.CommonPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
-import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
 import org.jboss.tools.vpe.browsersim.ui.ControlHandler;
 import org.jboss.tools.vpe.browsersim.ui.menu.BrowserSimMenuCreator;
+import org.jboss.tools.vpe.browsersim.ui.menu.ToolsMenuCreator;
 import org.jboss.tools.vpe.browsersim.ui.skin.BrowserSimSkin;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class CustomBrowserSim extends BrowserSim {
+public class CordovaSimMenuCreator extends BrowserSimMenuCreator {
 
-	public CustomBrowserSim(String homeUrl) {
-		super(homeUrl);
-	}
-
-	@Override
-	protected ControlHandler createControlHandler(BrowserSimBrowser browser, String homeUrl, SpecificPreferences specificPreferences) {
-		return new CordovaSimControlHandler(browser, homeUrl, specificPreferences);
+	public CordovaSimMenuCreator(BrowserSimSkin skin, CommonPreferences cp, SpecificPreferences sp, ControlHandler controlHandler, String homeUrl) {
+		super(skin, cp, sp, controlHandler, homeUrl);
 	}
 	
 	@Override
-	protected BrowserSimMenuCreator createMenuCreator(BrowserSimSkin skin, CommonPreferences commonPreferences, SpecificPreferences specificPreferences, ControlHandler controlHandler, String homeUrl) {
-		return new CordovaSimMenuCreator(skin, commonPreferences, specificPreferences, controlHandler, homeUrl);
+	protected void addToolsItems(Menu contextMenu, BrowserSimSkin skin, CommonPreferences commonPreferences, SpecificPreferences specificPreferences, String homeUrl) {
+		ToolsMenuCreator.addFireBugLiteItem(contextMenu, skin);
+		ToolsMenuCreator.addWeinreItem(contextMenu, skin, commonPreferences.getWeinreScriptUrl(), commonPreferences.getWeinreClientUrl());
+		ToolsMenuCreator.addScreenshotMenuItem(contextMenu, skin, commonPreferences.getScreenshotsFolder());
 	}
 }
