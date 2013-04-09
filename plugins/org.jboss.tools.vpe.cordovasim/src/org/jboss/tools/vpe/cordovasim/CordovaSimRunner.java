@@ -22,12 +22,14 @@ import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.ui.events.ExitListener;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeEvent;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeListener;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
 import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
+import org.jboss.tools.vpe.browsersim.ui.CocoaUIEnhancer;
 import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 
 /**
@@ -43,6 +45,9 @@ public class CordovaSimRunner {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
+		if (PlatformUtil.OS_MACOSX.equals(PlatformUtil.getOs())) {
+			CocoaUIEnhancer.initializeMacOSMenuBar(Messages.CordovaSim_CORDOVA_SIM);
+		}
 		BrowserSimArgs browserSimArgs = BrowserSimArgs.parseArgs(args);
 		BrowserSim.isStandalone = browserSimArgs.isStandalone();
 		File file = new File(browserSimArgs.getPath());
