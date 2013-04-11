@@ -78,7 +78,7 @@ public abstract class AbstractPlatformProjectGenerator {
 			}
 			directoryCopy( toURL(folder.getLocation().toFile()), toURL(targetWWW));
 			monitor.worked(10);
-			folder = getProject().getFolder("/platforms/"+getTargetShortName());
+			folder = getProject().getFolder("/"+ PlatformConstants.DIR_MERGES+"/"+getTargetShortName());
 			if (folder.exists()){
 				directoryCopy(folder.getLocationURI().toURL() , toURL(targetWWW));
 			}

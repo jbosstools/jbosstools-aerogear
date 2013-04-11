@@ -13,6 +13,7 @@ package org.jboss.tools.aerogear.hybrid.core.platform;
 public interface PlatformConstants {
 	
 	public static final String DIR_WWW = "www";
+	public static final String DIR_MERGES = "merges";
 	
 	public static final String FILE_JS_CORDOVA = "cordova.js";
 	public static final String FILE_XML_CONFIG = "config.xml";

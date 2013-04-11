@@ -11,6 +11,7 @@
 package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,25 +19,29 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.osgi.framework.Bundle;
 
 public class HybridProjectCreator {
 	
-	private static final String[] COMMON_PATHS={ ".cordova", "platforms", "plugins", "www"};
+	private static final String[] COMMON_PATHS={ ".cordova", PlatformConstants.DIR_MERGES, "plugins", PlatformConstants.DIR_WWW };
 	
 	/**
 	 * Creates a hybrid project with the given name and location. Location can be null, if location is null 
@@ -48,24 +53,39 @@ public class HybridProjectCreator {
 	 */
 	public void createProject( String projectName, URI location, IProgressMonitor monitor ) throws CoreException {
 		Assert.isNotNull(projectName, "Project name is null, can not create a project without a name");
+		if(monitor == null )
+			monitor = new NullProgressMonitor();
 		
 		IProject project = createBasicProject(projectName, location, monitor);
-		addNature(project);
-		addCommonPaths(project);
-		addPlatformPaths(project);
-		addCommonFiles(project);
-		addTemplateFiles(project);
+		addNature(project, new SubProgressMonitor(monitor, 5));
+		addCommonPaths(project, new SubProgressMonitor(monitor, 5));
+		addPlatformPaths(project, new SubProgressMonitor( monitor, 5));
+		addCommonFiles(project, new SubProgressMonitor(monitor, 5));
+		addTemplateFiles(project, new SubProgressMonitor(monitor, 5));
+		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 	}
 
 	
-	private void addTemplateFiles(IProject project) {
-		// TODO Auto-generated method stub
-		
+	private void addTemplateFiles(IProject project, IProgressMonitor monitor) throws CoreException{
+		Bundle bundle = HybridUI.getDefault().getBundle();
+	    URL source = bundle.getEntry("/templates/www");
+	    IFolder folder = project.getFolder(PlatformConstants.DIR_WWW);
+	    if (!folder.exists()){
+	    	folder.create(true, true, monitor);
+	    }
+	    
+		try {
+			FileUtils.directoryCopy(source, folder.getLocation().toFile().toURL());
+			monitor.done();
+		} catch (MalformedURLException e) {
+			throw new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error adding template files", e));
+		} catch (IOException e) {
+			throw new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error adding template files", e));
+		}
 	}
 
 
-	private void addCommonFiles(IProject project) throws CoreException{
-		copyFile(project, "/res/config.xml", "/www/config.xml");
+	private void addCommonFiles(IProject project, IProgressMonitor monitor) throws CoreException{
 		//TODO: write config.json to do .cordova directory 
 		//Should look sth like this
 //			{
@@ -74,46 +94,35 @@ public class HybridProjectCreator {
 //			} 
 		
 	}
-    private void copyFile(IProject project, String bundleLocation, String projectLocation) throws CoreException {
 
-    	Bundle bundle = HybridUI.getDefault().getBundle();
-	    URL url = bundle.getEntry(bundleLocation);
-	    IFile file = project.getFile(projectLocation);
-		if (!file.exists()) {
-			try{
-				file.create(url.openStream(), false, null);
-			}catch(IOException ios){
-				throw new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Could not create config.xml file", ios));
-			}
-		}
-	    
-	
-    }
 
-	private void addPlatformPaths(IProject project) throws CoreException{
+	private void addPlatformPaths(IProject project, IProgressMonitor monitor) throws CoreException{
 			//TODO: should we even bother to add platform paths now? 
+		monitor.done();
 	}
 
 
-	private void addCommonPaths(IProject project) throws CoreException {
+	private void addCommonPaths(IProject project, IProgressMonitor monitor) throws CoreException {
+		SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, COMMON_PATHS.length);
 		for (String path : COMMON_PATHS) {
-			createFolder(project.getFolder(path));
+			createFolder(project.getFolder(path),subMonitor);
+			subMonitor.worked(1);
 		}
-		
+		subMonitor.done();
 	}
 
-	private void createFolder(IFolder folder) throws CoreException {
+	private void createFolder(IFolder folder, IProgressMonitor monitor) throws CoreException {
 		IContainer parent = folder.getParent();
 		IFolder parentFolder = (IFolder)parent.getAdapter(IFolder.class);
 		if ( parentFolder != null ) {
-			createFolder(parentFolder);
+			createFolder(parentFolder, monitor);
 		}
 		if ( !folder.exists() ) {
-			folder.create(false, true, null);
+			folder.create(false, true, monitor);
 		}
 	}
 
-	private void addNature(IProject project) throws CoreException {
+	private void addNature(IProject project, IProgressMonitor monitor) throws CoreException {
 		IProjectDescription description = project.getDescription();
 	    String[] oldNatures = description.getNatureIds();
 	    List<String> natureList =  new ArrayList<String>();
@@ -128,7 +137,7 @@ public class HybridProjectCreator {
 		}
 		
 	    description.setNatureIds(natureList.toArray(new String[natureList.size()]));
-	    project.setDescription(description, null);
+	    project.setDescription(description, monitor);
 	    
 	}
 	
