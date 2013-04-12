@@ -71,4 +71,29 @@
 			<actionSet id="org.jboss.tools.vpe.cordovasim.eclipse.actionSet"/> 
 		</perspectiveExtension> 
 	</extension>
+ <extension
+       point="org.eclipse.debug.core.launchConfigurationTypes">
+    <launchConfigurationType
+          id="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType"
+          delegate="org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConfigurationDelegate"
+          modes="run"
+          name="CordovaSim">
+    </launchConfigurationType>
+ </extension>
+ <extension
+       point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+    <launchConfigurationTypeImage
+          configTypeID="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType"
+          icon="icons/cordovasim_16.png"
+          id="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationTypeImage">
+    </launchConfigurationTypeImage>
+ </extension>
+ <extension
+       point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+    <launchConfigurationTabGroup
+          class="org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConfigurationTabGroup"
+          id="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationTypeTabGroup"
+          type="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType">
+    </launchConfigurationTabGroup>
+ </extension>
 </plugin>

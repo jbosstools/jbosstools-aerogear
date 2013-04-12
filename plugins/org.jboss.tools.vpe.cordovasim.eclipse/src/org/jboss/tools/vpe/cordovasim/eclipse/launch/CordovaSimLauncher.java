@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.eclipse.util;
+package org.jboss.tools.vpe.cordovasim.eclipse.launch;
 
 import java.io.File;
 import java.net.URI;
