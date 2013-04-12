@@ -35,7 +35,7 @@ import org.eclipse.ui.internal.browser.WebBrowserEditor;
 import org.eclipse.ui.internal.browser.WebBrowserView;
 import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
 import org.jboss.tools.vpe.cordovasim.eclipse.editors.CordovaSimEditorLauncher;
-import org.jboss.tools.vpe.cordovasim.eclipse.util.CordovaSimLauncher;
+import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLauncher;
 
 /**
  * @author "Yahor Radtsevich (yradtsevich)"
@@ -97,7 +97,7 @@ public class RunCordovaSimAction implements IWorkbenchWindowActionDelegate {
 	 * If {@code part} is Internal Web Browser, returns opened URL. Otherwise
 	 * returns {@code null}. 
 	 */
-	private String getInternalWebBrowserUrl(IWorkbenchPart part) {
+	private static String getInternalWebBrowserUrl(IWorkbenchPart part) {
 		String url = null;
 		
 		BrowserViewer browserViewer = null;
@@ -141,7 +141,7 @@ public class RunCordovaSimAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T getFieldValue(Object object, String name) {
+	private static <T> T getFieldValue(Object object, String name) {
 		T fieldValue = null;
 		try {
 			Field field = object.getClass().getDeclaredField(name);

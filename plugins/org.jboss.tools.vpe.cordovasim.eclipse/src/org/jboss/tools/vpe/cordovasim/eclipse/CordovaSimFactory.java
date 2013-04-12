@@ -15,7 +15,7 @@ import java.net.URL;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.browser.BrowserFactory;
 import org.eclipse.ui.browser.IWebBrowser;
-import org.jboss.tools.vpe.cordovasim.eclipse.util.CordovaSimLauncher;
+import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLauncher;
 
 /**
  * Contribution to the {@code org.eclipse.ui.editors} extension point

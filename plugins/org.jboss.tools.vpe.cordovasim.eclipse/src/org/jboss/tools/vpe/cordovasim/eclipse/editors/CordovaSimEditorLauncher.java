@@ -13,7 +13,7 @@ package org.jboss.tools.vpe.cordovasim.eclipse.editors;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ui.IEditorLauncher;
-import org.jboss.tools.vpe.cordovasim.eclipse.util.CordovaSimLauncher;
+import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLauncher;
 
 /**
  * @author "Yahor Radtsevich (yradtsevich)"
