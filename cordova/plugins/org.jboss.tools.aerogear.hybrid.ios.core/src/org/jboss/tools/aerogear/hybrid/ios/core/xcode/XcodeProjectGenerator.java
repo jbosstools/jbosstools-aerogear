@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
@@ -37,47 +38,54 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 	protected void generateNativeFiles() throws CoreException{
 		
 		try{
-			//copyFilesFromBundle(IOSCore.getContext().getBundle(), "/templates/project/", getDestination());
+			HybridProject hybridProject = HybridProject.getHybridProject(getProject());
+			if(hybridProject == null ){
+				throw new CoreException(new Status(IStatus.ERROR, IOSCore.PLUGIN_ID, "Not a hybrid mobile project, can not generate files"));
+			}
+
 			generateCordovaLib();
 			
 			Bundle bundle = IOSCore.getContext().getBundle();
 			File destinationDir = getDestination();
 			
-			File prjdir = new File(destinationDir, getProjectName());
+			String name = hybridProject.getBuildArtifactAppName();
+			
+			File prjdir = new File(destinationDir, name);
 			if( !prjdir.exists() ){//create the project directory
 				prjdir.mkdirs();
 			}
-			directoryCopy(bundle.getEntry("/templates/project/__TESTING__"), toURL(new File(destinationDir, getProjectName()))  );		
-			directoryCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj"), toURL(new File(destinationDir, getProjectName()+".xcodeproj")));	
+			directoryCopy(bundle.getEntry("/templates/project/__TESTING__"), toURL(prjdir)  );		
+			directoryCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj"), toURL(new File(destinationDir, name+".xcodeproj")));	
 			
 			HashMap<String, String > values = new HashMap<String, String>();
-			values.put("__TESTING__", getProjectName());
+			values.put("__TESTING__", name);
+			values.put("--ID--", hybridProject.getAppName());
 			
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__-Info.plist"), 
-					toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Info.plist")), 
+					toURL(new File(prjdir, name+"-Info.plist")), 
 					values);
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__-Prefix.pch"),
-					toURL(new File(destinationDir, getProjectName()+"/"+getProjectName()+"-Prefix.pch")),
+					toURL(new File(prjdir, name+"-Prefix.pch")),
 					values);
 			
 			
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj/project.pbxproj"),
-					toURL(new File(destinationDir, getProjectName()+".xcodeproj/project.pbxproj")), 
+					toURL(new File(destinationDir, name+".xcodeproj/project.pbxproj")), 
 					values);
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/AppDelegate.h"),
-					toURL(new File(destinationDir, getProjectName()+"/Classes/AppDelegate.h")),
+					toURL(new File(prjdir, "/Classes/AppDelegate.h")),
 					values);
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/AppDelegate.m"),
-					toURL(new File(destinationDir, getProjectName()+"/Classes/AppDelegate.m")),
+					toURL(new File(prjdir, "/Classes/AppDelegate.m")),
 					values);
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/MainViewController.h"),
-					toURL(new File(destinationDir, getProjectName()+"/Classes/MainViewController.h")),
+					toURL(new File(prjdir, "/Classes/MainViewController.h")),
 					values);			
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/MainViewController.m"),
-					toURL(new File(destinationDir, getProjectName()+"/Classes/MainViewController.m")),
+					toURL(new File(prjdir, "/Classes/MainViewController.m")),
 					values);
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/main.m"),
-					toURL(new File(destinationDir, getProjectName()+"/main.m")),
+					toURL(new File(prjdir, "/main.m")),
 					values);
 		}
 		catch(IOException e ){

@@ -74,19 +74,18 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 	@Override
 	protected void generateNativeFiles() throws CoreException {
 		
-		
 		AndroidSDKManager sdkManager = new AndroidSDKManager();
 		
 		HybridProject hybridProject = HybridProject.getHybridProject(getProject());
+		if(hybridProject == null ){
+			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Not a hybrid mobile project, can not generate files"));
+		}
 		Widget widgetModel = hybridProject.getWidget();
 		
 		// Create the basic android project
 		String packageName = widgetModel.getId();
-		String name = widgetModel.getName();
-		if(name == null || name.isEmpty()){
-			name = getProjectName();
-		}
-		name = name.replaceAll("\\W", "_");// Both activity and project names do not allow spaces on Android.
+		String name = hybridProject.getBuildArtifactAppName();
+
 		List<AndroidSDK> targets = sdkManager.listTargets();
 		if(targets == null || targets.isEmpty() ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "No Android targets were found, Please create a target"));
@@ -109,7 +108,7 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 			fileCopy(toURL(configFile.getLocation().toFile()), 
 					toURL(new File(xmldir, PlatformConstants.FILE_XML_CONFIG)));
 			
-			updateAppName(name);
+			updateAppName(hybridProject.getAppName());
 			
 			// Copy templated files 
 			Map<String, String> values = new HashMap<String, String>();
@@ -124,8 +123,6 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 					values);
 			templatedFileCopy(getTemplateFile("/templates/project/AndroidManifest.xml"), 
 					toURL(new File(getDestination(), FILE_XML_ANDROIDMANIFEST)), values);
-			
-			
 			
 			}
 		catch(IOException e)

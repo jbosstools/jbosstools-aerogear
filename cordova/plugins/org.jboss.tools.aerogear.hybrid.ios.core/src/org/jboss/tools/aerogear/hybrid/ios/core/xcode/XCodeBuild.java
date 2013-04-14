@@ -17,12 +17,16 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
 import org.jboss.tools.aerogear.hybrid.core.util.TextDetectingStreamListener;
+import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 
 /**
  * Wrapper around the xcodebuild command line tool.
@@ -84,11 +88,17 @@ public class XCodeBuild {
 			// xcodebuild -project $PROJECT_NAME.xcodeproj -arch i386 -target
 			// $PROJECT_NAME -configuration Release -sdk $SDK clean build
 			// VALID_ARCHS="i386" CONFIGURATION_BUILD_DIR="$PROJECT_PATH/build"
-			StringBuilder cmdString = new StringBuilder("xcodebuild -project ");
-			cmdString.append("\"").append(project.getName()).append(".xcodeproj").append("\"");
+			HybridProject hybridProject = HybridProject.getHybridProject(project);
+			if(hybridProject == null ){
+				throw new CoreException(new Status(IStatus.ERROR, IOSCore.PLUGIN_ID, "Not a hybrid mobile project, can not generate files"));
+			}
 
-			// TODO: target should come from config.xml
-			cmdString.append(" -arch i386 -target ").append(project.getName());
+			String name = hybridProject.getBuildArtifactAppName();
+
+			StringBuilder cmdString = new StringBuilder("xcodebuild -project ");
+			cmdString.append("\"").append(name).append(".xcodeproj").append("\"");
+
+			cmdString.append(" -arch i386 -target ").append(name);
 			//TODO: do we need to clean every time?
 			cmdString.append(" -configuration Release -sdk iphonesimulator6.1 clean build VALID_ARCHS=\"i386\" CONFIGURATION_BUILD_DIR=");
 			cmdString.append("\"").append(getBuildDir(xcodeProject).getPath()).append("\"");

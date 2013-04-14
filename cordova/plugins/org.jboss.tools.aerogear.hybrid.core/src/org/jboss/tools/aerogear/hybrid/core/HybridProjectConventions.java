@@ -52,7 +52,7 @@ public class HybridProjectConventions {
 
 		Pattern pattern  = Pattern.compile("[_a-zA-z][\\._a-zA-Z0-9]*");
 		if( !pattern.matcher(id).matches()){
-			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Invalid id for project");
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, id + " is not a valid id project");
 		}
 		return Status.OK_STATUS;
 	}

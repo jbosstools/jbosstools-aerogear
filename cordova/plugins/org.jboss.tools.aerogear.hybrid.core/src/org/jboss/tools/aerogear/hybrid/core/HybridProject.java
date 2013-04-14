@@ -103,5 +103,35 @@ public class HybridProject {
 		}
 		return null;
 	}
+
+	/**
+	 * Returns the app name from the config.xml 
+	 * if there is not one it falls back to project name.
+	 * @return
+	 */
+	public String getAppName(){
+		String name = null;
+		try{
+			Widget widgetModel = this.getWidget();
+			name = widgetModel.getName();	
+		}catch(CoreException e){
+			//let it come from project name
+		}
+		if(name == null || name.isEmpty()){
+			name = kernelProject.getName();
+		}
+		return name;
+	}
+	
+	/**
+	 * Returns an app name that can be used to name build 
+	 * artifacts. The returned name does not contain whitespaces.
+	 * @return
+	 */
+	public String getBuildArtifactAppName(){
+		String name = getAppName();
+		name = name.replaceAll("\\W", "_");
+		return name;
+	}
 	
 }
