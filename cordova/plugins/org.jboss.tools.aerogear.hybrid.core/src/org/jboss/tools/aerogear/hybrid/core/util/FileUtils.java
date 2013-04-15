@@ -260,20 +260,10 @@ public final class FileUtils {
 	            ZipEntry zipEntry = entries.nextElement();
 	            if (zipEntry.getName().startsWith(locationInBundle)) {
 	            	
-	            	File file = null;
-	            	if(destination.isDirectory()){
-	            		if(zipEntry.isDirectory()){
-	            			file = destination;
-	            		}else{
-	            			IPath path = new Path(zipEntry.getName());
-	            			file = new File(destination, path.lastSegment());
-	            		}	            		
-	            	}else {
-	            		Assert.isTrue(!zipEntry.isDirectory(), "Can not copy a directory to a file");
-	            		file = destination;
-	            	}
-	            	
-	                if (!zipEntry.isDirectory()) {					
+	            	String path = zipEntry.getName().substring(locationInBundle.length());
+	            	File file = new File(destination, path);
+
+	            	if (!zipEntry.isDirectory()) {					
 	                	createFileFromZipFile(file, zipFile, zipEntry);
 					} else {
 						if( !file.exists() ){
@@ -288,7 +278,9 @@ public final class FileUtils {
 
 	private static void createFileFromZipFile(File file, ZipFile zipFile,
 			ZipEntry zipEntry) throws IOException {
-	
+		if(!file.getParentFile().exists() && !file.getParentFile().mkdirs()){
+			throw new IOException("Can not create parent directory for " + file.toString() );
+		}
 		file.createNewFile();
 		FileOutputStream fout = null;
 		FileChannel out = null;
