@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +26,6 @@ import javax.servlet.http.Part;
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-@MultipartConfig(maxFileSize = 1024 * 20)
 public class UploadFileServlet extends HttpServlet {
 	private static final String PHOTO_PART = "photo";
 	private static final String TEMP_PREFIX = "temp";
