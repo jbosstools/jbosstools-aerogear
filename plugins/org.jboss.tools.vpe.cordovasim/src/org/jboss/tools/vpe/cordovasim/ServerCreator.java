@@ -12,6 +12,7 @@ package org.jboss.tools.vpe.cordovasim;
 
 import java.io.IOException;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,6 +25,7 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.camera.HostFileServlet;
@@ -41,7 +43,7 @@ public class ServerCreator {
 		connector.setPort(port);
 		connector.setHost("localhost");
 		server.addConnector(connector);
-
+				
 		ServletHolder userAgentServletHolder = new ServletHolder(new StaticResponseServlet("OK"));
 		ServletHandler userAgentServletHandler = new ServletHandler();
 		userAgentServletHandler.addServletWithMapping(userAgentServletHolder, "/ripple/user-agent");
@@ -51,10 +53,11 @@ public class ServerCreator {
 		ServletHandler proxyServletHandler = new ServletHandler();
 		proxyServletHandler.addServletWithMapping(proxyServletHolder, "/ripple/xhr_proxy");
 		
+		ServletContextHandler fileUploadContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		ServletHolder uploadFileServletHolder = new ServletHolder(new UploadFileServlet());
-		ServletHandler uploadFileServletHandler = new ServletHandler();
-		uploadFileServletHandler.addServletWithMapping(uploadFileServletHolder, "/fileupload");
-		
+		uploadFileServletHolder.getRegistration().setMultipartConfig(new MultipartConfigElement(null, 1048576, 1048576, 262144));
+		fileUploadContextHandler.addServlet(uploadFileServletHolder, "/fileupload");
+
 		ServletHolder hostFileServletHolder = new ServletHolder(new HostFileServlet());
 		ServletHandler hostFileServletHandler = new ServletHandler();
 		hostFileServletHandler.addServletWithMapping(hostFileServletHolder, "/temp-photo/*");
@@ -79,7 +82,7 @@ public class ServerCreator {
 				wwwContextHandler,
 				proxyServletHandler,
 				rippleContextHandler,
-				uploadFileServletHandler,
+				fileUploadContextHandler,
 				hostFileServletHandler,
 				new DefaultHandler(),
 			});
@@ -100,7 +103,6 @@ public class ServerCreator {
 			}
 		});
 		server.setHandler(rewriteHandler);
-		
 		return server;
 	}
 }
