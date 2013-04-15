@@ -7,7 +7,7 @@ Bundle-Activator: org.jboss.tools.aerogear.android.ui.AndroidUI
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.debug.ui,
+ org.eclipse.debug.ui;bundle-version="[3.8.0,4.0.0)",
  org.jboss.tools.aerogear.hybrid.android.core;bundle-version="1.0.0",
  org.jboss.tools.aerogear.hybrid.core;bundle-version="1.0.0",
  org.jboss.tools.aerogear.hybrid.ui;bundle-version="1.0.0"
