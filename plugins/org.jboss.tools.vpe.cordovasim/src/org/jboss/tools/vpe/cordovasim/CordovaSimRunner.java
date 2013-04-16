@@ -21,6 +21,8 @@ import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.ui.events.ExitListener;
@@ -61,6 +63,12 @@ public class CordovaSimRunner {
 			shell.setLayout(new FillLayout());
 			final Browser browser = new Browser(shell, SWT.WEBKIT);
 			browser.setUrl("http://localhost:" + PORT + "/" + file.getName() + "?enableripple=true");
+			shell.addListener(SWT.Close, new Listener() {
+				@Override
+				public void handleEvent(Event event) {
+					browserSim.getBrowser().getShell().close();
+				}
+			});
 			browser.addOpenWindowListener(new OpenWindowListener() {
 				private Browser oldBrowser;
 
@@ -70,8 +78,7 @@ public class CordovaSimRunner {
 							|| browserSim.getBrowser().getShell().isDisposed()) {
 						createBrowserSim(browser);
 					} else if (oldBrowser == browserSim.getBrowser()) {
-						browserSim.getBrowser().getShell().dispose();
-						createBrowserSim(browser);
+						browserSim.reinitSkin();
 						browserSim.getBrowser().addLocationListener(new RippleInjector());
 					} else if (oldBrowser != browserSim.getBrowser()) {
 						browserSim.getBrowser().addLocationListener(new RippleInjector());
