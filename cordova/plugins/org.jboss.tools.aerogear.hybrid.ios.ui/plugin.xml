@@ -10,14 +10,20 @@
             modes="run">
          <contextualLaunch>
 			<enablement>
-         		<and>
-         		<with variable="selection">
+                <with variable="selection">
 					<count value="1"/>
-				</with>
+                <iterate>
+				<and>
 				<systemTest
           			property="os.name"
           			value="Mac OS X" />
+          		 <adapt  type="org.eclipse.core.resources.IResource">
+          		 <test property="org.eclipse.core.resources.projectNature" 
+                    value="org.jboss.tools.earogear.hybrid.core.HybridAppNature" /> 
+                 </adapt>   	
 				</and>
+				</iterate>
+         	    </with>
          	</enablement>
          </contextualLaunch>
       </shortcut>

@@ -13,6 +13,12 @@
        
                 <with variable="selection">
                     <count value="1"/>
+                    <iterate>
+                        <adapt  type="org.eclipse.core.resources.IResource">
+                        <test property="org.eclipse.core.resources.projectNature" 
+                           value="org.jboss.tools.earogear.hybrid.core.HybridAppNature" />    
+                        </adapt> 
+                    </iterate>
                 </with>
             </enablement>
          </contextualLaunch>
