@@ -25,5 +25,7 @@
 		<module>org.jboss.tools.vpe.browsersim.eclipse</module>
 		<module>org.jboss.tools.vpe.browsersim.browser</module>
 		<module>org.jboss.tools.vpe.browsersim</module>
+        <module>org.jboss.tools.vpe.cordovasim</module>
+		<module>org.jboss.tools.vpe.cordovasim.eclipse</module>
 	</modules>
 </project>
