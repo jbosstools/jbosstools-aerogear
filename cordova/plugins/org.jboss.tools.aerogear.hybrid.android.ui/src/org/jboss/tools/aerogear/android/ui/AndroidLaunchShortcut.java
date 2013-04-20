@@ -12,18 +12,10 @@ package org.jboss.tools.aerogear.android.ui;
 
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.ui.ILaunchShortcut;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.IEditorPart;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidLaunchConstants;
-import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDK;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDKManager;
 import org.jboss.tools.aerogear.hybrid.ui.launch.HybridProjectLaunchShortcut;

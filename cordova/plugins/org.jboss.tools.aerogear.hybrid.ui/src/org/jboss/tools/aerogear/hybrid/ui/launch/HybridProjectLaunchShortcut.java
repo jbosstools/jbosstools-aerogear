@@ -131,7 +131,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	/**
 	 * Return the launchConfiguratonType ID. Which will be used to 
 	 * create a launch configuration.
-	 * @return
+	 * @return launchConfig id
 	 */
 	protected abstract String getLaunchConfigurationTypeID();
 

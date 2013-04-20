@@ -24,5 +24,13 @@
          </contextualLaunch>
       </shortcut>
    </extension>
-
+ <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.jboss.tools.aerogear.android.ui.AndroidLaunchConfigurationTabGroup"
+            description="Android Emulator"
+            id="org.jboss.tools.aerogear.hybrid.android.ui.AndroildLaunchConfigurationTabGroup"
+            type="org.jboss.tools.aerogear.hybrid.android.core.AndroidLaunchConfigurationType">
+      </launchConfigurationTabGroup>
+   </extension>
 </plugin>

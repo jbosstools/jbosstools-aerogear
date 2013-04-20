@@ -20,7 +20,6 @@ import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLau
 
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -48,6 +47,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeBuild;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeSDK;
 
@@ -75,8 +75,11 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		}
 		@Override
 		public String getText(Object element) {
-			IProject prj = (IProject) element;
-			return prj.getName();
+			if (element instanceof HybridProject ){
+				HybridProject hp = (HybridProject) element;
+				return hp.getProject().getName();
+			}
+			return null;
 		}
 		
 		@Override
@@ -119,8 +122,8 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), new HybridProjectLabelProvider());
 				es.setElements(HybridCore.getHybridProjects().toArray());
 				if (es.open() == Window.OK) {			
-					IProject project = (IProject) es.getFirstResult();
-					textProject.setText(project.getName());
+					HybridProject project = (HybridProject) es.getFirstResult();
+					textProject.setText(project.getProject().getName());
 				}		
 			}
 		});
@@ -187,8 +190,7 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		try {
 			projectName = configuration.getAttribute(ATTR_BUILD_SCOPE, (String)null);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// not handled
 		}
 		if(projectName != null){
 			textProject.setText(projectName);
@@ -213,8 +215,7 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 			comboDeviceFamily.select(index);
 			
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
 		
 		try{

@@ -13,3 +13,5 @@ Require-Bundle: org.eclipse.ui,
  org.jboss.tools.aerogear.hybrid.ui;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.ui.dialogs,
+ org.eclipse.ui.ide

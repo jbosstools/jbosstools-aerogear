@@ -40,17 +40,13 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		HybridProject project = HybridProject.getHybridProject(getProject(configuration));
 		Widget widget = project.getWidget();
 		String packageName = widget.getId();
-		String name = widget.getName();
-		name = name.replaceAll("\\W", "_");
+		String name = project.getBuildArtifactAppName();
 
-		//TODO: find a better way to get apk name
-		// this is too much guessing and it should either be a launch config prop
-		// or should use config.xml
-		name = name.replaceAll("\\W", "_");
 		sdk.installApk(new File(buildDir,name+"-debug.apk" ), false);
 		
 		sdk.startApp(packageName+"/."+name);
-		
+		String logcatFilter = configuration.getAttribute(AndroidLaunchConstants.ATTR_LOGCAT_FILTER, "");
+		sdk.logcat(logcatFilter,null,null );
 		
 	}
 
@@ -73,7 +69,6 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		if(monitor.isCanceled() ){
 			return false;
 		}
-		SubProgressMonitor buildMonitor = new SubProgressMonitor(monitor,1);
 		AndroidSDKManager sdkManager = new AndroidSDKManager();
 		buildDir = sdkManager.buildProject(projectDirectory);
 		monitor.done();
@@ -101,8 +96,12 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			if (avds == null || avds.isEmpty()){
 				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "No Android AVDs are available"));
 			}
+			String avdName = configuration.getAttribute(AndroidLaunchConstants.ATTR_AVD_NAME, (String)null);
+			if(avdName == null || !avds.contains(avdName)){
+				avdName = avds.get(0);
+			}
 			//start the emulator.
-			sdk.startEmulator(avds.get(0));
+			sdk.startEmulator(avdName);
 			// wait for it to come online 
 			sdk.waitForDevice();
 		}
@@ -134,6 +133,4 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		}
 		return null;
 	}
-
-
 }

@@ -268,6 +268,15 @@ public class AndroidSDKManager {
 		
 	}
 	
+	public void logcat(String filter, IStreamListener outListener, IStreamListener errorListener) throws CoreException{
+		ExternalProcessUtility processUtility = new ExternalProcessUtility();
+		StringBuilder command = new StringBuilder("adb logcat ");
+		if(filter !=null && !filter.isEmpty()){
+			command.append(filter);
+		}
+		processUtility.execAsync(command.toString(), null, outListener, errorListener, null);
+	}
+	
 	
 	public void startEmulator(String avd) throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
