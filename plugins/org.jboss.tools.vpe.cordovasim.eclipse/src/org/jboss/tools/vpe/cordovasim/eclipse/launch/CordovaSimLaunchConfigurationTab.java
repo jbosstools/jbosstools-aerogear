@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.internal.ui.SWTFactory;
@@ -27,7 +26,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,7 +37,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
@@ -110,9 +107,9 @@ public class CordovaSimLaunchConfigurationTab extends
 	
 	protected void handleRootFolderButtonSelected() {
 		String rootFolderString = rootFolderText.getText();
-		IContainer rootFolder = getContainer(rootFolderString);
+		IContainer rootFolder = CordovaSimLaunchParametersUtil.getRootFolder(rootFolderString);      
 		String startPageString = startPageText.getText();
-		IResource startPage = getResource(rootFolder, startPageString);
+		IResource startPage = CordovaSimLaunchParametersUtil.getStartPage(rootFolder, startPageString);
 
 		ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(),
 				rootFolder,
@@ -128,7 +125,7 @@ public class CordovaSimLaunchConfigurationTab extends
 			IPath path = (IPath)results[0];
 			String containerName = path.toString();
 			rootFolderText.setText(containerName);
-			IContainer newRootFolder = getContainer(containerName);
+			IContainer newRootFolder = CordovaSimLaunchParametersUtil.getRootFolder(containerName);
 			IPath newStartPage = getRelativePath(newRootFolder, startPage);
 			startPageText.setText(newStartPage != null ? newStartPage.toString() : "");
 		}
@@ -136,13 +133,13 @@ public class CordovaSimLaunchConfigurationTab extends
 	
 	protected void handleStartPageButtonSelected() {
 		String rootFolderString = rootFolderText.getText();
-		IContainer rootFolder = getContainer(rootFolderString);
+		IContainer rootFolder = CordovaSimLaunchParametersUtil.getRootFolder(rootFolderString);
 		if (rootFolder == null) {
 			rootFolder = ResourcesPlugin.getWorkspace().getRoot();
 		}
 		
 		String startPageString = startPageText.getText();
-		IResource startPage = getResource(rootFolder, startPageString);
+		IResource startPage = CordovaSimLaunchParametersUtil.getStartPage(rootFolder, startPageString);
 		
 		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
 				getShell(), new WorkbenchLabelProvider(), new WorkbenchContentProvider());
@@ -170,22 +167,6 @@ public class CordovaSimLaunchConfigurationTab extends
 			IPath newStartPage = getRelativePath(rootFolder, newStartPageFile);
 			startPageText.setText(newStartPage != null ? newStartPage.toString() : "");
 		}
-	}
-	
-	private IResource getResource(IContainer container, String path) {
-		if (container != null && path != null && path.length() > 0) {
-			return container.findMember(new Path(path));
-		}
-		return null;
-	}
-	
-	private IContainer getContainer(String containerPath) {
-		IContainer root = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = getResource(root, containerPath);
-		if (resource instanceof IContainer) {
-			return (IContainer) resource;
-		}
-		return null;
 	}
 
 	/**
@@ -277,28 +258,30 @@ public class CordovaSimLaunchConfigurationTab extends
 		setErrorMessage(null);
 		
 		String rootFolderString = rootFolderText.getText();
-		IContainer rootFolder = getContainer(rootFolderString);
-		if (rootFolder == null || !rootFolder.exists()) {
-			setErrorMessage("Root Folder path is not valid");
+		IContainer rootFolder;
+		try {
+			rootFolder = CordovaSimLaunchParametersUtil.validateAndGetRootFolder(rootFolderString);
+		} catch (CoreException e) {
+			setErrorMessage(e.getStatus().getMessage());
 			return false;
 		}
 		
 		String startPageString = startPageText.getText();
-		IResource startPage = getResource(rootFolder, startPageString);
-		if (startPage == null || !startPage.exists()) {
-			setErrorMessage("Start Page path is not valid");
+		IResource startPage;
+		try {
+			startPage = CordovaSimLaunchParametersUtil
+					.validateAndGetStartPage(rootFolder, startPageString);
+		} catch (CoreException e) {
+			setErrorMessage(e.getStatus().getMessage());
 			return false;
 		}
 		
 		String portString = portText.getText();
+		int port;
 		try {
-			int port = Integer.parseInt(portString);//TODO: use an existing validator
-			if (port < 1 || 65535 < port) {
-				setErrorMessage("Port is invalid");
-				return false;
-			}
-		} catch (NumberFormatException e) {
-			setErrorMessage("Port is invalid");
+			port = CordovaSimLaunchParametersUtil.validateAndGetPortNumber(portString);
+		} catch (CoreException e) {
+			setErrorMessage(e.getStatus().getMessage());
 			return false;
 		}
 		
