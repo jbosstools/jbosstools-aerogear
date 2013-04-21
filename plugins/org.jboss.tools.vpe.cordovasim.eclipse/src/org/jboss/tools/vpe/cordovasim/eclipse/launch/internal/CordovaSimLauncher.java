@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.eclipse.launch;
+package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
 
 import java.io.File;
 import java.net.URI;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
@@ -53,22 +54,20 @@ public class CordovaSimLauncher {
 	//if you change this parameter, see also @org.jbosstools.browsersim.ui.BrowserSim
 	private static final String NOT_STANDALONE = BrowserSimLauncher.NOT_STANDALONE;	
 
-	public static void launchCordovaSim(String initialUrl) {
+	public static void launchCordovaSim(String rootFolder, String startPage, Integer port) {
 		List<String> parameters = new ArrayList<String>();
 		parameters.add(NOT_STANDALONE);
 
-		File file = null;
-		if (initialUrl != null) {
-			try {
-				file = new File(new URI(initialUrl));
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			}
-			if (file != null) {
-				parameters.add(file.toString());
-			}
+		if (rootFolder != null) {
+			IContainer rootFolderContainer = CordovaSimLaunchParametersUtil.getRootFolder(rootFolder);
+			parameters.add(rootFolderContainer.getLocation().toString());
+		}
+		if (startPage != null) {
+			parameters.add(startPage);
+		}
+		if (port != null) {
+			parameters.add("-port");
+			parameters.add(String.valueOf(port));
 		}
 
 		ExternalProcessLauncher.launchAsExternalProcess(REQUIRED_BUNDLES, OPTIONAL_BUNDLES,
