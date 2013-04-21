@@ -5,7 +5,7 @@
        point="org.eclipse.debug.core.launchConfigurationTypes">
     <launchConfigurationType
           id="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType"
-          delegate="org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConfigurationDelegate"
+          delegate="org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchConfigurationDelegate"
           modes="run"
           name="CordovaSim">
     </launchConfigurationType>
@@ -21,7 +21,7 @@
  <extension
        point="org.eclipse.debug.ui.launchConfigurationTabGroups">
     <launchConfigurationTabGroup
-          class="org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConfigurationTabGroup"
+          class="org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchConfigurationTabGroup"
           id="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationTypeTabGroup"
           type="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType">
     </launchConfigurationTabGroup>

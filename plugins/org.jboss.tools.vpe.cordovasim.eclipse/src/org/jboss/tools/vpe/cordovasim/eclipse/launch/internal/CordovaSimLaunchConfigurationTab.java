@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.eclipse.launch;
+package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -305,7 +305,7 @@ public class CordovaSimLaunchConfigurationTab extends
 class CordovaSimWorkingDirectoryBlock extends WorkingDirectoryBlock {
 
 	protected CordovaSimWorkingDirectoryBlock() {
-		super("org.jboss.tools.vpe.cordovasim.eclipse.launch.rootFolder");
+		super("org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.rootFolder");
 	}
 
 	@Override
