@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="org.eclipse.debug.ui.launchShortcuts">
+   <extension point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
-            class="org.jboss.tools.aerogear.android.ui.AndroidLaunchShortcut"
-            id="org.jboss.tools.aerogear.android.ui.launch"
-            label="Run on Android"
+            class="org.jboss.tools.aerogear.android.ui.AndroidEmulatorLaunchShortcut"
+            id="org.jboss.tools.aerogear.android.ui.launch.emulator"
+            label="Run on Android Emulator"
             modes="run">
         <contextualLaunch>
             <enablement>
-       
+                <with variable="selection">
+                    <count value="1"/>
+                    <iterate>
+                        <adapt  type="org.eclipse.core.resources.IResource">
+                        <test property="org.eclipse.core.resources.projectNature" 
+                           value="org.jboss.tools.earogear.hybrid.core.HybridAppNature" />    
+                        </adapt> 
+                    </iterate>
+                </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+      <shortcut
+            class="org.jboss.tools.aerogear.android.ui.AndroidDeviceLaunchShortcut"
+            id="org.jboss.tools.aerogear.android.ui.launch.device"
+            label="Run on Android Device"
+            modes="run">
+        <contextualLaunch>
+            <enablement>
                 <with variable="selection">
                     <count value="1"/>
                     <iterate>

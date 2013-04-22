@@ -72,6 +72,8 @@ public class AndroidSDKManager {
 					if(values.length == 2){
 						AndroidDevice device = new AndroidDevice();
 						device.setSerialNumber(values[0].trim());
+						device.setEmulator(values[0].contains("emulator"));
+						
 						if("device".equals(values[1].trim())){
 							device.setState(AndroidDevice.STATE_DEVICE);
 						}
@@ -236,14 +238,11 @@ public class AndroidSDKManager {
 	}
 	
 	
-	public void installApk(File apkFile, boolean useDevice) throws CoreException{
+	public void installApk(File apkFile, String serialNumber) throws CoreException{
+		Assert.isNotNull(serialNumber);
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		StringBuilder command = new StringBuilder("adb");
-		if(useDevice ){
-			command.append(" -d");
-		}else{
-			command.append(" -e");
-		}
+		command.append(" -s ").append(serialNumber);
 		command.append(" install");
 		command.append(" -r ");
 		command.append("\"").append(apkFile.getPath()).append("\"");
@@ -254,23 +253,40 @@ public class AndroidSDKManager {
 		}
 	}
 	
-	public void waitForDevice() throws CoreException{
-		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		processUtility.execSync("adb wait-for-device", null, null, null, new NullProgressMonitor(), null, null);
+	public void waitForEmulator() throws CoreException{
+		while(true){
+			List<AndroidDevice> devices = this.listDevices();
+			if(devices != null ){
+				for (AndroidDevice androidDevice : devices) {
+					if(androidDevice.isEmulator() && androidDevice.getState() == AndroidDevice.STATE_DEVICE)
+						return;
+				}
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	public void startApp(String component) throws CoreException{
+	public void startApp(String component, String serialNumber) throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		StringBuilder command = new StringBuilder("adb shell am start");
+		StringBuilder command = new StringBuilder("adb");
+		command.append(" -s ").append(serialNumber);
+		command.append(" shell am start");
 		command.append(" -n ");
 		command.append(component);
 		processUtility.execSync(command.toString(), null, null, null,new NullProgressMonitor(), null, null);
 		
 	}
 	
-	public void logcat(String filter, IStreamListener outListener, IStreamListener errorListener) throws CoreException{
+	public void logcat(String filter, IStreamListener outListener, IStreamListener errorListener, String serialNumber) throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		StringBuilder command = new StringBuilder("adb logcat ");
+		StringBuilder command = new StringBuilder("adb");
+		command.append(" -s ").append(serialNumber);
+		command.append(" logcat");
 		if(filter !=null && !filter.isEmpty()){
 			command.append(filter);
 		}

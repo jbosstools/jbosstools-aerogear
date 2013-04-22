@@ -31,6 +31,7 @@ import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 
 	private File buildDir;
+	private AndroidDevice device;
 	
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
@@ -42,11 +43,11 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		String packageName = widget.getId();
 		String name = project.getBuildArtifactAppName();
 
-		sdk.installApk(new File(buildDir,name+"-debug.apk" ), false);
+		sdk.installApk(new File(buildDir,name+"-debug.apk" ), device.getSerialNumber());
 		
-		sdk.startApp(packageName+"/."+name);
+		sdk.startApp(packageName+"/."+name, device.getSerialNumber());
 		String logcatFilter = configuration.getAttribute(AndroidLaunchConstants.ATTR_LOGCAT_FILTER, "");
-		sdk.logcat(logcatFilter,null,null );
+		sdk.logcat(logcatFilter,null,null, device.getSerialNumber());
 		
 	}
 
@@ -88,9 +89,33 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		// Start ADB Server
 		AndroidSDKManager sdk = new AndroidSDKManager();
 		sdk.startADBServer();
-		// Do we have any devices to run on?	
-		if ( !deviceReady() ){
-			// No devices lets start an emulator.
+		
+		String  serial = configuration.getAttribute(AndroidLaunchConstants.ATTR_DEVICE_SERIAL, (String)null);
+		// There is a serial run a specific device
+		if (serial != null ){
+			List<AndroidDevice> devices = sdk.listDevices();
+			for (AndroidDevice androidDevice : devices) {
+				if(serial.equals(androidDevice.getSerialNumber()))
+				{
+					this.device = androidDevice;
+					break;
+				}
+			}
+			if(this.device != null )
+			{
+				monitor.done();
+				return true;
+			}else{
+				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Device with serial number "+ 
+			serial +" is not available"));
+			}
+		}
+		
+		//No serial fall back and run emulator
+		AndroidDevice emulator = getEmulator();
+		// Do we have any emulators to run on?
+		if ( emulator == null ){
+			// No emulators lets start an emulator.
 			// Check if we have an AVD
 			List<String> avds = sdk.listAVDs();
 			if (avds == null || avds.isEmpty()){
@@ -103,22 +128,23 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			//start the emulator.
 			sdk.startEmulator(avdName);
 			// wait for it to come online 
-			sdk.waitForDevice();
+			sdk.waitForEmulator();
 		}
+		this.device = getEmulator();
 		monitor.done();
 		return true;
 	}
 	
-	private boolean deviceReady() throws CoreException{
+	private AndroidDevice getEmulator() throws CoreException{
 		AndroidSDKManager sdk = new AndroidSDKManager();
 		List<AndroidDevice> devices = sdk.listDevices();
 		if(devices == null ) 
-			return false;
+			return null;
 		for (AndroidDevice androidDevice : devices) {
-			if(androidDevice.getState() == AndroidDevice.STATE_DEVICE )
-				return true;
+			if ( androidDevice.isEmulator() && androidDevice.getState() == AndroidDevice.STATE_DEVICE )
+				return androidDevice;
 		}
-		return false;
+		return null;
 	}
 	
 	//TODO: duplicated form IOSLaunchDelegate... move both to a common utility.

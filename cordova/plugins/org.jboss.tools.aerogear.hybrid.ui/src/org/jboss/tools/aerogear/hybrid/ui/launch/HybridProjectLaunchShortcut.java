@@ -12,6 +12,7 @@ package org.jboss.tools.aerogear.hybrid.ui.launch;
 
 import java.io.IOException;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -28,9 +29,11 @@ import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.statushandlers.IStatusAdapterConstants;
 import org.eclipse.ui.statushandlers.StatusAdapter;
 import org.eclipse.ui.statushandlers.StatusManager;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 /**
@@ -43,36 +46,52 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 
 	@Override
 	public void launch(ISelection selection, String mode) {
-		
-		try{
-			validateBuildReady();
 			IStructuredSelection ssel = (IStructuredSelection) selection;
 			Object selected = ssel.getFirstElement();
 			IResource res = (IResource) selected;
-			IProject project = res.getProject();
-			
-		    DebugUITools.launch(findOrCreateLaunchConfiguration(project), mode);
-
-			
-			
-		} catch (CoreException e) {
-			StatusManager manager = StatusManager.getManager();
-			if ( e.getCause() instanceof IOException ){
-				Status status = new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Unable to complete the build for target plarform",e.getCause());
-				StatusAdapter adapter = new StatusAdapter(status);
-				adapter.setProperty(IStatusAdapterConstants.TITLE_PROPERTY, "Mobile Hybrid Project Build Error");
-				manager.handle(adapter, StatusManager.SHOW );
-			}else{
-				manager.handle(e,HybridUI.PLUGIN_ID);
-			}
-		}
+			launch(res.getProject());
 	}
 
 	@Override
 	public void launch(IEditorPart editor, String mode) {
-		// TODO Auto-generated method stub
-		
+		IFile file = ResourceUtil.getFile(editor.getEditorInput());
+		if (file != null) {
+			IProject project = file.getProject();
+			launch(project);
+		}
 	}
+
+	private void launch(IProject project) {
+		try {
+			
+			validateBuildToolsReady();
+			if (!shouldProceedWithLaunch(HybridProject
+					.getHybridProject(project)))
+				return;
+			
+			ILaunchConfiguration launchConfig = findOrCreateLaunchConfiguration(project);
+			ILaunchConfigurationWorkingCopy wc = launchConfig.getWorkingCopy();
+			updateLaunchConfiguration(wc);
+			launchConfig = wc.doSave();
+			DebugUITools.launch(launchConfig, "run");
+			
+		} catch (CoreException e) {
+			StatusManager manager = StatusManager.getManager();
+			if (e.getCause() instanceof IOException) {
+				Status status = new Status(IStatus.ERROR, HybridUI.PLUGIN_ID,
+						"Unable to complete the build for target plarform",
+						e.getCause());
+				StatusAdapter adapter = new StatusAdapter(status);
+				adapter.setProperty(IStatusAdapterConstants.TITLE_PROPERTY,
+						"Mobile Hybrid Project Build Error");
+				manager.handle(adapter, StatusManager.SHOW);
+			} else {
+				manager.handle(e, HybridUI.PLUGIN_ID);
+			}
+		}
+	}
+	
+	
 	
 	/**
 	 * Creates a new lauch configuration for the given project if one does not exists.
@@ -82,7 +101,6 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	 * @throws CoreException
 	 */
 	private ILaunchConfiguration findOrCreateLaunchConfiguration(IProject project) throws CoreException{
-
 		ILaunchManager lm = getLaunchManager();
 		ILaunchConfigurationType configType = getLaunchConfigurationType();
 		ILaunchConfiguration[] confs = lm.getLaunchConfigurations(configType);
@@ -109,7 +127,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	}
 	
 	
-	private  ILaunchConfigurationType getLaunchConfigurationType(){
+	private ILaunchConfigurationType getLaunchConfigurationType(){
 		ILaunchManager lm = DebugPlugin.getDefault().getLaunchManager();
 		String launchTypeID = getLaunchConfigurationTypeID();
 		Assert.isNotNull(launchTypeID);
@@ -119,14 +137,14 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	
 	/**
 	 * Invoked before commencing with the launch to give platfom a chance
-	 *  to check if the prerequisites for the build are in place. 
+	 *  to check if the prerequisites for a build are in place. 
 	 *  Implementors should throw a {@link CoreException} with a 
 	 *  Status message.
 	 *  
 	 * @throws CoreException if build tools are not working properly or 
 	 * 	does not exist
 	 */
-	protected abstract void validateBuildReady() throws CoreException;
+	protected abstract void validateBuildToolsReady() throws CoreException;
 	
 	/**
 	 * Return the launchConfiguratonType ID. Which will be used to 
@@ -134,5 +152,24 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	 * @return launchConfig id
 	 */
 	protected abstract String getLaunchConfigurationTypeID();
+	/**
+	 * Last chance for implementors to abort the launch. Default 
+	 * implementation checks the validity of the project.
+	 * 
+	 * @param project
+	 * @return
+	 */
+	protected boolean shouldProceedWithLaunch(HybridProject project){
+		return project != null;
+	}
+	
+	/**
+	 * Update the launch configuration with platform implementation specific values.
+	 * 
+	 * @param wc
+	 */
+	protected void updateLaunchConfiguration(ILaunchConfigurationWorkingCopy wc){
+		
+	}
 
 }

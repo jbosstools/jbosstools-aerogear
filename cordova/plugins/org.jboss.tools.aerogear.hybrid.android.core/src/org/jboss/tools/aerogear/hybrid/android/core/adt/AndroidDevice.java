@@ -35,6 +35,7 @@ public class AndroidDevice {
 	
 	private String serialNumber;
 	private int state;
+	private boolean emulator;
 	
 	public String getSerialNumber() {
 		return serialNumber;
@@ -42,13 +43,17 @@ public class AndroidDevice {
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
 	}
-	
 	public int getState() {
 		return state;
 	}
 	public void setState(int state) {
 		this.state = state;
 	}
-	
+	public boolean isEmulator() {
+		return emulator;
+	}
+	public void setEmulator(boolean emulator) {
+		this.emulator = emulator;
+	}
 
 }

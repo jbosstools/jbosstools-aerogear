@@ -22,6 +22,11 @@ public interface AndroidLaunchConstants {
 	public static final String ATTR_AVD_NAME = AndroidCore.PLUGIN_ID +".ATTR_AVD_NAME";
 	
 	/**
+	 * Attribute for the serial name for the device to be run 
+	 */
+	public static final String ATTR_DEVICE_SERIAL = AndroidCore.PLUGIN_ID+".ATTR_DEVICE_SERIAL";
+	
+	/**
 	 * Attribute for filter passed to the logcat during launch
 	 */
 	public static final String ATTR_LOGCAT_FILTER =  AndroidCore.PLUGIN_ID + ".ATTR_LOGCAT_FILTER";

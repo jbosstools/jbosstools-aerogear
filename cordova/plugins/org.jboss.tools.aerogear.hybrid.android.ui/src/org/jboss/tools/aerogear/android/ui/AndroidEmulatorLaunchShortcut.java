@@ -20,10 +20,10 @@ import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDK;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDKManager;
 import org.jboss.tools.aerogear.hybrid.ui.launch.HybridProjectLaunchShortcut;
 
-public class AndroidLaunchShortcut extends HybridProjectLaunchShortcut {
+public class AndroidEmulatorLaunchShortcut extends HybridProjectLaunchShortcut {
 
 	@Override
-	protected void validateBuildReady() throws CoreException {
+	protected void validateBuildToolsReady() throws CoreException {
 		AndroidSDKManager sdkManager = new AndroidSDKManager();
 		List<AndroidSDK> targets = sdkManager.listTargets();
 		if(targets == null || targets.isEmpty() ){

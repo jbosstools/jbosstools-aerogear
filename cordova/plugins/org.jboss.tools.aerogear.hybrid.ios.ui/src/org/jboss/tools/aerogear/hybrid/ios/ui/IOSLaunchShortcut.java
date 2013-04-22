@@ -24,7 +24,7 @@ import org.jboss.tools.aerogear.hybrid.ui.launch.HybridProjectLaunchShortcut;
 public class IOSLaunchShortcut extends HybridProjectLaunchShortcut{
 
 	@Override
-	protected void validateBuildReady() throws CoreException {
+	protected void validateBuildToolsReady() throws CoreException {
 		XCodeBuild xcode = new XCodeBuild();
 		xcode.version();
 	}
