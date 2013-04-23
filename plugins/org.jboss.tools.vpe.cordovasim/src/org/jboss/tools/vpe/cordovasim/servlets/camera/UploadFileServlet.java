@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.jetty.servlets.camera;
+package org.jboss.tools.vpe.cordovasim.servlets.camera;
 
 import java.io.File;
 import java.io.FileOutputStream;

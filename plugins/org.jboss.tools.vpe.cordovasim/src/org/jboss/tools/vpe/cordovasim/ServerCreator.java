@@ -28,8 +28,9 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.servlets.camera.HostFileServlet;
-import org.eclipse.jetty.servlets.camera.UploadFileServlet;
+import org.jboss.tools.vpe.cordovasim.servlets.camera.FormatDataServlet;
+import org.jboss.tools.vpe.cordovasim.servlets.camera.HostFileServlet;
+import org.jboss.tools.vpe.cordovasim.servlets.camera.UploadFileServlet;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -56,11 +57,15 @@ public class ServerCreator {
 		ServletContextHandler fileUploadContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		ServletHolder uploadFileServletHolder = new ServletHolder(new UploadFileServlet());
 		uploadFileServletHolder.getRegistration().setMultipartConfig(new MultipartConfigElement(null, 1048576, 1048576, 262144));
-		fileUploadContextHandler.addServlet(uploadFileServletHolder, "/fileupload");
+		fileUploadContextHandler.addServlet(uploadFileServletHolder, "/ripple/fileUpload");
 
 		ServletHolder hostFileServletHolder = new ServletHolder(new HostFileServlet());
 		ServletHandler hostFileServletHandler = new ServletHandler();
 		hostFileServletHandler.addServletWithMapping(hostFileServletHolder, "/temp-photo/*");
+		
+		ServletHolder formatDataServletHolder = new ServletHolder(new FormatDataServlet());
+		ServletHandler formatDataServletHandler = new ServletHandler();
+		formatDataServletHandler.addServletWithMapping(formatDataServletHolder, "/ripple/formatData");
 		
 		ResourceHandler rippleResourceHandler = new ResourceHandler();
 		rippleResourceHandler.setDirectoriesListed(true);
@@ -85,6 +90,7 @@ public class ServerCreator {
 				rippleContextHandler,
 				fileUploadContextHandler,
 				hostFileServletHandler,
+				formatDataServletHandler,
 				new DefaultHandler(),
 			});
 		
