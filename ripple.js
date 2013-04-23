@@ -28181,7 +28181,7 @@ module.exports = {
 
           var form = $('#photo-form');
           
-          form.attr("action", "fileupload");
+          form.attr("action", "ripple/fileUpload");
           form.attr("method", "post");
           form.attr("enctype", "multipart/form-data");
           form.attr("encoding", "multipart/form-data");
@@ -28190,10 +28190,10 @@ module.exports = {
 
           form.submit();
           $("#postiframe").load(function () {
-              iframeContents = $("#postiframe")[0].contentWindow.document.body.innerHTML;
+              var iframeContents = $("#postiframe")[0].contentWindow.document.body.innerHTML;
               $("#textarea").html(iframeContents);
-              response = $("#textarea").text();
-              imageLink= JSON.parse(response).photoUrl;
+              var response = $("#textarea").text();
+              var imageLink= JSON.parse(response).photoUrl;
               clear();
               var capture = document.createElement(getType());
               capture.style.height = "272px";
