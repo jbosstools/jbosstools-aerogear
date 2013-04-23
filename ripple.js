@@ -39412,7 +39412,25 @@ module.exports = {
             error({code: ripple('emulatorBridge').window().CaptureError.CAPTURE_NO_MEDIA_FILES });
         });
         camera.show();
-    }
+    },
+
+    getFormatData: function(success, error, args) {
+      var fileUrl = args[0]; 
+      var data = {"tempFileUrl": fileUrl};
+
+      $.ajax({
+        type: "POST",
+        url: "/ripple/formatData",
+        data: data,
+        success: function(data) {
+          success(data);
+        },
+        error: function(error) {
+          error(error);
+        },
+        dataType: "json"
+      });
+  }
 };
 
 });
