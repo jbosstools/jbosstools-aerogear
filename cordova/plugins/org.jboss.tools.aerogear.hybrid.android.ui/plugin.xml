@@ -4,6 +4,7 @@
    <extension point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             class="org.jboss.tools.aerogear.android.ui.AndroidEmulatorLaunchShortcut"
+            icon="icons/elcl16/phone_16.png"
             id="org.jboss.tools.aerogear.android.ui.launch.emulator"
             label="Run on Android Emulator"
             modes="run">
@@ -23,6 +24,7 @@
       </shortcut>
       <shortcut
             class="org.jboss.tools.aerogear.android.ui.AndroidDeviceLaunchShortcut"
+            icon="icons/elcl16/phone_16.png"
             id="org.jboss.tools.aerogear.android.ui.launch.device"
             label="Run on Android Device"
             modes="run">
