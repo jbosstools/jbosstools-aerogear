@@ -33,6 +33,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
@@ -51,7 +54,7 @@ public class HybridProjectCreator {
 	 * @param monitor
 	 * @throws CoreException
 	 */
-	public void createProject( String projectName, URI location, IProgressMonitor monitor ) throws CoreException {
+	public void createProject( String projectName, URI location, String appName, String appID, IProgressMonitor monitor ) throws CoreException {
 		Assert.isNotNull(projectName, "Project name is null, can not create a project without a name");
 		if(monitor == null )
 			monitor = new NullProgressMonitor();
@@ -63,9 +66,25 @@ public class HybridProjectCreator {
 		addCommonFiles(project, new SubProgressMonitor(monitor, 5));
 		addTemplateFiles(project, new SubProgressMonitor(monitor, 5));
 		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		updateConfig(project, appName, appID, new SubProgressMonitor(monitor, 5) );
+		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 	}
 
 	
+	private void updateConfig(IProject project, String appName, String appID, IProgressMonitor  monitor) throws CoreException{
+		HybridProject hybridProject = HybridProject.getHybridProject(project);
+		try {
+			Widget w = hybridProject.getWidget();
+			w.setId(appID);
+			w.setName(appName);
+			hybridProject.saveWidget(w);
+		} catch (CoreException e) {
+			HybridCore.log(IStatus.ERROR, "Error updating application name and id to config.xml", e);
+		}
+		
+	}
+
+
 	private void addTemplateFiles(IProject project, IProgressMonitor monitor) throws CoreException{
 		Bundle bundle = HybridUI.getDefault().getBundle();
 	    URL source = bundle.getEntry("/templates/www");

@@ -139,8 +139,13 @@ public class AbstractConfigObject {
 		if ( element == null )
 			throw new IllegalArgumentException("Element is null");
 		
-		NodeList nodes = element.getElementsByTagNameNS(namespace, tagName);
-
+		NodeList nodes = null; 
+		if (namespace == null ){
+			nodes = element.getElementsByTagName(tagName);
+		}else{
+			nodes = element.getElementsByTagNameNS(namespace, tagName);
+		}
+		
 		Node target = null;
 		if (nodes.getLength() < 1) {
 			target = element.getOwnerDocument().createElementNS(namespace,

@@ -185,7 +185,7 @@ public class AndroidSDKManager {
 		IStatus status = HybridProjectConventions.validateProjectName(projectName);
 		if(!status.isOK())
 			throw new CoreException(status);
-		
+		//activity class name matches the project name
 		status = HybridProjectConventions.validateProjectName(activity);
 		if(!status.isOK())
 			throw new CoreException(status);

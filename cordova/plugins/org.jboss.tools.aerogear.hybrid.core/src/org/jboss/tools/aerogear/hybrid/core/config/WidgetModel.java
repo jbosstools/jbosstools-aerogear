@@ -22,9 +22,19 @@ import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.W
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_ICON;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_LICENSE;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.w3c.dom.Document;
@@ -69,6 +79,30 @@ public class WidgetModel {
 		}
 		models.put(document, root);
 		return root;
+	}
+	
+	public void save(Widget root, File file) throws CoreException{
+		try {
+			Source source = new DOMSource(root.itemNode.getOwnerDocument());
+
+			StreamResult result = new StreamResult(file);
+
+			// Write the DOM document to the file
+			TransformerFactory transformerFactory = TransformerFactory
+					.newInstance();
+			Transformer xformer;
+			xformer = transformerFactory.newTransformer();
+			xformer.transform(source, result);
+
+		} catch (TransformerConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 	}
 	
 	/**

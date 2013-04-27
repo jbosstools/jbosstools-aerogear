@@ -21,7 +21,6 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	
@@ -45,13 +44,15 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException,
 					InterruptedException {
 				HybridProjectCreator creator = new HybridProjectCreator();
-				WizardNewProjectCreationPage page = (WizardNewProjectCreationPage)pageOne;
+				WizardNewHybridProjectCreationPage page = (WizardNewHybridProjectCreationPage)pageOne;
 				try {
 					URI location = null;
 					if( !page.useDefaults() ){
 						location = page.getLocationURI();
 					}
-					creator.createProject(page.getProjectName(), location , monitor);
+					String appName = page.getApplicationName();
+					String appID = page.getApplicationID();
+					creator.createProject(page.getProjectName(), location ,appName, appID, monitor);
 				} catch (CoreException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -75,7 +76,7 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	@Override
 	public void addPages() {
 		super.addPages();
-		pageOne = new WizardNewProjectCreationPage(getWindowTitle());
+		pageOne = new WizardNewHybridProjectCreationPage(getWindowTitle());
 		pageOne.setTitle("Create Hybrid Application Project");
 		pageOne.setDescription("Creates an aerogear hybrid application project for cross-platform mobile development");
 		addPage( pageOne );

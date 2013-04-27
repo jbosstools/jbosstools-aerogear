@@ -11,12 +11,14 @@
 package org.jboss.tools.aerogear.hybrid.core;
 
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -24,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -34,6 +37,7 @@ import org.xml.sax.SAXException;
  */
 public class HybridProject {
 	
+	private static final String PATH_CONFIG_XML = "/"+PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG;
 	private IProject kernelProject;
 	private Document configDocument;
 	
@@ -61,7 +65,7 @@ public class HybridProject {
 	    try{
 	    	db = dbf.newDocumentBuilder();
 	    	configDocument = db.parse( kernelProject.getFile(
-	    			"/www/config.xml").getContents()); 
+	    			PATH_CONFIG_XML).getContents()); 
 	    }
 		catch (ParserConfigurationException e) {
 			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing config.xml", e));
@@ -75,6 +79,15 @@ public class HybridProject {
 		 return widget;
 	}
 
+	public void saveWidget(Widget widget) throws CoreException{
+		IFile file = kernelProject.getFile(PATH_CONFIG_XML);
+		if( !file.exists()){
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, kernelProject.getName() + " does not have a config.xml"));
+		}
+		File config = file.getLocation().toFile();
+		WidgetModel.getInstance().save(widget, config);
+	}
+	
 	/**
 	 * Returns the underlying {@link IProject} instance.
 	 * @return kernel project

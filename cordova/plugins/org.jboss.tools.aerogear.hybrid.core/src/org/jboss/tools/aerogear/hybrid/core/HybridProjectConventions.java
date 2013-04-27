@@ -30,11 +30,11 @@ public class HybridProjectConventions {
 	 * @return
 	 */
 	public static IStatus validateProjectName(String name ){
-		if(name == null )
-			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Null project name");
+		if(name == null || name.isEmpty() )
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Project name must be specified");
 		Pattern pattern  = Pattern.compile("[_a-zA-z][_a-zA-Z0-9]*");
 		if(!pattern.matcher(name).matches()){
-			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Invalid project name");
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, name + " is not a valid application name");
 		}
 		return Status.OK_STATUS;
 
@@ -47,15 +47,20 @@ public class HybridProjectConventions {
 	 * @return
 	 */
 	public static IStatus validateProjectID(String id ){
-		if(id == null )
-			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Null id ");
+		if(id == null | id.isEmpty() )
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Application ID must be specified");
 
 		Pattern pattern  = Pattern.compile("[_a-zA-z][\\._a-zA-Z0-9]*");
 		if( !pattern.matcher(id).matches()){
-			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, id + " is not a valid id project");
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, id + " is not a valid application id");
 		}
 		return Status.OK_STATUS;
 	}
 	
+	public static IStatus validateApplicationName(String name ){
+		if(name == null || name.isEmpty() )
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Application name must be specified");
+		return Status.OK_STATUS;
+	}
 	
 }
