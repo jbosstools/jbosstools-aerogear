@@ -102,7 +102,7 @@ public class ServerCreator {
 			@Override
 			public String matchAndApply(String target, HttpServletRequest request,
 					HttpServletResponse response) throws IOException {
-				if ("true".equals(request.getParameter("enableripple"))) {
+				if (request.getParameter("enableripple") != null) {
 					return "/ripple/assets/index.html";
 				} else {
 					return null;
