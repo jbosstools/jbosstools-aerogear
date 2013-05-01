@@ -61,10 +61,9 @@ public class XCodeBuild {
 		String version;
 		@Override
 		public void streamAppended(String text, IStreamMonitor monitor) {
-			if(text.startsWith("XCode")){
+			if(text.toLowerCase().startsWith("xcode")){
 				version = text.substring("XCode".length()+1, text.indexOf('\n'));
 			}
-			
 		}
 		
 	}
