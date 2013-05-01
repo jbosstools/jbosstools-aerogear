@@ -86,7 +86,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 						"Mobile Hybrid Project Build Error");
 				manager.handle(adapter, StatusManager.SHOW);
 			} else {
-				manager.handle(e, HybridUI.PLUGIN_ID);
+				manager.handle(e.getStatus(),StatusManager.SHOW);
 			}
 		}
 	}
