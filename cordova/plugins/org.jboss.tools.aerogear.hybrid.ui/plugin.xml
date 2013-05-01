@@ -6,12 +6,18 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             canFinishEarly="false"
+            category="org.jboss.tools.aerogear.hybrid.ui.category"
             class="org.jboss.tools.aerogear.hybrid.ui.wizard.project.NewHybridProjectWizard"
             hasPages="true"
+            icon="icons/etool16/newcordovaprj_wiz.png"
             id="org.jboss.tools.aerogear.hybrid.ui.NewHybridProjectWizard"
-            name="Aerogear Hybrid Application Project"
+            name="Hybrid Mobile (Cordova) Application Project"
             project="true">
       </wizard>
+      <category
+            id="org.jboss.tools.aerogear.hybrid.ui.category"
+            name="Mobile">
+      </category>
    </extension>
   <extension point="org.eclipse.ui.editors">
     <editor

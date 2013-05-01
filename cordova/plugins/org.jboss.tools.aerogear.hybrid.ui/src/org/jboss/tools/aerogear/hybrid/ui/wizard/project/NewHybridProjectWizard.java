@@ -27,12 +27,13 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	private IWizardPage pageOne;
 
 	public NewHybridProjectWizard() {
-		setWindowTitle("New Aerogear Hybrid Application Project");
+		setWindowTitle("Hybrid Mobile (Cordova) Application Project");
+		
 	}
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -77,8 +78,8 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	public void addPages() {
 		super.addPages();
 		pageOne = new WizardNewHybridProjectCreationPage(getWindowTitle());
-		pageOne.setTitle("Create Hybrid Application Project");
-		pageOne.setDescription("Creates an aerogear hybrid application project for cross-platform mobile development");
+		pageOne.setTitle("Create Hybrid Mobile Application Project");
+		pageOne.setDescription("Create a hybrid mobile application using Apache Cordova for cross-platform mobile development");
 		addPage( pageOne );
 	}
 

@@ -10,7 +10,14 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui;
 
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -56,5 +63,23 @@ public class HybridUI extends AbstractUIPlugin {
 	public static HybridUI getDefault() {
 		return plugin;
 	}
-
+	
+	/**
+     * Returns an image descriptor for the icon referenced by the given path
+     * and contributor plugin
+     * 
+     * @param plugin symbolic name
+     * @param path the path of the icon 
+     * @return image descriptor or null
+     */
+    public static ImageDescriptor getImageDescriptor(String name, String path) {
+		Bundle bundle = Platform.getBundle(name);
+		if (path != null) {
+			URL iconURL = FileLocator.find(bundle , new Path(path), null);
+			if (iconURL != null) {
+				return ImageDescriptor.createFromURL(iconURL);
+			}
+		}
+		return null;
+    }
 }

@@ -13,6 +13,8 @@ package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -21,15 +23,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectConventions;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreationPage{
+	private static final String IMAGE_WIZBAN = "/icons/wizban/newcordovaprj_wiz.png";
 	private Text txtName;
 	private Text txtID;
 	
 	public WizardNewHybridProjectCreationPage(String pageName) {
 		super(pageName);
+		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, IMAGE_WIZBAN));
 	}
 
 	public void createControl(Composite parent ){		
