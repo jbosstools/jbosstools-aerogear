@@ -24,6 +24,7 @@ import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.WorkingDirectoryBlock;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.events.ModifyEvent;
@@ -38,6 +39,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -204,6 +208,16 @@ public class CordovaSimLaunchConfigurationTab extends
 
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
+		IWorkbenchWindow workbenchWindow = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow();
+		if (workbenchWindow != null) {
+			IWorkbenchPage activePage = workbenchWindow.getActivePage();
+			if (activePage != null) {
+				ISelection selection = activePage.getSelection();
+				
+				IProject project = CordovaSimLaunchConfigurationAutofillUtil.getProjectToRun(selection);
+				CordovaSimLaunchConfigurationAutofillUtil.fillLaunchConfiguraion(configuration, project);
+			}
+		}
 	}
 
 	@Override
