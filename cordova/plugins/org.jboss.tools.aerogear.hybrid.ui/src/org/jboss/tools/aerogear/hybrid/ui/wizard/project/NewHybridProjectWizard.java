@@ -13,14 +13,26 @@ package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	
@@ -33,8 +45,6 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		
-
 	}
 
 	@Override
@@ -54,7 +64,9 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 					String appName = page.getApplicationName();
 					String appID = page.getApplicationID();
 					creator.createProject(page.getProjectName(), location ,appName, appID, monitor);
-				} catch (CoreException e) {
+					openAndSelectConfigFile();
+					
+					} catch (CoreException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -72,6 +84,21 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 			e.printStackTrace();
 		}
 		return true;
+	}
+	
+	private void openAndSelectConfigFile(){
+		IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		WizardNewHybridProjectCreationPage page = (WizardNewHybridProjectCreationPage)pageOne;
+		IProject project = root.getProject(page.getProjectName());
+		IFile file = project.getFile(PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG);
+		
+		BasicNewResourceWizard.selectAndReveal(file, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+		try {
+			IDE.openEditor(activePage, file);
+		} catch (PartInitException e) {
+			HybridUI.log(IStatus.ERROR, "Error opening the config.xml", e);
+		}
 	}
 	
 	@Override

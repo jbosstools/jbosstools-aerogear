@@ -13,8 +13,10 @@ package org.jboss.tools.aerogear.hybrid.ui;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
@@ -27,7 +29,8 @@ public class HybridUI extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.tools.aerogear.hybrid.ui"; //$NON-NLS-1$
-
+	private static ILog logger;
+	
 	// The shared instance
 	private static HybridUI plugin;
 	
@@ -36,7 +39,7 @@ public class HybridUI extends AbstractUIPlugin {
 	 */
 	public HybridUI() {
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
@@ -44,6 +47,7 @@ public class HybridUI extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		logger = Platform.getLog(this.getBundle());
 	}
 
 	/*
@@ -62,6 +66,10 @@ public class HybridUI extends AbstractUIPlugin {
 	 */
 	public static HybridUI getDefault() {
 		return plugin;
+	}
+	
+	public static void log(int status, String message, Throwable throwable ){
+		logger.log(new Status(status, message, PLUGIN_ID,throwable));
 	}
 	
 	/**
