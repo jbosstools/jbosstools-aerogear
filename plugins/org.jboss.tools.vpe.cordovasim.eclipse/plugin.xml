@@ -26,4 +26,27 @@
           type="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType">
     </launchConfigurationTabGroup>
  </extension>
+  <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchShortcut"
+            id="org.jboss.tools.vpe.cordovasim.eclipse.launchShortcut"
+            label="Run with CordovaSim"
+            icon="icons/cordovasim_16.png"
+            modes="run">
+        <contextualLaunch>
+            <enablement>
+                <with variable="selection">
+                    <count value="1"/>
+                    <iterate>
+                        <adapt  type="org.eclipse.core.resources.IResource">
+                        <test property="org.eclipse.core.resources.projectNature" 
+                           value="org.jboss.tools.earogear.hybrid.core.HybridAppNature" />    
+                        </adapt> 
+                    </iterate>
+                </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
 </plugin>
