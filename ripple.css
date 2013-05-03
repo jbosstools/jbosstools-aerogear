@@ -2042,8 +2042,31 @@ fieldset {
 }
  
 /******************************************************************************/
-
 #upload-file-button {
     display:none;
 }
 
+.scanDialog {
+    display:none;
+}
+
+.scanDialog button {
+   float:right;
+}
+
+.skanDialogFieldSet label {
+  float:left;
+  width:25%;
+  margin-right:0.5em;
+  padding-top:0.2em;
+  text-align:right;
+  font-weight:bold;
+}
+
+.skanDialogFieldSet input[type=text] {
+    width: 300px;
+}
+
+.skanDialogFieldSet select {
+    width: 305px;
+}
