@@ -18,13 +18,15 @@ import org.jboss.tools.aerogear.hybrid.ui.launch.HybridProjectLaunchShortcut;
 public class AndroidDeviceLaunchShortcut extends HybridProjectLaunchShortcut {
 
 	@Override
-	protected void validateBuildToolsReady() throws CoreException {
+	protected boolean validateBuildToolsReady() throws CoreException {
+		if(!SDKLocationHelper.defineSDKLocationIfNecessary())
+			return false;
 		AndroidSDKManager sdkManager = new AndroidSDKManager();
 		List<AndroidSDK> targets = sdkManager.listTargets();
 		if(targets == null || targets.isEmpty() ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidUI.PLUGIN_ID, "No targets to build against"));
 		}
-		
+		return true;
 		
 		
 	}

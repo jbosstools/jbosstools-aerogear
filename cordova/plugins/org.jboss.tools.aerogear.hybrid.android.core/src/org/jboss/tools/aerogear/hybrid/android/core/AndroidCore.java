@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.android.core;
 
+import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -43,5 +44,10 @@ public class AndroidCore implements BundleActivator {
 	public void stop(BundleContext context) throws Exception {
 		AndroidCore.context = null;
 	}
+	
+	public static String getSDKLocation(){
+		return Platform.getPreferencesService().getString("org.jboss.tools.aerogear.hybrid.ui", "Android_SDK_Loc", null, null);
+	}
+	
 
 }

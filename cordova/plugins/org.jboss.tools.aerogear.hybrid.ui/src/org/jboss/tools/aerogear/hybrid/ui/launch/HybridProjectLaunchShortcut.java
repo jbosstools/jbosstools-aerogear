@@ -64,7 +64,9 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	private void launch(IProject project) {
 		try {
 			
-			validateBuildToolsReady();
+			if(!validateBuildToolsReady()){
+				return;
+			}
 			if (!shouldProceedWithLaunch(HybridProject
 					.getHybridProject(project)))
 				return;
@@ -140,11 +142,13 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	 *  to check if the prerequisites for a build are in place. 
 	 *  Implementors should throw a {@link CoreException} with a 
 	 *  Status message.
+	 * 
+	 * @return true if the tools are installed and ready
 	 *  
 	 * @throws CoreException if build tools are not working properly or 
 	 * 	does not exist
 	 */
-	protected abstract void validateBuildToolsReady() throws CoreException;
+	protected abstract boolean validateBuildToolsReady() throws CoreException;
 	
 	/**
 	 * Return the launchConfiguratonType ID. Which will be used to 

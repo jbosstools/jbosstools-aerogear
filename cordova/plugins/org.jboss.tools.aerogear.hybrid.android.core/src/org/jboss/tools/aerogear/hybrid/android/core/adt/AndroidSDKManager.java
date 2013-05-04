@@ -46,6 +46,8 @@ import org.jboss.tools.aerogear.hybrid.core.util.TextDetectingStreamListener;
  */
 public class AndroidSDKManager {
 	
+	private String toolsDir;
+	private String platformTools;
 	
 	private static class DeviceListParser implements IStreamListener{
 		private StringBuffer buffer = new StringBuffer();
@@ -180,6 +182,20 @@ public class AndroidSDKManager {
 		
 	}
 	
+	
+	public AndroidSDKManager() {
+		String sdkDir = AndroidCore.getSDKLocation();
+		if(sdkDir == null )
+			throw new IllegalStateException("No SDK is defined to work with the Android SDK Manager");
+		
+		if(!sdkDir.endsWith(File.separator)){
+			sdkDir = sdkDir+ File.separator;
+		}
+		toolsDir = sdkDir+ "tools" + File.separator;
+		platformTools = sdkDir +"platform-tools" + File.separator;
+	}
+	
+	
 	public void createProject(AndroidSDK target, String projectName, 
 			File path, String activity, String packageName) throws CoreException{
 		IStatus status = HybridProjectConventions.validateProjectName(projectName);
@@ -196,7 +212,8 @@ public class AndroidSDKManager {
 	
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		StringBuilder command = new StringBuilder();
-		command.append("android create project");
+		command.append(getAndroidCommand());
+		command.append(" create project");
 		command.append(" --target ").append(target.getId());
 		command.append(" --path ").append('"').append(path.getPath()).append('"');
 		command.append(" --name ").append('"').append(projectName).append('"');
@@ -208,14 +225,14 @@ public class AndroidSDKManager {
 	
 	public void startADBServer() throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		processUtility.execAsync("adb start-server ", null, null, null,  null);
+		processUtility.execAsync(getADBCommand()+" start-server ", null, null, null,  null);
 
 	}
 	
 	public List<String> listAVDs() throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		AVDListParser parser = new AVDListParser();
-		processUtility.execSync("android list avd", null, parser, parser, 
+		processUtility.execSync(getAndroidCommand()+" list avd", null, parser, parser, 
 				new NullProgressMonitor(), null, null);
 		return parser.getAVDList();
 	}
@@ -223,7 +240,7 @@ public class AndroidSDKManager {
 	public List<AndroidSDK> listTargets() throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		TargetListParser parser = new TargetListParser();
-		processUtility.execSync("android list target", 
+		processUtility.execSync(getAndroidCommand()+" list target", 
 				null, parser, parser, new NullProgressMonitor(), null, null);
 		return parser.getSDKList();
 	}
@@ -231,7 +248,7 @@ public class AndroidSDKManager {
 	public List<AndroidDevice> listDevices() throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		DeviceListParser parser = new DeviceListParser();
-		processUtility.execSync("adb devices", null, parser, parser, 
+		processUtility.execSync(getADBCommand()+" devices", null, parser, parser, 
 				new NullProgressMonitor(), null, null);
 		return parser.getDeviceList();
 		
@@ -241,7 +258,7 @@ public class AndroidSDKManager {
 	public void installApk(File apkFile, String serialNumber) throws CoreException{
 		Assert.isNotNull(serialNumber);
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		StringBuilder command = new StringBuilder("adb");
+		StringBuilder command = new StringBuilder(getADBCommand());
 		command.append(" -s ").append(serialNumber);
 		command.append(" install");
 		command.append(" -r ");
@@ -265,15 +282,14 @@ public class AndroidSDKManager {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
 			}
 		}
 	}
 	
 	public void startApp(String component, String serialNumber) throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		StringBuilder command = new StringBuilder("adb");
+		StringBuilder command = new StringBuilder(getADBCommand());
 		command.append(" -s ").append(serialNumber);
 		command.append(" shell am start");
 		command.append(" -n ");
@@ -284,7 +300,7 @@ public class AndroidSDKManager {
 	
 	public void logcat(String filter, IStreamListener outListener, IStreamListener errorListener, String serialNumber) throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		StringBuilder command = new StringBuilder("adb");
+		StringBuilder command = new StringBuilder(getADBCommand());
 		command.append(" -s ").append(serialNumber);
 		command.append(" logcat");
 		if(filter !=null && !filter.isEmpty()){
@@ -296,7 +312,7 @@ public class AndroidSDKManager {
 	
 	public void startEmulator(String avd) throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		StringBuilder command = new StringBuilder("emulator");
+		StringBuilder command = new StringBuilder(getEmulatorCommand());
 		command.append(" -cpu-delay 0"); 
 		command.append(" -no-boot-anim");
 		command.append(" -avd ").append(avd);
@@ -327,4 +343,16 @@ public class AndroidSDKManager {
         return new File(projectLocation, AndroidConstants.DIR_BIN);
 	}
 
+	private String getAndroidCommand(){
+		return toolsDir+"android";
+	}
+	
+	private String getADBCommand(){
+		return platformTools+"adb";
+	}
+	
+	private String getEmulatorCommand(){
+		return toolsDir+"emulator";
+	}
+	
 }

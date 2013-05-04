@@ -51,7 +51,6 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 		Hashtable<String,Object> props = new Hashtable<String, Object>();
 		props.put(org.eclipse.osgi.service.debug.DebugOptions.LISTENER_SYMBOLICNAME, PLUGIN_ID);
 		context.registerService(DebugOptionsListener.class.getName(), this, props);
-
 	}
 
 	/*
@@ -75,9 +74,6 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 		return hybrids;
 	}
 
-	
-	
-	
 	@Override
 	public void optionsChanged(DebugOptions options) {
 		if(TRACE==null)

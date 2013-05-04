@@ -26,11 +26,12 @@ import org.jboss.tools.aerogear.hybrid.ui.launch.HybridProjectLaunchShortcut;
 public class IOSLaunchShortcut extends HybridProjectLaunchShortcut{
 
 	@Override
-	protected void validateBuildToolsReady() throws CoreException {
+	protected boolean validateBuildToolsReady() throws CoreException {
 		XCodeBuild xcode = new XCodeBuild();
 		if (xcode.version() == null ){
 			throw new CoreException(new Status(IStatus.ERROR, IOSUI.PLUGIN_ID, "Can not retrieve xcode version, is xcode properly installed?"));
 		}
+		return true;
 	}
 
 	@Override

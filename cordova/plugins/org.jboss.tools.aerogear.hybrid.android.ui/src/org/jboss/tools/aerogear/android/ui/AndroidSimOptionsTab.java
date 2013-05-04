@@ -159,6 +159,10 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
+		if(!SDKLocationHelper.defineSDKLocationIfNecessary()){
+			setErrorMessage("Android SDK location is not defined" );
+		}
+		
 		String projectName =null;
 		try {
 			projectName = configuration.getAttribute(HybridProjectLaunchConfigConstants.ATTR_BUILD_SCOPE, (String)null);
@@ -206,5 +210,12 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 		configuration.setAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_CONSOLE, true);
 		configuration.setAttribute(ATTR_LOGCAT_FILTER, VAL_DEFAULT_LOGCAT_FILTER);
 	}
-
+	
+	@Override
+	public boolean isValid(ILaunchConfiguration launchConfig) {
+		if(SDKLocationHelper.isSDKLocationDefined())
+			return super.isValid(launchConfig);
+		return false;
+	}
+	
 }

@@ -17,8 +17,12 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridToolsPreferences;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -48,6 +52,18 @@ public class HybridUI extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 		logger = Platform.getLog(this.getBundle());
+		IPreferenceStore store = getPreferenceStore();
+		HybridToolsPreferences.init(store);
+		store.addPropertyChangeListener(new IPropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				HybridToolsPreferences.getPrefs().loadValues(event);
+				
+			}
+		});
+		HybridToolsPreferences.getPrefs().loadValues();
+		
 	}
 
 	/*
