@@ -18,8 +18,7 @@ Releases are yet to come! But you can get the nightly builds from staging p2 upd
 
 ### Requirements 
 * [iOS SDK](http://developer.apple.com) with the latest Xcode including the Xcode Command Line Tools
-* [Android SDK](http://developer.android.com) with the absolute latest updates for all Android SDK components. Also the SDK's _tools_ and _platform-tools_ directories on your system path
-
+* [Android SDK](http://developer.android.com) with the absolute latest updates for all Android SDK components. 
 
 ## Get the code
 
