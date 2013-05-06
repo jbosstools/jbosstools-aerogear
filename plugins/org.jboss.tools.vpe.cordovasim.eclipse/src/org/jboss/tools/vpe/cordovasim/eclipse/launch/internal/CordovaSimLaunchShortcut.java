@@ -45,7 +45,6 @@ public class CordovaSimLaunchShortcut implements ILaunchShortcut {
 	}
 	
 	private void launch(IProject project, String mode) {
-		//TODO: draft implementation. fill launch parameters with non-hard-coded values, etc.
 		try {
 			ILaunchConfigurationWorkingCopy launchConfiguration = createEmptyLaunchConfiguration(project.getName());
 			CordovaSimLaunchConfigurationAutofillUtil.fillLaunchConfiguraion(launchConfiguration, project);
