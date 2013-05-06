@@ -10,14 +10,14 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
@@ -54,17 +54,34 @@ public class CordovaSimLauncher {
 	//if you change this parameter, see also @org.jbosstools.browsersim.ui.BrowserSim
 	private static final String NOT_STANDALONE = BrowserSimLauncher.NOT_STANDALONE;	
 
-	public static void launchCordovaSim(String rootFolder, String startPage, Integer port) {
+	public static void launchCordovaSim(String projectString, String rootFolderString, String startPageString,
+			Integer port) {
 		List<String> parameters = new ArrayList<String>();
 		parameters.add(NOT_STANDALONE);
 
-		if (rootFolder != null) {
-			IContainer rootFolderContainer = CordovaSimLaunchParametersUtil.getRootFolder(rootFolder);
-			parameters.add(rootFolderContainer.getLocation().toString());
+		IContainer rootFolder = null;
+		IProject project = null;
+		if (projectString != null) {
+			project = CordovaSimLaunchParametersUtil.getProject(projectString);
+			
+			if (rootFolderString != null) {
+				rootFolder = CordovaSimLaunchParametersUtil.getRootFolder(project, rootFolderString);
+			} else {
+				rootFolder = CordovaSimLaunchParametersUtil.getDefaultRootFolder(project);
+			}
+			parameters.add(rootFolder.getLocation().toString());
 		}
-		if (startPage != null) {
-			parameters.add(startPage);
+		
+		String actualStartPageString;
+		if (startPageString != null) {
+			actualStartPageString = startPageString;
+		} else {
+			IResource startPage = CordovaSimLaunchParametersUtil.getDefaultStartPage(project, rootFolder);
+			IPath startPagePath = CordovaSimLaunchParametersUtil.getRelativePath(rootFolder, startPage);
+			actualStartPageString = startPagePath.toString();
 		}
+		parameters.add(actualStartPageString);
+		
 		if (port != null) {
 			parameters.add("-port");
 			parameters.add(String.valueOf(port));

@@ -25,9 +25,7 @@ import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
 public class CordovaSimLaunchConfigurationAutofillUtil {
 	public static void fillLaunchConfiguraion(ILaunchConfigurationWorkingCopy launchConfiguration, IProject project) {
 		if (project != null) {
-			launchConfiguration.setAttribute(CordovaSimLaunchConstants.ROOT_FOLDER,
-					project.getFolder("www").getFullPath().toString());
-			launchConfiguration.setAttribute(CordovaSimLaunchConstants.START_PAGE, "index.html");
+			launchConfiguration.setAttribute(CordovaSimLaunchConstants.PROJECT, project.getName());
 		}
 	}
 	
