@@ -25,7 +25,7 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class CordovaResourceHandler extends ResourceHandler {
+public class NotCachingResourceHandler extends ResourceHandler {
 
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
