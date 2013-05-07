@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="org.jboss.tools.earogear.hybrid.core.HybridAppNature"
+         id="org.jboss.tools.aerogear.hybrid.core.HybridAppNature"
          name="Aerogear Hybrid Application Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
