@@ -30,7 +30,7 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	/**
 	 * Plugin ID
 	 */	
-	public static final String PLUGIN_ID = "org.jboss.tools.earogear.hybrid.core";
+	public static final String PLUGIN_ID = "org.jboss.tools.aerogear.hybrid.core";
 	
 	private static BundleContext context;
 	public static boolean DEBUG = true;
