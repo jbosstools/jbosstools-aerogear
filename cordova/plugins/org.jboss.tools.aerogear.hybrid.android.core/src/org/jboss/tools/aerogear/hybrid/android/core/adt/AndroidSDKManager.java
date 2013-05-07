@@ -280,7 +280,7 @@ public class AndroidSDKManager {
 				}
 			}
 			try {
-				Thread.sleep(100);
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 
 			}
@@ -302,7 +302,7 @@ public class AndroidSDKManager {
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		StringBuilder command = new StringBuilder(getADBCommand());
 		command.append(" -s ").append(serialNumber);
-		command.append(" logcat");
+		command.append(" logcat ");
 		if(filter !=null && !filter.isEmpty()){
 			command.append(filter);
 		}
