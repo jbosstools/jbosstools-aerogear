@@ -2,6 +2,7 @@ package org.jboss.tools.aerogear.android.ui;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -77,6 +78,11 @@ public class AndroidDeviceLaunchShortcut extends HybridProjectLaunchShortcut {
 			return null;
 		}
 
+	}
+
+	@Override
+	protected String getLaunchConfigurationNamePrefix(IProject project) {
+		return project.getName() + " (Android Device)";
 	}
 	
 	

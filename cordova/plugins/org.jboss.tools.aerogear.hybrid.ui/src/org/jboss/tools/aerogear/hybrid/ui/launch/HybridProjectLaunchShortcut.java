@@ -119,7 +119,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	
 	private ILaunchConfiguration createLaunchConfiguration(IProject project) throws CoreException{
 		ILaunchConfigurationWorkingCopy wc = getLaunchConfigurationType().newInstance(null,
-				getLaunchManager().generateLaunchConfigurationName(project.getName()));
+				getLaunchManager().generateLaunchConfigurationName(getLaunchConfigurationNamePrefix(project)));
 		wc.setAttribute(HybridProjectLaunchConfigConstants.ATTR_BUILD_SCOPE, project.getName());
 		return wc.doSave();
 	}
@@ -138,7 +138,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	}
 	
 	/**
-	 * Invoked before commencing with the launch to give platfom a chance
+	 * Invoked before commencing with the launch to give platform a chance
 	 *  to check if the prerequisites for a build are in place. 
 	 *  Implementors should throw a {@link CoreException} with a 
 	 *  Status message.
@@ -166,7 +166,14 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	protected boolean shouldProceedWithLaunch(HybridProject project){
 		return project != null;
 	}
-	
+	/**
+	 * Return the name prefix to be used when a name is generated 
+	 * for this launch configuration.
+	 * 
+	 * @return a launch configuration name
+	 */
+	protected abstract String getLaunchConfigurationNamePrefix(IProject project);
+		
 	/**
 	 * Update the launch configuration with platform implementation specific values.
 	 * 

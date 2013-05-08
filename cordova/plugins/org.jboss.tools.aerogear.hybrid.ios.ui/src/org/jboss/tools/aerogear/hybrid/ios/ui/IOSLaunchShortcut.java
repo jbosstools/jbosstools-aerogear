@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.ui;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -37,6 +38,11 @@ public class IOSLaunchShortcut extends HybridProjectLaunchShortcut{
 	@Override
 	protected String getLaunchConfigurationTypeID() {
 		return IOSSimulatorLaunchConstants.ID_LAUNCH_CONFIG_TYPE;
+	}
+
+	@Override
+	protected String getLaunchConfigurationNamePrefix(IProject project) {
+		return project.getName() + " (iOS Emulator)";
 	}
 
 }
