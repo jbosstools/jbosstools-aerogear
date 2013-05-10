@@ -61,7 +61,7 @@ public class AndroidSDKManager {
 
 			if (buffer == null || buffer.length() < 1)
 				return null;
-
+			
 			StringReader reader = new StringReader(buffer.toString());
 			BufferedReader read = new BufferedReader(reader);
 			String line =null;
@@ -88,7 +88,7 @@ public class AndroidSDKManager {
 				}
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				AndroidCore.log(IStatus.ERROR, "Error parsing the Android device list", e);
 				return null;
 			}
 			return list;
@@ -225,7 +225,7 @@ public class AndroidSDKManager {
 	
 	public void startADBServer() throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
-		processUtility.execAsync(getADBCommand()+" start-server ", null, null, null,  null);
+		processUtility.execSync(getADBCommand()+" start-server",null, null, null, new NullProgressMonitor(), null, null);
 
 	}
 	
@@ -253,7 +253,6 @@ public class AndroidSDKManager {
 		return parser.getDeviceList();
 		
 	}
-	
 	
 	public void installApk(File apkFile, String serialNumber) throws CoreException{
 		Assert.isNotNull(serialNumber);
