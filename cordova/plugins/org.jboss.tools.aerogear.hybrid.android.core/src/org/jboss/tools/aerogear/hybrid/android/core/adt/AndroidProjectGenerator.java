@@ -161,15 +161,13 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 
 			    xformer.transform(source, result);
 				
-			} catch (XPathExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (XPathExpressionException e) {//We continue because this affects the displayed app name
+				                                  // which is not a show stopper during development
+				AndroidCore.log(IStatus.ERROR, "Error when updating the application name", e);
 			} catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				AndroidCore.log(IStatus.ERROR, "Error when updating the application name", e);
 			} catch (TransformerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				AndroidCore.log(IStatus.ERROR, "Error when updating the application name", e);
 			}
 	    	
 	    }

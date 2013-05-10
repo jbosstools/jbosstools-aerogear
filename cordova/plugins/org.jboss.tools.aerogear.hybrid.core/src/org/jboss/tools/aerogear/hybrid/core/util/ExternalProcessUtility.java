@@ -14,6 +14,7 @@ import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.IStreamListener;
@@ -63,7 +64,7 @@ public class ExternalProcessUtility {
 		HybridCore.trace("Sync Execute command line: "+commandLine);
 		String[] cmd = DebugPlugin.parseArguments(commandLine);
 		Process process =DebugPlugin.exec(cmd, workingDirectory, envp);
-		
+		HybridCore.trace("Created process for "+ commandLine );
 		
 		Launch launch = new Launch(launchConfiguration, "run", null);
 		IProcess prcs = DebugPlugin.newProcess(launch, process, "Cordova Plugin:  "+ cmd[0]);
@@ -73,6 +74,7 @@ public class ExternalProcessUtility {
 		
 		//Set tracing 
 		if(HybridCore.DEBUG){
+			HybridCore.trace("Creating TracingStreamListeners for " + commandLine);
 			outStreamListener = new TracingStreamListener(outStreamListener);
 			errorStreamListener = new TracingStreamListener(outStreamListener);
 		}
@@ -93,6 +95,7 @@ public class ExternalProcessUtility {
 				}
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
+				HybridCore.log(IStatus.INFO, "Exception waiting for process to terminate", e);
 			}
 		}
 	}	

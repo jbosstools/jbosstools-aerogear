@@ -33,7 +33,7 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	public static final String PLUGIN_ID = "org.jboss.tools.aerogear.hybrid.core";
 	
 	private static BundleContext context;
-	public static boolean DEBUG = true;
+	public static boolean DEBUG;
 	private static DebugTrace TRACE;
 	private static ILog logger;
 	
@@ -82,7 +82,6 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	}
 	
 	public static void trace( String message){
-		System.out.println(message);//TODO: Remove this eventually?
 		if( !DEBUG ) return;
 		TRACE.trace(null, message);
 	}

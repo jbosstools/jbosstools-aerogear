@@ -123,7 +123,7 @@ public class AndroidSDKManager {
 				}
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				AndroidCore.log(IStatus.ERROR, "Error parsing the AVD list", e);
 				return null;
 			}
 			return list;
@@ -175,7 +175,7 @@ public class AndroidSDKManager {
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				AndroidCore.log(IStatus.ERROR, "Error parsing the SDK list", e);
 			}
 			return sdkList;
 		}
