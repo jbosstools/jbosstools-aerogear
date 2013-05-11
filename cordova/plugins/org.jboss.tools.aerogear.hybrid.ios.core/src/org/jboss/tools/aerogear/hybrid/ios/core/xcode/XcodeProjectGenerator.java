@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
 
@@ -87,6 +88,9 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/main.m"),
 					toURL(new File(prjdir, "/main.m")),
 					values);
+			//iOS config.xml needs to be copied outside www to be used
+			File configxml = getProject().getFile(PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG).getLocation().toFile();
+			fileCopy(toURL(configxml),toURL(new File(prjdir, "/"+PlatformConstants.FILE_XML_CONFIG)));
 		}
 		catch(IOException e ){
 			throw new CoreException(new Status(IStatus.ERROR,IOSCore.PLUGIN_ID,"Error generating the native iOS project", e));
