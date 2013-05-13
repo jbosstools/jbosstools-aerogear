@@ -14,9 +14,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -153,6 +156,7 @@ public class EssentialsPage extends FormPage {
 		sctnNameAndDescription.setClient(composite_1);
 		composite_1.setLayout(new GridLayout(2, false));
 		
+		@SuppressWarnings("unused")
 		Label lblId = managedForm.getToolkit().createLabel(composite_1, "ID:", SWT.NONE);
 		
 		txtIdtxt = managedForm.getToolkit().createText(composite_1, "New Text", SWT.NONE);
@@ -166,12 +170,14 @@ public class EssentialsPage extends FormPage {
 		txtName.setText("");
 		txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
+		@SuppressWarnings("unused")
 		Label lblVersion = managedForm.getToolkit().createLabel(composite_1, "Version:", SWT.NONE);
 		
 		txtVersion = managedForm.getToolkit().createText(composite_1, "New Text", SWT.NONE);
 		txtVersion.setText("");
 		txtVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
+		@SuppressWarnings("unused")
 		Label lblDescription = managedForm.getToolkit().createLabel(composite_1, "Description:", SWT.NONE);
 		
 		txtDescription = managedForm.getToolkit().createText(composite_1, "New Text", SWT.MULTI);
@@ -206,12 +212,14 @@ public class EssentialsPage extends FormPage {
 		txtAuthorname.setText("");
 		txtAuthorname.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
+		@SuppressWarnings("unused")
 		Label lblEmail = managedForm.getToolkit().createLabel(composite, "Email:", SWT.NONE);
 		
 		txtEmail = managedForm.getToolkit().createText(composite, "New Text", SWT.NONE);
 		txtEmail.setText("");
 		txtEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
+		@SuppressWarnings("unused")
 		Label lblUrl = managedForm.getToolkit().createLabel(composite, "URL:", SWT.NONE);
 		
 		txtUrl = managedForm.getToolkit().createText(composite, "New Text", SWT.NONE);
@@ -306,6 +314,16 @@ public class EssentialsPage extends FormPage {
 		
 		IObservableValue observeTextTxtContentsourceObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtContentsource);
 		IObservableValue contentsrcGetWidgetObserveValue = BeanProperties.value("src").observeDetail(value);
-		bindingContext.bindValue(observeTextTxtContentsourceObserveWidget, contentsrcGetWidgetObserveValue, null, null);
+		bindingContext.bindValue(observeTextTxtContentsourceObserveWidget, contentsrcGetWidgetObserveValue, new UpdateValueStrategy() {
+			@Override
+			protected IStatus doSet(IObservableValue observableValue,
+					Object value) {
+				if(value == null || value.toString().isEmpty()){
+					getWidget().setContent(null);
+					return Status.OK_STATUS; // Wste are done 
+				}
+				return super.doSet(observableValue, value);
+			}
+		}, null);
 	}
 }
