@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test
+Bundle-SymbolicName: org.jboss.tools.aerogear.hybrid.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.jboss.tools.aerogear.hybrid.test.Activator
+Bundle-Vendor: JBoss by Red Hat
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.junit,
+ org.jboss.tools.aerogear.hybrid.core;bundle-version="1.0.0",
+ org.jboss.tools.aerogear.hybrid.ui;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
