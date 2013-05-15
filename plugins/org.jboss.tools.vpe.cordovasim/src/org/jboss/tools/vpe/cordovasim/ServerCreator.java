@@ -81,6 +81,11 @@ public class ServerCreator {
 		ContextHandler cordovaContextHandler = new ContextHandler("/cordova.js");
 		cordovaContextHandler.setHandler(cordovaResourceHandler);
 		
+		ResourceHandler cordovaPluginsJsonResourceHandler = new NotCachingResourceHandler(); // JBIDE-14453
+		cordovaPluginsJsonResourceHandler.setResourceBase(ripplePath + "/cordova/cordova_plugins.json");
+		ContextHandler cordovaPluginsJsonContextHandler = new ContextHandler("/cordova_plugins.json");
+		cordovaPluginsJsonContextHandler.setHandler(cordovaPluginsJsonResourceHandler);
+		
 		ResourceHandler wwwResourceHandler = new NotCachingResourceHandler();
 		wwwResourceHandler.setDirectoriesListed(true);
 		wwwResourceHandler.setResourceBase(resourceBase);
@@ -98,7 +103,8 @@ public class ServerCreator {
 				hostFileServletHandler,
 				formatDataServletHandler,
 				cordovaContextHandler,
-				new DefaultHandler(),
+				cordovaPluginsJsonContextHandler,
+				new DefaultHandler()
 			});
 		
 		RewriteHandler rewriteHandler = new RewriteHandler();
