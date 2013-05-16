@@ -40,8 +40,12 @@
                     <count value="1"/>
                     <iterate>
                         <adapt  type="org.eclipse.core.resources.IResource">
-                           	<test property="org.eclipse.core.resources.projectNature" 
-                           		value="org.jboss.tools.aerogear.hybrid.core.HybridAppNature" />
+                        	<or>
+	                        	<test property="org.eclipse.core.resources.projectNature" 
+	                           		value="org.jboss.tools.aerogear.hybrid.core.HybridAppNature" />
+	                           	<test property="org.eclipse.core.resources.projectNature" 
+	                           		value="com.android.ide.eclipse.adt.AndroidNature" />
+                        	</or>
                         </adapt> 
                     </iterate>
                 </with>
