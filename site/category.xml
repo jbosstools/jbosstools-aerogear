@@ -32,6 +32,14 @@
 		<category name="JBoss Tools vpe Nightly Build Update Site"/>
 	</feature> -->
 
+	<!-- CordovaSim -->
+	<feature id="org.jboss.tools.vpe.cordovasim.feature" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature>
+	<feature id="org.jboss.tools.vpe.cordovasim.feature.source" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature>
+
 	<!-- include but leave uncategorized -->
 	<feature url="features/org.mozilla.xulrunner.feature_0.0.0.jar" id="org.mozilla.xulrunner.feature" version="0.0.0">
 	</feature>
