@@ -17,12 +17,14 @@ import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
@@ -46,7 +48,7 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 
 			generateCordovaLib();
 			
-			Bundle bundle = IOSCore.getContext().getBundle();
+//			Bundle bundle = IOSCore.getContext().getBundle();
 			File destinationDir = getDestination();
 			
 			String name = hybridProject.getBuildArtifactAppName();
@@ -55,37 +57,37 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 			if( !prjdir.exists() ){//create the project directory
 				prjdir.mkdirs();
 			}
-			directoryCopy(bundle.getEntry("/templates/project/__TESTING__"), toURL(prjdir)  );		
-			directoryCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj"), toURL(new File(destinationDir, name+".xcodeproj")));	
+			directoryCopy(getTemplateFile("/templates/ios/project/__TESTING__"), toURL(prjdir)  );		
+			directoryCopy(getTemplateFile("/templates/ios/project/__TESTING__.xcodeproj"), toURL(new File(destinationDir, name+".xcodeproj")));	
 			
 			HashMap<String, String > values = new HashMap<String, String>();
 			values.put("__TESTING__", name);
 			values.put("--ID--", hybridProject.getAppName());
 			
-			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__-Info.plist"), 
+			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/__TESTING__-Info.plist"), 
 					toURL(new File(prjdir, name+"-Info.plist")), 
 					values);
-			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__-Prefix.pch"),
+			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/__TESTING__-Prefix.pch"),
 					toURL(new File(prjdir, name+"-Prefix.pch")),
 					values);
 			
 			
-			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__.xcodeproj/project.pbxproj"),
+			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__.xcodeproj/project.pbxproj"),
 					toURL(new File(destinationDir, name+".xcodeproj/project.pbxproj")), 
 					values);
-			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/AppDelegate.h"),
+			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/Classes/AppDelegate.h"),
 					toURL(new File(prjdir, "/Classes/AppDelegate.h")),
 					values);
-			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/AppDelegate.m"),
+			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/Classes/AppDelegate.m"),
 					toURL(new File(prjdir, "/Classes/AppDelegate.m")),
 					values);
-			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/MainViewController.h"),
+			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/Classes/MainViewController.h"),
 					toURL(new File(prjdir, "/Classes/MainViewController.h")),
 					values);			
-			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/Classes/MainViewController.m"),
+			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/Classes/MainViewController.m"),
 					toURL(new File(prjdir, "/Classes/MainViewController.m")),
 					values);
-			templatedFileCopy(bundle.getEntry("/templates/project/__TESTING__/main.m"),
+			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/main.m"),
 					toURL(new File(prjdir, "/main.m")),
 					values);
 			//iOS config.xml needs to be copied outside www to be used
@@ -101,7 +103,7 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 	private File generateCordovaLib() throws IOException{
 		File cordovaLibDirectory = new File(getDestination(),"CordovaLib");
 		if ( !cordovaLibDirectory.exists() ){
-			directoryCopy(IOSCore.getContext().getBundle().getEntry("/templates/CordovaLib"), toURL(new File(getDestination(),"CordovaLib")));
+			directoryCopy(getTemplateFile("/templates/ios/CordovaLib"), toURL(new File(getDestination(),"CordovaLib")));
 		}
 		return cordovaLibDirectory;
 	}
@@ -121,6 +123,11 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 	@Override
 	protected File getPlatformWWWDirectory() {
 		return new File(getDestination(), "www");
+	}
+	
+	private URL getTemplateFile(String path){
+		Bundle bundle = CordovaLibrarySupport.getContext().getBundle();
+		return bundle.getEntry(path);
 	}
 
 }

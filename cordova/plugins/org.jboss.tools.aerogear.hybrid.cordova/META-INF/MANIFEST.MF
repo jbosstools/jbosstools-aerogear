@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.jboss.tools.aerogear.hybrid.cordova;singleton:=true
+Bundle-Version: 2.7.0
+Bundle-Activator: org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: %Bundle-Vendor
+Export-Package: org.jboss.tools.aerogear.hybrid.cordova

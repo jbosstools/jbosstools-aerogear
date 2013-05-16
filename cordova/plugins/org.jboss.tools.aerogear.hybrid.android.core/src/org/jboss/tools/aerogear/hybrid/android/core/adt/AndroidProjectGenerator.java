@@ -54,6 +54,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
+import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
@@ -95,9 +96,9 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 		
 		//Move cordova library to libs
 		try{
-			fileCopy(getTemplateFile("/templates/CordovaLib/cordova-2.5.0.jar"), 
+			fileCopy(getTemplateFile("/templates/android/cordova.jar"), 
 					toURL(new File(getDestination(), DIR_LIBS + File.separator + FILE_JAR_CORDOVA )));
-			directoryCopy(getTemplateFile("/templates/project/res/"),
+			directoryCopy(getTemplateFile("/templates/android//project/res/"),
 					toURL(new File(getDestination(), DIR_RES )));
 			
 			IFile configFile = getProject().getFile(PlatformConstants.DIR_WWW+"/config.xml");
@@ -117,11 +118,11 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 			values.put("__ACTIVITY__", name);
 			values.put("__APILEVEL__", Integer.toString(targets.get(0).getApiLevel()));
 			
-			templatedFileCopy(getTemplateFile("/templates/project/Activity.java"), 
+			templatedFileCopy(getTemplateFile("/templates/android/project/Activity.java"), 
 					toURL(new File(getDestination(), File.separator+DIR_SRC+ File.separator+ 
 							packageName.replace('.', File.separatorChar)+File.separator+name+".java")),
 					values);
-			templatedFileCopy(getTemplateFile("/templates/project/AndroidManifest.xml"), 
+			templatedFileCopy(getTemplateFile("/templates/android/project/AndroidManifest.xml"), 
 					toURL(new File(getDestination(), FILE_XML_ANDROIDMANIFEST)), values);
 			
 			}
@@ -187,12 +188,12 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 
 	@Override
 	protected void replaceCordovaPlatformFiles() throws IOException {
-		fileCopy(getTemplateFile("/templates/CordovaLib/cordova.android.js"), 
+		fileCopy(getTemplateFile("/templates/android/cordova.android.js"), 
 				toURL(new File(getPlatformWWWDirectory(), PlatformConstants.FILE_JS_CORDOVA )));
 	}
 
 	private URL getTemplateFile(String path){
-		Bundle bundle = AndroidCore.getContext().getBundle();
+		Bundle bundle = CordovaLibrarySupport.getContext().getBundle();
 		return bundle.getEntry(path);
 	}
 	
