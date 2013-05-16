@@ -10,7 +10,20 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -20,6 +33,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * @author "Yahor Radtsevich (yradtsevich)"
@@ -119,20 +135,76 @@ public class CordovaSimLaunchParametersUtil {
 	}
 	
 	public static IResource getDefaultStartPage(IProject project, IContainer rootFolder) {
-		// TODO: add config.xml parsing
 		String startPageName = null;
-//		try {
-//			if (project.hasNature(AEROGEAR_HYBRID_NATURE_ID)) {
-//				// TODO: startPageName = www/config.xml/widget/content/text()
-//			} else if (project.hasNature(ANDROID_NATURE_ID)) {
-//				// TODO: startPageName = res/xml/config.xml/widget/content/text()
-//			}
-//		} catch (CoreException e) {
-//			Activator.logError(e.getMessage(), e);
-//		}
-		startPageName = "index.html";
+		try {
+			String configFilePath = null;
+			if (project.hasNature(AEROGEAR_HYBRID_NATURE_ID)) {
+				configFilePath = "www/config.xml";
+			} else if (project.hasNature(ANDROID_NATURE_ID)) {
+				configFilePath = "res/xml/config.xml";
+			}
+			if (configFilePath != null) {
+				IResource configResource = project.findMember("www/config.xml");
+				if (configResource instanceof IFile) {
+					IFile configFile = (IFile) configResource;
+					startPageName = getStartPageName(configFile);
+				}
+			}
+		} catch (CoreException e) {
+			Activator.logError(e.getMessage(), e);
+		}
+		
+		if (startPageName == null) {
+			startPageName = "index.html"; // standard default value
+		}
 		IResource startPage = getStartPage(rootFolder, startPageName);
 		return startPage;
+	}
+	
+	/**
+	 * Reads PhoneGap's config.xml and tries to extract the start page name from it.
+	 * 
+	 * Returns {@code null} if it is not found.
+	 */
+	private static String getStartPageName(IFile configFile) {
+		String startPageName = null;
+		InputStream inputStream = null;
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			inputStream = configFile.getContents();
+			Document document = dBuilder.parse(inputStream);
+
+			// optional, but recommended
+			// see http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+			document.getDocumentElement().normalize();
+			XPath xPath = XPathFactory.newInstance().newXPath();
+			XPathExpression xPathExpression = xPath.compile("//widget/content/@src");
+			Node startPageNameNode = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
+			if (startPageNameNode != null) {
+				startPageName = startPageNameNode.getNodeValue().trim();
+			}
+		} catch (SAXException e) {
+			// This may happen if user has a not valid XML. We just ignore this.
+		} catch (IOException e) {
+			Activator.logError(e.getMessage(), e);
+		} catch (CoreException e) {
+			Activator.logError(e.getMessage(), e);
+		} catch (ParserConfigurationException e) {
+			Activator.logError(e.getMessage(), e);
+		} catch (XPathExpressionException e) {
+			Activator.logError(e.getMessage(), e);
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					Activator.logError(e.getMessage(), e);
+				}
+			}
+		}
+
+		return startPageName;
 	}
 
 	static IPath getRelativePath(IContainer container, IResource resource) {
