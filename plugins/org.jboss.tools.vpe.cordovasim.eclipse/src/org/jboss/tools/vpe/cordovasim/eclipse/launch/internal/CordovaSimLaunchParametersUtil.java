@@ -117,7 +117,7 @@ public class CordovaSimLaunchParametersUtil {
 
 	public static IContainer getDefaultRootFolder(IProject project) {
 		IContainer rootFolder = null;
-		if (project != null) {
+		if (project != null && project.isOpen()) {
 			try {
 				if (project.hasNature(AEROGEAR_HYBRID_NATURE_ID)) {
 					rootFolder = getRootFolder(project, "www");
@@ -136,22 +136,24 @@ public class CordovaSimLaunchParametersUtil {
 	
 	public static IResource getDefaultStartPage(IProject project, IContainer rootFolder) {
 		String startPageName = null;
-		try {
-			String configFilePath = null;
-			if (project.hasNature(AEROGEAR_HYBRID_NATURE_ID)) {
-				configFilePath = "www/config.xml";
-			} else if (project.hasNature(ANDROID_NATURE_ID)) {
-				configFilePath = "res/xml/config.xml";
-			}
-			if (configFilePath != null) {
-				IResource configResource = project.findMember("www/config.xml");
-				if (configResource instanceof IFile) {
-					IFile configFile = (IFile) configResource;
-					startPageName = getStartPageName(configFile);
+		if (project != null && project.isOpen()) {
+			try {
+				String configFilePath = null;
+				if (project.hasNature(AEROGEAR_HYBRID_NATURE_ID)) {
+					configFilePath = "www/config.xml";
+				} else if (project.hasNature(ANDROID_NATURE_ID)) {
+					configFilePath = "res/xml/config.xml";
 				}
+				if (configFilePath != null) {
+					IResource configResource = project.findMember("www/config.xml");
+					if (configResource instanceof IFile) {
+						IFile configFile = (IFile) configResource;
+						startPageName = getStartPageName(configFile);
+					}
+				}
+			} catch (CoreException e) {
+				Activator.logError(e.getMessage(), e);
 			}
-		} catch (CoreException e) {
-			Activator.logError(e.getMessage(), e);
 		}
 		
 		if (startPageName == null) {
