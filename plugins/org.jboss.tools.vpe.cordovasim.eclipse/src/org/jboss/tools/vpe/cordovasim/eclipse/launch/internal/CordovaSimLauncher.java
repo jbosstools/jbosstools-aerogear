@@ -8,15 +8,19 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.eclipse.util;
+package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
@@ -53,25 +57,54 @@ public class CordovaSimLauncher {
 	//if you change this parameter, see also @org.jbosstools.browsersim.ui.BrowserSim
 	private static final String NOT_STANDALONE = BrowserSimLauncher.NOT_STANDALONE;	
 
-	public static void launchCordovaSim(String initialUrl) {
+	public static void launchCordovaSim(String projectString, String rootFolderString, String startPageString,
+			Integer port) {
 		List<String> parameters = new ArrayList<String>();
 		parameters.add(NOT_STANDALONE);
 
-		File file = null;
-		if (initialUrl != null) {
-			try {
-				file = new File(new URI(initialUrl));
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			}
-			if (file != null) {
-				parameters.add(file.toString());
+		IContainer rootFolder = null;
+		IProject project = null;
+		if (projectString != null) {
+			project = CordovaSimLaunchParametersUtil.getProject(projectString);
+			
+			if (rootFolderString != null) {
+				rootFolder = CordovaSimLaunchParametersUtil.getRootFolder(project, rootFolderString);
+			} else {
+				rootFolder = CordovaSimLaunchParametersUtil.getDefaultRootFolder(project);
 			}
 		}
+		
+		String actualStartPageString = null;
+		if (startPageString != null) {
+			actualStartPageString = startPageString;
+		} else {
+			IResource startPage = CordovaSimLaunchParametersUtil.getDefaultStartPage(project, rootFolder);
+			IPath startPagePath = CordovaSimLaunchParametersUtil.getRelativePath(rootFolder, startPage);
+			if (startPagePath != null) {
+				actualStartPageString = startPagePath.toString();
+			}
+		}
+		
+		if (rootFolder != null && actualStartPageString != null) {
+			parameters.add(rootFolder.getLocation().toString());
+			parameters.add(actualStartPageString);
+			
+			if (port != null) {
+				parameters.add("-port");
+				parameters.add(String.valueOf(port));
+			}
 
-		ExternalProcessLauncher.launchAsExternalProcess(REQUIRED_BUNDLES, OPTIONAL_BUNDLES,
-				CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters);
+			ExternalProcessLauncher.launchAsExternalProcess(REQUIRED_BUNDLES, OPTIONAL_BUNDLES,
+					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters);
+		} else {
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+							"Cannot run CordovaSim", "Cannot find root folder or start page.\n" +
+							"Please specify them in the Run Configuration settings.");					
+				}
+			});
+		}
 	}
 }

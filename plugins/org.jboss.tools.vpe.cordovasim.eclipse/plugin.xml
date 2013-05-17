@@ -1,74 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="org.eclipse.ui.commands">
-      <category
-            name="CordovaSim"
-            id="org.jboss.tools.vpe.cordovasim.eclipse.commands.category">
-      </category>
-      <command
-            name="Run CordovaSim"
-            categoryId="org.jboss.tools.vpe.cordovasim.eclipse.commands.category"
-            id="org.jboss.tools.vpe.cordovasim.eclipse.commands.runCordovaSim">
-      </command>
-   </extension>
-   <!--extension
-         point="org.eclipse.ui.bindings">
-      <key
-            commandId="org.jboss.tools.vpe.cordovasim.eclipse.commands.runCordovaSim"
-            contextId="org.eclipse.ui.contexts.window"
-            sequence="M1+6"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </key>
-   </extension-->
-   <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            id="org.jboss.tools.vpe.cordovasim.eclipse.actionSet"
-            label="CordovaSim"
-            visible="false">
-            	<action
-                   id="org.jboss.tools.vpe.cordovasim.eclipse.runCordovaSim"
-                   definitionId="org.jboss.tools.vpe.cordovasim.eclipse.commands.runCordovaSim"
-                   toolbarPath="cordovaSim"
-                   label="Run CordovaSim"
-                   class="org.jboss.tools.vpe.cordovasim.eclipse.actions.RunCordovaSimAction"
-                   icon="icons/cordovasim_16.png">
-            	</action>
-      </actionSet>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            extensions="htm, html"
+ <extension
+       point="org.eclipse.debug.core.launchConfigurationTypes">
+    <launchConfigurationType
+          id="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType"
+          delegate="org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchConfigurationDelegate"
+          modes="run"
+          name="CordovaSim">
+    </launchConfigurationType>
+ </extension>
+ <extension
+       point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+    <launchConfigurationTypeImage
+          configTypeID="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType"
+          icon="icons/cordovasim_16.png"
+          id="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationTypeImage">
+    </launchConfigurationTypeImage>
+ </extension>
+ <extension
+       point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+    <launchConfigurationTabGroup
+          class="org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchConfigurationTabGroup"
+          id="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationTypeTabGroup"
+          type="org.jboss.tools.vpe.cordovasim.eclipse.cordovaSimLaunchConfigurationType">
+    </launchConfigurationTabGroup>
+ </extension>
+  <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchShortcut"
+            id="org.jboss.tools.vpe.cordovasim.eclipse.launchShortcut"
+            label="Run with CordovaSim"
             icon="icons/cordovasim_16.png"
-            id="org.jboss.tools.vpe.cordovasim.eclipse.editors.CordovaSimLauncher"
-            launcher="org.jboss.tools.vpe.cordovasim.eclipse.editors.CordovaSimEditorLauncher"
-            name="CordovaSim">
-      </editor>
+            modes="run">
+        <contextualLaunch>
+            <enablement>
+                <with variable="selection">
+                    <count value="1"/>
+                    <iterate>
+                        <adapt  type="org.eclipse.core.resources.IResource">
+                        	<or>
+	                        	<test property="org.eclipse.core.resources.projectNature" 
+	                           		value="org.jboss.tools.aerogear.hybrid.core.HybridAppNature" />
+	                           	<test property="org.eclipse.core.resources.projectNature" 
+	                           		value="com.android.ide.eclipse.adt.AndroidNature" />
+                        	</or>
+                        </adapt> 
+                    </iterate>
+                </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
    </extension>
-   <extension point="org.eclipse.ui.browser.browsers">
-       <browser
-             executable=""
-             factoryclass="org.jboss.tools.vpe.cordovasim.eclipse.CordovaSimFactory"
-             id="org.jboss.tools.vpe.cordovasim.eclipse"
-             name="CordovaSim"
-             os="Win32,linux,MacOSX">
-          <location>
-             .
-          </location>
-   </browser>
-   </extension>
-	<extension point="org.eclipse.ui.perspectiveExtensions"> 
-		<perspectiveExtension targetID="org.jboss.tools.common.ui.JBossPerspective"> 
-			<actionSet id="org.jboss.tools.vpe.cordovasim.eclipse.actionSet"/> 
-		</perspectiveExtension> 
-		<perspectiveExtension targetID="org.jboss.tools.jst.web.ui.WebDevelopmentPerspective"> 
-			<actionSet id="org.jboss.tools.vpe.cordovasim.eclipse.actionSet"/> 
-		</perspectiveExtension> 
-		<perspectiveExtension targetID="org.jboss.tools.jst.cssPerspective"> 
-			<actionSet id="org.jboss.tools.vpe.cordovasim.eclipse.actionSet"/> 
-		</perspectiveExtension> 
-	</extension>
 </plugin>
