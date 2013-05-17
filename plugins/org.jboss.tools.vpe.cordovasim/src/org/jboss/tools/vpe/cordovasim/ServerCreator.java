@@ -45,7 +45,6 @@ public class ServerCreator {
 		connector.setHost("localhost");
 		server.addConnector(connector);
 		
-		String ripplePath = ServerCreator.class.getClassLoader().getResource("ripple").toExternalForm();
 				
 		ServletHolder userAgentServletHolder = new ServletHolder(new StaticResponseServlet("OK"));
 		ServletHandler userAgentServletHandler = new ServletHandler();
@@ -72,17 +71,20 @@ public class ServerCreator {
 		ResourceHandler rippleResourceHandler = new ResourceHandler();
 		rippleResourceHandler.setDirectoriesListed(true);
 		rippleResourceHandler.setWelcomeFiles(new String[] { "index.html" });
+		String ripplePath = ServerCreator.class.getClassLoader().getResource("ripple").toExternalForm();
 		rippleResourceHandler.setResourceBase(ripplePath);
 		ContextHandler rippleContextHandler = new ContextHandler("/ripple/assets");
 		rippleContextHandler.setHandler(rippleResourceHandler);
 		
 		ResourceHandler cordovaResourceHandler = new NotCachingResourceHandler();
-		cordovaResourceHandler.setResourceBase(ripplePath + "/cordova/cordova-2.6.0.js");
+		String cordovaPath = ServerCreator.class.getClassLoader().getResource("ripple/cordova/cordova-2.6.0.js").toExternalForm();
+		cordovaResourceHandler.setResourceBase(cordovaPath);
 		ContextHandler cordovaContextHandler = new ContextHandler("/cordova.js");
 		cordovaContextHandler.setHandler(cordovaResourceHandler);
 		
 		ResourceHandler cordovaPluginsJsonResourceHandler = new NotCachingResourceHandler(); // JBIDE-14453
-		cordovaPluginsJsonResourceHandler.setResourceBase(ripplePath + "/cordova/cordova_plugins.json");
+		String cordovaPluginsPath = ServerCreator.class.getClassLoader().getResource("ripple/cordova/cordova_plugins.json").toExternalForm();
+		cordovaPluginsJsonResourceHandler.setResourceBase(cordovaPluginsPath);
 		ContextHandler cordovaPluginsJsonContextHandler = new ContextHandler("/cordova_plugins.json");
 		cordovaPluginsJsonContextHandler.setHandler(cordovaPluginsJsonResourceHandler);
 		
