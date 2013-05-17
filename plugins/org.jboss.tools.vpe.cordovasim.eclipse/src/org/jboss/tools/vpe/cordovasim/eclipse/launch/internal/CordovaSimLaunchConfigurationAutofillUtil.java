@@ -12,10 +12,13 @@ package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.ide.ResourceUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
 import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
 
 /**
@@ -27,6 +30,22 @@ public class CordovaSimLaunchConfigurationAutofillUtil {
 		if (project != null) {
 			launchConfiguration.setAttribute(CordovaSimLaunchConstants.PROJECT, project.getName());
 		}
+	}
+	
+	public static ILaunchConfiguration chooseLaunchConfiguration(ILaunchConfiguration[] configurations, IProject project) {
+		try {
+			for (ILaunchConfiguration configuration : configurations) {
+				String projectName;
+					projectName = configuration.getAttribute(CordovaSimLaunchConstants.PROJECT, (String) null);
+				
+				if (projectName != null && projectName.equals(project.getName())) {
+					return configuration;
+				}
+			}
+		} catch (CoreException e) {
+			Activator.logError(e.getMessage(), e);
+		}
+		return null;
 	}
 	
 	public static IProject getProjectToRun(ISelection selection) {
