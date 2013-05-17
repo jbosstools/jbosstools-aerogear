@@ -18,6 +18,9 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
@@ -69,25 +72,39 @@ public class CordovaSimLauncher {
 			} else {
 				rootFolder = CordovaSimLaunchParametersUtil.getDefaultRootFolder(project);
 			}
-			parameters.add(rootFolder.getLocation().toString());
 		}
 		
-		String actualStartPageString;
+		String actualStartPageString = null;
 		if (startPageString != null) {
 			actualStartPageString = startPageString;
 		} else {
 			IResource startPage = CordovaSimLaunchParametersUtil.getDefaultStartPage(project, rootFolder);
 			IPath startPagePath = CordovaSimLaunchParametersUtil.getRelativePath(rootFolder, startPage);
-			actualStartPageString = startPagePath.toString();
+			if (startPagePath != null) {
+				actualStartPageString = startPagePath.toString();
+			}
 		}
-		parameters.add(actualStartPageString);
 		
-		if (port != null) {
-			parameters.add("-port");
-			parameters.add(String.valueOf(port));
-		}
+		if (rootFolder != null && actualStartPageString != null) {
+			parameters.add(rootFolder.getLocation().toString());
+			parameters.add(actualStartPageString);
+			
+			if (port != null) {
+				parameters.add("-port");
+				parameters.add(String.valueOf(port));
+			}
 
-		ExternalProcessLauncher.launchAsExternalProcess(REQUIRED_BUNDLES, OPTIONAL_BUNDLES,
-				CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters);
+			ExternalProcessLauncher.launchAsExternalProcess(REQUIRED_BUNDLES, OPTIONAL_BUNDLES,
+					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters);
+		} else {
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+							"Cannot run CordovaSim", "Cannot find root folder or start page.\n" +
+							"Please specify them in the Run Configuration settings.");					
+				}
+			});
+		}
 	}
 }
