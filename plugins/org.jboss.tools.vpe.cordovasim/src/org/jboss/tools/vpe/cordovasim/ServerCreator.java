@@ -77,7 +77,7 @@ public class ServerCreator {
 		rippleContextHandler.setHandler(rippleResourceHandler);
 		
 		ResourceHandler cordovaResourceHandler = new NotCachingResourceHandler();
-		String cordovaPath = ServerCreator.class.getClassLoader().getResource("ripple/cordova/cordova-2.6.0.js").toExternalForm();
+		String cordovaPath = ServerCreator.class.getClassLoader().getResource("ripple/cordova/cordova-2.7.0.js").toExternalForm();
 		cordovaResourceHandler.setResourceBase(cordovaPath);
 		ContextHandler cordovaContextHandler = new ContextHandler("/cordova.js");
 		cordovaContextHandler.setHandler(cordovaResourceHandler);
