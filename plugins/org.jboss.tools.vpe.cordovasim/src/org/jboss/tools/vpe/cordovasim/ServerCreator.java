@@ -77,16 +77,10 @@ public class ServerCreator {
 		rippleContextHandler.setHandler(rippleResourceHandler);
 		
 		ResourceHandler cordovaResourceHandler = new NotCachingResourceHandler();
-		String cordovaPath = ServerCreator.class.getClassLoader().getResource("ripple/cordova/cordova-2.7.0.js").toExternalForm();
+		String cordovaPath = ServerCreator.class.getClassLoader().getResource("ripple/cordova").toExternalForm();
 		cordovaResourceHandler.setResourceBase(cordovaPath);
-		ContextHandler cordovaContextHandler = new ContextHandler("/cordova.js");
+		ContextHandler cordovaContextHandler = new ContextHandler("/ripple/cordova");
 		cordovaContextHandler.setHandler(cordovaResourceHandler);
-		
-		ResourceHandler cordovaPluginsJsonResourceHandler = new NotCachingResourceHandler(); // JBIDE-14453
-		String cordovaPluginsPath = ServerCreator.class.getClassLoader().getResource("ripple/cordova/cordova_plugins.json").toExternalForm();
-		cordovaPluginsJsonResourceHandler.setResourceBase(cordovaPluginsPath);
-		ContextHandler cordovaPluginsJsonContextHandler = new ContextHandler("/cordova_plugins.json");
-		cordovaPluginsJsonContextHandler.setHandler(cordovaPluginsJsonResourceHandler);
 		
 		ResourceHandler wwwResourceHandler = new NotCachingResourceHandler();
 		wwwResourceHandler.setDirectoriesListed(true);
@@ -94,26 +88,11 @@ public class ServerCreator {
 		ContextHandler wwwContextHandler = new ContextHandler("/");
 		wwwContextHandler.setHandler(wwwResourceHandler);
 		
-
-		HandlerList handlers = new HandlerList();
-		handlers.setHandlers(new Handler[] {
-				userAgentServletHandler,
-				wwwContextHandler,
-				proxyServletHandler,
-				rippleContextHandler,
-				fileUploadContextHandler,
-				hostFileServletHandler,
-				formatDataServletHandler,
-				cordovaContextHandler,
-				cordovaPluginsJsonContextHandler,
-				new DefaultHandler()
-			});
-		
-		RewriteHandler rewriteHandler = new RewriteHandler();
-		rewriteHandler.setRewriteRequestURI(true);
-		rewriteHandler.setRewritePathInfo(true);
-		rewriteHandler.setHandler(handlers);
-		rewriteHandler.addRule(new Rule() {
+		RewriteHandler rippleRewriteHandler = new RewriteHandler();
+		rippleRewriteHandler.setRewriteRequestURI(true);
+		rippleRewriteHandler.setRewritePathInfo(true);
+		rippleRewriteHandler.setHandler(rippleContextHandler);
+		rippleRewriteHandler.addRule(new Rule() {
 			@Override
 			public String matchAndApply(String target, HttpServletRequest request,
 					HttpServletResponse response) throws IOException {
@@ -124,7 +103,38 @@ public class ServerCreator {
 				}
 			}
 		});
-		server.setHandler(rewriteHandler);
+		
+		RewriteHandler cordovaRewriteHandler = new RewriteHandler();
+		cordovaRewriteHandler.setRewriteRequestURI(true);
+		cordovaRewriteHandler.setRewritePathInfo(true);
+		cordovaRewriteHandler.setHandler(cordovaContextHandler);
+		cordovaRewriteHandler.addRule(new Rule() {
+			@Override
+			public String matchAndApply(String target, HttpServletRequest request,
+					HttpServletResponse response) throws IOException {
+				if (request.getPathInfo().equals("/cordova.js")){ // JBIDE-14319
+					return "/ripple/cordova/cordova-2.7.0.js";
+				} else if (request.getPathInfo().equals("/cordova_plugins.json")){ // JBIDE-14453
+					return "/ripple/cordova/cordova_plugins.json";
+				} else {
+					return null;
+				}
+			}
+		});
+		
+		HandlerList handlers = new HandlerList();
+		handlers.setHandlers(new Handler[] {
+				userAgentServletHandler,
+				rippleRewriteHandler,
+				wwwContextHandler,
+				cordovaRewriteHandler,
+				proxyServletHandler,
+				fileUploadContextHandler,
+				hostFileServletHandler,
+				formatDataServletHandler,
+				new DefaultHandler()
+			});
+		server.setHandler(handlers);
 		return server;
 	}
 }
