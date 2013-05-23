@@ -98,7 +98,7 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 		try{
 			fileCopy(getTemplateFile("/templates/android/cordova.jar"), 
 					toURL(new File(getDestination(), DIR_LIBS + File.separator + FILE_JAR_CORDOVA )));
-			directoryCopy(getTemplateFile("/templates/android//project/res/"),
+			directoryCopy(getTemplateFile("/templates/android/project/res/"),
 					toURL(new File(getDestination(), DIR_RES )));
 			
 			IFile configFile = getProject().getFile(PlatformConstants.DIR_WWW+"/config.xml");
@@ -194,7 +194,11 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 
 	private URL getTemplateFile(String path){
 		Bundle bundle = CordovaLibrarySupport.getContext().getBundle();
-		return bundle.getEntry(path);
+		URL url = bundle.getEntry(path);
+		if( url == null ){
+			AndroidCore.log(IStatus.WARNING, "Template file "+ path+ " is missing", null);
+		}
+		return url;
 	}
 	
 	
