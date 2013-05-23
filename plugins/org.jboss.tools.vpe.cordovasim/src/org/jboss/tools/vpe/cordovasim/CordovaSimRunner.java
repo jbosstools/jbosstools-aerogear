@@ -13,7 +13,6 @@ package org.jboss.tools.vpe.cordovasim;
 import java.io.File;
 import java.net.BindException;
 import java.text.MessageFormat;
-import java.util.Arrays;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -21,17 +20,18 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.ui.events.ExitListener;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeEvent;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeListener;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
+import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
 import org.jboss.tools.vpe.browsersim.ui.CocoaUIEnhancer;
 import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
@@ -42,7 +42,8 @@ import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
  */
 public class CordovaSimRunner {
 	private static CustomBrowserSim browserSim;
-	
+	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"};
+
 	/**
 	 * @param args
 	 * @throws Exception
@@ -64,6 +65,8 @@ public class CordovaSimRunner {
 
 			final Display display = Display.getDefault();
 			Shell shell = new Shell(display);
+			shell.setSize(750, 750);
+			setShellAttributes(shell);
 			shell.setLayout(new FillLayout());
 			final Browser browser = new Browser(shell, SWT.WEBKIT);
 			browser.setUrl("http://localhost:" + port + "/" + cordovaSimArgs.getStartPage() + "?enableripple=true");
@@ -117,22 +120,40 @@ public class CordovaSimRunner {
 	}
 
 	private static void createBrowserSim(final Browser browser) {
-		browserSim = new CustomBrowserSim("about:blank");
-		browserSim.open();
-		browserSim.addSkinChangeListener(new SkinChangeListener() {
-			@Override
-			public void skinChanged(SkinChangeEvent event) {
-				browser.refresh();
-			}
-		});
-		browserSim.addExitListener(new ExitListener() {
-			
-			@Override
-			public void exit() {
-				browser.getShell().dispose();
-			}
-		});
-		browserSim.getBrowser().addLocationListener(new RippleInjector());
+		Shell parentShell = browser.getShell();
+		if (parentShell != null) {
+			browserSim = new CustomBrowserSim("about:blank", parentShell);
+			browserSim.open();
+			browserSim.addSkinChangeListener(new SkinChangeListener() {
+				@Override
+				public void skinChanged(SkinChangeEvent event) {
+					browser.refresh();
+				}
+			});
+			browserSim.addExitListener(new ExitListener() {
+				
+				@Override
+				public void exit() {
+					browser.getShell().dispose();
+				}
+			});
+			browserSim.getBrowser().addLocationListener(new RippleInjector());
+		}
 	}
 	
+	private static Image[] initImages(Shell shell) {
+		CordovaSimImageList imageList = new CordovaSimImageList(shell);
+		Image[] icons = new Image[CORDOVASIM_ICONS.length];
+		for (int i = 0; i < CORDOVASIM_ICONS.length; i++) {
+			icons[i] = imageList.getImage(CORDOVASIM_ICONS[i]);
+		}
+
+		return icons;
+	}
+
+	private static void setShellAttributes(Shell shell) {
+		Image[] icons = initImages(shell);
+		shell.setImages(icons);
+		shell.setText(Messages.CordovaSim_CORDOVA_SIM);
+	}
 }
