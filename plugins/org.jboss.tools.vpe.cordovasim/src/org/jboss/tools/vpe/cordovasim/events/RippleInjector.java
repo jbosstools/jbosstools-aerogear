@@ -18,7 +18,15 @@ public class RippleInjector extends LocationAdapter {
 	@Override
 	public void changed(LocationEvent event) {
 		Browser browser = (Browser) event.widget;
-		browser.execute("if (window.opener.ripple) { window.opener.ripple('bootstrap').inject(window, document);}");
-		browser.forceFocus();
+		if (event.top) {
+			browser.execute(
+					/* Cordova's InAppBrowser API overrides window.open function, so we have to remember it for FireBug Lite
+					 * (see FireBugLiteLoader.java and JBIDE-14625) */
+					"window._bsOriginalWindowOpen = window._bsOriginalWindowOpen || window.open;" +
+					"if (window.opener.ripple) {" +
+						"window.opener.ripple('bootstrap').inject(window, document);" +
+					"}");
+			browser.forceFocus();
+		}
 	}
 }
