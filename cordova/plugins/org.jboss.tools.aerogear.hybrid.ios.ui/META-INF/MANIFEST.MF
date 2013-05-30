@@ -15,3 +15,4 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.tools.aerogear.hybrid.ios.ui;x-internal:=true
 Import-Package: org.eclipse.ui.dialogs,
  org.eclipse.ui.ide
+Bundle-Localization: plugin

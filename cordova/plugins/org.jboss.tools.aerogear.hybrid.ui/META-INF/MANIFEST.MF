@@ -33,4 +33,5 @@ Export-Package: org.jboss.tools.aerogear.hybrid.ui;x-internal:=true,
  org.jboss.tools.aerogear.hybrid.ui.launch,
  org.jboss.tools.aerogear.hybrid.ui.wizard.project;x-internal:=true
 Bundle-Vendor: %Bundle-Vendor
+Bundle-Localization: plugin
 

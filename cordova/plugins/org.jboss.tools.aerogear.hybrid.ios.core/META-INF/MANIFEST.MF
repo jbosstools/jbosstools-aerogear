@@ -17,3 +17,4 @@ Bundle-ClassPath: .,
 Export-Package: org.jboss.tools.aerogear.hybrid.ios.core;x-friends:="org.jboss.tools.aerogear.hybrid.ios.ui",
  org.jboss.tools.aerogear.hybrid.ios.core.simulator;x-friends:="org.jboss.tools.aerogear.hybrid.ios.ui",
  org.jboss.tools.aerogear.hybrid.ios.core.xcode;x-friends:="org.jboss.tools.aerogear.hybrid.ios.ui"
+Bundle-Localization: plugin
