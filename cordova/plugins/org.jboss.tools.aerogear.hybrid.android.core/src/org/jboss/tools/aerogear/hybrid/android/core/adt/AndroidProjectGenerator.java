@@ -50,6 +50,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -94,15 +95,21 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 		
 		sdkManager.createProject(targets.get(0), name, getDestination(),name, packageName );
 		
-		//Move cordova library to libs
 		try{
-			fileCopy(getTemplateFile("/templates/android/cordova.jar"), 
-					toURL(new File(getDestination(), DIR_LIBS + File.separator + FILE_JAR_CORDOVA )));
+			File libsDir = new File(getDestination(),DIR_LIBS);
+			if(!libsDir.exists()){
+				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Android SDK tools failed to create libs folder"));
+			}
+			//Move cordova library to libs
+			URL sourcs = getTemplateFile("/templates/android/cordova.jar");
+			URL dests = toURL(new File(libsDir, FILE_JAR_CORDOVA ));
+			AndroidCore.log(IStatus.INFO, "Copying cordova android lib from " + sourcs + " to " + dests,  null);
+ 			fileCopy(sourcs, dests);
 			directoryCopy(getTemplateFile("/templates/android/project/res/"),
 					toURL(new File(getDestination(), DIR_RES )));
 			
-			IFile configFile = getProject().getFile(PlatformConstants.DIR_WWW+"/config.xml");
-			File xmldir = new File(getDestination(),DIR_RES+File.separator+DIR_XML+File.separator);
+			IFile configFile = getProject().getFile(PlatformConstants.DIR_WWW+ "/" + PlatformConstants.FILE_XML_CONFIG);
+			File xmldir = new File(getDestination(), DIR_RES + File.separator + DIR_XML +File.separator);
 			if( !xmldir.exists() ){//only config.xml uses xml 
 				xmldir.mkdirs();   //directory make sure it is created
 			}
@@ -195,9 +202,7 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 	private URL getTemplateFile(String path){
 		Bundle bundle = CordovaLibrarySupport.getContext().getBundle();
 		URL url = bundle.getEntry(path);
-		if( url == null ){
-			AndroidCore.log(IStatus.WARNING, "Template file "+ path+ " is missing", null);
-		}
+		Assert.isNotNull(url, "No template file resolved for path "+path);
 		return url;
 	}
 	
