@@ -343,6 +343,9 @@ public class AndroidSDKManager {
 	}
 
 	private String getAndroidCommand(){
+		if(isWindows()){
+			return "cmd /c start "+ toolsDir +"android";
+		}
 		return toolsDir+"android";
 	}
 	
@@ -352,6 +355,11 @@ public class AndroidSDKManager {
 	
 	private String getEmulatorCommand(){
 		return toolsDir+"emulator";
+	}
+	
+	private boolean isWindows(){
+		String OS = System.getProperty("os.name","unknown");
+		return OS.toLowerCase().indexOf("win")>-1;
 	}
 	
 }
