@@ -40503,7 +40503,7 @@ function _default() {
         "emails": [{type: "work", value: "mark@tinyhippos.com", pref: false}]
     }].map(function (obj) {
         obj.id = Math.uuid(undefined, 16);
-        return navigator.contacts.create(obj);
+        return bsPopup.navigator.contacts.create(obj);
     });
 }
 
@@ -40543,7 +40543,7 @@ _self = {
         var fields = args[0],
             options = args[1],
             foundContacts = [],
-            tempContact = navigator.contacts.create(),
+            tempContact = bsPopup.navigator.contacts.create(),
             contacts = _get();
 
         options = options || {};
@@ -40557,7 +40557,7 @@ _self = {
 
         if (fields.length > 0) {
             contacts.forEach(function (contact) {
-                var newContact = navigator.contacts.create(contact);
+                var newContact = bsPopup.navigator.contacts.create(contact);
 
                 if (options && (!_filtered(contact, options))) {
                     return;
