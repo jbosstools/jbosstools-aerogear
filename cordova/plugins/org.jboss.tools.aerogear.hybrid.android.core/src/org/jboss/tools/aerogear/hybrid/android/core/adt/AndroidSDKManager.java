@@ -344,7 +344,7 @@ public class AndroidSDKManager {
 
 	private String getAndroidCommand(){
 		if(isWindows()){
-			return "cmd /c start "+ toolsDir +"android";
+			return "cmd /c "+ toolsDir +"android";
 		}
 		return toolsDir+"android";
 	}
