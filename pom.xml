@@ -12,6 +12,7 @@
 	<name>vpe.all</name>
 	<packaging>pom</packaging>
 	<modules>
+		<module>win32_win32_x86</module>
 		<module>plugins</module>
 		<module>tests</module>
 		<module>features</module>
