@@ -12,9 +12,7 @@ package org.jboss.tools.vpe.cordovasim;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 

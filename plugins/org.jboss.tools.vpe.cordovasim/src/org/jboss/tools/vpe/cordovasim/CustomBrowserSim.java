@@ -13,10 +13,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.jboss.tools.vpe.browsersim.browser.BrowserSimBrowser;
 import org.jboss.tools.vpe.browsersim.model.preferences.CommonPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
+import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferencesStorage;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
 import org.jboss.tools.vpe.browsersim.ui.ControlHandler;
 import org.jboss.tools.vpe.browsersim.ui.menu.BrowserSimMenuCreator;
 import org.jboss.tools.vpe.browsersim.ui.skin.BrowserSimSkin;
+import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPreferencesStorage;
+import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
@@ -35,5 +38,14 @@ public class CustomBrowserSim extends BrowserSim {
 	@Override
 	protected BrowserSimMenuCreator createMenuCreator(BrowserSimSkin skin, CommonPreferences commonPreferences, SpecificPreferences specificPreferences, ControlHandler controlHandler, String homeUrl) {
 		return new CordovaSimMenuCreator(skin, commonPreferences, specificPreferences, controlHandler, homeUrl);
+	}
+	
+	@Override
+	protected SpecificPreferencesStorage getSpecificPreferencesStorage() {
+		return CordavaSimSpecificPreferencesStorage.INSTANCE;
+	}
+
+	public CordovaSimSpecificPreferences getSpecificPreferences() {
+		return (CordovaSimSpecificPreferences)super.getSpecificPreferences();
 	}
 }

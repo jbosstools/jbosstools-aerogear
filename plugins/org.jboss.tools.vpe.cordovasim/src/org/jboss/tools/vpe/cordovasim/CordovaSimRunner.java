@@ -20,6 +20,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
@@ -27,14 +29,17 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
+import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
+import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
+import org.jboss.tools.vpe.browsersim.ui.CocoaUIEnhancer;
+import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 import org.jboss.tools.vpe.browsersim.ui.events.ExitListener;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeEvent;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeListener;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
+import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPreferencesStorage;
+import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
-import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
-import org.jboss.tools.vpe.browsersim.ui.CocoaUIEnhancer;
-import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -64,8 +69,7 @@ public class CordovaSimRunner {
 			port = connector.getLocalPort(); // for the case if port equals 0 is requested (any free port)
 
 			final Display display = Display.getDefault();
-			Shell shell = new Shell(display);
-			shell.setSize(750, 750);
+			final Shell shell = new Shell(display);
 			setShellAttributes(shell);
 			shell.setLayout(new FillLayout());
 			final Browser browser = new Browser(shell, SWT.WEBKIT);
@@ -76,6 +80,17 @@ public class CordovaSimRunner {
 					browserSim.getBrowser().getShell().close();
 				}
 			});
+			
+			final CordovaSimSpecificPreferences sp = loadPreferences();
+			
+			if (sp.getCordovaBrowserSize() != null) {
+				shell.setSize(sp.getCordovaBrowserSize());
+				
+			}
+			if (sp.getCordovaBrowserLocation() != null) {
+				shell.setLocation(sp.getCordovaBrowserLocation());
+			}
+			
 			browser.addOpenWindowListener(new OpenWindowListener() {
 				private Browser oldBrowser;
 
@@ -83,7 +98,7 @@ public class CordovaSimRunner {
 				public void open(WindowEvent event) {
 					if (browserSim == null || browserSim.getBrowser().isDisposed()
 							|| browserSim.getBrowser().getShell().isDisposed()) {
-						createBrowserSim(browser);
+						createBrowserSim(sp, browser);
 					} else if (oldBrowser == browserSim.getBrowser()) {
 						browserSim.reinitSkin();
 						browserSim.getBrowser().addLocationListener(new RippleInjector());
@@ -94,8 +109,25 @@ public class CordovaSimRunner {
 					oldBrowser = browserSim.getBrowser();
 				}
 			});
+			shell.addControlListener(new ControlAdapter() {
+				@Override
+				public void controlMoved(ControlEvent e) {
+					if (browserSim != null) {
+						browserSim.getSpecificPreferences().setCordovaBrowserLocation(shell.getLocation());
+					}
+					super.controlMoved(e);
+				}
+			});
+			shell.addListener(SWT.Resize, new Listener() {
+				public void handleEvent(Event e) {
+					if (browserSim != null) {
+						browserSim.getSpecificPreferences().setCordovaBrowserSize(shell.getSize());
+					}
+				}
+			});
 
 			shell.open();
+			
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch())
 					display.sleep();
@@ -119,11 +151,11 @@ public class CordovaSimRunner {
 		display.dispose();
 	}
 
-	private static void createBrowserSim(final Browser browser) {
+	private static void createBrowserSim(final SpecificPreferences sp, final Browser browser) {
 		Shell parentShell = browser.getShell();
 		if (parentShell != null) {
 			browserSim = new CustomBrowserSim("about:blank", parentShell);
-			browserSim.open();
+			browserSim.open(sp, null, parentShell);
 			browserSim.addSkinChangeListener(new SkinChangeListener() {
 				@Override
 				public void skinChanged(SkinChangeEvent event) {
@@ -150,6 +182,16 @@ public class CordovaSimRunner {
 
 		return icons;
 	}
+
+
+	private static CordovaSimSpecificPreferences loadPreferences() {
+		CordovaSimSpecificPreferences sp = (CordovaSimSpecificPreferences) CordavaSimSpecificPreferencesStorage.INSTANCE.load();
+		if (sp == null) {
+			sp = (CordovaSimSpecificPreferences) CordavaSimSpecificPreferencesStorage.INSTANCE.loadDefault();
+		}
+		return sp;
+	}
+
 
 	private static void setShellAttributes(Shell shell) {
 		Image[] icons = initImages(shell);

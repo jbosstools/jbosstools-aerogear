@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<browserSim version="11">
+	<selectedDeviceId>7192d646-0179-45bc-9c85-f68e325e8971</selectedDeviceId>
+	<location>
+		<x></x>
+		<y></y>
+	</location>
+	<orientationAngle>0</orientationAngle>
+	<useSkins>true</useSkins>
+	<cordova>
+		<cordovaLocation>
+			<x></x>
+			<y></y>
+		</cordovaLocation>
+		<size>
+			<width>750</width>
+			<height>700</height>
+		</size>
+	</cordova>
+</browserSim>
