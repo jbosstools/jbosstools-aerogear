@@ -30016,11 +30016,10 @@ function _writeable(obj) {
 
 function _XMLHttpRequest() {
     var Xhr = ripple('emulatorBridge').xhr() || XHR;
-    return _writeable(new Xhr());
+    return /*_writeable(*/new Xhr()/*)*/;
 }
 
 module.exports = _XMLHttpRequest;
-
 });
 ripple.define('omgwtf', function (ripple, exports, module) {
 /*
@@ -35324,6 +35323,7 @@ module.exports = {
             var isFileScheme = utils.location().protocol.match(/^file:/);
             window.XMLHttpRequest = ripple(isFileScheme ? 'xhr/jsonp' : 'xhr/cors');
         }
+
     }
 };
 
@@ -54338,7 +54338,21 @@ if (!localStorage.ripple) {
                                             "id":"tinyhippos-device-key",
                                             "key":"device-key",
                                             "prefix":"tinyhippos-"
-                                          }
+                                          },
+					"tinyhippos-settings-xhr-proxy-setting":
+										{
+											"id":"tinyhippos-settings-xhr-proxy-setting",
+											"key":"settings-xhr-proxy-setting",
+											"value":"local",
+											"prefix":"tinyhippos-"
+										},
+					"tinyhippos-settings-xhr-proxy-local-port":
+										{
+											"id":"tinyhippos-settings-xhr-proxy-local-port",
+											"key":"settings-xhr-proxy-local-port",
+											"value":location.port,
+											"prefix":"tinyhippos-"
+										}
                       };
   localStorage.setItem('ripple', JSON.stringify(defaultValues));
 }
