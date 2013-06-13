@@ -20,6 +20,10 @@ public class RippleInjector extends LocationAdapter {
 		Browser browser = (Browser) event.widget;
 		if (event.top) {
 			browser.execute(
+					/* We have to remember userAgent of the BrowserSim, cause window.navigator object would be overridden by ripple
+					 * (see define function of the 'platform/w3c/1.0/navigator' in ripple.js and JBIDE-14652) */
+					"window.bsUserAgent = window.navigator.userAgent;" +
+					"window.opener.document.getElementById('userAgentInfo').innerHTML = bsUserAgent;" +
 					/* Cordova's InAppBrowser API overrides window.open function, so we have to remember it for FireBug Lite
 					 * (see FireBugLiteLoader.java and JBIDE-14625) */
 					"window._bsOriginalWindowOpen = window._bsOriginalWindowOpen || window.open;" +
