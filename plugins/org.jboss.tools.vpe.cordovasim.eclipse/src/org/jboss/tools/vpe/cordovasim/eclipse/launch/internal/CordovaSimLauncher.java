@@ -31,10 +31,10 @@ import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
 public class CordovaSimLauncher {
 	public static final String CORDOVASIM_CLASS_NAME = "org.jboss.tools.vpe.cordovasim.CordovaSimRunner"; //$NON-NLS-1$
 	private static final List<ExternalProcessCallback> CORDOVASIM_CALLBACKS = BrowserSimLauncher.BROWSERSIM_CALLBACKS;
-	private static final List<String> REQUIRED_BUNDLES = new ArrayList<String>(); 
+	private static final List<String> BUNDLES = new ArrayList<String>(); 
 	static {
-		REQUIRED_BUNDLES.addAll(BrowserSimLauncher.REQUIRED_BUNDLES);
-		REQUIRED_BUNDLES.addAll(Arrays.asList(
+		BUNDLES.addAll(BrowserSimLauncher.BUNDLES);
+		BUNDLES.addAll(Arrays.asList(
 			"org.jboss.tools.vpe.cordovasim",
 			"org.jboss.tools.vpe.cordovasim.ripple",
 			"org.eclipse.jetty.continuation",
@@ -51,9 +51,9 @@ public class CordovaSimLauncher {
 			"javax.servlet"
 		));
 	}
-	
-	private static final List<String> OPTIONAL_BUNDLES = BrowserSimLauncher.OPTIONAL_BUNDLES;	
 
+	private static final List<String> RESOURCES_BUNDLES = BrowserSimLauncher.RESOURCES_BUNDLES;
+	
 	//if you change this parameter, see also @org.jbosstools.browsersim.ui.BrowserSim
 	private static final String NOT_STANDALONE = BrowserSimLauncher.NOT_STANDALONE;	
 
@@ -94,7 +94,7 @@ public class CordovaSimLauncher {
 				parameters.add(String.valueOf(port));
 			}
 
-			ExternalProcessLauncher.launchAsExternalProcess(REQUIRED_BUNDLES, OPTIONAL_BUNDLES,
+			ExternalProcessLauncher.launchAsExternalProcess(BUNDLES, RESOURCES_BUNDLES,
 					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters);
 		} else {
 			Display.getDefault().asyncExec(new Runnable() {
