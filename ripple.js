@@ -25988,7 +25988,7 @@ function _updateInformationView() {
     }
 
     infoList.push("<section><label class=\"ui-text-label\" style=\"float:left; padding-top: 0px; \">User Agent: </label>" +
-                    "<div class=\"text-is-selectable\" style=\"padding-left: 80px\">" + device.userAgent + "</div></section>");
+                    "<div class=\"text-is-selectable\" id=\"userAgentInfo\" style=\"padding-left: 80px\">" + device.userAgent + "</div></section>");
 
     if (device.notes) {
         utils.forEach(device.notes, function (note) {
@@ -35699,7 +35699,7 @@ var _original = window.navigator,
 }());
 
 _self.__defineGetter__('userAgent', function () {
-    return devices.getCurrentDevice().userAgent || _original.userAgent;
+    return bsPopup.bsUserAgent || devices.getCurrentDevice().userAgent || _original.userAgent; // JBIDE-14652 variable bsPopup.bsUserAgent is defined in RippleInjector.java  
 });
 
 module.exports = _self;
