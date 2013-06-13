@@ -43,7 +43,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 	private static final String PREFERENCES_CORDOVA = "cordova";
 	private static final String PREFERENCES_CORDOVA_LOCATION = "cordovaLocation";
 	private static final String PREFERENCES_CORDOVA_SIZE = "size";
-	private static final String PREFERENCES_WIDTH = "widht";
+	private static final String PREFERENCES_WIDTH = "width";
 	private static final String PREFERENCES_HEIGHT = "height";
 	
 	
