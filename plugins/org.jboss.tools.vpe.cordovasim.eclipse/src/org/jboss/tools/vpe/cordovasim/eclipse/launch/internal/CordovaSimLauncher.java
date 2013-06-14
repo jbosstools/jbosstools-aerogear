@@ -95,7 +95,7 @@ public class CordovaSimLauncher {
 			}
 
 			ExternalProcessLauncher.launchAsExternalProcess(BUNDLES, RESOURCES_BUNDLES,
-					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters);
+					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, "CordovaSim");
 		} else {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
