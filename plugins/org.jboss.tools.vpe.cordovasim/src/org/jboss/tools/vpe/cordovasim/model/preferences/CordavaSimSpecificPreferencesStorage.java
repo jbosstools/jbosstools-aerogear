@@ -11,8 +11,8 @@
 package org.jboss.tools.vpe.cordovasim.model.preferences;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.Point;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferencesStorage;
 import org.jboss.tools.vpe.browsersim.util.PreferencesUtil;
-import org.jboss.tools.vpe.cordovasim.util.ResourcesUtil;
+import org.jboss.tools.vpe.cordovasim.util.CordovaSimResourcesUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -54,7 +54,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 	}
 
 	@Override
-	protected SpecificPreferences load(File file) {
+	protected SpecificPreferences load(InputStream is) {
 		int configVersion = 0;
 		String selectedDeviceId = null;
 		int orientationAngle = 0;
@@ -64,11 +64,9 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 		Point cordovaBrowserLocation = null;
 		Point cordovaBrowserSize = null;
 
-		FileInputStream is = null;
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			is = new FileInputStream(file);
 			Document document = dBuilder.parse(is);
 
 			// optional, but recommended
@@ -143,6 +141,8 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (Throwable t) {
+			t.printStackTrace();
 		} finally {
 			try {
 				if (is != null)
@@ -156,7 +156,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 	}
 
 	@Override
-	protected SpecificPreferences getDefault() {
+	protected SpecificPreferences createBlankPreferences() {
 		return new CordovaSimSpecificPreferences(null, true, false, 0, null, null, null);
 	}
 
@@ -238,8 +238,8 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 	}
 
 	@Override
-	protected File getDefaultFile() {
-		return ResourcesUtil.getResourceAsFile(DEFAULT_SPECIFIC_PREFERENCES_RESOURCE);
+	protected InputStream getDefaultPreferencesFileAsStream() {
+		return CordovaSimResourcesUtil.getResourceAsStream(DEFAULT_SPECIFIC_PREFERENCES_RESOURCE);
 	}
 
 }

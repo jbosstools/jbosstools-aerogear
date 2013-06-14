@@ -83,7 +83,11 @@ public class CordovaSimRunner {
 			
 			final CordovaSimSpecificPreferences sp = loadPreferences();
 			
-			shell.setSize(sp.getCordovaBrowserSize());
+			if (sp.getCordovaBrowserSize() != null) {
+				shell.setSize(sp.getCordovaBrowserSize());
+			} else {
+				sp.setCordovaBrowserSize(shell.getSize());
+			}
 			if (sp.getCordovaBrowserLocation() != null) {
 				shell.setLocation(sp.getCordovaBrowserLocation());
 			} else {
