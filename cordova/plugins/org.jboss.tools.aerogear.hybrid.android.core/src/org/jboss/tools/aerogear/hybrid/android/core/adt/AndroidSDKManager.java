@@ -40,7 +40,6 @@ import org.jboss.tools.aerogear.hybrid.core.util.TextDetectingStreamListener;
 /**
  * Wrapper around the Android CommandLine tools.
  * 
- * 
  * @author Gorkem Ercan
  *
  */
@@ -91,8 +90,13 @@ public class AndroidSDKManager {
 				AndroidCore.log(IStatus.ERROR, "Error parsing the Android device list", e);
 				return null;
 			}
+			finally{
+				try{
+					read.close();
+					reader.close();
+				}catch(IOException e){/*ignored*/}
+			}
 			return list;
-		
 		}
 		
 		
@@ -125,6 +129,12 @@ public class AndroidSDKManager {
 			catch (IOException e) {
 				AndroidCore.log(IStatus.ERROR, "Error parsing the AVD list", e);
 				return null;
+			}
+			finally{
+				try{
+					read.close();
+					reader.close();
+				}catch(IOException e){/*ignored*/}
 			}
 			return list;
 		}
@@ -177,10 +187,56 @@ public class AndroidSDKManager {
 			} catch (IOException e) {
 				AndroidCore.log(IStatus.ERROR, "Error parsing the SDK list", e);
 			}
+			finally{
+				try{
+					read.close();
+					reader.close();
+				}catch(IOException e){
+					//ignored
+				}
+			}
 			return sdkList;
 		}
 		
 	}
+	
+	private static class CreateProjectResultParser implements IStreamListener{
+		private StringBuffer buffer = new StringBuffer();
+		
+		@Override
+		public void streamAppended(String text, IStreamMonitor monitor) {
+			buffer.append(text);
+			
+		}
+		/**
+		 * Returns an error string or null if it is OK 				
+		 * @return
+		 */
+		public String getErrorString(){
+			String text = buffer.toString();
+			if (text.startsWith("Error:"))
+			{
+				StringReader reader = new StringReader(text);
+				BufferedReader read = new BufferedReader(reader);
+				try {
+					String line = read.readLine();
+					return line.substring(7);
+				} catch (IOException e) {
+					AndroidCore.log(IStatus.ERROR, "Error parsing the create project command result", e);
+				}
+				finally{
+					try{
+						read.close();
+						reader.close();
+					}catch(IOException e){
+						//ignored
+					}
+				}
+			}
+			return null;
+		}
+	}
+	
 	
 	
 	public AndroidSDKManager() {
@@ -219,8 +275,12 @@ public class AndroidSDKManager {
 		command.append(" --name ").append('"').append(projectName).append('"');
 		command.append(" --activity ").append(activity);
 		command.append(" --package ").append(packageName);
-		
-		processUtility.execSync(command.toString(), null, null, null, new NullProgressMonitor(), null, null);
+
+		CreateProjectResultParser parser = new CreateProjectResultParser();
+		processUtility.execSync(command.toString(), null, parser, parser, new NullProgressMonitor(), null, null);
+		if( parser.getErrorString() != null ){
+			throw new CoreException(new Status(IStatus.ERROR,AndroidCore.PLUGIN_ID,"Error creating the Android project: "+ parser.getErrorString()));
+		}
 	}
 	
 	public void startADBServer() throws CoreException{

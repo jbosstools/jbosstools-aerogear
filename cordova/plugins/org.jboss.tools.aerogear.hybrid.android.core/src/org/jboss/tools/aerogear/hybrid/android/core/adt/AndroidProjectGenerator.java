@@ -48,6 +48,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
@@ -93,13 +94,20 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "No Android targets were found, Please create a target"));
 		}
 		
+		if(getDestination().exists()){
+			try {//Clean the android directory to avoid and "Error:" message 
+				 // from the command line tools for using update. Otherwise all create
+				// project calls will be recognized as failed.
+				FileUtils.cleanDirectory(getDestination());
+			} catch (IOException e) {
+				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Error cleaning android working direcrtory", e));
+			}
+		}
+		
 		sdkManager.createProject(targets.get(0), name, getDestination(),name, packageName );
 		
 		try{
 			File libsDir = new File(getDestination(),DIR_LIBS);
-			if(!libsDir.exists()){
-				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Android SDK tools failed to create libs folder"));
-			}
 			//Move cordova library to libs
 			URL sourcs = getTemplateFile("/templates/android/cordova.jar");
 			URL dests = toURL(new File(libsDir, FILE_JAR_CORDOVA ));
