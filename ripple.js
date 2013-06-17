@@ -39936,10 +39936,33 @@ ripple.define('platform/cordova/2.0.0/bridge/camera', function (ripple, exports,
 var camera = ripple('ui/plugins/camera'),
     event = ripple('event');
 
+function getBase64Image(uri, cb, encodingType) { // JBIDE-14894 support of the 'DATA_URL' destination Type 
+    var img = new Image();
+    img.src = uri;
+
+    img.onload = function() {
+       var canvas = document.createElement("canvas");
+       canvas.width = img.width;
+       canvas.height = img.height;
+       var ctx = canvas.getContext("2d");
+       ctx.drawImage(img, 0, 0);
+       var imageEncoding = (encodingType === bsPopup.Camera.EncodingType.PNG) ? "image/png" : "image/jpeg"; // Encoding Type - Phonegap docs: http://docs.phonegap.com/en/2.8.0/cordova_camera_camera.md.html#Camera 
+       var dataURL = canvas.toDataURL(imageEncoding);
+       cb(dataURL.replace(/^data:image\/(png|jpeg);base64,/, ""));
+   }
+}
+
 module.exports = {
-    takePicture: function (success) {
+    takePicture: function (success, error, args) {
+        var destinationType = args[1]; // Destination Type - Phonegap docs: http://docs.phonegap.com/en/2.8.0/cordova_camera_camera.md.html#Camera 
+        var encodingType = args[5];   // Encoding Type - Phonegap docs: http://docs.phonegap.com/en/2.8.0/cordova_camera_camera.md.html#Camera 
+
         event.once("captured-image", function (uri) {
-            success(uri);
+            if (destinationType === bsPopup.Camera.DestinationType.DATA_URL) { 
+              getBase64Image(uri, success, encodingType); 
+            } else {
+              success(uri); // Destination Type "File_URI" 
+            }
         });
         camera.show();
     },
