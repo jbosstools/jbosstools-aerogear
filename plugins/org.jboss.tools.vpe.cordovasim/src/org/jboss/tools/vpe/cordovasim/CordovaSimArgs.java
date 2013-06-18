@@ -21,13 +21,13 @@ public class CordovaSimArgs {
 	private String rootFolder;
 	private String startPage;
 	private String port;
-	private boolean standalone;
+	public static boolean standalone;
 	
-	public CordovaSimArgs(String rootFolder, String startPage, String port, boolean standalone) {
+	public CordovaSimArgs(String rootFolder, String startPage, String port, boolean isStandalone) {
 		this.rootFolder = rootFolder;
 		this.startPage = startPage;
 		this.port = port;
-		this.standalone = standalone;
+		standalone = isStandalone;
 	}
 
 	public static CordovaSimArgs parseArgs(String[] args) {
