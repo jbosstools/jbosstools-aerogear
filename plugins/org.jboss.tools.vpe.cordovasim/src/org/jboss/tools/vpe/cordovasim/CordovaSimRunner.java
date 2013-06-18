@@ -28,9 +28,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
-import org.jboss.tools.vpe.browsersim.ui.BrowserSim;
 import org.jboss.tools.vpe.browsersim.ui.CocoaUIEnhancer;
 import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 import org.jboss.tools.vpe.browsersim.ui.events.ExitListener;
@@ -58,7 +58,7 @@ public class CordovaSimRunner {
 			CocoaUIEnhancer.initializeMacOSMenuBar(Messages.CordovaSim_CORDOVA_SIM);
 		}
 		CordovaSimArgs cordovaSimArgs = CordovaSimArgs.parseArgs(args);
-		BrowserSim.isStandalone = cordovaSimArgs.isStandalone();
+		BrowserSimArgs.standalone = CordovaSimArgs.standalone;
 		int port = Integer.parseInt(cordovaSimArgs.getPort());
 		File rootFolder = new File(cordovaSimArgs.getRootFolder());
 		Server server = null;
