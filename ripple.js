@@ -33343,6 +33343,7 @@ ripple.define('notifications', function (ripple, exports, module) {
  *
  */
 var constants = ripple('constants'),
+    emulatorBridge = ripple('emulatorBridge'),
     exception = ripple('exception');
 
 function _validateAndInitNType(nType) {
@@ -33363,8 +33364,8 @@ function _processNotification(nType, stateType, message) {
         displayText,
         className,
         notificationIcon,
-        popUpBox = bsPopup.document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS),
-        popUpMsgBox = bsPopup.document.getElementById(constants.NOTIFICATIONS.MESSAGE_TEXT_CONTAINER_CLASS),
+        popUpBox = emulatorBridge.window().document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS),
+        popUpMsgBox = emulatorBridge.window().document.getElementById(constants.NOTIFICATIONS.MESSAGE_TEXT_CONTAINER_CLASS),
         box = document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS),
         msgBox = document.getElementById(constants.NOTIFICATIONS.MESSAGE_TEXT_CONTAINER_CLASS);
 
@@ -33424,10 +33425,10 @@ function _processNotification(nType, stateType, message) {
                                           "-webkit-border-radius: 6px;" +
                                           "border-radius: 6px;");  
         closeButton.addEventListener("click", function(){
-            var notificationPanel = bsPopup.document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS);
+            var notificationPanel = emulatorBridge.window().document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS);
             notificationPanel.parentNode.removeChild(notificationPanel);
         }, false);   
-        bsPopup.document.body.appendChild(notificationPanel); 
+        emulatorBridge.window().document.body.appendChild(notificationPanel); 
     } else {
         popUpMsgBox.innerHTML = notificationIcon + displayText;
         var previousStyle = popUpBox.getAttribute("style"); // XXX have to save previous css
@@ -33866,7 +33867,7 @@ function _bindObjects(win, doc) {
 }
 
 function _createBsPopup(src) {
-    bsPopup = window.open(src ,'bsPopup',
+    var bsPopup = window.open(src ,'bsPopup',
         'width=500,height=500,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0');
     bsPopup.focus();
     return bsPopup;
@@ -35680,6 +35681,7 @@ ripple.define('platform/w3c/1.0/navigator', function (ripple, exports, module) {
  *
  */
 var _original = window.navigator,
+    emulatorBridge = ripple('emulatorBridge'),
     devices = ripple('devices'),
     _self = {};
 
@@ -35699,7 +35701,7 @@ var _original = window.navigator,
 }());
 
 _self.__defineGetter__('userAgent', function () {
-    return bsPopup.bsUserAgent || devices.getCurrentDevice().userAgent || _original.userAgent; // JBIDE-14652 variable bsPopup.bsUserAgent is defined in RippleInjector.java  
+    return  emulatorBridge.window().bsUserAgent || devices.getCurrentDevice().userAgent || _original.userAgent; // JBIDE-14652 variable emulatorBridge.window().bsUserAgent is defined in RippleInjector.java  
 });
 
 module.exports = _self;
@@ -39934,6 +39936,7 @@ ripple.define('platform/cordova/2.0.0/bridge/camera', function (ripple, exports,
  *
  */
 var camera = ripple('ui/plugins/camera'),
+    emulatorBridge = ripple('emulatorBridge'),
     event = ripple('event');
 
 function getBase64Image(uri, cb, encodingType) { // JBIDE-14894 support of the 'DATA_URL' destination Type 
@@ -39946,7 +39949,7 @@ function getBase64Image(uri, cb, encodingType) { // JBIDE-14894 support of the '
        canvas.height = img.height;
        var ctx = canvas.getContext("2d");
        ctx.drawImage(img, 0, 0);
-       var imageEncoding = (encodingType === bsPopup.Camera.EncodingType.PNG) ? "image/png" : "image/jpeg"; // Encoding Type - Phonegap docs: http://docs.phonegap.com/en/2.8.0/cordova_camera_camera.md.html#Camera 
+       var imageEncoding = (encodingType === emulatorBridge.window().Camera.EncodingType.PNG) ? "image/png" : "image/jpeg"; // Encoding Type - Phonegap docs: http://docs.phonegap.com/en/2.8.0/cordova_camera_camera.md.html#Camera 
        var dataURL = canvas.toDataURL(imageEncoding);
        cb(dataURL.replace(/^data:image\/(png|jpeg);base64,/, ""));
    }
@@ -39958,7 +39961,7 @@ module.exports = {
         var encodingType = args[5];   // Encoding Type - Phonegap docs: http://docs.phonegap.com/en/2.8.0/cordova_camera_camera.md.html#Camera 
 
         event.once("captured-image", function (uri) {
-            if (destinationType === bsPopup.Camera.DestinationType.DATA_URL) { 
+            if (destinationType === emulatorBridge.window().Camera.DestinationType.DATA_URL) { 
               getBase64Image(uri, success, encodingType); 
             } else {
               success(uri); // Destination Type "File_URI" 
@@ -40123,6 +40126,8 @@ module.exports = {
 });
 ripple.define('phonegap-plugin/BarcodeScanner', function (ripple, exports, module) {
 
+  var emulatorBridge = ripple('emulatorBridge');
+
   module.exports = {
     scan: function (success, error, args) {
       var scanDialog = $('<div id="scanDialog" class="scanDialog">'),
@@ -40213,13 +40218,13 @@ ripple.define('phonegap-plugin/BarcodeScanner', function (ripple, exports, modul
            barcodeImage = $('<img id="barcode-image">'),
            barcodeData = $('<div id="barcode-data">' + data + '</div>');  
            barcodeBackButtonFunction = function() {
-              var barcodeWrapper = bsPopup.document.getElementById('barcode-wrapper');
-              var backgroundMask = bsPopup.document.getElementById('background-mask');
+              var barcodeWrapper = emulatorBridge.window().document.getElementById('barcode-wrapper');
+              var backgroundMask = emulatorBridge.window().document.getElementById('background-mask');
               
               barcodeWrapper.parentNode.removeChild(barcodeWrapper);
               backgroundMask.parentNode.removeChild(backgroundMask);
               
-              bsPopup.document.removeEventListener("backbutton", barcodeBackButtonFunction, false); // Force one time execution of the listener
+              emulatorBridge.window().document.removeEventListener("backbutton", barcodeBackButtonFunction, false); // Force one time execution of the listener
            };
 
         barcodeImage.attr("src", url);
@@ -40258,9 +40263,9 @@ ripple.define('phonegap-plugin/BarcodeScanner', function (ripple, exports, modul
                                    + "z-index: 2147483646;" 
                                    + "background-color: white;");
 
-        barcodeWrapper.appendTo(bsPopup.document.body);
-        backgroundMask.appendTo(bsPopup.document.body);
-        bsPopup.document.addEventListener("backbutton",  barcodeBackButtonFunction, false);    
+        barcodeWrapper.appendTo(emulatorBridge.window().document.body);
+        backgroundMask.appendTo(emulatorBridge.window().document.body);
+        emulatorBridge.window().document.addEventListener("backbutton",  barcodeBackButtonFunction, false);    
 //      success(); // ?! under Android VM success function is never called
     }
   }
@@ -40501,6 +40506,7 @@ ripple.define('platform/cordova/2.0.0/bridge/contacts', function (ripple, export
  */
 var db = ripple('db'),
     utils = ripple('utils'),
+    emulatorBridge = ripple('emulatorBridge'),
     _self;
 
 function _default() {
@@ -40526,7 +40532,7 @@ function _default() {
         "emails": [{type: "work", value: "mark@tinyhippos.com", pref: false}]
     }].map(function (obj) {
         obj.id = Math.uuid(undefined, 16);
-        return bsPopup.navigator.contacts.create(obj);
+        return emulatorBridge.window().navigator.contacts.create(obj);
     });
 }
 
@@ -40566,7 +40572,7 @@ _self = {
         var fields = args[0],
             options = args[1],
             foundContacts = [],
-            tempContact = bsPopup.navigator.contacts.create(),
+            tempContact = emulatorBridge.window().navigator.contacts.create(),
             contacts = _get();
 
         options = options || {};
@@ -40580,7 +40586,7 @@ _self = {
 
         if (fields.length > 0) {
             contacts.forEach(function (contact) {
-                var newContact = bsPopup.navigator.contacts.create(contact);
+                var newContact = emulatorBridge.window().navigator.contacts.create(contact);
 
                 if (options && (!_filtered(contact, options))) {
                     return;
@@ -54379,6 +54385,5 @@ if (!localStorage.ripple) {
                       };
   localStorage.setItem('ripple', JSON.stringify(defaultValues));
 }
-var bsPopup;
 window.openDatabase = null;
 ripple('bootstrap').bootstrap();
