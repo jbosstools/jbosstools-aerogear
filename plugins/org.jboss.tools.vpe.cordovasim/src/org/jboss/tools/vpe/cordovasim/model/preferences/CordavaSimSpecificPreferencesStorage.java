@@ -16,6 +16,7 @@ import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -141,8 +142,11 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (Throwable t) {
-			t.printStackTrace();
+		} catch (FactoryConfigurationError e) {
+			e.printStackTrace();
+		} catch (RuntimeException e) {
+			//catched to avoid exceptions like NPE, NFE, etc
+			e.printStackTrace();
 		} finally {
 			try {
 				if (is != null)
