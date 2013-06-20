@@ -30,7 +30,7 @@ public class HybridProjectConventions {
 	 * @return
 	 */
 	public static IStatus validateProjectName(String name ){
-		if(name == null || name.isEmpty() )
+		if(name == null || name.trim().isEmpty() )
 			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Project name must be specified");
 		Pattern pattern  = Pattern.compile("[_a-zA-z][_a-zA-Z0-9]*");
 		if(!pattern.matcher(name).matches()){
@@ -47,10 +47,10 @@ public class HybridProjectConventions {
 	 * @return
 	 */
 	public static IStatus validateProjectID(String id ){
-		if(id == null | id.isEmpty() )
+		if(id == null | id.trim().isEmpty() )
 			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Application ID must be specified");
 
-		Pattern pattern  = Pattern.compile("[_a-zA-z][\\._a-zA-Z0-9]*");
+		Pattern pattern  = Pattern.compile("([a-zA-Z][a-zA-Z\\d_]*[\\.])+[a-zA-Z_][a-zA-Z\\d_]*");
 		if( !pattern.matcher(id).matches()){
 			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, id + " is not a valid application id");
 		}
@@ -58,8 +58,15 @@ public class HybridProjectConventions {
 	}
 	
 	public static IStatus validateApplicationName(String name ){
-		if(name == null || name.isEmpty() )
+		if( name == null || name.trim().isEmpty() )
 			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Application name must be specified");
+		
+		if( name.length() >=25 ){
+			// iTunes Store recommendation which is valid for other stores as well.
+			// http://developer.apple.com/library/mac/#documentation/LanguagesUtilities/Conceptual/iTunesConnect_Guide/18_BestPractices/BestPractices.html
+			return new Status(IStatus.WARNING, HybridCore.PLUGIN_ID,
+					"Application names are recommended to have fewer than 25 characters for best presentation.");
+		}
 		return Status.OK_STATUS;
 	}
 	
