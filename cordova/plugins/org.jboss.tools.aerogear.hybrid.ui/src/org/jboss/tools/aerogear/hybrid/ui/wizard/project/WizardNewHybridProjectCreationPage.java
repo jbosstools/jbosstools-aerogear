@@ -84,19 +84,42 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
 		}                                     // until all UI components are in place.
 		
 
-		IStatus status = HybridProjectConventions.validateApplicationName(txtName.getText());
+		IStatus status1 = HybridProjectConventions.validateApplicationName(txtName.getText());
+		IStatus status2 = HybridProjectConventions.validateProjectID(txtID.getText());
+		IStatus status = null;
+		
+		//Interested on ERROR and WARNINGS with 
+		//ERRORs getting prio over WARNINGs
+		if(status1.matches(IStatus.ERROR)){
+			status = status1;
+		}
+		if(status2.matches(IStatus.ERROR)){
+			status = status2;
+		}
+		
+		if(status1.matches(IStatus.WARNING)){
+			status = status1;
+		}
+		if(status2.matches(IStatus.WARNING)){
+			status = status2;
+		}
+		
+		if (status == null ){
+			setErrorMessage(null);
+			setMessage(null);
+			return true;
+		}
+		
 		if(status.getSeverity() == IStatus.ERROR ){
-			setErrorMessage(status.getMessage());
+			setMessage(status.getMessage(), ERROR);
 			return false;
 		}
-		status = HybridProjectConventions.validateProjectID(txtID.getText());
-		if(status.getSeverity() == IStatus.ERROR ){
-			setErrorMessage(status.getMessage());
-			return false;
-		}		
-        setErrorMessage(null);
-        setMessage(null);
-        return true;
+		if (status.getSeverity() == IStatus.WARNING) {
+			setMessage(status.getMessage(), WARNING);
+			this.getContainer().updateMessage();
+			return true;
+		}
+		return true;
 	}
 	
 	public String getApplicationName(){
