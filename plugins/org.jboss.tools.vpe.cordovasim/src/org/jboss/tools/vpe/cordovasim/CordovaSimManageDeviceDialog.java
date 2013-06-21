@@ -25,8 +25,8 @@ public class CordovaSimManageDeviceDialog extends ManageDevicesDialog {
 	
 	
 	@Override
-	protected SpecificPreferences create(String selectedDeviceId, boolean useSkins, boolean enableLiveReload) {
-		return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload,
+	protected SpecificPreferences create(String selectedDeviceId, boolean useSkins, boolean enableLiveReload, int liveReloadPort) {
+		return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort,
 				oldSpecificPreferences.getOrientationAngle(), oldSpecificPreferences.getLocation(),
 				((CordovaSimSpecificPreferences)oldSpecificPreferences).getCordovaBrowserLocation(),
 				((CordovaSimSpecificPreferences)oldSpecificPreferences).getCordovaBrowserSize());
