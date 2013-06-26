@@ -158,7 +158,7 @@ public class CordovaSimRunner {
 		Shell parentShell = browser.getShell();
 		if (parentShell != null) {
 			browserSim = new CustomBrowserSim("about:blank", parentShell);
-			browserSim.open(sp, null, parentShell);
+			browserSim.open(sp, null);
 			browserSim.addSkinChangeListener(new SkinChangeListener() {
 				@Override
 				public void skinChanged(SkinChangeEvent event) {
