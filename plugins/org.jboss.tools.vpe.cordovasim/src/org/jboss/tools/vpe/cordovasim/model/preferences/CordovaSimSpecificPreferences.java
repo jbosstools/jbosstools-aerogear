@@ -20,16 +20,16 @@ public class CordovaSimSpecificPreferences extends SpecificPreferences{
 	private Point cordovaBrowserSize;
 	private Point cordovaBrowserLocation;
 	
-	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload,
+	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload, int liveReloadPort,
 			int orientationAngle, Point location, Point cordovaBrowserLocation, Point cordovaBrowserSize) {
-		super(selectedDeviceId, useSkins, enableLiveReload, orientationAngle, location);
+		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, orientationAngle, location);
 		this.cordovaBrowserLocation = cordovaBrowserLocation;
 		this.cordovaBrowserSize = cordovaBrowserSize;
 	}
 
-	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload,
+	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload, int liveReloadPort,
 			int orientationAngle, Point location) {
-		super(selectedDeviceId, useSkins, enableLiveReload, orientationAngle, location);
+		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, orientationAngle, location);
 	}
 
 	public Point getCordovaBrowserLocation() {
@@ -47,5 +47,13 @@ public class CordovaSimSpecificPreferences extends SpecificPreferences{
 	public void setCordovaBrowserSize(Point cordovaBrowserSize) {
 		this.cordovaBrowserSize = cordovaBrowserSize;
 	}
-
+	
+	@Override
+	public void copyProperties(SpecificPreferences sp) {
+		super.copyProperties(sp);
+		if (sp instanceof CordovaSimSpecificPreferences) {
+			setCordovaBrowserLocation(((CordovaSimSpecificPreferences) sp).getCordovaBrowserLocation());
+			setCordovaBrowserSize(((CordovaSimSpecificPreferences) sp).getCordovaBrowserSize());
+		}
+	}
 }

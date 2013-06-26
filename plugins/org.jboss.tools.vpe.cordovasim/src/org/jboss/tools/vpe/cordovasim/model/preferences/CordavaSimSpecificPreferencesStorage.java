@@ -62,6 +62,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 		Point currentlocation = null;
 		boolean useSkins = true;
 		boolean enableLiveReload = false;
+		int liveReloadPort = DEFAULT_LIVE_RELOAD_PORT;
 		Point cordovaBrowserLocation = null;
 		Point cordovaBrowserSize = null;
 
@@ -89,6 +90,11 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 				node = document.getElementsByTagName(PREFERENCES_LIVE_RELOAD).item(0);
 				if (!PreferencesUtil.isNullOrEmpty(node)) {
 					enableLiveReload = Boolean.parseBoolean(node.getTextContent());
+				}
+				
+				node = document.getElementsByTagName(PREFERENCES_LIVE_RELOAD_PORT).item(0);
+				if (!PreferencesUtil.isNullOrEmpty(node)) {
+					liveReloadPort = Integer.parseInt(node.getTextContent());
 				}
 				
 				node = document.getElementsByTagName(PREFERENCES_ORIENTATION_ANGLE).item(0);
@@ -134,7 +140,8 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 					}
 				}
 				
-				return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload, orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize);
+				return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort,
+						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize);
 			}
 		} catch (SAXException e) {
 			e.printStackTrace();
@@ -161,7 +168,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 
 	@Override
 	protected SpecificPreferences createBlankPreferences() {
-		return new CordovaSimSpecificPreferences(null, true, false, 0, null, null, null);
+		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, 0, null, null, null);
 	}
 
 	@Override
@@ -200,6 +207,10 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			Element enableLiveReload = doc.createElement(PREFERENCES_LIVE_RELOAD);
 			enableLiveReload.setTextContent(String.valueOf(sp.isEnableLiveReload()));
 			rootElement.appendChild(enableLiveReload);
+			
+			Element liveReloadPort = doc.createElement(PREFERENCES_LIVE_RELOAD_PORT);
+			liveReloadPort.setTextContent(String.valueOf(sp.getLiveReloadPort()));
+			rootElement.appendChild(liveReloadPort);
 			
 			Element cordova = doc.createElement(PREFERENCES_CORDOVA);
 			
