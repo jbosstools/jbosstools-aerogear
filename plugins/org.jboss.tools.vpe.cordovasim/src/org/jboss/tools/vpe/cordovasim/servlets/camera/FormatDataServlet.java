@@ -10,18 +10,19 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim.servlets.camera;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
@@ -41,7 +42,8 @@ public class FormatDataServlet extends HttpServlet {
 		String tempFileName = null;
 		TempFile tempFile = null;
 		File file = null;
-		BufferedImage image = null;
+		Image image = null;
+		Rectangle imageData = null;
 
 		if (tempFileUrl != null) {
 			tempFileName = getTempFileName(tempFileUrl);
@@ -56,15 +58,22 @@ public class FormatDataServlet extends HttpServlet {
 		}
 
 		if (file != null && file.exists()) {
-			image = ImageIO.read(file);
+			/* JBIDE-15003 - Have to use org.eclipse.swt.graphics.Image because of the  
+			 * SWT Bug 212617 Launching Swing based IApplications on Mac still results in deadlock */	
+			image = new Image(null, file.getAbsolutePath());
+		}
+		
+		if (image != null) {
+			imageData = image.getBounds();
+			image.dispose();
 		}
 
-		if (image != null) {
-			String height = Integer.toString(image.getHeight());
-			String width = Integer.toString(image.getWidth());
+		if (imageData != null) {
+			String height = Integer.toString(imageData.height);
+			String width = Integer.toString(imageData.width);
 			String json = generateJSON(height, width);
 			sendResponse(response, json);
-		} else {
+		} else { 
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
