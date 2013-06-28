@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -89,5 +90,16 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	public static void log(int status, String message, Throwable throwable ){
 		logger.log(new Status(status, message, PLUGIN_ID,throwable));
 	}
-
+	
+	public static List<ProjectGenerator> getPlatformProjectGenerators(){
+		IConfigurationElement[] configElements = Platform.getExtensionRegistry().getConfigurationElementsFor(ProjectGenerator.EXTENSION_POINT_ID);
+		List<ProjectGenerator> generators = new ArrayList<ProjectGenerator>();
+		for (int i = 0; i < configElements.length; i++) {
+			ProjectGenerator generator = new ProjectGenerator();
+			generator.setPlatform(configElements[i].getAttribute(ProjectGenerator.ATTR_PLATFORM));
+			generator.setContributor(configElements[i].getContributor());
+			generators.add(generator);
+		}
+		return generators;
+	}
 }

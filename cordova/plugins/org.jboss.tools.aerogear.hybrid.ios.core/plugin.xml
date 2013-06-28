@@ -10,5 +10,13 @@
             name="iOS Simulator">
       </launchConfigurationType>
    </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.core.projectGenerator">
+      <generator
+            delegate="org.jboss.tools.aerogear.hybrid.ios.core.xcode.XcodeProjectGenerator"
+            id="org.jboss.tools.aerogear.hybrid.ios.core.projectGenerator"
+            platform="iOS (XCode)">
+      </generator>
+   </extension>
 
 </plugin>

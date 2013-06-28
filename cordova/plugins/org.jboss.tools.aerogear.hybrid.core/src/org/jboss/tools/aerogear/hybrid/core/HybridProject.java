@@ -147,4 +147,23 @@ public class HybridProject {
 		return name;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(this.kernelProject == null )
+			return super.equals(obj);
+		if(obj == null ) 
+			return false;
+		if(!(obj instanceof HybridProject))
+			return false;
+		IProject prj = ((HybridProject)obj).getProject();
+		return kernelProject.equals(prj);
+	}
+	
+	@Override
+	public int hashCode() {
+		if(kernelProject == null )
+			return super.hashCode();
+		return kernelProject.hashCode();
+	}
+	
 }

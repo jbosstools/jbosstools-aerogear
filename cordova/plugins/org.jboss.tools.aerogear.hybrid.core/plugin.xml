@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="org.jboss.tools.aerogear.hybrid.core.projectGenerator" name="Native Platform Project Generators" schema="schema/org.jboss.tools.aerogear.hybrid.core.projectGenerator.exsd"/>
    <extension
          id="org.jboss.tools.aerogear.hybrid.core.HybridAppNature"
          name="Aerogear Hybrid Application Nature"

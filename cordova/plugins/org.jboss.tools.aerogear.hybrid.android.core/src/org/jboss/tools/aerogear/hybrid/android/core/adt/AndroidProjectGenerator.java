@@ -60,17 +60,21 @@ import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
-import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
+public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 
+	public AndroidProjectGenerator(){
+		super();
+	}
+	
 	public AndroidProjectGenerator(IProject project, File generationFolder) {
-		super(project, generationFolder);
+		init(project, generationFolder);
 	}
 
 

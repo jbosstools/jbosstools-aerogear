@@ -26,15 +26,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
-import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
 
-public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
+public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
+	
+	public XcodeProjectGenerator(){
+		super();
+	}
 	
 	public XcodeProjectGenerator(IProject project, File generationFolder) {
-		super(project, generationFolder);
+		init(project, generationFolder);
 	}
 	
 	@Override
@@ -48,7 +52,6 @@ public class XcodeProjectGenerator extends AbstractPlatformProjectGenerator{
 
 			generateCordovaLib();
 			
-//			Bundle bundle = IOSCore.getContext().getBundle();
 			File destinationDir = getDestination();
 			
 			String name = hybridProject.getBuildArtifactAppName();
