@@ -19,8 +19,10 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
@@ -37,6 +39,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
@@ -44,8 +47,12 @@ import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ui.util.HybridProjectContentProvider;
 import org.jboss.tools.aerogear.hybrid.ui.util.HybridProjectLabelProvider;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.ModifyEvent;
 
 public class NativeProjectDestinationPage extends WizardPage implements IOverwriteQuery{
+
+	private static final String SETTINGS_KEY_DESTINATION_HISTORY = "destinationHistory";
 
 	private static int DESTINATION_HISTORY_LENGTH = 5;
 
@@ -107,7 +114,8 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 		});
 		btnDeselectAll.setText("Deselect All");
 		projectsTableViewer.setContentProvider(new HybridProjectContentProvider());
-		projectsTableViewer.setLabelProvider(new HybridProjectLabelProvider());
+		projectsTableViewer.setLabelProvider(new DecoratingLabelProvider(new HybridProjectLabelProvider(), PlatformUI.getWorkbench().getDecoratorManager()
+                .getLabelDecorator()));
 		projectsTableViewer.setInput(HybridCore.getHybridProjects());
 		
 		Group grpAvailablePlatforms = new Group(container, SWT.NONE);
@@ -167,6 +175,11 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 		lblDirectory.setText("Directory:");
 		
 		destinationCombo = new Combo(grpDestination, SWT.NONE);
+		destinationCombo.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				setPageComplete(validatePage());
+			}
+		});
 		destinationCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Button btnBrowse = new Button(grpDestination, SWT.NONE);
@@ -177,6 +190,7 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 			}
 		});
 		btnBrowse.setText("Browse...");
+		restoreWidgetValues();
 		setupFromInitialSelection();
 		setPageComplete(validatePage());
 		
@@ -211,7 +225,7 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 		dialog.setMessage("Select a destination directory");
 		String directory = dialog.open();
 		if(directory != null ){
-			this.addToDestinationCombo(directory);
+			this.destinationCombo.setText(directory);
 			setPageComplete(validatePage());
 		}
 	}
@@ -293,5 +307,22 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 			list.add((HybridProject)checked[i]);
 		}
 		return list;
+	}
+	void saveWidgetValues(){
+		IDialogSettings settings = getDialogSettings();
+		if(settings != null ){
+			addToDestinationCombo(getDestinationDirectory());
+			settings.put(SETTINGS_KEY_DESTINATION_HISTORY, this.destinationHistory);
+		}
+	}
+	
+	private void restoreWidgetValues(){
+		IDialogSettings settings = getDialogSettings();
+		if(settings != null ){
+			destinationHistory = settings.getArray(SETTINGS_KEY_DESTINATION_HISTORY);
+			for (int i = 0; i < destinationHistory.length; i++) {
+				destinationCombo.add(destinationHistory[i], i);
+			}
+		}
 	}
 }

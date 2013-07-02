@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
@@ -26,14 +27,20 @@ import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 
+	private static final String DIALOG_SETTINGS_KEY = "NativeProjectExportWizard";
 	private NativeProjectDestinationPage pageOne;
 	private IStructuredSelection initialSelection;
 	
 	public NativeProjectExportWizard() {
 		setWindowTitle("Export Native Platform Project");
+		IDialogSettings workbenchSettings= HybridUI.getDefault().getDialogSettings();
+		IDialogSettings section= workbenchSettings.getSection(DIALOG_SETTINGS_KEY);
+		setDialogSettings(section);
+
 	}
 
 	@Override
@@ -69,7 +76,18 @@ public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 				e.printStackTrace();
 			}
 		}
+		savePageSettings();
 		return true;
+	}
+
+	private void savePageSettings() {
+		IDialogSettings workbenchSettings= HybridUI.getDefault().getDialogSettings();
+		IDialogSettings section= workbenchSettings.getSection(DIALOG_SETTINGS_KEY);
+		if(section == null ){
+			section = workbenchSettings.addNewSection(DIALOG_SETTINGS_KEY);
+		}
+		setDialogSettings(section);
+		pageOne.saveWidgetValues();
 	}
 
 	@Override
