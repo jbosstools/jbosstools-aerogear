@@ -76,7 +76,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 			if(!generationRoot.exists() && !generationRoot.mkdirs() ){
 				throw new CoreException(new Status(IStatus.ERROR,HybridCore.PLUGIN_ID, "Can not create the destination directory for project generation at "+generationRoot.toString() ));
 			}
-			monitor.beginTask("Generate Native Project", 40);
+			monitor.beginTask("Generate Native Project for "+this.getProjectName(), 40);
 			generateNativeFiles();
 			monitor.worked(10);
 			IFolder folder = getProject().getFolder("/"+PlatformConstants.DIR_WWW);

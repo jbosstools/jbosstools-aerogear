@@ -12,12 +12,14 @@
 package org.jboss.tools.aerogear.hybrid.ui.wizard.export;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -37,6 +39,7 @@ public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 	
 	public NativeProjectExportWizard() {
 		setWindowTitle("Export Native Platform Project");
+		this.setNeedsProgressMonitor(true);
 		IDialogSettings workbenchSettings= HybridUI.getDefault().getDialogSettings();
 		IDialogSettings section= workbenchSettings.getSection(DIALOG_SETTINGS_KEY);
 		setDialogSettings(section);
@@ -67,15 +70,24 @@ public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 				}
 			}
 		}
-		//Run all the delegates
-		for (AbstractProjectGeneratorDelegate delegate : delegates) {
-			try {
-				delegate.generateNow(new NullProgressMonitor());
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		NativeProjectExportOperation op = new NativeProjectExportOperation(delegates);
+		try {
+			getContainer().run(true, true, op);
+		} catch (InvocationTargetException e) {
+			if (e.getTargetException() != null) {
+				ErrorDialog.openError(getShell(), "Error exporting native projects",null, 
+						new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while exporting native projects", e.getTargetException() ));
+				return false;
 			}
+			return false;
+		} catch (InterruptedException e) {
+			return false;
 		}
+		IStatus status= op.getStatus();
+		if (!status.isOK()) {
+			ErrorDialog.openError(getShell(), "Native Project Export Error", null, status);
+			return !(status.matches(IStatus.ERROR));
+		}	
 		savePageSettings();
 		return true;
 	}
