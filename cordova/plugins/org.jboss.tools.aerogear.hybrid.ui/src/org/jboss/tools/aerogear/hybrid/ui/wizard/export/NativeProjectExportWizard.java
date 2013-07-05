@@ -70,7 +70,7 @@ public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 				}
 			}
 		}
-		NativeProjectExportOperation op = new NativeProjectExportOperation(delegates);
+		NativeProjectExportOperation op = new NativeProjectExportOperation(delegates,pageOne);
 		try {
 			getContainer().run(true, true, op);
 		} catch (InvocationTargetException e) {

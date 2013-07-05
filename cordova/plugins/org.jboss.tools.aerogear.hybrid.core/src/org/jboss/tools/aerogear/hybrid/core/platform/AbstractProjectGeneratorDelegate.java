@@ -143,7 +143,13 @@ public abstract class AbstractProjectGeneratorDelegate {
 	protected abstract File getPlatformWWWDirectory();
 	
 	
-	protected File getDestination(){
+	/**
+	 * The destination folder where the generated files are replaced. This is 
+	 * usually a directory named the short name for a target platform under a 
+	 * a root folder for project.
+	 * @return
+	 */
+	public File getDestination(){
 		return new File(generationRoot,getTargetShortName());
 	}
 	protected String getProjectName(){

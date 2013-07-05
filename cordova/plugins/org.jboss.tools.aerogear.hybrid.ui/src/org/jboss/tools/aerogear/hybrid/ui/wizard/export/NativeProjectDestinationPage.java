@@ -19,7 +19,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
@@ -27,10 +29,13 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -46,9 +51,6 @@ import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ui.util.HybridProjectContentProvider;
 import org.jboss.tools.aerogear.hybrid.ui.util.HybridProjectLabelProvider;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
 
 public class NativeProjectDestinationPage extends WizardPage implements IOverwriteQuery{
 
@@ -57,7 +59,7 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 	private static int DESTINATION_HISTORY_LENGTH = 5;
 
 	private Combo destinationCombo;
-	private String[] destinationHistory = new String[0];
+	private String[] destinationHistory;
 	private Table platformTable;
 	private CheckboxTableViewer platformsTableViewer;
 	private Table prjTable;
@@ -215,8 +217,26 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 
 	@Override
 	public String queryOverwrite(String pathString) {
-		// TODO Auto-generated method stub
-		return null;
+		final MessageDialog dialog = new MessageDialog(getShell(), 
+				"Overwrite Files?", 
+				null, 
+				"Directory " + pathString+ " already exists. Would you like to overwrite it?",
+				 MessageDialog.QUESTION,
+				 new String[] { IDialogConstants.YES_LABEL,
+	                        IDialogConstants.YES_TO_ALL_LABEL,
+	                        IDialogConstants.NO_LABEL,
+	                        IDialogConstants.NO_TO_ALL_LABEL,
+	                        IDialogConstants.CANCEL_LABEL },
+	                        0);
+		String[] response = new String[] { YES, ALL, NO, NO_ALL, CANCEL };
+        //most likely to be called from non-ui thread
+		getControl().getDisplay().syncExec(new Runnable() {
+            public void run() {
+                dialog.open();
+            }
+        });
+        return dialog.getReturnCode() < 0 ? CANCEL : response[dialog
+                .getReturnCode()];
 	}
 	
 	private void chooseDirectory(){
@@ -231,6 +251,9 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 	}
 	
 	private void addToDestinationCombo(String directory){
+			if(destinationHistory == null ){
+				destinationHistory = new String[0];
+			}
 			ArrayList<String> l = new ArrayList<String>(Arrays.asList(destinationHistory));
 			l.remove(directory);
 			l.add(directory);
