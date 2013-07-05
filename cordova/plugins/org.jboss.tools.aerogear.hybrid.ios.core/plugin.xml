@@ -16,6 +16,12 @@
             delegate="org.jboss.tools.aerogear.hybrid.ios.core.xcode.XcodeProjectGenerator"
             id="org.jboss.tools.aerogear.hybrid.ios.core.projectGenerator"
             platform="iOS (XCode)">
+         <enablement>
+            <systemTest
+                  property="os.name"
+                  value="Mac OS X">
+            </systemTest>
+         </enablement>
       </generator>
    </extension>
 

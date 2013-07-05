@@ -12,6 +12,11 @@ package org.jboss.tools.aerogear.hybrid.core;
 
 import java.io.File;
 
+import org.eclipse.core.expressions.EvaluationResult;
+import org.eclipse.core.expressions.Expression;
+import org.eclipse.core.expressions.ExpressionConverter;
+import org.eclipse.core.expressions.ExpressionTagNames;
+import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -23,7 +28,7 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 
 /**
- * Represents the org.jboss.tools.aerogear.hybrid.core.projectGenerator extension point. 
+ * Proxy object for the org.jboss.tools.aerogear.hybrid.core.projectGenerator extension point. 
  * 
  * @author Gorkem Ercan
  *
@@ -34,10 +39,28 @@ public class ProjectGenerator {
 	public static final String ATTR_DELEGATE = "delegate";
 	private String platform;
 	private IContributor contributor;
+	private Expression expression;
 
-	void setContributor(IContributor contributor) {
-		this.contributor = contributor;
+
+	ProjectGenerator(IConfigurationElement configurationElement ){
+		setPlatform(configurationElement.getAttribute(ProjectGenerator.ATTR_PLATFORM));
+		setContributor(configurationElement.getContributor());
+		configureEnablement(configurationElement.getChildren(ExpressionTagNames.ENABLEMENT));
 	}
+
+
+	private void configureEnablement(IConfigurationElement[] enablementNodes) {
+		if(enablementNodes == null || enablementNodes.length < 1 ) return;
+		IConfigurationElement node = enablementNodes[0];
+		try {
+			 expression = ExpressionConverter.getDefault().perform(node);
+			
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 
 	/**
 	 * Creates a project generator delegate for the given project and destination. 
@@ -70,7 +93,21 @@ public class ProjectGenerator {
 		return platform;
 	}
 
-   void setPlatform(String platform) {
+	public boolean isEnabled(IEvaluationContext context) throws CoreException{
+		if(expression == null ) return true;
+		if(context == null ){
+			throw new IllegalArgumentException("Must have an evalutation context");
+		}
+		return (this.expression.evaluate(context) == EvaluationResult.TRUE);
+	}
+	
+    private void setPlatform(String platform) {
 		this.platform = platform;
 	}
+   
+	private void setContributor(IContributor contributor) {
+		this.contributor = contributor;
+	}
+	
+	
 }

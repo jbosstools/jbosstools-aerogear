@@ -320,8 +320,10 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 		IDialogSettings settings = getDialogSettings();
 		if(settings != null ){
 			destinationHistory = settings.getArray(SETTINGS_KEY_DESTINATION_HISTORY);
-			for (int i = 0; i < destinationHistory.length; i++) {
-				destinationCombo.add(destinationHistory[i], i);
+			if(destinationHistory != null ){
+				for (int i = 0; i < destinationHistory.length; i++) {
+					destinationCombo.add(destinationHistory[i], i);
+				}
 			}
 		}
 	}

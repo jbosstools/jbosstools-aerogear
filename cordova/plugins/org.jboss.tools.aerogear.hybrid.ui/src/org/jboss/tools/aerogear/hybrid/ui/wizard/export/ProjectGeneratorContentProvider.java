@@ -13,10 +13,15 @@ package org.jboss.tools.aerogear.hybrid.ui.wizard.export;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.services.IEvaluationService;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 /**
  * IStructuredContentProvider implementation for the {@link ProjectGenerator} extension point. 
  * If a List of ProjectGenerators are passed to a ContentViewer this ProjectGenerator will use the 
@@ -45,6 +50,17 @@ public class ProjectGeneratorContentProvider implements IStructuredContentProvid
 	public Object[] getElements(Object inputElement) {
 		if(generators == null ){
 			generators = HybridCore.getPlatformProjectGenerators();
+		}
+		IEvaluationService service = (IEvaluationService)PlatformUI.getWorkbench().getService(IEvaluationService.class);
+		for (ProjectGenerator generator : generators) {
+			try {
+				if(!generator.isEnabled(service.getCurrentState())){
+					this.generators.remove(generator);
+				}
+				
+			} catch (CoreException e) {
+				HybridUI.log(IStatus.ERROR, "Error filterin objects", e);
+			}
 		}
 		return generators.toArray();
 	}

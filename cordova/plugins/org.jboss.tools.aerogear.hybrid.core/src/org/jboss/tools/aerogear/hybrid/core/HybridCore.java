@@ -90,14 +90,19 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	public static void log(int status, String message, Throwable throwable ){
 		logger.log(new Status(status, message, PLUGIN_ID,throwable));
 	}
-	
+
+	/**
+	 * Get the {@link ProjectGenerator} objects defined by the extensions. 
+	 * Returns all the defined ProjectGenerators, it is up to the clients 
+	 * to filter enabled/disabled ProjectGenerators @see {@link ProjectGenerator#isEnabled(org.eclipse.core.expressions.IEvaluationContext)}.
+	 * 	
+	 * @return list of project generators if any
+	 */
 	public static List<ProjectGenerator> getPlatformProjectGenerators(){
 		IConfigurationElement[] configElements = Platform.getExtensionRegistry().getConfigurationElementsFor(ProjectGenerator.EXTENSION_POINT_ID);
 		List<ProjectGenerator> generators = new ArrayList<ProjectGenerator>();
 		for (int i = 0; i < configElements.length; i++) {
-			ProjectGenerator generator = new ProjectGenerator();
-			generator.setPlatform(configElements[i].getAttribute(ProjectGenerator.ATTR_PLATFORM));
-			generator.setContributor(configElements[i].getContributor());
+			ProjectGenerator generator = new ProjectGenerator(configElements[i]);
 			generators.add(generator);
 		}
 		return generators;
