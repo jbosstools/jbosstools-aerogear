@@ -21,13 +21,10 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -38,9 +35,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDKManager;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
@@ -57,26 +53,6 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 		public void handleEvent(Event event) {
 			setDirty(true);
 			updateLaunchConfigurationDialog();
-		}
-	}
-	
-	private class ProjectLabelProvider extends LabelProvider{
-		private ImageDescriptor DESC_OBJ_PROJECT;
-		{
-			DESC_OBJ_PROJECT = PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(IDE.SharedImages.IMG_OBJ_PROJECT);
-		}
-		@Override
-		public String getText(Object element) {
-			if (element instanceof HybridProject ){
-				HybridProject hp = (HybridProject) element;
-				return hp.getProject().getName();
-			}
-			return null;
-		}
-		
-		@Override
-		public Image getImage(Object element) {
-			return DESC_OBJ_PROJECT.createImage();
 		}
 	}
 	
@@ -109,7 +85,9 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 		btnProjectBrowse.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), new ProjectLabelProvider());
+				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
+				es.setTitle("Project Selection");
+				es.setMessage("Select a project to run");
 				es.setElements(HybridCore.getHybridProjects().toArray());
 				if (es.open() == Window.OK) {			
 					HybridProject project = (HybridProject) es.getFirstResult();

@@ -24,7 +24,6 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
@@ -44,13 +43,12 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ui.util.HybridProjectContentProvider;
-import org.jboss.tools.aerogear.hybrid.ui.util.HybridProjectLabelProvider;
 
 public class NativeProjectDestinationPage extends WizardPage implements IOverwriteQuery{
 
@@ -116,8 +114,7 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 		});
 		btnDeselectAll.setText("Deselect All");
 		projectsTableViewer.setContentProvider(new HybridProjectContentProvider());
-		projectsTableViewer.setLabelProvider(new DecoratingLabelProvider(new HybridProjectLabelProvider(), PlatformUI.getWorkbench().getDecoratorManager()
-                .getLabelDecorator()));
+		projectsTableViewer.setLabelProvider(WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
 		projectsTableViewer.setInput(HybridCore.getHybridProjects());
 		
 		Group grpAvailablePlatforms = new Group(container, SWT.NONE);
