@@ -10,15 +10,33 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.export;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.PlatformImage;
 
 public class ProjectGeneratorLabelProvider extends BaseLabelProvider implements ILabelProvider{
-
+	private HashMap<String, Image> imageCache = new HashMap<String, Image>();
 	@Override
 	public Image getImage(Object element) {
+		ProjectGenerator generator = (ProjectGenerator)element;
+		Image img = imageCache.get(generator);
+		if(img != null ){
+			return img;
+		}
+		List<PlatformImage> images = HybridUI.getPlatformImages();
+		for (PlatformImage platformImage : images) {
+			if(generator.getID().equals(platformImage.getProjectGeneratorID())){
+				img = platformImage.getIcon().createImage();
+				imageCache.put(generator.getID(), img);
+				return img;
+			}
+		}
 		return null;
 	}
 

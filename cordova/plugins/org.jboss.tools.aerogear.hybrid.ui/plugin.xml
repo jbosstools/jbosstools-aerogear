@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="org.jboss.tools.aerogear.hybrid.ui.platformImages" name="Platform mages" schema="schema/org.jboss.tools.aerogear.hybrid.ui.platformImage.exsd"/>
 
    <extension
          point="org.eclipse.ui.newWizards">

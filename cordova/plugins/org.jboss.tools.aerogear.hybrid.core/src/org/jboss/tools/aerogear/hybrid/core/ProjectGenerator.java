@@ -37,15 +37,18 @@ public class ProjectGenerator {
 	public static final String EXTENSION_POINT_ID = "org.jboss.tools.aerogear.hybrid.core.projectGenerator";
 	public static final String ATTR_PLATFORM = "platform";
 	public static final String ATTR_DELEGATE = "delegate";
+	public static final String ATTR_ID="id";
 	private String platform;
 	private IContributor contributor;
 	private Expression expression;
+	private String id;
 
 
 	ProjectGenerator(IConfigurationElement configurationElement ){
 		setPlatform(configurationElement.getAttribute(ProjectGenerator.ATTR_PLATFORM));
 		setContributor(configurationElement.getContributor());
 		configureEnablement(configurationElement.getChildren(ExpressionTagNames.ENABLEMENT));
+		this.id = configurationElement.getAttribute(ATTR_ID);
 	}
 
 
@@ -56,8 +59,7 @@ public class ProjectGenerator {
 			 expression = ExpressionConverter.getDefault().perform(node);
 			
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			HybridCore.log(IStatus.ERROR, "Error while reading the enablement", e);
 		}
 	}
 
@@ -91,6 +93,9 @@ public class ProjectGenerator {
 
 	public String getPlatform() {
 		return platform;
+	}
+	public String getID(){
+		return id;
 	}
 
 	public boolean isEnabled(IEvaluationContext context) throws CoreException{
