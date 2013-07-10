@@ -48,10 +48,12 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.util.HybridProjectContentProvider;
 
 public class NativeProjectDestinationPage extends WizardPage implements IOverwriteQuery{
-
+	
+	private static final String IMAGE_WIZBAN = "/icons/wizban/exportnativeprj_wiz.png";
 	private static final String SETTINGS_KEY_DESTINATION_HISTORY = "destinationHistory";
 
 	private static int DESTINATION_HISTORY_LENGTH = 5;
@@ -67,6 +69,7 @@ public class NativeProjectDestinationPage extends WizardPage implements IOverwri
 
 	protected NativeProjectDestinationPage(String pageName, IStructuredSelection initialSelection) {
 		super(pageName);
+		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, IMAGE_WIZBAN));
 		this.initialSelection = initialSelection;
 	}
 

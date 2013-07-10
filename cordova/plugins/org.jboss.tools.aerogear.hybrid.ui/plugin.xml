@@ -50,6 +50,7 @@
      <wizard
            category="org.jboss.tools.aerogear.hybrid.ui.category"
            class="org.jboss.tools.aerogear.hybrid.ui.wizard.export.NativeProjectExportWizard"
+           icon="icons/etool16/exportnativeprj_wiz.png"
            id="org.jboss.tools.aerogear.hybrid.ui.exportNativeProjectWizard"
            name="Export Native Platform Project">
      </wizard>
