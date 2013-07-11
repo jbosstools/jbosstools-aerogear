@@ -26,13 +26,10 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -43,9 +40,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeBuild;
@@ -68,26 +64,6 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		}
 	}
 	
-	private class HybridProjectLabelProvider extends LabelProvider{
-		private ImageDescriptor DESC_OBJ_PROJECT;
-		{
-			DESC_OBJ_PROJECT = PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(IDE.SharedImages.IMG_OBJ_PROJECT);
-		}
-		@Override
-		public String getText(Object element) {
-			if (element instanceof HybridProject ){
-				HybridProject hp = (HybridProject) element;
-				return hp.getProject().getName();
-			}
-			return null;
-		}
-		
-		@Override
-		public Image getImage(Object element) {
-			return DESC_OBJ_PROJECT.createImage();
-		}
-	}
-
 	public IOSSimOptionsTab() {
 		this.dirtyFlagListener = new DirtyListener();
 	}
@@ -119,8 +95,10 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		btnProjectBrowse.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), new HybridProjectLabelProvider());
+				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
 				es.setElements(HybridCore.getHybridProjects().toArray());
+				es.setTitle("Project Selection");
+				es.setMessage("Select a project to run");
 				if (es.open() == Window.OK) {			
 					HybridProject project = (HybridProject) es.getFirstResult();
 					textProject.setText(project.getProject().getName());

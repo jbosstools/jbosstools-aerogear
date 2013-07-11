@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -90,4 +91,20 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 		logger.log(new Status(status, message, PLUGIN_ID,throwable));
 	}
 
+	/**
+	 * Get the {@link ProjectGenerator} objects defined by the extensions. 
+	 * Returns all the defined ProjectGenerators, it is up to the clients 
+	 * to filter enabled/disabled ProjectGenerators @see {@link ProjectGenerator#isEnabled(org.eclipse.core.expressions.IEvaluationContext)}.
+	 * 	
+	 * @return list of project generators if any
+	 */
+	public static List<ProjectGenerator> getPlatformProjectGenerators(){
+		IConfigurationElement[] configElements = Platform.getExtensionRegistry().getConfigurationElementsFor(ProjectGenerator.EXTENSION_POINT_ID);
+		List<ProjectGenerator> generators = new ArrayList<ProjectGenerator>();
+		for (int i = 0; i < configElements.length; i++) {
+			ProjectGenerator generator = new ProjectGenerator(configElements[i]);
+			generators.add(generator);
+		}
+		return generators;
+	}
 }

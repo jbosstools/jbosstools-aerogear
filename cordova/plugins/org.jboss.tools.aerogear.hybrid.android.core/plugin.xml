@@ -10,5 +10,14 @@
             name="Android">
       </launchConfigurationType>
    </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.core.projectGenerator">
+      <generator
+            class="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidProjectGenerators"
+            delegate="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidProjectGenerator"
+            id="org.jboss.tools.aerogear.hybrid.android.core.projectGenerator"
+            platform="Android">
+      </generator>
+   </extension>
 
 </plugin>
