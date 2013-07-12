@@ -60,4 +60,12 @@
            name="Mobile">
      </category>
   </extension>
+  <extension
+        point="org.eclipse.ui.ide.projectNatureImages">
+     <image
+           icon="icons/ovr16/cordova_botovr.png"
+           id="org.jboss.tools.aerogear.hybrid.ui.HybridAppNatureImage"
+           natureId="org.jboss.tools.aerogear.hybrid.core.HybridAppNature">
+     </image>
+  </extension>
 </plugin>
