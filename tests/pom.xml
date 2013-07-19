@@ -6,59 +6,24 @@
 		<artifactId>vpe</artifactId>
 		<version>3.5.0-SNAPSHOT</version>
 	</parent>
-
 	<groupId>org.jboss.tools.vpe</groupId>
 	<artifactId>tests</artifactId>
 	<name>vpe.tests</name>
+
 	<packaging>pom</packaging>
 
-	<profiles>
-		<profile>
-			<id>vpe-tests-libs</id>
-			<activation>
-				<property>
-					<name>vpe-coverage</name>
-				</property>
-			</activation>
-			<modules>
-				<module>../../build/emma/lib</module>
-			</modules>
-		</profile>
-
-		<profile>
-			<id>vpe-tests-deafult</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-				<property>
-					<name>vpe-coverage</name>
-				</property>
-			</activation>
-			<modules>
-				<module>org.jboss.tools.vpe.base.test</module>
-				<module>org.jboss.tools.vpe.docbook.test</module>
-				<module>org.jboss.tools.vpe.ui.test</module>
-				<module>org.jboss.tools.vpe.html.test</module>
-				<module>org.jboss.tools.vpe.spring.test</module>
-				<module>org.jboss.tools.vpe.jsp.test</module>
-				<module>org.jboss.tools.vpe.test</module>
-				<module>org.jboss.tools.vpe.xulrunner.test</module>
-				<module>org.jboss.tools.vpe.browsersim.browser.test</module>
-				<module>org.jboss.tools.vpe.browsersim.eclipse.test</module>
-		</modules>
-		</profile>
-
-		<profile>
-			<id>vpe-tests-coverage-report</id>
-			<activation>
-				<property>
-					<name>vpe-coverage</name>
-				</property>
-			</activation>
-			<modules>
-				<module>../../build/emma/reports</module>
-			</modules>
-		</profile>
-	</profiles>
+	<modules>
+		<module>org.jboss.tools.vpe.base.test</module>
+		<module>org.jboss.tools.vpe.docbook.test</module>
+		<module>org.jboss.tools.vpe.ui.test</module>
+		<module>org.jboss.tools.vpe.html.test</module>
+		<module>org.jboss.tools.vpe.spring.test</module>
+		<module>org.jboss.tools.vpe.jsp.test</module>
+		<module>org.jboss.tools.vpe.test</module>
+		<module>org.jboss.tools.vpe.xulrunner.test</module>
+		<module>org.jboss.tools.vpe.browsersim.browser.test</module>
+		<module>org.jboss.tools.vpe.browsersim.eclipse.test</module>
+	</modules>
 
 	<properties>
 		<surefire.timeout>3600</surefire.timeout>
