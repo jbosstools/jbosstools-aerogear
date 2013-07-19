@@ -55,6 +55,13 @@
            id="org.jboss.tools.aerogear.hybrid.ui.exportNativeProjectWizard"
            name="Export Native Platform Project">
      </wizard>
+     <wizard
+           category="org.jboss.tools.aerogear.hybrid.ui.category"
+           class="org.jboss.tools.aerogear.hybrid.ui.wizard.export.NativeBinaryExportWizard"
+           icon="icons/etool16/exportnativeprj_wiz.png"
+           id="org.jboss.tools.aerogear.hybrid.ui.exportNativeBinaryWizard"
+           name="Export Mobile Application">
+     </wizard>
      <category
            id="org.jboss.tools.aerogear.hybrid.ui.category"
            name="Mobile">
