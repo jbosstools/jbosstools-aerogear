@@ -47,6 +47,8 @@ import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CordovaSimRunner {
+	public static final String PLUGIN_ID = "org.jboss.tools.vpe.cordovasim"; //$NON-NLS-1$
+	
 	private static CustomBrowserSim browserSim;
 	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"};
 
