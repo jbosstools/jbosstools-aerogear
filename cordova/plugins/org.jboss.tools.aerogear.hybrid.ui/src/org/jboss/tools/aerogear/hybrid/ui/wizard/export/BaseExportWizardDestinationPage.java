@@ -79,7 +79,6 @@ public abstract class BaseExportWizardDestinationPage extends WizardPage{
 		});
 		platformsGroup.getTableViewer().setContentProvider(getPlatformContentProvider());
 		platformsGroup.getTableViewer().setLabelProvider(getPlatformLabelProvider());
-		platformsGroup.getTableViewer().setInput(HybridCore.getPlatformProjectGenerators());
 		
 		destinationDirectoryGroup = new DirectorySelectionGroup(container, SWT.NONE);
 		destinationDirectoryGroup.setText("Destination:");

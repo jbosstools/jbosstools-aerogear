@@ -16,13 +16,15 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.osgi.service.debug.DebugTrace;
+import org.jboss.tools.aerogear.hybrid.core.extensions.ExtensionPointProxy;
+import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
+import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -99,12 +101,19 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	 * @return list of project generators if any
 	 */
 	public static List<ProjectGenerator> getPlatformProjectGenerators(){
-		IConfigurationElement[] configElements = Platform.getExtensionRegistry().getConfigurationElementsFor(ProjectGenerator.EXTENSION_POINT_ID);
-		List<ProjectGenerator> generators = new ArrayList<ProjectGenerator>();
-		for (int i = 0; i < configElements.length; i++) {
-			ProjectGenerator generator = new ProjectGenerator(configElements[i]);
-			generators.add(generator);
-		}
-		return generators;
+		return ExtensionPointProxy.getNativeExtensionPointProxy(ProjectGenerator.EXTENSION_POINT_ID, ProjectGenerator.class);
 	}
+	
+	/**
+	 * Returns the {@link NativeProjectBuilder} proxy objects defined by the 
+	 * extensions. 
+	 * 
+	 * @return project builder extension points if any
+	 */
+	public static List<NativeProjectBuilder> getNativeProjectBuilders(){
+		return ExtensionPointProxy.getNativeExtensionPointProxy(NativeProjectBuilder.EXTENSION_POINT_ID, NativeProjectBuilder.class);
+	}
+	
+
+	
 }

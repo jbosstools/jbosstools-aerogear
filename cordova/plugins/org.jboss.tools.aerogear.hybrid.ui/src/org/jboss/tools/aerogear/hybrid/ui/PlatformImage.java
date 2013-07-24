@@ -10,23 +10,32 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.resource.ImageDescriptor;
-
+/**
+ * Proxy object for the platformImages extension point.
+ * 
+ * @author Gorkem Ercan
+ *
+ */
 public class PlatformImage {
 	
 	private static final String ATTR_ICON = "icon";
-	private static final String ATTR_PROJECT_GENERATOR="projectGenerator";
-
+	public static final String ATTR_PROJECT_GENERATOR="projectGenerator";
+	public static final String ATTR_PROJECT_BUILDER="projectBuilder";
 	public static final String EXTENSION_POINT_ID= "org.jboss.tools.aerogear.hybrid.ui.platformImages";
 
 	private ImageDescriptor icon;
 	private String projectGeneratorID;
+	private String projectBuilderID;
 	
 	PlatformImage(IConfigurationElement configurationElement) {
 		String iconPath = configurationElement.getAttribute(ATTR_ICON);
 		icon= HybridUI.getImageDescriptor(configurationElement.getContributor().getName(), iconPath);
 		projectGeneratorID = configurationElement.getAttribute(ATTR_PROJECT_GENERATOR);
+		projectBuilderID = configurationElement.getAttribute(ATTR_PROJECT_BUILDER);
 		
 	}
 
@@ -36,6 +45,23 @@ public class PlatformImage {
 
 	public String getProjectGeneratorID() {
 		return projectGeneratorID;
+	}
+
+	public String getProjectBuilderID() {
+		return projectBuilderID;
+	}
+	
+	public static ImageDescriptor getIconFor(String attribute, String id ){
+		List<PlatformImage> images = HybridUI.getPlatformImages();
+		for (PlatformImage platformImage : images) {			
+			if(attribute.equals(ATTR_PROJECT_GENERATOR) && id.equals(platformImage.getProjectGeneratorID())){
+				return platformImage.getIcon();
+			}
+			if(attribute.equals(ATTR_PROJECT_BUILDER) && id.equals(platformImage.getProjectBuilderID())){
+				return platformImage.getIcon();
+			}
+		}
+		return null;
 	}
 
 }

@@ -26,14 +26,10 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 /**
  * Utilities for working with files on the file system and inside bundles.
  * 

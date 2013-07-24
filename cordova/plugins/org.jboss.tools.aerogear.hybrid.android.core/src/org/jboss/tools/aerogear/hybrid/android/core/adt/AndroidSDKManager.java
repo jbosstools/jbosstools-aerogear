@@ -17,21 +17,13 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ant.launching.IAntLaunchConstants;
-import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
-import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectConventions;
 import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
@@ -378,30 +370,6 @@ public class AndroidSDKManager {
 		processUtility.execAsync(command.toString(), null, null, null, null);
 	}
 	
-	public File buildProject(File projectLocation) throws CoreException{
-		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-		ILaunchConfigurationType antLaunchConfigType = launchManager.getLaunchConfigurationType(IAntLaunchConstants.ID_ANT_LAUNCH_CONFIGURATION_TYPE);
-		if(antLaunchConfigType == null ){
-			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Ant launch configuration type is not available"));
-		}
-		ILaunchConfigurationWorkingCopy wc = antLaunchConfigType.newInstance(null, "Android project builder"); //$NON-NLS-1$
-		wc.setContainer(null);
-		File buildFile = new File(projectLocation, AndroidConstants.FILE_XML_BUILD);
-		if(!buildFile.exists()){
-			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "build.xml does not exist in "+ projectLocation.getPath()));
-		}
-		wc.setAttribute(IExternalToolConstants.ATTR_LOCATION, buildFile.getPath());
-		wc.setAttribute(IAntLaunchConstants.ATTR_ANT_TARGETS, "debug");
-		wc.setAttribute(IAntLaunchConstants.ATTR_DEFAULT_VM_INSTALL, true);
-
-		wc.setAttribute(IExternalToolConstants.ATTR_LAUNCH_IN_BACKGROUND, false);
-		wc.setAttribute(DebugPlugin.ATTR_CAPTURE_OUTPUT, true);
-
-		ILaunchConfiguration launchConfig = wc.doSave();
-        launchConfig.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor(), true, true);
-        return new File(projectLocation, AndroidConstants.DIR_BIN);
-	}
-
 	private String getAndroidCommand(){
 		if(isWindows()){
 			return "cmd /c "+ toolsDir +"android";

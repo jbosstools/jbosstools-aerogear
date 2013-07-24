@@ -20,7 +20,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.services.IEvaluationService;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 /**
  * IStructuredContentProvider implementation for the {@link ProjectGenerator} extension point. 
@@ -41,7 +41,7 @@ public class ProjectGeneratorContentProvider implements IStructuredContentProvid
 		try {
 			generators = (List<ProjectGenerator>) newInput;
 		} catch (ClassCastException e) {
-			// Warn the developer that he is doing something wrong
+			// Warn that something is wrong
 			Assert.isTrue( false, "input is not of correct type this content provider can only work with List<ProjectGenerator> type inputs");
 		}
 	}
@@ -59,7 +59,7 @@ public class ProjectGeneratorContentProvider implements IStructuredContentProvid
 				}
 				
 			} catch (CoreException e) {
-				HybridUI.log(IStatus.ERROR, "Error filterin objects", e);
+				HybridUI.log(IStatus.ERROR, "Error filtering objects", e);
 			}
 		}
 		return generators.toArray();

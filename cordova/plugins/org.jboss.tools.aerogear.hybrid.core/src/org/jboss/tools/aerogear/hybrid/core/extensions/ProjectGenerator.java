@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core;
+package org.jboss.tools.aerogear.hybrid.core.extensions;
 
 import java.io.File;
 
@@ -20,11 +20,11 @@ import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 
 /**
@@ -33,22 +33,21 @@ import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDel
  * @author Gorkem Ercan
  *
  */
-public class ProjectGenerator {
+public class ProjectGenerator extends ExtensionPointProxy {
 	public static final String EXTENSION_POINT_ID = "org.jboss.tools.aerogear.hybrid.core.projectGenerator";
 	public static final String ATTR_PLATFORM = "platform";
 	public static final String ATTR_DELEGATE = "delegate";
 	public static final String ATTR_ID="id";
 	private String platform;
-	private IContributor contributor;
 	private Expression expression;
 	private String id;
 
 
 	ProjectGenerator(IConfigurationElement configurationElement ){
-		setPlatform(configurationElement.getAttribute(ProjectGenerator.ATTR_PLATFORM));
-		setContributor(configurationElement.getContributor());
-		configureEnablement(configurationElement.getChildren(ExpressionTagNames.ENABLEMENT));
+		super(configurationElement);
 		this.id = configurationElement.getAttribute(ATTR_ID);
+		this.platform = configurationElement.getAttribute(ProjectGenerator.ATTR_PLATFORM);
+		configureEnablement(configurationElement.getChildren(ExpressionTagNames.ENABLEMENT));
 	}
 
 
@@ -105,14 +104,5 @@ public class ProjectGenerator {
 		}
 		return (this.expression.evaluate(context) == EvaluationResult.TRUE);
 	}
-	
-    private void setPlatform(String platform) {
-		this.platform = platform;
-	}
-   
-	private void setContributor(IContributor contributor) {
-		this.contributor = contributor;
-	}
-	
 	
 }

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.jboss.tools.aerogear.hybrid.ui" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.jboss.tools.aerogear.hybrid.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.jboss.tools.aerogear.hybrid.ui" id="org.jboss.tools.aerogear.hybrid.ui.platformImages" name="Platform mages"/>
+         <meta.schema plugin="org.jboss.tools.aerogear.hybrid.core" id="org.jboss.tools.aerogear.hybrid.core.projectBuilder" name="Native Binary Builder"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -18,7 +18,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="platformImage" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="builder"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,8 +47,18 @@
       </complexType>
    </element>
 
-   <element name="platformImage">
+   <element name="builder">
       <complexType>
+         <attribute name="delegate" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.jboss.tools.aerogear.hybrid.core.platform.AbstractNativeBinaryBuildDelegate:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
@@ -56,34 +66,11 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="icon" type="string" use="required">
+         <attribute name="platform" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
-               <appinfo>
-                  <meta.attribute kind="resource"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="projectGenerator" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="identifier" basedOn="org.jboss.tools.aerogear.hybrid.core.projectGenerator/generator/@id"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="projectBuilder" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="identifier" basedOn="org.jboss.tools.aerogear.hybrid.core.projectBuilder/builder/@id"/>
-               </appinfo>
             </annotation>
          </attribute>
       </complexType>

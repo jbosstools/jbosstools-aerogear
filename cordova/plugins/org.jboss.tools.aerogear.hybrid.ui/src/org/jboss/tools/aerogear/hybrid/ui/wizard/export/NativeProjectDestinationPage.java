@@ -18,8 +18,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
-import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class NativeProjectDestinationPage extends BaseExportWizardDestinationPage implements IOverwriteQuery{
@@ -31,6 +33,11 @@ public class NativeProjectDestinationPage extends BaseExportWizardDestinationPag
 		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, IMAGE_WIZBAN));
 	}
 	
+	@Override
+	public void createControl(Composite parent) {
+		super.createControl(parent);
+		this.getPlatformsGroup().getTableViewer().setInput(HybridCore.getPlatformProjectGenerators());
+	}
 	@Override
 	public String queryOverwrite(String pathString) {
 		final MessageDialog dialog = new MessageDialog(getShell(), 

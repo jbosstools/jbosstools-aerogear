@@ -27,7 +27,7 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
-import org.jboss.tools.aerogear.hybrid.core.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
