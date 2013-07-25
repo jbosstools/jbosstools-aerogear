@@ -30,7 +30,7 @@ public abstract class AbstractNativeBinaryBuildDelegate {
 	
 	public abstract void buildNow(IProgressMonitor monitor) throws CoreException;
 
-	protected IProject getProject() {
+	public IProject getProject() {
 		return project;
 	}
 

@@ -47,7 +47,7 @@ public class NativeBinaryExportOperation extends WorkspaceModifyOperation {
 				break; 
 			}
 			SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
-			subMonitor.setTaskName("Building for Android");
+			subMonitor.setTaskName("Building "+ delegate.getProject().getName());
 			delegate.setRelease(true);
 			delegate.buildNow(subMonitor);
 			try {
@@ -62,7 +62,12 @@ public class NativeBinaryExportOperation extends WorkspaceModifyOperation {
 						break;
 					}
 				}
-				FileUtils.copyFileToDirectory(delegate.getBuildArtifact(), destinationDir);
+				File artifact = delegate.getBuildArtifact();
+				if(artifact.isDirectory()){
+					FileUtils.copyDirectoryToDirectory(artifact, destinationDir);
+				}else{
+					FileUtils.copyFileToDirectory(artifact, destinationDir);
+				}
 				monitor.worked(1);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

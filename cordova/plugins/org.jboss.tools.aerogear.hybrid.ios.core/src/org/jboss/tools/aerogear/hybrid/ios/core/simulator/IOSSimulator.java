@@ -16,11 +16,9 @@ import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
@@ -33,7 +31,6 @@ import org.osgi.framework.Bundle;
 public class IOSSimulator {
 
 	private File iosSim;
-	private IProject project;
 	private boolean tall;
 	private boolean retina;
 	private String family;
@@ -70,19 +67,14 @@ public class IOSSimulator {
 		if(iosSim == null || !iosSim.exists() ){
 			throw newException(IStatus.ERROR,"ios-sim binary is not extracted correctly");
 		}
-		if( project== null ){
-			throw newException(IStatus.ERROR, "Can not run a the simulator without a project");
-		}
 		StringBuilder cmdLine = new StringBuilder();
 		cmdLine.append("\"").append(iosSim.getPath()).append("\" launch ");
 
-		HybridProject hybridProject = HybridProject.getHybridProject(this.project);
 		
 		
-		String name = hybridProject.getBuildArtifactAppName();
 		
 		assert pathToBinary != null: "Path to the app binary to launch on the simulator is missing"; 
-		cmdLine.append("\"").append(pathToBinary).append("/").append(name).append(".app\"");
+		cmdLine.append("\"").append(pathToBinary).append("\"");
 		if( family != null && !family.isEmpty() ){
 			cmdLine.append(" --family ").append(family);
 		}
@@ -97,10 +89,6 @@ public class IOSSimulator {
 		}
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		processUtility.execAsync(cmdLine.toString(), iosSim.getParentFile(), null, null,environment);
-	}
-	
-	public void setProject(IProject project) {
-		this.project = project;
 	}
 
 	public void setTall(boolean tall) {
