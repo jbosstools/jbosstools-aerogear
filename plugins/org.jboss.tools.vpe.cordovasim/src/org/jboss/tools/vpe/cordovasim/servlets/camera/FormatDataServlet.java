@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.jboss.tools.vpe.cordovasim.CordovaSimLogger;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
@@ -91,7 +92,7 @@ public class FormatDataServlet extends HttpServlet {
 			String path = uri.getPath();
 			tempFileName = path.substring(path.lastIndexOf('/') + 1);
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			CordovaSimLogger.logError(e.getMessage(), e);
 		}
 		return tempFileName;
 	}
