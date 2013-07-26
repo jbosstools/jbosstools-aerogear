@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Point;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferencesStorage;
 import org.jboss.tools.vpe.browsersim.util.PreferencesUtil;
+import org.jboss.tools.vpe.cordovasim.CordovaSimLogger;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimResourcesUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -144,22 +145,22 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize);
 			}
 		} catch (SAXException e) {
-			e.printStackTrace();
+			CordovaSimLogger.logError(e.getMessage(), e);
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			CordovaSimLogger.logError(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			CordovaSimLogger.logError(e.getMessage(), e);
 		} catch (FactoryConfigurationError e) {
-			e.printStackTrace();
+			CordovaSimLogger.logError(e.getMessage(), e);
 		} catch (RuntimeException e) {
 			//catched to avoid exceptions like NPE, NFE, etc
-			e.printStackTrace();
+			CordovaSimLogger.logError(e.getMessage(), e);
 		} finally {
 			try {
 				if (is != null)
 					is.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
+			} catch (IOException e) {
+				CordovaSimLogger.logError(e.getMessage(), e);
 			}
 		}
 
@@ -240,10 +241,10 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			transformerFactory.newTransformer().transform(new DOMSource(doc), new StreamResult(file));
 
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		} catch (TransformerException tfe) {
-			tfe.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			CordovaSimLogger.logError(e.getMessage(), e);
+		} catch (TransformerException e) {
+			CordovaSimLogger.logError(e.getMessage(), e);
 		}
 	}
 
