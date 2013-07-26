@@ -47,6 +47,8 @@ import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CordovaSimRunner {
+	public static final String PLUGIN_ID = "org.jboss.tools.vpe.cordovasim"; //$NON-NLS-1$
+	
 	private static CustomBrowserSim browserSim;
 	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"};
 
@@ -55,34 +57,30 @@ public class CordovaSimRunner {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		if (PlatformUtil.OS_MACOSX.equals(PlatformUtil.getOs())) {
-			CocoaUIEnhancer.initializeMacOSMenuBar(Messages.CordovaSim_CORDOVA_SIM);
-		}
-		CordovaSimArgs cordovaSimArgs = CordovaSimArgs.parseArgs(args);
-		BrowserSimArgs.standalone = CordovaSimArgs.standalone;
-		int port = Integer.parseInt(cordovaSimArgs.getPort());
-		File rootFolder = new File(cordovaSimArgs.getRootFolder());
+		int port = 0;
 		Server server = null;
+		Display display = null;
 		try {
+			if (PlatformUtil.OS_MACOSX.equals(PlatformUtil.getOs())) {
+				CocoaUIEnhancer.initializeMacOSMenuBar(Messages.CordovaSim_CORDOVA_SIM);
+			}
+			CordovaSimArgs cordovaSimArgs = CordovaSimArgs.parseArgs(args);
+			BrowserSimArgs.standalone = CordovaSimArgs.standalone;
+			port = Integer.parseInt(cordovaSimArgs.getPort());
+			File rootFolder = new File(cordovaSimArgs.getRootFolder());
+			
 			server = ServerCreator.createServer(rootFolder.getAbsolutePath(), port);// XXX
 			server.start();
 			Connector connector = server.getConnectors()[0];
 			port = connector.getLocalPort(); // for the case if port equals 0 is requested (any free port)
 
-			final Display display = Display.getDefault();
+			display = Display.getDefault();
 			final Shell shell = new Shell(display);
 			setShellAttributes(shell);
 			shell.setLayout(new FillLayout());
-			final Browser browser;
-			try {
-				browser = new Browser(shell, SWT.WEBKIT);
-				browser.setUrl("http://localhost:" + port + "/" + cordovaSimArgs.getStartPage() + "?enableripple=true");
-			} catch(SWTError e) {
-				e.printStackTrace();
-				ExceptionNotifier.showWebKitLoadError(new Shell(display), e, "CordovaSim");
-				display.dispose();
-				return;
-			}
+			final Browser browser = new Browser(shell, SWT.WEBKIT);
+			browser.setUrl("http://localhost:" + port + "/" + cordovaSimArgs.getStartPage() + "?enableripple=true");
+			
 			shell.addListener(SWT.Close, new Listener() {
 				@Override
 				public void handleEvent(Event event) {
@@ -144,13 +142,19 @@ public class CordovaSimRunner {
 				if (!display.readAndDispatch())
 					display.sleep();
 			}
-			display.dispose();
+		} catch (SWTError e) {
+			ExceptionNotifier.showBrowserSimLoadError(new Shell(display), e, "CordovaSim");
 		} catch (BindException e) {
 			showPortInUseMessage(port);
+		} catch (Throwable t) {
+			CordovaSimLogger.logError(t.getMessage(), t);
 		} finally {
 			if (server != null) {
 				server.stop();
 				server.join();
+			}
+			if (display != null) {
+				display.dispose();
 			}
 		}
 	}
