@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author Ilya Buziuk (ibuziuk)
  */
 public class HostFileServlet extends HttpServlet {
+	private static final long serialVersionUID = 877976028427058251L;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String fileName = getFileName(request);
 		TempFile tempFile = TempFileStorage.getTempFileStorage().get(fileName);

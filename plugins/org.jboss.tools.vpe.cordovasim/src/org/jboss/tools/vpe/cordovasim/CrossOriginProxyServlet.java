@@ -30,6 +30,6 @@ public class CrossOriginProxyServlet extends ProxyServlet {
 	protected void customizeExchange(HttpExchange exchange,
 			HttpServletRequest request) {
 		HttpURI url = new HttpURI(exchange.getRequestURI());
-		exchange.setRequestHeader("Host", url.getHost());
+		exchange.setRequestHeader("Host", url.getHost()); //$NON-NLS-1$
 	}
 }

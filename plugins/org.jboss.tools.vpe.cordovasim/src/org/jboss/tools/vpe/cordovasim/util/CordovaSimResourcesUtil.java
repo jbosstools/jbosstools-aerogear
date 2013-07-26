@@ -18,7 +18,7 @@ import org.jboss.tools.vpe.browsersim.util.ResourcesUtil;
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CordovaSimResourcesUtil {
-	private static final String RESOURCES_ROOT_FOLDER = "/org/jboss/tools/vpe/cordovasim/resources/"; 
+	private static final String RESOURCES_ROOT_FOLDER = "/org/jboss/tools/vpe/cordovasim/resources/";  //$NON-NLS-1$
 
 	public static InputStream getResourceAsStream(String name) {
 		return ResourcesUtil.getResourceAsStream(RESOURCES_ROOT_FOLDER, name);

@@ -51,7 +51,7 @@ public class CordovaSimRunner {
 	public static final String PLUGIN_ID = "org.jboss.tools.vpe.cordovasim"; //$NON-NLS-1$
 	
 	private static CustomBrowserSim browserSim;
-	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"};
+	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 	/**
 	 * @param args
@@ -79,9 +79,10 @@ public class CordovaSimRunner {
 			final Shell shell = new Shell(display);
 			setShellAttributes(shell);
 			shell.setLayout(new FillLayout());
+			
 			final Browser browser = new Browser(shell, SWT.WEBKIT);
-			final String homeUrl = "http://localhost:" + port + "/" + CordovaSimArgs.getStartPage();
-			browser.setUrl(homeUrl + "?enableripple=true");
+			final String homeUrl = "http://localhost:" + port + "/" + CordovaSimArgs.getStartPage(); //$NON-NLS-1$ //$NON-NLS-2$
+			browser.setUrl(homeUrl + "?enableripple=true"); //$NON-NLS-1$
 			
 			shell.addListener(SWT.Close, new Listener() {
 				@Override
@@ -147,7 +148,7 @@ public class CordovaSimRunner {
 					display.sleep();
 			}
 		} catch (SWTError e) {
-			ExceptionNotifier.showBrowserSimLoadError(new Shell(display), e, "CordovaSim");
+			ExceptionNotifier.showBrowserSimLoadError(new Shell(display), e, Messages.CordovaSim_CORDOVA_SIM);
 		} catch (BindException e) {
 			showPortInUseMessage(port);
 		} catch (Throwable t) {

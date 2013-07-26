@@ -29,13 +29,15 @@ import org.jboss.tools.vpe.cordovasim.CordovaSimLogger;
  * @author Ilya Buziuk (ibuziuk)
  */
 public class FormatDataServlet extends HttpServlet {
-	private static final String TEMP_FILE_URL = "tempFileUrl";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String CODECS = "codecs";
-	private static final String BITRATE = "bitrate";
-	private static final String HEIGHT = "height";
-	private static final String WIDTH = "width";
-	private static final String DURATION = "duration";
+	private static final long serialVersionUID = -4120900565146871118L;
+	
+	private static final String TEMP_FILE_URL = "tempFileUrl"; //$NON-NLS-1$
+	private static final String APPLICATION_JSON = "application/json"; //$NON-NLS-1$
+	private static final String CODECS = "codecs"; //$NON-NLS-1$
+	private static final String BITRATE = "bitrate"; //$NON-NLS-1$
+	private static final String HEIGHT = "height"; //$NON-NLS-1$
+	private static final String WIDTH = "width"; //$NON-NLS-1$
+	private static final String DURATION = "duration"; //$NON-NLS-1$
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -98,13 +100,13 @@ public class FormatDataServlet extends HttpServlet {
 	}
 	
 	private String generateJSON(String height, String width) {
-		String json = "{" + 
-							"\"" + CODECS    +   "\""  +    ": \"null\", "  +
-							"\"" + BITRATE   +   "\""  +    ": \"0\", "     +
-							"\"" + HEIGHT    +   "\""  +    ": \"" +  height + "\", " +
-							"\"" + WIDTH     +   "\""  +    ": \"" +  width  + "\", " +
-							"\"" + DURATION  +   "\""  +    ": \"0\""       +
-					   "}";
+		String json = "{" +  //$NON-NLS-1$
+							"\"" + CODECS    +   "\""  +    ": \"null\", "  + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							"\"" + BITRATE   +   "\""  +    ": \"0\", "     + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							"\"" + HEIGHT    +   "\""  +    ": \"" +  height + "\", " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+							"\"" + WIDTH     +   "\""  +    ": \"" +  width  + "\", " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+							"\"" + DURATION  +   "\""  +    ": \"0\""       + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					   "}"; //$NON-NLS-1$
 		return json;
 	}
 }

@@ -32,7 +32,7 @@ public class CordovaSimArgs {
 			params.remove(BrowserSimArgs.NOT_STANDALONE);
 		}
 		
-		int portParameterIndex = params.indexOf("-port");
+		int portParameterIndex = params.indexOf("-port"); //$NON-NLS-1$
 		if (portParameterIndex >= 0) {
 			params.remove(portParameterIndex);
 			try {
@@ -48,13 +48,13 @@ public class CordovaSimArgs {
 		if (params.size() > 0) {
 			startPage = params.remove(params.size() - 1); // the last parameter
 		} else {
-			startPage = "";
+			startPage = ""; //$NON-NLS-1$
 		}
 		
 		if (params.size() > 0) {
 			rootFolder = params.remove(params.size() - 1); // the parameter before the last one
 		} else {
-			rootFolder = ".";
+			rootFolder = "."; //$NON-NLS-1$
 		}
 	}
 
