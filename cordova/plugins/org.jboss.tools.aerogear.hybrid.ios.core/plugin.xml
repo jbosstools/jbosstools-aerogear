@@ -24,5 +24,19 @@
          </enablement>
       </generator>
    </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.core.projectBuilder">
+      <builder
+            delegate="org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeBuild"
+            id="org.jboss.tools.aerogear.hybrid.ios.core.nativeBuilder"
+            platform="iOS (XCode)">
+            <enablement>
+            <systemTest
+                  property="os.name"
+                  value="Mac OS X">
+            </systemTest>
+         </enablement>
+      </builder>
+   </extension>
 
 </plugin>

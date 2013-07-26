@@ -115,7 +115,6 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 			//Move cordova library to libs
 			URL sourcs = getTemplateFile("/templates/android/cordova.jar");
 			URL dests = toURL(new File(libsDir, FILE_JAR_CORDOVA ));
-			AndroidCore.log(IStatus.INFO, "Copying cordova android lib from " + sourcs + " to " + dests,  null);
  			fileCopy(sourcs, dests);
  			//Copy the android compatability jar required by PushPlugin. 
  			//This should change in the future with a more generic plugin support.

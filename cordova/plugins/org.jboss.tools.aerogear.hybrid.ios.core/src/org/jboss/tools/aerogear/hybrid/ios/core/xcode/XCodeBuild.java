@@ -28,6 +28,7 @@ import org.jboss.tools.aerogear.hybrid.core.platform.AbstractNativeBinaryBuildDe
 import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
 import org.jboss.tools.aerogear.hybrid.core.util.TextDetectingStreamListener;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
+import org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants;
 
 /**
  * Wrapper around the xcodebuild command line tool.
@@ -128,10 +129,19 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 			StringBuilder cmdString = new StringBuilder("xcodebuild -project ");
 			cmdString.append("\"").append(name).append(".xcodeproj").append("\"");
 
-			cmdString.append(" -arch i386 -target ").append(name);
-			//TODO: do we need to clean every time?
-			cmdString.append(" -configuration Release -sdk iphonesimulator6.1 clean build VALID_ARCHS=\"i386\" CONFIGURATION_BUILD_DIR=");
-			cmdString.append("\"").append(getBuildDir(xcodeProjectDir).getPath()).append("\"");
+//			cmdString.append(" -arch i386 armv6 armv7 -target ").append(name);
+			cmdString.append(" -target ").append(name);
+			cmdString.append(" -configuration Release ");
+		
+			cmdString.append(" -sdk ").append(selectSDK());
+			cmdString.append(" clean build ");
+			cmdString.append("VALID_ARCHS=\"i386 armv6 armv7\"");
+			cmdString.append(" CONFIGURATION_BUILD_DIR=").append("\"").append(getBuildDir(xcodeProjectDir).getPath()).append("\"");
+			if(isRelease()){
+				// We explicitly do not code sign until we have proper mechanisms to 
+				// get the correct signing certificates.
+				cmdString.append(" CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO");
+			}
 
 			ExternalProcessUtility processUtility = new ExternalProcessUtility();
 			if (monitor.isCanceled()) {
@@ -154,6 +164,19 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 		}
 
 		
+	}
+
+	private Object selectSDK() {
+		if(isRelease()){
+			return "iphoneos6.1";
+		}
+		if( getLaunchConfiguration() != null ){
+			try {
+				return getLaunchConfiguration().getAttribute(IOSSimulatorLaunchConstants.ATTR_SIMULATOR_SDK_VERSION, "iphonesimulator6.1");
+			} catch (CoreException e) {
+			}
+		}
+		return "iphonesimulator6.1";
 	}
 
 	public ILaunchConfiguration getLaunchConfiguration() {

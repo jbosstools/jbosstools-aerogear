@@ -12,6 +12,11 @@ package org.jboss.tools.aerogear.hybrid.core.extensions;
 
 import java.io.File;
 
+import org.eclipse.core.expressions.EvaluationResult;
+import org.eclipse.core.expressions.Expression;
+import org.eclipse.core.expressions.ExpressionConverter;
+import org.eclipse.core.expressions.ExpressionTagNames;
+import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -31,12 +36,25 @@ public class NativeProjectBuilder extends ExtensionPointProxy{
 
 	private String id;
 	private String platform;
+	private Expression expression;
 
 	NativeProjectBuilder(IConfigurationElement element) {
 		super(element);
 		this.id = element.getAttribute(ATTR_ID);
 		this.platform = element.getAttribute(ProjectGenerator.ATTR_PLATFORM);
+		configureEnablement(element.getChildren(ExpressionTagNames.ENABLEMENT));
 
+	}
+	
+	private void configureEnablement(IConfigurationElement[] enablementNodes) {
+		if(enablementNodes == null || enablementNodes.length < 1 ) return;
+		IConfigurationElement node = enablementNodes[0];
+		try {
+			 expression = ExpressionConverter.getDefault().perform(node);
+			
+		} catch (CoreException e) {
+			HybridCore.log(IStatus.ERROR, "Error while reading the enablement", e);
+		}
 	}
 	
 	public String getPlatform() {
@@ -45,6 +63,14 @@ public class NativeProjectBuilder extends ExtensionPointProxy{
 	
 	public String getID(){
 		return id;
+	}
+	
+	public boolean isEnabled(IEvaluationContext context) throws CoreException{
+		if(expression == null ) return true;
+		if(context == null ){
+			throw new IllegalArgumentException("Must have an evalutation context");
+		}
+		return (this.expression.evaluate(context) == EvaluationResult.TRUE);
 	}
 	
 	public AbstractNativeBinaryBuildDelegate createDelegate(IProject project, File destination) throws CoreException{
