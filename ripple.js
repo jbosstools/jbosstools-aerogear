@@ -1,5 +1,5 @@
 /*! 
-  Ripple Mobile Environment Emulator v0.9.17 :: Built On Fri May 31 2013 12:44:34 GMT+0300 (FET)
+  Ripple Mobile Environment Emulator v0.9.18 :: Built On Thu Jul 25 2013 19:11:32 GMT+0300 (FET)
 
                                 Apache License
                            Version 2.0, January 2004
@@ -22586,7 +22586,7 @@ a.featureCoordSys),this.addCoordSys(b.filtercoordsys,a.filterCoordSys)):this.req
 null!==b.proj&&(a.id=b.proj.srsProjNumber,a.string=b.proj.srsCode)},iserror:function(a){var b=null;a?(a=OpenLayers.Format.XML.prototype.read.apply(this,[a]),a=a.documentElement.getElementsByTagName("ERROR"),b=null!==a&&0<a.length):b=""!==this.response.error;return b},read:function(a){"string"==typeof a&&(a=OpenLayers.Format.XML.prototype.read.apply(this,[a]));var b=null;a&&a.documentElement&&(b="ARCXML"==a.documentElement.nodeName?a.documentElement:a.documentElement.getElementsByTagName("ARCXML")[0]);
 if(!b||"parsererror"===b.firstChild.nodeName){var c,d;try{c=a.firstChild.nodeValue,d=a.firstChild.childNodes[1].firstChild.nodeValue}catch(e){}throw{message:"Error parsing the ArcXML request",error:c,source:d};}return this.parseResponse(b)},write:function(a){a||(a=this.request);var b=this.createElementNS("","ARCXML");b.setAttribute("version","1.1");var c=this.createElementNS("","REQUEST");if(null!=a.get_image){var d=this.createElementNS("","GET_IMAGE");c.appendChild(d);var e=this.createElementNS("",
 "PROPERTIES");d.appendChild(e);a=a.get_image.properties;null!=a.featurecoordsys&&(d=this.createElementNS("","FEATURECOORDSYS"),e.appendChild(d),0===a.featurecoordsys.id?d.setAttribute("string",a.featurecoordsys.string):d.setAttribute("id",a.featurecoordsys.id));null!=a.filtercoordsys&&(d=this.createElementNS("","FILTERCOORDSYS"),e.appendChild(d),0===a.filtercoordsys.id?d.setAttribute("string",a.filtercoordsys.string):d.setAttribute("id",a.filtercoordsys.id));null!=a.envelope&&(d=this.createElementNS("",
-"ENVELOPE"),e.appendChild(d),d.setAttribute("minx",a.envelope.minx),d.setAttribute("miny",a.envelope.miny),d.setAttribute("maxx",a.envelope.maxx),d.setAttribute("maxy",a.envelope.maxy));d=this.createElementNS("","IMAGESIZE");e.appendChild(d);d.setAttribute("height",a.imagesize.height);d.setAttribute("width",a.imagesize.width);if(a.imagesize.height!=a.imagesize.printheight||a.imagesize.width!=a.imagesize.printwidth)d.setAttribute("printheight",a.imagesize.printheight),d.setArrtibute("printwidth",a.imagesize.printwidth);
+"ENVELOPE"),e.appendChild(d),d.setAttribute("minx",a.envelope.minx),d.setAttribute("miny",a.envelope.miny),d.setAttribute("maxx",a.envelope.maxx),d.setAttribute("maxy",a.envelope.maxy));d=this.createElementNS("","IMAGESIZE");e.appendChild(d);d.setAttribute("height",a.imagesize.height);d.setAttribute("width",a.imagesize.width);if(a.imagesize.height!=a.imagesize.printheight||a.imagesize.width!=a.imagesize.printwidth)d.setAttribute("printheight",a.imagesize.printheight),d.setAttribute("printwidth",a.imagesize.printwidth);
 null!=a.background&&(d=this.createElementNS("","BACKGROUND"),e.appendChild(d),d.setAttribute("color",a.background.color.r+","+a.background.color.g+","+a.background.color.b),null!==a.background.transcolor&&d.setAttribute("transcolor",a.background.transcolor.r+","+a.background.transcolor.g+","+a.background.transcolor.b));if(null!=a.layerlist&&0<a.layerlist.length){d=this.createElementNS("","LAYERLIST");e.appendChild(d);for(e=0;e<a.layerlist.length;e++){var f=this.createElementNS("","LAYERDEF");d.appendChild(f);
 f.setAttribute("id",a.layerlist[e].id);f.setAttribute("visible",a.layerlist[e].visible);if("object"==typeof a.layerlist[e].query){var g=a.layerlist[e].query;if(0>g.where.length)continue;var h=null,h="boolean"==typeof g.spatialfilter&&g.spatialfilter?this.createElementNS("","SPATIALQUERY"):this.createElementNS("","QUERY");h.setAttribute("where",g.where);"number"==typeof g.accuracy&&0<g.accuracy&&h.setAttribute("accuracy",g.accuracy);"number"==typeof g.featurelimit&&2E3>g.featurelimit&&h.setAttribute("featurelimit",
 g.featurelimit);"string"==typeof g.subfields&&"#ALL#"!=g.subfields&&h.setAttribute("subfields",g.subfields);"string"==typeof g.joinexpression&&0<g.joinexpression.length&&h.setAttribute("joinexpression",g.joinexpression);"string"==typeof g.jointables&&0<g.jointables.length&&h.setAttribute("jointables",g.jointables);f.appendChild(h)}"object"==typeof a.layerlist[e].renderer&&this.addRenderer(f,a.layerlist[e].renderer)}}}else if(null!=a.get_feature&&(d=this.createElementNS("","GET_FEATURES"),d.setAttribute("outputmode",
@@ -26233,6 +26233,12 @@ module.exports = {
         jQuery("." + constants.NOTIFICATIONS.CLOSE_BUTTON_CLASS).bind("click", function () {
             notifications.closeNotification();
         });
+        jQuery("#confirm-dialog").dialog({
+            autoOpen: false,
+            modal: true,
+            width: 200,
+            position: 'center',
+        });
     }
 };
 
@@ -29355,7 +29361,7 @@ _self = {
                 poll(resp);
             },
             function (error) {
-                var message = "Build request failded with message: " + error.data;
+                var message = "Build request failed with message: " + error.data;
 
                 if (error.code === 0 || error.code === 404) {
                     message += "<br>This could be due to the Build and Deploy services not running or not being installed";
@@ -30001,7 +30007,7 @@ function _writeable(obj) {
 
     // need prototypes
     for (key in obj) {
-        //HACK: don't even know what to say bout this, resonseBlob can go fly a kite: related to this issue:
+        //HACK: don't even know what to say bout this, responseBlob can go fly a kite: related to this issue:
         //https://github.com/blackberry/Ripple-UI/issues/394
         if (key !== "responseBlob" && typeof obj[key] === "function") {
             newObj[key] = _handle(obj, key);
@@ -33437,6 +33443,38 @@ function _processNotification(nType, stateType, message) {
 
 }
 
+function _processConfirm (message,resultCallback,title,buttonLabels) {
+    buttonLabels = buttonLabels || "";
+    message = message || "";
+    title = title || "Confirm";
+    var btnArray = (!buttonLabels || 0 === buttonLabels.length) ? [] : buttonLabels.split(',');
+    var buttons = [];
+
+    btnArray.forEach(function(btnLabel,index) {
+        var button = {};
+        button["text"] = btnLabel;
+        button["click"] = function () {
+            if(resultCallback !== typeof "undefined")
+                resultCallback(index);
+            jQuery( this ).dialog( "close" );
+        };
+        buttons.push(button);
+    });
+    var dialogBox = jQuery("#confirm-dialog");
+    dialogBox.dialog("option","title", title);
+    jQuery("#confirm-message").text(message);
+    dialogBox.dialog("open");
+    if(btnArray.length > 0){
+        dialogBox.dialog( "option", "buttons", buttons);
+        return;
+    }
+    var closeBox = function() {
+        dialogBox.dialog("close");
+    };
+    jQuery("#confirm-cancel").button().unbind().bind('click', closeBox).show();
+    jQuery("#confirm-ok").button().unbind().bind('click', closeBox).show();
+}
+
 module.exports = {
     openNotification: function (nType, msg) {
         _processNotification(nType, constants.NOTIFICATIONS.STATE_TYPES.OPEN, msg);
@@ -33444,6 +33482,10 @@ module.exports = {
 
     closeNotification: function (nType) {
         _processNotification(nType, constants.NOTIFICATIONS.STATE_TYPES.CLOSE);
+    },
+
+    confirmNotification: function (message, resultCallback, title, buttonLabels) {
+        _processConfirm(message,resultCallback,title,buttonLabels);
     }
 };
 
@@ -38761,7 +38803,7 @@ function _fires(name, data) {
         var win = ripple('emulatorBridge').window();
 
         if (!win.cordova) {
-            throw "You must have cordova.js included in your prjects, to be able to trigger events";
+            throw "You must have cordova.js included in your projects, to be able to trigger events";
         }
 
         win.cordova.fireDocumentEvent(name, data);
@@ -40097,8 +40139,15 @@ module.exports = {
         return success && success();
     },
 
-    confirm: function () {
-        throw "Not Implemented";
+    confirm: function (resultCallback, someObject, confirmStrings) {
+        // For some reason only 3 parameters are passed i
+        //with all the options as the last parameter
+        //this is a HACK to get it to work
+        var options = confirmStrings;
+        var message = options[0] || "";
+        var title = options[1] || "";
+        var buttonLabels = options[2];
+        notifications.confirmNotification(message, resultCallback, title, buttonLabels);
     },
 
     activityStart: function () {
@@ -53752,8 +53801,8 @@ function _simulateTouchEvent(type, mouseevent) {
         shiftKey: mouseevent.shiftKey,
         metaKey: mouseevent.metaKey,
         changedTouches: [touchObj],
-        targetTouches: [touchObj],
-        touches: [touchObj]
+        targetTouches: type === "touchend" ? [] : [touchObj],
+        touches: type === "touchend" ? [] : [touchObj]
     };
 
     utils.mixin(touchObj, eventData);
