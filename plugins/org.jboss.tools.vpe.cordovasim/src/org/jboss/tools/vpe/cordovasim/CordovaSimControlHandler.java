@@ -24,7 +24,7 @@ public class CordovaSimControlHandler extends BrowserSimControlHandler {
 
 	@Override
 	public void goBack() {
-		boolean backButtonProcessed = (Boolean) browser.evaluate("return !!window.opener.bsBackbuttonPressed && !window.opener.bsBackbuttonPressed()");
+		boolean backButtonProcessed = (Boolean) browser.evaluate("return !!window.opener.bsBackbuttonPressed && !window.opener.bsBackbuttonPressed()"); //$NON-NLS-1$
 		if (!backButtonProcessed) {
 			super.goBack(); 
 		}

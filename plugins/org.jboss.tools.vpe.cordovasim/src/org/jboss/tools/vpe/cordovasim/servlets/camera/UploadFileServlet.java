@@ -27,13 +27,15 @@ import javax.servlet.http.Part;
  * @author Ilya Buziuk (ibuziuk)
  */
 public class UploadFileServlet extends HttpServlet {
-	private static final String PHOTO_PART = "photo";
-	private static final String TEMP_PREFIX = "temp";
-	private static final String JSON_KEY = "photoUrl";
-	private static final String RESOURCE_MAPPING = "/temp-photo/";
-	private static final String CONTENT_DISPOSITION = "content-disposition";
-	private static final String FILE_NAME = "filename";
-	private static final String TEXT_HTML = "text/html";
+	private static final long serialVersionUID = -3271748843766809687L;
+	
+	private static final String PHOTO_PART = "photo"; //$NON-NLS-1$
+	private static final String TEMP_PREFIX = "temp"; //$NON-NLS-1$
+	private static final String JSON_KEY = "photoUrl"; //$NON-NLS-1$
+	private static final String RESOURCE_MAPPING = "/temp-photo/"; //$NON-NLS-1$
+	private static final String CONTENT_DISPOSITION = "content-disposition"; //$NON-NLS-1$
+	private static final String FILE_NAME = "filename"; //$NON-NLS-1$
+	private static final String TEXT_HTML = "text/html"; //$NON-NLS-1$
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Part photoPart = request.getPart(PHOTO_PART);
@@ -65,7 +67,7 @@ public class UploadFileServlet extends HttpServlet {
 
 	private String generateJSON(File tempFile) {
 		String url = RESOURCE_MAPPING + tempFile.getName();
-		String json = "{\"" + JSON_KEY + "\": " + "\"" + url + "\"}"; 
+		String json = "{\"" + JSON_KEY + "\": " + "\"" + url + "\"}";  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		return json;
 	}
 
@@ -92,10 +94,10 @@ public class UploadFileServlet extends HttpServlet {
 	}
 	
 	private String getFileNameFromPart(Part part) {
-		for (String cd : part.getHeader(CONTENT_DISPOSITION).split(";")) {
+		for (String cd : part.getHeader(CONTENT_DISPOSITION).split(";")) { //$NON-NLS-1$
 			if (cd.trim().startsWith(FILE_NAME)) {
 				return cd.substring(cd.indexOf('=') + 1).trim()
-						.replace("\"", "");
+						.replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		return null;

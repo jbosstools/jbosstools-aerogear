@@ -35,20 +35,20 @@ public class CordovaSimLauncher {
 	static {
 		BUNDLES.addAll(BrowserSimLauncher.BUNDLES);
 		BUNDLES.addAll(Arrays.asList(
-			"org.jboss.tools.vpe.cordovasim",
-			"org.jboss.tools.vpe.cordovasim.ripple",
-			"org.eclipse.jetty.continuation",
-			"org.eclipse.jetty.continuation",
-			"org.eclipse.jetty.http",
-			"org.eclipse.jetty.io",
-		"org.eclipse.jetty.security",
-			"org.eclipse.jetty.server",
-			"org.eclipse.jetty.servlet",
-			"org.eclipse.jetty.util",
-		"org.eclipse.jetty.client",
-		"org.eclipse.jetty.servlets",
-		"org.eclipse.jetty.rewrite",
-			"javax.servlet"
+			"org.jboss.tools.vpe.cordovasim", //$NON-NLS-1$
+			"org.jboss.tools.vpe.cordovasim.ripple", //$NON-NLS-1$
+			"org.eclipse.jetty.continuation", //$NON-NLS-1$
+			"org.eclipse.jetty.continuation", //$NON-NLS-1$
+			"org.eclipse.jetty.http", //$NON-NLS-1$
+			"org.eclipse.jetty.io", //$NON-NLS-1$
+		"org.eclipse.jetty.security", //$NON-NLS-1$
+			"org.eclipse.jetty.server", //$NON-NLS-1$
+			"org.eclipse.jetty.servlet", //$NON-NLS-1$
+			"org.eclipse.jetty.util", //$NON-NLS-1$
+		"org.eclipse.jetty.client", //$NON-NLS-1$
+		"org.eclipse.jetty.servlets", //$NON-NLS-1$
+		"org.eclipse.jetty.rewrite", //$NON-NLS-1$
+			"javax.servlet" //$NON-NLS-1$
 		));
 	}
 
@@ -90,19 +90,18 @@ public class CordovaSimLauncher {
 			parameters.add(actualStartPageString);
 			
 			if (port != null) {
-				parameters.add("-port");
+				parameters.add("-port"); //$NON-NLS-1$
 				parameters.add(String.valueOf(port));
 			}
 
 			ExternalProcessLauncher.launchAsExternalProcess(BUNDLES, RESOURCES_BUNDLES,
-					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, "CordovaSim");
+					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM);
 		} else {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
 					MessageDialog.openError(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
-							"Cannot run CordovaSim", "Cannot find root folder or start page.\n" +
-							"Please specify them in the Run Configuration settings.");					
+							Messages.CordovaSimLauncher_CANNOT_RUN_CORDOVASIM, Messages.CordovaSimLauncher_CANNOT_FIND_ROOT_FOLDER);					
 				}
 			});
 		}

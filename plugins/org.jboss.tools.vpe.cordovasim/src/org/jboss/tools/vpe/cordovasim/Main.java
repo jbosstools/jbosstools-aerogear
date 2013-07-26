@@ -27,23 +27,23 @@ public class Main {
         HandlerCollection handlers = new HandlerCollection();
         _server.setHandler(handlers);
 
-        ServletContextHandler proxyCtx = new ServletContextHandler(handlers, "/proxy", ServletContextHandler.NO_SESSIONS);
+        ServletContextHandler proxyCtx = new ServletContextHandler(handlers, "/proxy", ServletContextHandler.NO_SESSIONS); //$NON-NLS-1$
         ServletHolder proxyServletHolder = new ServletHolder(new ProxyServlet()
         {
             @Override
             protected HttpURI proxyHttpURI(String scheme, String serverName, int serverPort, String uri) throws MalformedURLException
             {
                 // Proxies any call to "/proxy" to "/"
-            	HttpURI httpUri = new HttpURI(uri.substring("/proxy/".length()));
+            	HttpURI httpUri = new HttpURI(uri.substring("/proxy/".length())); //$NON-NLS-1$
             	setHostHeader(httpUri.getHost()); // XXX
                 return httpUri;
             }
         });
         proxyServletHolder.setAsyncSupported(true);
-        proxyServletHolder.setInitParameter("timeout", String.valueOf(5 * 60 * 1000L));
-        proxyCtx.addServlet(proxyServletHolder, "/*");
+        proxyServletHolder.setInitParameter("timeout", String.valueOf(5 * 60 * 1000L)); //$NON-NLS-1$
+        proxyCtx.addServlet(proxyServletHolder, "/*"); //$NON-NLS-1$
 
-        ServletContextHandler appCtx = new ServletContextHandler(handlers, "/", ServletContextHandler.SESSIONS);
+        ServletContextHandler appCtx = new ServletContextHandler(handlers, "/", ServletContextHandler.SESSIONS); //$NON-NLS-1$
 
         handlers.addHandler(proxyCtx);
         handlers.addHandler(appCtx);

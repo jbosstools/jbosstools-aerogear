@@ -33,18 +33,18 @@ import org.xml.sax.SAXException;
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CordovaPluginXmlUtil {
-	public static final String PLATFORM_ANDROID = "android";
-	public static final String PLATFORM_IOS = "ios";
+	public static final String PLATFORM_ANDROID = "android"; //$NON-NLS-1$
+	public static final String PLATFORM_IOS = "ios"; //$NON-NLS-1$
 
-	private static final String ATTRIBUTE_ID = "id";
-	private static final String ATTRIBUTE_NAME = "name";
-	private static final String ATTRIBUTE_SRC = "src";
-	private static final String ATTRIBUTE_TARGET = "target";
-	private static final String PLUGINS_DIR = "plugins";
-	private static final String TAG_CLOBBERS = "clobbers";
-	private static final String TAG_JS_MODULE = "js-module";
-	private static final String TAG_MERGES = "merges";
-	private static final String TAG_PLATFORM = "platform";
+	private static final String ATTRIBUTE_ID = "id"; //$NON-NLS-1$
+	private static final String ATTRIBUTE_NAME = "name"; //$NON-NLS-1$
+	private static final String ATTRIBUTE_SRC = "src"; //$NON-NLS-1$
+	private static final String ATTRIBUTE_TARGET = "target"; //$NON-NLS-1$
+	private static final String PLUGINS_DIR = "plugins"; //$NON-NLS-1$
+	private static final String TAG_CLOBBERS = "clobbers"; //$NON-NLS-1$
+	private static final String TAG_JS_MODULE = "js-module"; //$NON-NLS-1$
+	private static final String TAG_MERGES = "merges"; //$NON-NLS-1$
+	private static final String TAG_PLATFORM = "platform"; //$NON-NLS-1$
 	
 	/**
 	 * Returns a {@link List} of all plugins for the specific platform from the {@link Document} of the plugin.xml 
@@ -103,8 +103,8 @@ public class CordovaPluginXmlUtil {
 			List<String> clobbers = getMappers(clobbersList);
 			List<String> merges = getMappers(mergesList);
 
-			String pluginId = pluginXmlId + "." + moduleName; // plugin id = pligin.xml.id + moduleName
-			String file = PLUGINS_DIR + "/" + pluginXmlId + "/" + src;
+			String pluginId = pluginXmlId + "." + moduleName; // plugin id = pligin.xml.id + moduleName //$NON-NLS-1$
+			String file = PLUGINS_DIR + "/" + pluginXmlId + "/" + src; //$NON-NLS-1$ //$NON-NLS-2$
 
 			if (clobbers.size() > 0 || merges.size() > 0) {
 				plugin = new Plugin(file, pluginId, clobbers, merges);

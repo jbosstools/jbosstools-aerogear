@@ -61,7 +61,7 @@ import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
 public class CordovaSimLaunchConfigurationTab extends
 		AbstractLaunchConfigurationTab {
 
-	private Image image = Activator.getImageDescriptor("icons/cordovasim_16.png").createImage();
+	private Image image = Activator.getImageDescriptor("icons/cordovasim_16.png").createImage(); //$NON-NLS-1$
 	private WidgetListener defaultListener = new WidgetListener();
 	private Text projectText;
 	private Button useDefaultRootFolderCheckbox;
@@ -91,10 +91,10 @@ public class CordovaSimLaunchConfigurationTab extends
 
 
 	private void createProjectEditor(Composite parent) {
-		Group group = SWTFactory.createGroup(parent, "Project:", 2, 1, GridData.FILL_HORIZONTAL);
+		Group group = SWTFactory.createGroup(parent, Messages.CordovaSimLaunchConfigurationTab_PROJECT, 2, 1, GridData.FILL_HORIZONTAL);
 		projectText = SWTFactory.createSingleText(group, 1);
 		projectText.addModifyListener(defaultListener);
-		Button peojectButton = createPushButton(group, "&Browse...", null); 
+		Button peojectButton = createPushButton(group, Messages.CordovaSimLaunchConfigurationTab_BROWSE, null); 
 		peojectButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				handleProjectButtonSelected();				
@@ -103,11 +103,11 @@ public class CordovaSimLaunchConfigurationTab extends
 	}
 	
 	private void createRootFolderEditor(Composite parent) {
-		Group group = SWTFactory.createGroup(parent, "Root folder:", 2, 1, GridData.FILL_HORIZONTAL);
-		useDefaultRootFolderCheckbox = SWTFactory.createCheckButton(group, "Use default", null, true, 2);
+		Group group = SWTFactory.createGroup(parent, Messages.CordovaSimLaunchConfigurationTab_ROOT_FOLDER, 2, 1, GridData.FILL_HORIZONTAL);
+		useDefaultRootFolderCheckbox = SWTFactory.createCheckButton(group, Messages.CordovaSimLaunchConfigurationTab_USE_DEFAULT, null, true, 2);
 		rootFolderText = SWTFactory.createSingleText(group, 1);
 		rootFolderText.addModifyListener(defaultListener);
-		rootFolderButton = createPushButton(group, "&Browse...", null); 
+		rootFolderButton = createPushButton(group, Messages.CordovaSimLaunchConfigurationTab_BROWSE, null);  
 		rootFolderButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				handleRootFolderButtonSelected();				
@@ -132,11 +132,11 @@ public class CordovaSimLaunchConfigurationTab extends
 	}
 	
 	private void createStartPageEditor(Composite parent) {
-		Group group = SWTFactory.createGroup(parent, "Start page:", 2, 1, GridData.FILL_HORIZONTAL);
-		useDefaultStartPageCheckbox = SWTFactory.createCheckButton(group, "Use default", null, true, 2);
+		Group group = SWTFactory.createGroup(parent, Messages.CordovaSimLaunchConfigurationTab_START_PAGE, 2, 1, GridData.FILL_HORIZONTAL);
+		useDefaultStartPageCheckbox = SWTFactory.createCheckButton(group, Messages.CordovaSimLaunchConfigurationTab_USE_DEFAULT, null, true, 2); 
 		startPageText = SWTFactory.createSingleText(group, 1);
 		startPageText.addModifyListener(defaultListener);
-		startPageButton = createPushButton(group, "&Browse...", null); 
+		startPageButton = createPushButton(group, Messages.CordovaSimLaunchConfigurationTab_BROWSE, null);  
 		startPageButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				handleStartPageButtonSelected();				
@@ -160,9 +160,9 @@ public class CordovaSimLaunchConfigurationTab extends
 	}
 	
 	private void createServerEditor(Composite parent) {
-		Group group = SWTFactory.createGroup(parent, "Server port:", 2, 1, GridData.FILL_HORIZONTAL);
-		useDefaultPortCheckbox = SWTFactory.createCheckButton(group, "Use default", null, true, 2);
-		SWTFactory.createLabel(group, "Port:", 1);
+		Group group = SWTFactory.createGroup(parent, Messages.CordovaSimLaunchConfigurationTab_SERVER_PORT, 2, 1, GridData.FILL_HORIZONTAL);
+		useDefaultPortCheckbox = SWTFactory.createCheckButton(group, Messages.CordovaSimLaunchConfigurationTab_USE_DEFAULT, null, true, 2); 
+		SWTFactory.createLabel(group, Messages.CordovaSimLaunchConfigurationTab_PORT, 1);
 		portText = SWTFactory.createSingleText(group, 1);
 		portText.addModifyListener(defaultListener);
 		useDefaultPortCheckbox.addSelectionListener(new SelectionAdapter() {
@@ -179,8 +179,8 @@ public class CordovaSimLaunchConfigurationTab extends
 
 		ElementListSelectionDialog dialog= new ElementListSelectionDialog(getShell(),
 				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
-		dialog.setTitle("Project Selection");
-		dialog.setMessage("Select a project to constrain your search.");
+		dialog.setTitle(Messages.CordovaSimLaunchConfigurationTab_PROJECT_SELECTION);
+		dialog.setMessage(Messages.CordovaSimLaunchConfigurationTab_SELECT_PROJECT);
 		List<IProject> openPojects = new ArrayList<IProject>();
 		for (IProject p : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
 			if (p.isOpen()) {
@@ -192,7 +192,7 @@ public class CordovaSimLaunchConfigurationTab extends
 			dialog.setInitialSelections(new IProject[] {project});
 		}
 		
-		dialog.setDialogBoundsSettings(getDialogBoundsSettings(Activator.PLUGIN_ID + ".PROJECT_DIALOG"),
+		dialog.setDialogBoundsSettings(getDialogBoundsSettings(Activator.PLUGIN_ID + ".PROJECT_DIALOG"), //$NON-NLS-1$
 				Dialog.DIALOG_PERSISTSIZE);
 		
 		dialog.open();
@@ -208,11 +208,11 @@ public class CordovaSimLaunchConfigurationTab extends
 		
 		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
 				getShell(), new WorkbenchLabelProvider(), new WorkbenchContentProvider());
-		dialog.setTitle("Root Folder Selection");
-		dialog.setMessage("&Choose the folder to be the root:");
+		dialog.setTitle(Messages.CordovaSimLaunchConfigurationTab_ROOT_FOLDER_SELECTION);
+		dialog.setMessage(Messages.CordovaSimLaunchConfigurationTab_CHOOSE_ROOT_FOLDER);
 		dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
-		dialog.setDialogBoundsSettings(getDialogBoundsSettings(Activator.PLUGIN_ID + ".ROOT_FOLDER_LOCATION_DIALOG"),
+		dialog.setDialogBoundsSettings(getDialogBoundsSettings(Activator.PLUGIN_ID + ".ROOT_FOLDER_LOCATION_DIALOG"), //$NON-NLS-1$
 				Dialog.DIALOG_PERSISTSIZE);
 		dialog.setInitialSelection(rootFolder);
 		dialog.addFilter(new ViewerFilter() {
@@ -244,18 +244,18 @@ public class CordovaSimLaunchConfigurationTab extends
 		
 		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
 				getShell(), new WorkbenchLabelProvider(), new WorkbenchContentProvider());
-		dialog.setTitle("Start Page Selection");
-		dialog.setMessage("&Choose the file to be the start page:");
+		dialog.setTitle(Messages.CordovaSimLaunchConfigurationTab_START_PAGE_SELECTION);
+		dialog.setMessage(Messages.CordovaSimLaunchConfigurationTab_CHOOSE_START_PAGE_FILE);
 		dialog.setInput(rootFolder);
 		dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
-		dialog.setDialogBoundsSettings(getDialogBoundsSettings(Activator.PLUGIN_ID + ".ROOT_START_PAGE_LOCATION_DIALOG"),
+		dialog.setDialogBoundsSettings(getDialogBoundsSettings(Activator.PLUGIN_ID + ".ROOT_START_PAGE_LOCATION_DIALOG"), //$NON-NLS-1$
 				Dialog.DIALOG_PERSISTSIZE);
 		dialog.setInitialSelection(startPage);
 		dialog.addFilter(new ViewerFilter() {
 			public boolean select(Viewer viewer, Object parentElement, Object element) {
 				if (element instanceof IFile) {
 					String extension = ((IFile) element).getFileExtension();
-					return "html".equals(extension) || "htm".equals(extension);
+					return "html".equals(extension) || "htm".equals(extension); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				return true;
 			}
@@ -360,7 +360,7 @@ public class CordovaSimLaunchConfigurationTab extends
 
 	@Override
 	public String getName() {
-		return "&Main";
+		return Messages.CordovaSimLaunchConfigurationTab_MAIN;
 	}
 	
 	@Override
@@ -399,7 +399,7 @@ public class CordovaSimLaunchConfigurationTab extends
 		} else {
 			rootFolder = CordovaSimLaunchParametersUtil.getDefaultRootFolder(project);
 			if (rootFolder == null) {
-				setErrorMessage("Cannot find default root folder for selected project.");
+				setErrorMessage(Messages.CordovaSimLaunchConfigurationTab_NO_ROOT_FOLDER);
 				return false;
 			}
 		}
@@ -417,7 +417,7 @@ public class CordovaSimLaunchConfigurationTab extends
 		} else {
 			startPage = CordovaSimLaunchParametersUtil.getDefaultStartPage(project, rootFolder);
 			if (startPage == null) {
-				setErrorMessage("Cannot find default start page for selected project.");
+				setErrorMessage(Messages.CordovaSimLaunchConfigurationTab_NO_START_PAGE);
 				return false;				
 			}
 		}
@@ -441,7 +441,7 @@ public class CordovaSimLaunchConfigurationTab extends
 	}
 	
 	private void setSelectedProject(IProject project) {
-		projectText.setText(project != null ? project.getName() : "");
+		projectText.setText(project != null ? project.getName() : ""); //$NON-NLS-1$
 		IContainer rootFolder = getSelectedRootFolder(project);
 		if (rootFolder == null) {
 			setSelectedRootFolder(project, null); // restore defaults
@@ -474,7 +474,7 @@ public class CordovaSimLaunchConfigurationTab extends
 			actualRootFolder = rootFolder;
 		}
 		IPath rootFolderRelative = CordovaSimLaunchParametersUtil.getRelativePath(project, actualRootFolder);
-		rootFolderText.setText(rootFolderRelative != null ? rootFolderRelative.toString() : "");
+		rootFolderText.setText(rootFolderRelative != null ? rootFolderRelative.toString() : ""); //$NON-NLS-1$
 	}
 	
 	private IResource getSelectedStartPage(IProject project, IContainer rootFolder) {
@@ -499,7 +499,7 @@ public class CordovaSimLaunchConfigurationTab extends
 			actualStartPage = startPage;
 		}
 		IPath startPagePath = CordovaSimLaunchParametersUtil.getRelativePath(rootFolder, actualStartPage);
-		startPageText.setText(startPagePath != null ? startPagePath.toString() : "");
+		startPageText.setText(startPagePath != null ? startPagePath.toString() : ""); //$NON-NLS-1$
 	}
 	
 	private IResource getActualStartPage(IProject project, IContainer rootFolder) {
@@ -536,7 +536,7 @@ public class CordovaSimLaunchConfigurationTab extends
 		
 		useDefaultPortCheckbox.setSelection(useDefaultPort);
 		portText.setEnabled(!useDefaultPort);
-		portText.setText(port != null ? port.toString() : "");
+		portText.setText(port != null ? port.toString() : ""); //$NON-NLS-1$
 	}
 	
 	private class WidgetListener implements ModifyListener, SelectionListener {
@@ -556,7 +556,7 @@ public class CordovaSimLaunchConfigurationTab extends
 class CordovaSimWorkingDirectoryBlock extends WorkingDirectoryBlock {
 
 	protected CordovaSimWorkingDirectoryBlock() {
-		super("org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.rootFolder");
+		super("org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.rootFolder"); //$NON-NLS-1$
 	}
 
 	@Override

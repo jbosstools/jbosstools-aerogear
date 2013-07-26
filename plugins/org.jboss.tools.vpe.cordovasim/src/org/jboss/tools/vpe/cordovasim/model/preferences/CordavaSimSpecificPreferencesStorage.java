@@ -39,14 +39,15 @@ import org.xml.sax.SAXException;
  */
 public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesStorage{
 	private static final int CURRENT_CONFIG_VERSION = 11;
-	private static final String SPECIFIC_PREFERENCES_FILE = "cordovaSpecificPreferences.xml";
-	private static final String DEFAULT_SPECIFIC_PREFERENCES_RESOURCE = "config/cordovaSpecificPreferences.xml";
+	private static final String SPECIFIC_PREFERENCES_FILE = "cordovaSpecificPreferences.xml"; //$NON-NLS-1$
+	private static final String DEFAULT_SPECIFIC_PREFERENCES_RESOURCE = "config/cordovaSpecificPreferences.xml"; //$NON-NLS-1$
 	
-	private static final String PREFERENCES_CORDOVA = "cordova";
-	private static final String PREFERENCES_CORDOVA_LOCATION = "cordovaLocation";
-	private static final String PREFERENCES_CORDOVA_SIZE = "size";
-	private static final String PREFERENCES_WIDTH = "width";
-	private static final String PREFERENCES_HEIGHT = "height";
+	private static final String PREFERENCES_CORDOVASIM = "cordovasim"; //$NON-NLS-1$
+	private static final String PREFERENCES_CORDOVA = "cordova"; //$NON-NLS-1$
+	private static final String PREFERENCES_CORDOVA_LOCATION = "cordovaLocation"; //$NON-NLS-1$
+	private static final String PREFERENCES_CORDOVA_SIZE = "size"; //$NON-NLS-1$
+	private static final String PREFERENCES_WIDTH = "width"; //$NON-NLS-1$
+	private static final String PREFERENCES_HEIGHT = "height"; //$NON-NLS-1$
 	
 	
 	public static CordavaSimSpecificPreferencesStorage INSTANCE = new CordavaSimSpecificPreferencesStorage();
@@ -185,7 +186,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			Document doc = docBuilder.newDocument();
 			
-			Element rootElement = doc.createElement("cordovasim");
+			Element rootElement = doc.createElement(PREFERENCES_CORDOVASIM);
 			rootElement.setAttribute(PREFERENCES_VERSION, String.valueOf(CURRENT_CONFIG_VERSION));
 			doc.appendChild(rootElement);
 

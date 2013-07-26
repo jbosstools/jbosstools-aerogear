@@ -41,13 +41,13 @@ import org.xml.sax.SAXException;
  * @author "Yahor Radtsevich (yradtsevich)"
  */
 public class CordovaSimLaunchParametersUtil {
-	private static final String AEROGEAR_HYBRID_NATURE_ID = "org.jboss.tools.aerogear.hybrid.core.HybridAppNature";
-	private static final String ANDROID_NATURE_ID = "com.android.ide.eclipse.adt.AndroidNature";
+	private static final String AEROGEAR_HYBRID_NATURE_ID = "org.jboss.tools.aerogear.hybrid.core.HybridAppNature"; //$NON-NLS-1$
+	private static final String ANDROID_NATURE_ID = "com.android.ide.eclipse.adt.AndroidNature"; //$NON-NLS-1$
 	
 	public static IProject validateAndGetProject(String projectString) throws CoreException {
 		IProject project = getProject(projectString);
 		if (project == null || !project.isOpen()) {
-			throw new CoreException(createErrorStatus("Start Page path is not valid"));
+			throw new CoreException(createErrorStatus(Messages.CordovaSimLaunchParametersUtil_INVALID_START_PAGE_PATH));
 		}
 		return project;
 	}
@@ -86,7 +86,7 @@ public class CordovaSimLaunchParametersUtil {
 	public static IContainer validateAndGetRootFolder(IProject project, String rootFolderString) throws CoreException {
 		IContainer rootFolder = getRootFolder(project, rootFolderString);
 		if (rootFolder == null || !rootFolder.exists()) {
-			throw new CoreException(createErrorStatus("Root Folder path is not valid"));
+			throw new CoreException(createErrorStatus(Messages.CordovaSimLaunchParametersUtil_INVALID_ROOT_FOLDER_PATH));
 		}
 		return rootFolder;
 	}
@@ -95,7 +95,7 @@ public class CordovaSimLaunchParametersUtil {
 			throws CoreException {
 		IResource startPage = getStartPage(rootFolder, startPageString);
 		if (startPage == null || !startPage.exists()) {
-			throw new CoreException(createErrorStatus("Start Page path is not valid"));
+			throw new CoreException(createErrorStatus(Messages.CordovaSimLaunchParametersUtil_INVALID_START_PAGE_PATH)); 
 		}
 		return startPage;
 	}
@@ -104,10 +104,10 @@ public class CordovaSimLaunchParametersUtil {
 		try {
 			int port = Integer.parseInt(portString);//TODO: use an existing validator
 			if (port < 1 || 65535 < port) {
-				throw new CoreException(createErrorStatus("Port is invalid"));
+				throw new CoreException(createErrorStatus(Messages.CordovaSimLaunchParametersUtil_INVALID_PORT));
 			}
 		} catch (NumberFormatException e) {
-			throw new CoreException(createErrorStatus("Port is invalid"));
+			throw new CoreException(createErrorStatus(Messages.CordovaSimLaunchParametersUtil_INVALID_PORT)); 
 		}
 	}
 	
@@ -120,9 +120,9 @@ public class CordovaSimLaunchParametersUtil {
 		if (project != null && project.isOpen()) {
 			try {
 				if (project.hasNature(AEROGEAR_HYBRID_NATURE_ID)) {
-					rootFolder = getRootFolder(project, "www");
+					rootFolder = getRootFolder(project, "www"); //$NON-NLS-1$
 				} else if (project.hasNature(ANDROID_NATURE_ID)) {
-					rootFolder = getRootFolder(project, "assets/www");
+					rootFolder = getRootFolder(project, "assets/www"); //$NON-NLS-1$
 				} else {
 					rootFolder = project;
 				}
@@ -140,12 +140,12 @@ public class CordovaSimLaunchParametersUtil {
 			try {
 				String configFilePath = null;
 				if (project.hasNature(AEROGEAR_HYBRID_NATURE_ID)) {
-					configFilePath = "www/config.xml";
+					configFilePath = "www/config.xml"; //$NON-NLS-1$
 				} else if (project.hasNature(ANDROID_NATURE_ID)) {
-					configFilePath = "res/xml/config.xml";
+					configFilePath = "res/xml/config.xml"; //$NON-NLS-1$
 				}
 				if (configFilePath != null) {
-					IResource configResource = project.findMember("www/config.xml");
+					IResource configResource = project.findMember("www/config.xml"); //$NON-NLS-1$
 					if (configResource instanceof IFile) {
 						IFile configFile = (IFile) configResource;
 						startPageName = getStartPageName(configFile);
@@ -157,7 +157,7 @@ public class CordovaSimLaunchParametersUtil {
 		}
 		
 		if (startPageName == null) {
-			startPageName = "index.html"; // standard default value
+			startPageName = "index.html"; // standard default value //$NON-NLS-1$
 		}
 		IResource startPage = getStartPage(rootFolder, startPageName);
 		return startPage;
@@ -181,7 +181,7 @@ public class CordovaSimLaunchParametersUtil {
 			// see http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
 			document.getDocumentElement().normalize();
 			XPath xPath = XPathFactory.newInstance().newXPath();
-			XPathExpression xPathExpression = xPath.compile("//widget/content/@src");
+			XPathExpression xPathExpression = xPath.compile("//widget/content/@src"); //$NON-NLS-1$
 			Node startPageNameNode = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
 			if (startPageNameNode != null) {
 				startPageName = startPageNameNode.getNodeValue().trim();
