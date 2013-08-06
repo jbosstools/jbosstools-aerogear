@@ -15,11 +15,13 @@ import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
+import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
 /**
@@ -44,14 +46,9 @@ public class IOSSimulator {
 			Bundle bundle = IOSCore.getContext().getBundle();
 			File bundleDataDirectory = bundle.getDataFile("/");			
 			iosSim = new File(bundleDataDirectory, "ios-sim");
-			if (!iosSim.exists()) {// Copied earlier
-				// TODO: this is likely to cause problems when the ios-sim
-				// version changes
-				// implement a solution for changing to a newer version of
-				// ios-sim when plugin is updated
-				//
-
-				directoryCopy(bundle.getEntry("/ios-sim"),toURL( bundleDataDirectory));
+			URL iosSimBinary = bundle.getEntry("/ios-sim");
+			if (!iosSim.exists() || FileUtils.isNewer(iosSimBinary, FileUtils.toURL(iosSim))) {// Copied earlier
+				directoryCopy(iosSimBinary,toURL( bundleDataDirectory));
 			}
 			if (iosSim.exists()){
 				iosSim.setExecutable(true, false);

@@ -179,7 +179,45 @@ public final class FileUtils {
 		
 	}
 	
-	
+	public static boolean isNewer(URL file, URL reference ){
+		if(file == null || reference == null )
+			throw new IllegalArgumentException("null file value");
+		file = getFileURL(file);
+		reference = getFileURL(reference);
+		if(!isFile(file) && !isFile(reference))
+			throw new IllegalArgumentException("destination is not a file URL");
+		
+		long fileLastModified = 0;
+		long referenceLastModified = 0;
+		
+		if("file".equals(file.getProtocol())){
+			File srcFile = new File(file.getFile());
+			fileLastModified = srcFile.lastModified();
+		}
+		if("file".equals(reference.getProtocol())){
+			File referenceFile = new File(reference.getFile());
+			referenceLastModified = referenceFile.lastModified();
+		}
+		
+		if("jar".equals(file.getProtocol())){
+			ZipFile zipFile = getZipFile(file);
+			ZipEntry zipEntry = getZipEntry(file, zipFile);
+			if(zipEntry == null ){
+				throw new IllegalArgumentException(file + " can not be found on the zip file");
+			}
+			fileLastModified = zipEntry.getTime();
+		}
+		if("jar".equals(reference.getProtocol())){
+			ZipFile zipFile = getZipFile(reference);
+			ZipEntry zipEntry = getZipEntry(reference, zipFile);
+			if(zipEntry == null ){
+				throw new IllegalArgumentException(reference+ " can not be found on the zip file");
+			}
+			referenceLastModified = zipEntry.getTime();
+		}
+		
+		return fileLastModified >= referenceLastModified;
+	}
 
 	/**
 	 * Convenience method to turn a file to a URL.
@@ -244,7 +282,13 @@ public final class FileUtils {
 		catch(IOException e){
 			return null;
 		}
-		
+	}
+	
+	private static ZipEntry getZipEntry(URL file, ZipFile zipFile){
+		String fileString = file.getFile();
+		int exclamation = fileString.indexOf('!');
+		String jarLocation = fileString.substring(exclamation + 2); // remove jar separator !/ 
+		return zipFile.getEntry(jarLocation);
 	}
 	
 	
