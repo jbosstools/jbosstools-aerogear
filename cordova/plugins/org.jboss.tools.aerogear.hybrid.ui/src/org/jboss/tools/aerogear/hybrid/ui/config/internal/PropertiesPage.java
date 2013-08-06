@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -44,6 +45,7 @@ import org.jboss.tools.aerogear.hybrid.core.config.Feature;
 import org.jboss.tools.aerogear.hybrid.core.config.Plugin;
 import org.jboss.tools.aerogear.hybrid.core.config.Preference;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginWizard;
 
 public class PropertiesPage extends FormPage {
 	private DataBindingContext m_bindingContext;
@@ -237,10 +239,9 @@ public class PropertiesPage extends FormPage {
 		btnPluginAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				NewPluginDialog dialog = new NewPluginDialog(getSite().getShell(), getWidget());
-				if (dialog.open() == Window.OK && dialog.getPlugin() != null){
-					getWidget().addPlugin(dialog.getPlugin());
-				}
+				CordovaPluginWizard wizard = new CordovaPluginWizard();
+				WizardDialog dialog = new WizardDialog(getSite().getShell(), wizard);
+				dialog.open();
 			}
 		});
 		
