@@ -38979,7 +38979,7 @@ module.exports = {
                         iosPlugin.setInfo(info);
                     }, null, 'Device', 'getDeviceInfo', []);
                 } catch (e) {
-                    cordova.require('cordova/channel').onCordovaInfoReady.fire();
+                    // cordova.require('cordova/channel').onCordovaInfoReady.fire();
                 }
             };
 
