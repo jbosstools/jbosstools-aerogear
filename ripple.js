@@ -33447,7 +33447,7 @@ function _processConfirm (message,resultCallback,title,buttonLabels) {
     buttonLabels = buttonLabels || "";
     message = message || "";
     title = title || "Confirm";
-    var btnArray = (!buttonLabels || 0 === buttonLabels.length) ? [] : buttonLabels.split(',');
+    var btnArray = (!buttonLabels || 0 === buttonLabels.length) ? [] : buttonLabels;
     var buttons = [];
 
     btnArray.forEach(function(btnLabel,index) {
