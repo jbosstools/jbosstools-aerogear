@@ -40808,6 +40808,7 @@ module.exports = {
             "Network Status": ripple('platform/cordova/2.0.0/bridge/network'),
             "NetworkStatus": ripple('platform/cordova/2.0.0/bridge/network'),
             "Notification": ripple('platform/cordova/2.0.0/bridge/notification'),
+            "Vibration": ripple('platform/cordova/2.0.0/bridge/notification'),
             "BarcodeScanner": ripple('phonegap-plugin/BarcodeScanner')
         };
 
