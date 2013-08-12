@@ -8,18 +8,13 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.platform;
-
-public interface PlatformConstants {
-	
-	public static final String DIR_WWW = "www";
-	public static final String DIR_MERGES = "merges";
-	
-	public static final String FILE_JS_CORDOVA = "cordova.js";
-	public static final String FILE_XML_CONFIG = "config.xml";
-	/**
-	 * plugin definition file for Cordova plugins
-	 */
-	public static final String FILE_XML_PLUGIN = "plugin.xml";
+package org.jboss.tools.aerogear.hybrid.core.plugin;
+/**
+ * Manages the Cordova plugins for a project. 
+ * 
+ * @author Gorkem Ercan
+ *
+ */
+public class CordovaPluginManager {
 
 }

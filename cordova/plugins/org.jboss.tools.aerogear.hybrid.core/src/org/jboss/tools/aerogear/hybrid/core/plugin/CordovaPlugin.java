@@ -1,52 +1,24 @@
 package org.jboss.tools.aerogear.hybrid.core.plugin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class CordovaPlugin {
-	private String name;
-	private String description;
-	private List<String> keywords;
-	private Map<String, String> maintainers;
+public class CordovaPlugin extends CordovaPluginInfo {
 	
-	public String getName() {
-		return name;
+	private List<CordovaPluginVersion> versions;
+
+	public List<CordovaPluginVersion> getVersions() {
+		return versions;
 	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-	
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	public List<String> getKeywords() {
-		return keywords;
-	}
-	
-	public void addKeyword(String keyword) {
-		if(keywords == null ){
-			keywords = new ArrayList<String>();
+
+	public void addVersion(CordovaPluginVersion version ) {
+		if(versions == null ){
+			versions = new ArrayList<CordovaPluginVersion>();
 		}
-		keywords.add(keyword);
+		versions.add(version);
 	}
 	
-	public void addMaintainer(String email, String name){
-		if(maintainers == null ){
-			maintainers = new HashMap<String, String>();
-		}
-		maintainers.put(email, name);
-	}
 	
-	public Map<String, String> getMaintainers(){
-		return maintainers;
-	}
 	
+
 }
