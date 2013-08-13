@@ -39111,7 +39111,7 @@ module.exports = {
     getHeading: function (success) {
         // TODO: build facility to trigger onError() from emulator
         // see pivotal item: https://www.pivotaltracker.com/story/show/7040343
-
+        CompassHeading = ripple('emulatorBridge').window().CompassHeading;
         var heading = new CompassHeading();
         heading.trueHeading = geo.getPositionInfo().heading;
         heading.magneticHeading = geo.getPositionInfo().heading;
