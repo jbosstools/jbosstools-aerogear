@@ -28,6 +28,8 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jboss.tools.vpe.cordovasim.servlet.plugin.CordovaPluginJsServlet;
+import org.jboss.tools.vpe.cordovasim.servlet.plugin.PluginServlet;
 import org.jboss.tools.vpe.cordovasim.servlets.camera.FormatDataServlet;
 import org.jboss.tools.vpe.cordovasim.servlets.camera.HostFileServlet;
 import org.jboss.tools.vpe.cordovasim.servlets.camera.UploadFileServlet;
@@ -35,7 +37,10 @@ import org.jboss.tools.vpe.cordovasim.servlets.camera.UploadFileServlet;
 /**
  * @author Yahor Radtsevich (yradtsevich)
  */
-public class ServerCreator {
+public class ServerCreator {	
+	private static final String CORDOVA_3 = "3.0.0";
+	private static final String CORDOVA_2 = "2.0.0";
+	
 	public static Server createServer(String resourceBase, int port) {
 		Server server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();
@@ -88,6 +93,15 @@ public class ServerCreator {
 		ContextHandler wwwContextHandler = new ContextHandler("/");
 		wwwContextHandler.setHandler(wwwResourceHandler);
 		
+		String pluginDir = getPluginDir(resourceBase); 
+		ServletHolder cordovaPluginJsServletHolder = new ServletHolder(new CordovaPluginJsServlet(pluginDir));
+		ServletHandler cordovaPluginJsServetHandler = new ServletHandler();
+		cordovaPluginJsServetHandler.addServletWithMapping(cordovaPluginJsServletHolder, "/cordova_plugins.js");
+		
+		ServletHolder pluginServletHolder = new ServletHolder(new PluginServlet(pluginDir));
+		ServletHandler pluginServletHandler = new ServletHandler();
+		pluginServletHandler.addServletWithMapping(pluginServletHolder, "/plugins/*");
+		
 		RewriteHandler rippleRewriteHandler = new RewriteHandler();
 		rippleRewriteHandler.setRewriteRequestURI(true);
 		rippleRewriteHandler.setRewritePathInfo(true);
@@ -112,10 +126,23 @@ public class ServerCreator {
 			@Override
 			public String matchAndApply(String target, HttpServletRequest request,
 					HttpServletResponse response) throws IOException {
-				if (request.getPathInfo().equals("/cordova.js")){ // JBIDE-14319
-					return "/ripple/cordova/cordova-2.7.0.js";
-				} else if (request.getPathInfo().equals("/cordova_plugins.json")){ // JBIDE-14453
-					return "/ripple/cordova/cordova_plugins.json";
+				String pathInfo = request.getPathInfo(); 
+				String cordovaVersion = getCordovaVersion();
+				
+				if (cordovaVersion.equals(CORDOVA_2)) {
+					if (pathInfo.equals("/cordova.js")){ // JBIDE-14319
+						return "/ripple/cordova/cordova-2.7.0.js";
+					} else if (pathInfo.equals("/cordova_plugins.json")){ // JBIDE-14453
+						return "/ripple/cordova/cordova_plugins.json";
+					} else {
+						return null;
+					}
+				} else if (cordovaVersion.equals(CORDOVA_3)) {
+					if (pathInfo.equals("/cordova.js")){
+						return "/ripple/cordova/cordova-3.0.0.js";
+					} else {
+						return null;
+					}
 				} else {
 					return null;
 				}
@@ -128,6 +155,8 @@ public class ServerCreator {
 				rippleRewriteHandler,
 				wwwContextHandler,
 				cordovaRewriteHandler,
+				cordovaPluginJsServetHandler,
+				pluginServletHandler,
 				proxyServletHandler,
 				fileUploadContextHandler,
 				hostFileServletHandler,
@@ -136,5 +165,14 @@ public class ServerCreator {
 			});
 		server.setHandler(handlers);
 		return server;
+	}
+	
+	private static String getPluginDir(String resourceBase) { 
+		int parentDirIndex  = resourceBase.lastIndexOf("www");
+		return resourceBase.substring(0, parentDirIndex) + "plugins"; // HACK - need to do this better
+	}
+
+	public static String getCordovaVersion() {
+		return CORDOVA_3;
 	}
 }
