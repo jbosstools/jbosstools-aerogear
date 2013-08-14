@@ -32,8 +32,8 @@ public class PluginServlet extends HttpServlet {
 			if (file.exists()) {
 				String fileContent = new Scanner(file).useDelimiter("\\A").next();
 				String content = CORDOVA_DEFINE + "\"" + pluginId + "\"" + ", " + FUNCTION_BEGGINING + fileContent + FUNCTION_END;
-				resp.setContentType("application/javascript");
 				resp.setStatus(HttpServletResponse.SC_OK);
+				resp.setContentType("application/javascript");
 				resp.getWriter().write(content);
 			}
 		}
