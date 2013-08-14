@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.MultipartConfigElement;
@@ -38,8 +39,9 @@ import org.jboss.tools.vpe.cordovasim.servlets.camera.UploadFileServlet;
  * @author Yahor Radtsevich (yradtsevich)
  */
 public class ServerCreator {	
-	private static final String CORDOVA_3 = "3.0.0";
-	private static final String CORDOVA_2 = "2.0.0";
+	private static final String CORDOVA_3 = "3.0.0";  // TODO need to remove that constant in future 
+	private static final String CORDOVA_2 = "2.0.0";  // TODO need to remove that constant in future 	
+	private static final String PLUGINS_DIR = "plugins";
 	
 	public static Server createServer(String resourceBase, int port) {
 		Server server = new Server();
@@ -168,11 +170,16 @@ public class ServerCreator {
 	}
 	
 	private static String getPluginDir(String resourceBase) { 
-		int parentDirIndex  = resourceBase.lastIndexOf("www");
-		return resourceBase.substring(0, parentDirIndex) + "plugins"; // HACK - need to do this better
+		String pluginDir = null;
+		File file = new File(resourceBase);
+		String parentDir = file.getParent();
+		if (parentDir != null) {
+			pluginDir = parentDir + "/" + PLUGINS_DIR;
+		}
+		return pluginDir;
 	}
 
-	public static String getCordovaVersion() {
-		return CORDOVA_3;
+	public static String getCordovaVersion() { // TODO need to remove that method in future 
+		return CORDOVA_3; 
 	}
 }
