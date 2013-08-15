@@ -8,23 +8,30 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.servlet.util;
+package org.jboss.tools.vpe.cordovasim.plugin.model;
 
-import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class ServletUtil {
-	public static final String APPLICATION_JAVASCRIPT_CONTENT_TYPE = "application/javascript";
-	public static final String ETAG = "Etag";
-	public static final String IF_NONE_MATCH = "If-None-Match";
+public class PluginIdCache {
+	private static final Map<String, String> FILE_TO_ID_CACHE = new HashMap<String, String>(); // Maps plugin's "file" to "id"
 
-	public static String generateEtag(File file) {
-		if (file.exists()) {
-			return String.valueOf(file.lastModified());
+	private PluginIdCache() {
+	}
+
+	public static void update(List<Plugin> plugins) {
+		FILE_TO_ID_CACHE.clear();
+		for (Plugin plugin : plugins) {
+			FILE_TO_ID_CACHE.put(plugin.getFile(), plugin.getId());
 		}
-		return null;
+	}
+
+	public static String getPluginId(String fileName) {
+		return FILE_TO_ID_CACHE.get(fileName);
 	}
 
 }
