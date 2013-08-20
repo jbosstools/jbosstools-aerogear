@@ -24,6 +24,7 @@ import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -95,7 +96,8 @@ public class CordovaSimRunner {
 			} else {
 				sp.setCordovaBrowserSize(shell.getSize());
 			}
-			if (sp.getCordovaBrowserLocation() != null) {
+			Point location = sp.getCordovaBrowserLocation();
+			if (location != null && display.getClientArea().contains(location)) {
 				shell.setLocation(sp.getCordovaBrowserLocation());
 			} else {
 				sp.setCordovaBrowserLocation(shell.getLocation());
