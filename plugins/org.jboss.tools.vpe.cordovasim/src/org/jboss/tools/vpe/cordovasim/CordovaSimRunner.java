@@ -38,6 +38,7 @@ import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 import org.jboss.tools.vpe.browsersim.ui.events.ExitListener;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeEvent;
 import org.jboss.tools.vpe.browsersim.ui.events.SkinChangeListener;
+import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPreferencesStorage;
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
@@ -96,9 +97,10 @@ public class CordovaSimRunner {
 			} else {
 				sp.setCordovaBrowserSize(shell.getSize());
 			}
+			
 			Point location = sp.getCordovaBrowserLocation();
-			if (location != null && display.getClientArea().contains(location)) {
-				shell.setLocation(sp.getCordovaBrowserLocation());
+			if (location != null) {
+				BrowserSimUtil.setShellLocation(shell, shell.getSize(), location);
 			} else {
 				sp.setCordovaBrowserLocation(shell.getLocation());
 			}
