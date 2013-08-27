@@ -13,16 +13,16 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginInfo;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 @SuppressWarnings("restriction")
-public class CordovaPluginInfoItem extends ControlListItem<CordovaPluginInfo>{
+public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPluginInfo>{
 
 	private final CordovaPluginWizardResources resources;
 	private final CordovaPluginCatalogViewer viewer;
 
-	public CordovaPluginInfoItem(Composite parent, int style, CordovaPluginInfo element, CordovaPluginWizardResources resources, CordovaPluginCatalogViewer viewer) {
+	public CordovaPluginInfoItem(Composite parent, int style, CordovaRegistryPluginInfo element, CordovaPluginWizardResources resources, CordovaPluginCatalogViewer viewer) {
 		super(parent, style, element);
 		this.resources = resources;
 		this.viewer = viewer;

@@ -8,19 +8,20 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.platform;
+package org.jboss.tools.aerogear.hybrid.android.core.adt;
 
-public interface PlatformConstants {
+import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_ASSETS;
+
+import java.io.File;
+
+import org.eclipse.core.runtime.Assert;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+
+public class AndroidProjectUtils {
 	
-	public static final String DIR_WWW = "www";
-	public static final String DIR_MERGES = "merges";
-	public static final String DIR_PLUGINS = "plugins";
-	
-	public static final String FILE_JS_CORDOVA = "cordova.js";
-	public static final String FILE_XML_CONFIG = "config.xml";
-	/**
-	 * plugin definition file for Cordova plugins
-	 */
-	public static final String FILE_XML_PLUGIN = "plugin.xml";
+	public static File getPlatformWWWDirectory(File projectDirectory) {
+		Assert.isNotNull(projectDirectory);
+		return new File(projectDirectory, DIR_ASSETS + File.separator +PlatformConstants.DIR_WWW);
+	}
 
 }

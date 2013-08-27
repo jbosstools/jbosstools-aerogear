@@ -10,11 +10,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginVersion;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugin;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 
 @SuppressWarnings("restriction")
-public class CordovaPluginItem extends ControlListItem<CordovaPlugin> {
+public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 	private static final String LABEL_LATEST_VERSION = "latest";
 	private final CordovaPluginWizardResources resources;
 	private Label description;
@@ -22,7 +22,7 @@ public class CordovaPluginItem extends ControlListItem<CordovaPlugin> {
 	private Label licenseLbl;
 	private Combo versionCombo;
 
-	public CordovaPluginItem(Composite parent, int style, CordovaPlugin element, CordovaPluginWizardResources resources ) {
+	public CordovaPluginItem(Composite parent, int style, CordovaRegistryPlugin element, CordovaPluginWizardResources resources ) {
 		super(parent, style, element);
 		this.resources = resources;
 		createContent();
@@ -49,8 +49,8 @@ public class CordovaPluginItem extends ControlListItem<CordovaPlugin> {
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(versionCombo);
 		versionCombo.add(LABEL_LATEST_VERSION);
 		versionCombo.select(0);
-		List<CordovaPluginVersion> versions = getData().getVersions();
-		for ( CordovaPluginVersion cordovaPluginVersion : versions) {
+		List<CordovaRegistryPluginVersion> versions = getData().getVersions();
+		for ( CordovaRegistryPluginVersion cordovaPluginVersion : versions) {
 			versionCombo.add(cordovaPluginVersion.getVersionNumber());
 		}
 		
@@ -79,8 +79,8 @@ public class CordovaPluginItem extends ControlListItem<CordovaPlugin> {
 		if(version.equals(LABEL_LATEST_VERSION)){
 			version = getData().getLatestVersion();
 		}
-		List<CordovaPluginVersion> versions = getData().getVersions();
-		for ( CordovaPluginVersion cordovaPluginVersion : versions) {
+		List<CordovaRegistryPluginVersion> versions = getData().getVersions();
+		for ( CordovaRegistryPluginVersion cordovaPluginVersion : versions) {
 			if(cordovaPluginVersion.getVersionNumber().equals(version)){
 				setDescriptionText(cordovaPluginVersion.getDescription());
 				licenseLbl.setText("License:"+cordovaPluginVersion.getLicense());

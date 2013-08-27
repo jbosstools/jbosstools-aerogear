@@ -8,19 +8,27 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.platform;
+package org.jboss.tools.aerogear.hybrid.core.plugin.registry;
 
-public interface PlatformConstants {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CordovaRegistryPlugin extends CordovaRegistryPluginInfo {
 	
-	public static final String DIR_WWW = "www";
-	public static final String DIR_MERGES = "merges";
-	public static final String DIR_PLUGINS = "plugins";
+	private List<CordovaRegistryPluginVersion> versions;
+
+	public List<CordovaRegistryPluginVersion> getVersions() {
+		return versions;
+	}
+
+	public void addVersion(CordovaRegistryPluginVersion version ) {
+		if(versions == null ){
+			versions = new ArrayList<CordovaRegistryPluginVersion>();
+		}
+		versions.add(version);
+	}
 	
-	public static final String FILE_JS_CORDOVA = "cordova.js";
-	public static final String FILE_XML_CONFIG = "config.xml";
-	/**
-	 * plugin definition file for Cordova plugins
-	 */
-	public static final String FILE_XML_PLUGIN = "plugin.xml";
+	
+	
 
 }

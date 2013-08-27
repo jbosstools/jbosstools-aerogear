@@ -8,14 +8,14 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.plugin;
+package org.jboss.tools.aerogear.hybrid.core.plugin.registry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CordovaPluginInfo {
+public class CordovaRegistryPluginInfo {
 	private String name;
 	private String description;
 	private List<String> keywords;

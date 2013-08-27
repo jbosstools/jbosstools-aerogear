@@ -16,6 +16,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
 
+import org.jboss.tools.aerogear.hybrid.test.TestUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -26,34 +27,11 @@ public class FileUtilsTest {
 	private static File jarFile;	
 	@BeforeClass
 	public static void setFiles() throws IOException{
-		tempDir = new File(System.getProperty("java.io.tmpdir"));
-		plainFile = createTempFile("plain.file");
-		jarFile = createTempFile("fileTest.jar");
+		tempDir = TestUtils.getTempDirectory();
+		plainFile = TestUtils.createTempFile("plain.file");
+		jarFile = TestUtils.createTempFile("fileTest.jar");
 	}
 
-	private static File createTempFile(String fileName) throws IOException, FileNotFoundException {
-		File f = new File(tempDir, fileName);
-		f.createNewFile();
-		f.deleteOnExit();
-		FileOutputStream fout = null;
-		FileChannel out = null;
-		InputStream in = FileUtilsTest.class.getResourceAsStream("/"+fileName);;
-		try {
-			fout = new FileOutputStream(f);
-			out = fout.getChannel();
-			
-			out.transferFrom(Channels.newChannel(in), 0, Integer.MAX_VALUE);
-			return f;
-		} finally {
-			if (out != null)
-				out.close();
-			if (in != null)
-				in.close();
-			if (fout != null)
-				fout.close();
-		}
-	}
-	
 	private boolean deleteDirRecursively(File dir) 
 	{ 
 		if (dir.isDirectory()) 
@@ -70,7 +48,6 @@ public class FileUtilsTest {
 		}
 	  return dir.delete(); 
 	} 
-	
 		
 	@Test
 	public void testDirectoryCopy() throws IOException{

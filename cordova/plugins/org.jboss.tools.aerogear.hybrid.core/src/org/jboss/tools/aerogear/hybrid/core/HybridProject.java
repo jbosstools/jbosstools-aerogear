@@ -20,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
@@ -28,6 +29,7 @@ import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -41,6 +43,7 @@ public class HybridProject implements IAdaptable{
 	private static final String PATH_CONFIG_XML = "/"+PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG;
 	private IProject kernelProject;
 	private Document configDocument;
+	private CordovaPluginManager pluginManager;
 	
 	private HybridProject(IProject project) {
 		this.kernelProject = project;
@@ -116,6 +119,34 @@ public class HybridProject implements IAdaptable{
 			// let it return null
 		}
 		return null;
+	}
+	/**
+	 * Convenience method for getting a handle  to the hybrid project with 
+	 * name projectName. 
+	 * 
+	 * @see #getHybridProject(IProject)
+	 * @param projectName
+	 * @return
+	 */
+	public static HybridProject getHybridProject(String projectName) {
+		if(projectName == null || projectName.isEmpty())
+			return null;
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		if(project == null )
+			return null; 
+		return getHybridProject(project);
+	}
+	
+	/**
+	 * Retrieves the {@link CordovaPluginManager} instance for this project.
+	 *  
+	 * @return plugin manager
+	 */
+	public CordovaPluginManager getPluginManager(){
+		if(pluginManager == null ){
+			pluginManager = new CordovaPluginManager(this);
+		}
+		return pluginManager;
 	}
 
 	/**

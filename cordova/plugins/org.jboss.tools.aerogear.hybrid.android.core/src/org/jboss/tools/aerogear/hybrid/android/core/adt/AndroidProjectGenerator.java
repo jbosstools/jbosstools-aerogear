@@ -11,7 +11,6 @@
 package org.jboss.tools.aerogear.hybrid.android.core.adt;
 
 
-import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_ASSETS;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_LIBS;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_RES;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_SRC;
@@ -73,10 +72,9 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		super();
 	}
 	
-	public AndroidProjectGenerator(IProject project, File generationFolder) {
-		init(project, generationFolder);
+	public AndroidProjectGenerator(IProject project, File generationFolder,String platform) {
+		init(project, generationFolder,platform);
 	}
-
 
 	@Override
 	protected void generateNativeFiles() throws CoreException {
@@ -205,11 +203,6 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 
 	@Override
-	protected String getTargetShortName() {
-		return "android";
-	}
-
-	@Override
 	protected void replaceCordovaPlatformFiles() throws IOException {
 		fileCopy(getTemplateFile("/templates/android/cordova.android.js"), 
 				toURL(new File(getPlatformWWWDirectory(), PlatformConstants.FILE_JS_CORDOVA )));
@@ -222,10 +215,9 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		return url;
 	}
 	
-	
 	@Override
 	protected File getPlatformWWWDirectory() {
-		return new File(getDestination(), DIR_ASSETS + File.separator +PlatformConstants.DIR_WWW);
+		return AndroidProjectUtils.getPlatformWWWDirectory(getDestination());
 	}
 
 }

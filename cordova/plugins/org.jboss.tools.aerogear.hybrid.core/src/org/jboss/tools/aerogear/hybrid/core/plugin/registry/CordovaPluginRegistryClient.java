@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.plugin;
+package org.jboss.tools.aerogear.hybrid.core.plugin.registry;
 
 
 import java.io.IOException;
@@ -31,14 +31,14 @@ import com.google.gson.stream.JsonToken;
 public class CordovaPluginRegistryClient {
 	
 	private long updated;
-	private List<CordovaPluginInfo> plugins;
+	private List<CordovaRegistryPluginInfo> plugins;
 	private String registry;
 	
 	public CordovaPluginRegistryClient(String url) {
 		this.registry = url;
 	}
 	
-	public CordovaPlugin getCordovaPlugin(String name) {
+	public CordovaRegistryPlugin getCordovaPlugin(String name) {
 
 		HttpClient client = new DefaultHttpClient();
 		String url = registry.endsWith("/") ? registry + name : registry + "/"
@@ -50,7 +50,7 @@ public class CordovaPluginRegistryClient {
 			HttpEntity entity = response.getEntity();
 			InputStream stream = entity.getContent();
 			JsonReader reader = new JsonReader(new InputStreamReader(stream));
-			CordovaPlugin plugin = new CordovaPlugin();
+			CordovaRegistryPlugin plugin = new CordovaRegistryPlugin();
 			readPluginInfo(reader, plugin);
 			return plugin;
 		} catch (ClientProtocolException e) {
@@ -65,7 +65,7 @@ public class CordovaPluginRegistryClient {
 
 	}
 	
-	public List<CordovaPluginInfo> retrievePluginInfos()
+	public List<CordovaRegistryPluginInfo> retrievePluginInfos()
 	{
 		HttpClient client = new DefaultHttpClient();
 		String url = registry.endsWith("/") ? registry+"-/all" : registry+"/-/all";
@@ -78,12 +78,12 @@ public class CordovaPluginRegistryClient {
 			InputStream stream = entity.getContent();
 			JsonReader reader = new JsonReader(new InputStreamReader(stream));
 			reader.beginObject();//start the Registry
-			plugins = new ArrayList<CordovaPluginInfo>();
+			plugins = new ArrayList<CordovaRegistryPluginInfo>();
 			while(reader.hasNext()){
 				JsonToken token = reader.peek();
 				switch (token) {
 				case BEGIN_OBJECT:
-					CordovaPluginInfo info = new CordovaPluginInfo();
+					CordovaRegistryPluginInfo info = new CordovaRegistryPluginInfo();
 					readPluginInfo(reader, info);
 					plugins.add(info);
 					break;
@@ -119,7 +119,7 @@ public class CordovaPluginRegistryClient {
 		
 	}
 
-	private void readPluginInfo(JsonReader reader, CordovaPluginInfo plugin ) throws IOException {
+	private void readPluginInfo(JsonReader reader, CordovaRegistryPluginInfo plugin ) throws IOException {
 		Assert.isNotNull(plugin);
 		reader.beginObject();
 
@@ -148,16 +148,16 @@ public class CordovaPluginRegistryClient {
 					parseLatestVersion(reader,plugin);
 					break;
 				}
-				if("versions".equals(name) && plugin instanceof CordovaPlugin) { 
-					parseDetailedVersions(reader, (CordovaPlugin)plugin);       
+				if("versions".equals(name) && plugin instanceof CordovaRegistryPlugin) { 
+					parseDetailedVersions(reader, (CordovaRegistryPlugin)plugin);       
 					break;
 				}
-				if("dist".equals(name) && plugin instanceof CordovaPluginVersion ){
-					parseDistDetails(reader, (CordovaPluginVersion) plugin);
+				if("dist".equals(name) && plugin instanceof CordovaRegistryPluginVersion ){
+					parseDistDetails(reader, (CordovaRegistryPluginVersion) plugin);
 					break;
 				}
-				if("license".equals(name) && plugin instanceof CordovaPluginVersion ){
-					CordovaPluginVersion v = (CordovaPluginVersion) plugin;
+				if("license".equals(name) && plugin instanceof CordovaRegistryPluginVersion ){
+					CordovaRegistryPluginVersion v = (CordovaRegistryPluginVersion) plugin;
 					v.setLicense(reader.nextString());
 					break;
 				}
@@ -172,7 +172,7 @@ public class CordovaPluginRegistryClient {
 		reader.endObject();
 	}
 
-	private void parseDistDetails(JsonReader reader, CordovaPluginVersion plugin) throws IOException{
+	private void parseDistDetails(JsonReader reader, CordovaRegistryPluginVersion plugin) throws IOException{
 		reader.beginObject();
 		JsonToken token = reader.peek();
 		while(token != JsonToken.END_OBJECT){
@@ -199,13 +199,13 @@ public class CordovaPluginRegistryClient {
 	}
 
 	private void parseDetailedVersions(JsonReader reader,
-			CordovaPlugin plugin) throws IOException{
+			CordovaRegistryPlugin plugin) throws IOException{
 		reader.beginObject();//versions
 		JsonToken token = reader.peek();
 		while( token != JsonToken.END_OBJECT ){
 			switch (token) {
 			case NAME:
-				CordovaPluginVersion version = new CordovaPluginVersion();
+				CordovaRegistryPluginVersion version = new CordovaRegistryPluginVersion();
 				version.setVersionNumber(reader.nextName());
 				readPluginInfo(reader, version);
 				plugin.addVersion(version);
@@ -220,7 +220,7 @@ public class CordovaPluginRegistryClient {
 		reader.endObject();
 	}
 
-	private void parseLatestVersion(JsonReader reader, CordovaPluginInfo plugin) throws IOException{
+	private void parseLatestVersion(JsonReader reader, CordovaRegistryPluginInfo plugin) throws IOException{
 		reader.beginObject();
 		JsonToken token = reader.peek();
 		while ( token != JsonToken.END_OBJECT){
@@ -241,7 +241,7 @@ public class CordovaPluginRegistryClient {
 		reader.endObject();
 	}
 
-	private void parseMaintainers(JsonReader reader, CordovaPluginInfo plugin) throws IOException{
+	private void parseMaintainers(JsonReader reader, CordovaRegistryPluginInfo plugin) throws IOException{
 		reader.beginArray();
 		String name=null, email = null;
 		JsonToken token = reader.peek();
@@ -275,7 +275,7 @@ public class CordovaPluginRegistryClient {
 		reader.endArray();
 	}
 
-	private void parseKeywords(JsonReader reader, CordovaPluginInfo plugin) throws IOException{
+	private void parseKeywords(JsonReader reader, CordovaRegistryPluginInfo plugin) throws IOException{
 		reader.beginArray();
 		while(reader.hasNext()){
 			plugin.addKeyword(reader.nextString());

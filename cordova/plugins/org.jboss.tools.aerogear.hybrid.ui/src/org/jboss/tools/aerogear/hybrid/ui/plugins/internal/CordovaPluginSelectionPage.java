@@ -6,20 +6,33 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginInfo;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.wizard.export.DirectorySelectionGroup;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 public class CordovaPluginSelectionPage extends WizardPage {
 
@@ -34,6 +47,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private TabItem gitTab;
 	private TabItem directoryTab;
 	private DirectorySelectionGroup destinationDirectoryGroup;
+	private Text textProject;
 
 	protected CordovaPluginSelectionPage(String pageName) {
 		super(pageName);
@@ -43,10 +57,50 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	@SuppressWarnings("restriction")
 	@Override
 	public void createControl(Composite parent) {
-		tabFolder = new TabFolder(parent, SWT.NONE);
-		tabFolder.setBounds(0, 39, 148, 52);
 		
-		setControl(tabFolder);
+		Composite container = new Composite(parent, SWT.NONE);
+		setControl(container);
+		container.setLayout(new GridLayout(1, false));
+		
+		Group grpProject = new Group(container, SWT.NONE);
+		grpProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		grpProject.setText("Project");
+		grpProject.setLayout(new GridLayout(3, false));
+		
+		Label lblProject = new Label(grpProject, SWT.NONE);
+		lblProject.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblProject.setText("Project:");
+		
+		textProject = new Text(grpProject, SWT.BORDER);
+		textProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		textProject.addListener(SWT.Modify, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				setPageComplete(validatePage());
+			}
+		});
+		
+		
+		Button btnProjectBrowse = new Button(grpProject, SWT.NONE);
+		btnProjectBrowse.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
+				es.setElements(HybridCore.getHybridProjects().toArray());
+				es.setTitle("Project Selection");
+				es.setMessage("Select a project to run");
+				if (es.open() == Window.OK) {			
+					HybridProject project = (HybridProject) es.getFirstResult();
+					textProject.setText(project.getProject().getName());
+				}		
+			}
+		});
+		btnProjectBrowse.setText("Browse...");
+		
+		
+		tabFolder = new TabFolder(container, SWT.NONE);
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tabFolder);
 		
 		registryTab = new TabItem(tabFolder, SWT.NONE);
 		registryTab.setText("Registry");
@@ -104,7 +158,15 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		return PLUGIN_SOURCE_REGISTRY; // defaults to registry;
 	}
 	
-	private List<CordovaPluginInfo> getCheckedCordovaRegistryItems(){
+	public String getSelectedDirectory(){
+		return this.destinationDirectoryGroup.getValue();
+	}
+	
+	public String getProjectName(){
+		return textProject.getText();
+	}
+	
+	private List<CordovaRegistryPluginInfo> getCheckedCordovaRegistryItems(){
 		IStructuredSelection selection = catalogViewer.getSelection();
 		if(selection == null || selection.isEmpty())
 			return Collections.emptyList();
@@ -118,6 +180,29 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	}
 	
 	private boolean validatePage() {
+		//Check project
+		String projectName = textProject.getText();
+		if(projectName == null || projectName.isEmpty()){
+			setMessage("Specify a project",ERROR);
+			return false;
+		}
+		List<HybridProject> projects = HybridCore.getHybridProjects();
+		boolean projectValid = false;
+		for (HybridProject hybridProject : projects) {
+			if (hybridProject.getProject().getName().equals(projectName)) {
+				projectValid = true;
+				break;
+			}
+		}
+		if (!projectValid) {
+			setMessage(
+					"Specified project is not a valid project for this operation",
+					ERROR);
+			return false;
+		}
+		
+		//Now tabs
+		
 		boolean valid = false;
 		switch (getPluginSourceType()) {
 		case PLUGIN_SOURCE_DIRECTORY:

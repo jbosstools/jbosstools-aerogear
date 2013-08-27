@@ -107,7 +107,8 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 		
 		try {
 			monitor.beginTask("Build Cordova project for iOS", 10);
-			XcodeProjectGenerator creator = new XcodeProjectGenerator(getProject(),null);
+			//TODO: use extension point to create the generator.
+			XcodeProjectGenerator creator = new XcodeProjectGenerator(getProject(),null,"ios");
 			SubProgressMonitor generateMonitor = new SubProgressMonitor(monitor, 1);
 			File xcodeProjectDir  = creator.generateNow(generateMonitor);
 			

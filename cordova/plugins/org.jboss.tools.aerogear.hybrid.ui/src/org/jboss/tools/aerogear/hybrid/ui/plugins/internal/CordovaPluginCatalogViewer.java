@@ -15,8 +15,8 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginInfo;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginRegistryClient;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryClient;
 @SuppressWarnings("restriction")
 public class CordovaPluginCatalogViewer extends FilteredViewer {
 	
@@ -46,7 +46,7 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 	
 	private final SelectionProviderAdapter selectionProvider;
 	private CordovaPluginWizardResources resources;
-	private List<CordovaPluginInfo> selectedItems = new ArrayList<CordovaPluginInfo>();
+	private List<CordovaRegistryPluginInfo> selectedItems = new ArrayList<CordovaRegistryPluginInfo>();
 
 	
 	public CordovaPluginCatalogViewer() {
@@ -66,7 +66,7 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 		return (IStructuredSelection) selectionProvider.getSelection();
 	}
 	
-	void modifySelection ( CordovaPluginInfo element, boolean selection){
+	void modifySelection ( CordovaRegistryPluginInfo element, boolean selection){
 		if (selection) {
 			selectedItems.add(element);
 		}else{
@@ -83,7 +83,7 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 		StructuredViewer viewer = new ControlListViewer(container, SWT.BORDER) {
 
 			@Override
-			protected ControlListItem<CordovaPluginInfo> doCreateItem(
+			protected ControlListItem<CordovaRegistryPluginInfo> doCreateItem(
 					Composite parent, Object element) {
 				return doCreateViewerItem(parent, element);
 			}
@@ -93,9 +93,9 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 		return viewer;
 	}
 	
-	private ControlListItem<CordovaPluginInfo> doCreateViewerItem(Composite parent, Object element ){
+	private ControlListItem<CordovaRegistryPluginInfo> doCreateViewerItem(Composite parent, Object element ){
 		return new CordovaPluginInfoItem(parent, SWT.NONE,
-				(CordovaPluginInfo) element,resources, this);
+				(CordovaRegistryPluginInfo) element,resources, this);
 	}
 
 }

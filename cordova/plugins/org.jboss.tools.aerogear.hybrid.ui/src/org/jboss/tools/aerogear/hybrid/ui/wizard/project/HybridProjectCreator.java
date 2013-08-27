@@ -44,7 +44,9 @@ import org.osgi.framework.Bundle;
 
 public class HybridProjectCreator {
 	
-	private static final String[] COMMON_PATHS={ ".cordova", PlatformConstants.DIR_MERGES, "plugins", PlatformConstants.DIR_WWW };
+	private static final String[] COMMON_PATHS={ ".cordova", PlatformConstants.DIR_MERGES, 
+		PlatformConstants.DIR_PLUGINS,
+		PlatformConstants.DIR_WWW };
 	
 	/**
 	 * Creates a hybrid project with the given name and location. Location can be null, if location is null 

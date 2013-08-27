@@ -4,9 +4,17 @@ import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginS
 import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage.PLUGIN_SOURCE_GIT;
 import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage.PLUGIN_SOURCE_REGISTRY;
 
+import java.io.File;
+
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.actions.WorkspaceAction;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class CordovaPluginWizard extends Wizard {
@@ -26,8 +34,20 @@ public class CordovaPluginWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
+		String projectName = pageOne.getProjectName();
+		HybridProject project = HybridProject.getHybridProject(projectName);
+		CordovaPluginManager pm = new CordovaPluginManager(project);
+		
 		switch (pageOne.getPluginSourceType()) {
 		case PLUGIN_SOURCE_DIRECTORY:
+			String directoryName = pageOne.getSelectedDirectory();
+			Assert.isTrue(directoryName != null && !directoryName.isEmpty());
+			try{
+				pm.installPlugin(new File(directoryName));}
+				catch(CoreException e){
+					//TODO: Error/handling reporting
+					return false;
+				}
 			break;
 		case PLUGIN_SOURCE_GIT:
 			break;
@@ -38,7 +58,7 @@ public class CordovaPluginWizard extends Wizard {
 			break;
 		}
 		savePageSettings();
-		return false;
+		return true;
 	}
 	
 	@Override

@@ -2,10 +2,10 @@ package org.jboss.tools.aerogear.hybrid.core.plugin.test;
 
 import java.util.List;
 
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginInfo;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginRegistryClient;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginVersion;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugin;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryClient;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 
 import static org.junit.Assert.*;
 
@@ -16,26 +16,26 @@ public class CordovaPluginRegistryTest {
 	@Test
 	public void testRetrievePluginInfosFromCordovaRegistry(){
 		CordovaPluginRegistryClient client = getCordovaIORegistryClient();
-		List<CordovaPluginInfo> infos = client.retrievePluginInfos();
+		List<CordovaRegistryPluginInfo> infos = client.retrievePluginInfos();
 		assertNotNull(infos);
 		assertFalse(infos.isEmpty());
-		CordovaPluginInfo info = infos.get(0);
+		CordovaRegistryPluginInfo info = infos.get(0);
 		assertNotNull(info.getName());
 	}
 
 	@Test
 	public void testReadCordovaPluginFromCordovaRegistry(){
 		CordovaPluginRegistryClient client = getCordovaIORegistryClient();
-		List<CordovaPluginInfo> infos = client.retrievePluginInfos();
-		CordovaPluginInfo info = infos.get(0);
-		CordovaPlugin plugin = client.getCordovaPlugin(info.getName());
+		List<CordovaRegistryPluginInfo> infos = client.retrievePluginInfos();
+		CordovaRegistryPluginInfo info = infos.get(0);
+		CordovaRegistryPlugin plugin = client.getCordovaPlugin(info.getName());
 		assertNotNull(plugin);
 		assertNotNull(plugin.getName());
 		assertEquals(info.getName(), plugin.getName());
 		assertNotNull(plugin.getVersions());
-		List<CordovaPluginVersion> versions = plugin.getVersions();
+		List<CordovaRegistryPluginVersion> versions = plugin.getVersions();
 		assertFalse(versions.isEmpty());
-		CordovaPluginVersion version = versions.get(0);
+		CordovaRegistryPluginVersion version = versions.get(0);
 		assertNotNull(version.getName());
 		assertNotNull(version.getVersionNumber());
 		assertNotNull(version.getDistributionSHASum());

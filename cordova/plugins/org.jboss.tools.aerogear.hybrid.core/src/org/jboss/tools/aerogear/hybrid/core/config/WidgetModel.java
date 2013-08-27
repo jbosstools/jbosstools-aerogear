@@ -37,6 +37,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -82,27 +83,7 @@ public class WidgetModel {
 	}
 	
 	public void save(Widget root, File file) throws CoreException{
-		try {
-			Source source = new DOMSource(root.itemNode.getOwnerDocument());
-
-			StreamResult result = new StreamResult(file);
-
-			// Write the DOM document to the file
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-			Transformer xformer;
-			xformer = transformerFactory.newTransformer();
-			xformer.transform(source, result);
-
-		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-
+		XMLUtil.saveXML(file, root.itemNode.getOwnerDocument());
 	}
 	
 	/**

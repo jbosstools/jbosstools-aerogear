@@ -25,7 +25,7 @@ import org.eclipse.osgi.service.debug.DebugTrace;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ExtensionPointProxy;
 import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginRegistryClient;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryClient;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

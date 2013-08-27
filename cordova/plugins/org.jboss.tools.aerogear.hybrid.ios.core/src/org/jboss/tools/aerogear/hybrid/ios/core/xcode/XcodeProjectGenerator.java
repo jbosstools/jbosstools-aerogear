@@ -37,8 +37,8 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 		super();
 	}
 	
-	public XcodeProjectGenerator(IProject project, File generationFolder) {
-		init(project, generationFolder);
+	public XcodeProjectGenerator(IProject project, File generationFolder, String platform) {
+		init(project, generationFolder, platform);
 	}
 	
 	@Override
@@ -111,11 +111,6 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 		return cordovaLibDirectory;
 	}
 	
-	@Override
-	protected String getTargetShortName(){
-		return "ios";
-	}
-
 	@Override
 	protected void replaceCordovaPlatformFiles() throws IOException{
 		File cordovaLib = generateCordovaLib();

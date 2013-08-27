@@ -8,19 +8,28 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.platform;
+package org.jboss.tools.aerogear.hybrid.core.plugin;
 
-public interface PlatformConstants {
+import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
+
+public class ConfigFileAction implements IPluginInstallationAction {
 	
-	public static final String DIR_WWW = "www";
-	public static final String DIR_MERGES = "merges";
-	public static final String DIR_PLUGINS = "plugins";
 	
-	public static final String FILE_JS_CORDOVA = "cordova.js";
-	public static final String FILE_XML_CONFIG = "config.xml";
-	/**
-	 * plugin definition file for Cordova plugins
-	 */
-	public static final String FILE_XML_PLUGIN = "plugin.xml";
+
+	public ConfigFileAction(String target, String parent, String value) {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void install() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void unInstall() {
+		// TODO Auto-generated method stub
+
+	}
 
 }
