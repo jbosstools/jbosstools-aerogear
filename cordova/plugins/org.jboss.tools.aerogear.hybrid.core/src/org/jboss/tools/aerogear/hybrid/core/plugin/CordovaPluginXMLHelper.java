@@ -45,12 +45,40 @@ import org.w3c.dom.NodeList;
 
 public class CordovaPluginXMLHelper {
 	
+	private static class PluginXMLNamespaceContext implements NamespaceContext{
+
+		private Document document;
+		
+		public PluginXMLNamespaceContext(Document doc ) {
+			this.document = doc;
+		}
+		
+		@Override
+		public String getNamespaceURI(String prefix) {
+			if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
+				return document.lookupNamespaceURI(null);
+			}
+			return document.lookupNamespaceURI(prefix);
+		}
+
+		@Override
+		public String getPrefix(String namespaceURI) {
+			return document.lookupPrefix(namespaceURI);
+		}
+
+		@Override
+		public Iterator getPrefixes(String arg0) {
+			return null;
+		}
+		
+	}
+	
 	private static final XPathFactory xpathFactory = XPathFactory.newInstance();;
 	
 	public static Node getPlatformNode(Document document, String platform){
 		try {
-			XPath xpath = getXPath();
-			XPathExpression expression = xpath.compile("./:platform[@name='"+platform+"']");
+			XPath xpath = getXPath(document);
+			XPathExpression expression = xpath.compile("./:platform[@name=\""+platform+"\"]");
 			Node node =	(Node) expression.evaluate(document.getDocumentElement(), XPathConstants.NODE);
 			return node;
 		} catch (XPathExpressionException e) {
@@ -59,31 +87,9 @@ public class CordovaPluginXMLHelper {
 		}
 	}
 
-	private static XPath getXPath() {
+	private static XPath getXPath(Document doc) {
 		XPath xpath = xpathFactory.newXPath();
-		xpath.setNamespaceContext(new NamespaceContext() {
-			
-			@Override
-			public Iterator getPrefixes(String arg0) {
-				return null;
-			}
-			
-			@Override
-			public String getPrefix(String arg0) {
-				return null;
-			}
-			
-			@Override
-			public String getNamespaceURI(String prefix) {
-				if (prefix == null) {
-		            throw new IllegalArgumentException("No prefix provided!");
-		        } 
-				if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
-		            return "http://www.phonegap.com/ns/plugins/1.0";
-				}
-				return XMLConstants.NULL_NS_URI;
-			}
-		});
+		xpath.setNamespaceContext(new PluginXMLNamespaceContext(doc));
 		return xpath;
 	}
 	
@@ -117,7 +123,7 @@ public class CordovaPluginXMLHelper {
 		
 	private static NodeList getNodes(Node node, String xpathExpression){
 		try{
-			XPath xpath = getXPath(); 
+			XPath xpath = getXPath(node.getOwnerDocument()); 
 			XPathExpression expression = xpath.compile(xpathExpression);
 			return (NodeList) expression.evaluate(node, XPathConstants.NODESET);
 		}
@@ -168,7 +174,7 @@ public class CordovaPluginXMLHelper {
 		plugin.setKeywords(getChildNodeValue(rootNode, "keywords"));
 		plugin.setInfo(getChildNodeValue(rootNode, "info"));
 		//js-modules
-		NodeList moduleNodes = getNodes(rootNode, "//:js-module");
+		NodeList moduleNodes = rootNode.getElementsByTagName("js-module");
 		for (int i = 0; i < moduleNodes.getLength(); i++) {
 			Node n = moduleNodes.item(i);
 			PluginJavaScriptModule module = new PluginJavaScriptModule();
@@ -190,17 +196,14 @@ public class CordovaPluginXMLHelper {
 			plugin.addModule(module);
 		}
 		// engines
-		NodeList nods = rootNode.getElementsByTagName("engines");
-		if (nods.getLength()==1) {
-			Node enginesNode = nods.item(0);
-			NodeList engineNodes = enginesNode.getChildNodes();
-			for (int i = 0; i < engineNodes.getLength(); i++) {
-				Node engineNode = engineNodes.item(i);
-				CordovaEngine engine = new CordovaEngine();
-				engine.setName(getAttributeValue(engineNode, "name"));
-				engine.setVersion(getAttributeValue(engineNode, "version"));
-				plugin.addSupportedEngine(engine);
-			}
+		NodeList engineNodes = getNodes(rootNode, "//:engine");
+		for (int i = 0; i < engineNodes.getLength(); i++) {
+			Node engineNode = engineNodes.item(i);
+
+			CordovaEngine engine = new CordovaEngine();
+			engine.setName(getAttributeValue(engineNode, "name"));
+			engine.setVersion(getAttributeValue(engineNode, "version"));
+			plugin.addSupportedEngine(engine);
 		}
 		return plugin;
 	}

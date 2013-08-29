@@ -41,6 +41,10 @@ public abstract class AbstractPluginInstallationActionsFactory {
 
 	public abstract IPluginInstallationAction getFrameworkAction(String src, String weak); 
 	
+	public abstract IPluginInstallationAction getJSModuleAction(String src, String pluginId);
+	
+	public abstract IPluginInstallationAction getCreatePluginJSAction(String content); 
+	
 	public File getPluginDirectory(){
 		return pluginDirectory;
 	}
@@ -52,5 +56,6 @@ public abstract class AbstractPluginInstallationActionsFactory {
 	public IProject getProject(){
 		return project;
 	}
+
 
 }

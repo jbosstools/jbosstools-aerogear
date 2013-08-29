@@ -107,6 +107,22 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	}
 	
 	/**
+	 * Returns the {@link ProjectGenerator} for the given platformID or null if none is present.
+	 * 
+	 * @param platformID
+	 * @return ProjectGenerator or null if no generator for the platformID is present
+	 */
+	public static ProjectGenerator getPlatformProjectGenerator(String platformID){
+		List<ProjectGenerator> generators = getPlatformProjectGenerators();
+		for (ProjectGenerator projectGenerator : generators) {
+			if(projectGenerator.getPlatformId().equals(platformID)){
+				return projectGenerator;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns the {@link NativeProjectBuilder} proxy objects defined by the 
 	 * extensions. 
 	 * 

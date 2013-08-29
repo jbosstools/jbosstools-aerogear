@@ -54,4 +54,17 @@ public class IOSPluginInstallationActionsFactory extends
 		return null;
 	}
 
+	@Override
+	public IPluginInstallationAction getJSModuleAction(String src,
+			String pluginId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IPluginInstallationAction getCreatePluginJSAction(String content) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

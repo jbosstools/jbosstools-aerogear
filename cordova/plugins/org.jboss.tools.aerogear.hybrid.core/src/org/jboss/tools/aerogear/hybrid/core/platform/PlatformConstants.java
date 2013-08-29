@@ -17,6 +17,7 @@ public interface PlatformConstants {
 	public static final String DIR_PLUGINS = "plugins";
 	
 	public static final String FILE_JS_CORDOVA = "cordova.js";
+	public static final String FILE_JS_CORDOVA_PLUGIN = "cordova_plugin.js";
 	public static final String FILE_XML_CONFIG = "config.xml";
 	/**
 	 * plugin definition file for Cordova plugins

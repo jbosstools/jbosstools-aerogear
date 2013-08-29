@@ -122,8 +122,9 @@ public class CordovaPluginManager {
 	 */
 	public void completePluginInstallationsForPlatform(File platformProjectLocation, String platform) throws CoreException{
 		List<CordovaPlugin> plugins  = getInstalledPlugins();
+		ProjectGenerator generator = HybridCore.getPlatformProjectGenerator(platform);
 		for (CordovaPlugin cordovaPlugin : plugins) {
-			completePluginInstallationToPlatform(cordovaPlugin, platform, platformProjectLocation);
+ 			completePluginInstallationToPlatform(cordovaPlugin, generator, platformProjectLocation);
 		}
 	}
 	
@@ -217,7 +218,7 @@ public class CordovaPluginManager {
 						addInstalledPlugin(file);
 					}
 				}
-				return false;
+				return true;
 			}
 		};
 		IFolder plugins = this.project.getProject().getFolder(PlatformConstants.DIR_PLUGINS);
@@ -228,12 +229,17 @@ public class CordovaPluginManager {
 	
 	private void addInstalledPlugin(IFile pluginxml) throws CoreException{
 		CordovaPlugin plugin = CordovaPluginXMLHelper.createCordovaPlugin(pluginxml.getContents());
-		installedPlugins.add(plugin);
+		int index = installedPlugins.indexOf(plugin);
+		if(index>-1){
+			installedPlugins.set(index, plugin);
+		}else{
+			installedPlugins.add(plugin);
+		}
 	}
 
 	private File getPluginHomeDirectory(CordovaPlugin plugin) throws CoreException{
 		IProject prj = this.project.getProject();
-		IPath path = prj.getFullPath().append(PlatformConstants.DIR_PLUGINS).append(plugin.getId());
+		IPath path = prj.getLocation().append(PlatformConstants.DIR_PLUGINS).append(plugin.getId());
 		File f = path.toFile();
 		if(f.exists())
 			return f;
@@ -265,32 +271,48 @@ public class CordovaPluginManager {
 			}
 		}
 	}
-	
-	private void completePluginInstallationToPlatform(CordovaPlugin plugin, String platform, File platformProject) throws CoreException{
+	/*
+	 * 1. collect common asset tags 
+	 * 2. collect config tags except config.xml (which are handled during installation)
+	 * 3. collect all js-module actions (for copying source files)
+	 * 3. create cordova_plugin.js
+	 * 4. collect all platform specific tags
+	 * 	
+	 */
+	private void completePluginInstallationToPlatform(CordovaPlugin plugin, ProjectGenerator generator, File platformProject) throws CoreException{
+		if(generator == null ) return;
+			
 		File pluginHome = getPluginHomeDirectory(plugin);
 		File pluginFile = new File(pluginHome, PlatformConstants.FILE_XML_PLUGIN);
 		Document doc = XMLUtil.loadXML(pluginFile); 
 		//TODO: check  supported engines
 		ArrayList<IPluginInstallationAction> allActions = new ArrayList<IPluginInstallationAction>();
-
 		
-		List<ProjectGenerator> generators = HybridCore.getPlatformProjectGenerators();
-		for (ProjectGenerator projectGenerator : generators) {
-			Node node = getPlatformNode(doc, projectGenerator.getPlatformId());
-			if( projectGenerator.getPlatformId().equals(platform) && node != null ){
-
-				AbstractPluginInstallationActionsFactory actionFactory = projectGenerator.getPluginInstallationActionsFactory(this.project.getProject(), 
-						pluginHome, platformProject);
-				allActions.addAll(getAssetActionsForPlatform(doc.getDocumentElement(),actionFactory ));// add common assets
-				allActions.addAll(getConfigFileActionsForPlatform(doc.getDocumentElement(), actionFactory)); // common config changes
-				
-				allActions.addAll(collectActionsForPlatform(node, 
-						actionFactory));
-			}
+		Node node = getPlatformNode(doc, generator.getPlatformId());
+		if( node != null ){
+			AbstractPluginInstallationActionsFactory actionFactory = generator.getPluginInstallationActionsFactory(this.project.getProject(), 
+					pluginHome, platformProject);
+			allActions.addAll(getAssetActionsForPlatform(doc.getDocumentElement(),actionFactory ));// add common assets
+			allActions.addAll(getConfigFileActionsForPlatform(doc.getDocumentElement(), actionFactory)); // common config changes
+			allActions.addAll(getJSModuleActionsForPlatform(plugin, actionFactory)); // add all js-module actions
+			//We do not need to create this file 
+			//with every plugin. TODO: find a better place
+			allActions.add(actionFactory.getCreatePluginJSAction(this.getCordovaPluginJSContent()));
+			allActions.addAll(collectActionsForPlatform(node, actionFactory));
 		}
 		runActions(allActions);
 	}
 	
+	private List<IPluginInstallationAction> getJSModuleActionsForPlatform(CordovaPlugin plugin,AbstractPluginInstallationActionsFactory factory) {
+		List<PluginJavaScriptModule> modules =  plugin.getModules(); 
+		List<IPluginInstallationAction> actions = new ArrayList<IPluginInstallationAction>();
+		for (PluginJavaScriptModule scriptModule : modules) {
+			IPluginInstallationAction action = factory.getJSModuleAction(scriptModule.getSource(), plugin.getId());
+			actions.add(action);
+		}
+		return actions;
+	}
+
 	private List<IPluginInstallationAction> collectAllConfigXMLActions(Document doc){
 		NodeList configFiles = getConfigFileNodes(doc.getDocumentElement());
 		ArrayList<IPluginInstallationAction> configList = new ArrayList<IPluginInstallationAction>();

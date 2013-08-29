@@ -20,7 +20,9 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPluginInstallationActionsFactory;
 import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CopyFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CreateFileAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.XMLConfigFileAction;
 
 public class AndroidPluginInstallationActionsFactory extends AbstractPluginInstallationActionsFactory
@@ -107,6 +109,25 @@ public class AndroidPluginInstallationActionsFactory extends AbstractPluginInsta
 	@Override
 	public IPluginInstallationAction getFrameworkAction(String src, String weak) {
 		throw new UnsupportedOperationException("Not relevant for Android");
+	}
+
+	@Override
+	public IPluginInstallationAction getJSModuleAction(String src,
+			String pluginId) {
+		File source = new File(getPluginDirectory(), src);
+		File target = new File(AndroidProjectUtils.getPlatformWWWDirectory(getProjectDirectory()), "plugins/"+pluginId+"/" );
+		if(!target.isDirectory()){// create the target directory
+			target.mkdirs();
+		}
+		CopyFileAction action = new CopyFileAction(source, target);
+		return action;
+	}
+
+	@Override
+	public IPluginInstallationAction getCreatePluginJSAction(String content) {
+		File pluginJs = new File(AndroidProjectUtils.getPlatformWWWDirectory(getProjectDirectory()), PlatformConstants.FILE_JS_CORDOVA_PLUGIN);
+		CreateFileAction action = new CreateFileAction(content, pluginJs);
+		return action;
 	}
 
 

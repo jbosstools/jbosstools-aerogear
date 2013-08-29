@@ -80,7 +80,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 			if(!generationRoot.exists() && !generationRoot.mkdirs() ){
 				throw new CoreException(new Status(IStatus.ERROR,HybridCore.PLUGIN_ID, "Can not create the destination directory for project generation at "+generationRoot.toString() ));
 			}
-			monitor.beginTask("Generate Native Project for "+this.getProjectName(), 40);
+			monitor.beginTask("Generate Native Project for "+this.getProjectName(), 50);
 			generateNativeFiles();
 			monitor.worked(10);
 			IFolder folder = getProject().getFolder("/"+PlatformConstants.DIR_WWW);
@@ -100,7 +100,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 			}
 			monitor.worked(10);
 			replaceCordovaPlatformFiles();
-			completeCordovaPluginInstallations();
+			completeCordovaPluginInstallations(monitor);
 		}
 		catch (IOException e) {
 			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, " Unable to generate native project ",e));
@@ -114,7 +114,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 	}
 	
 	
-	protected void completeCordovaPluginInstallations() throws CoreException{
+	protected void completeCordovaPluginInstallations(IProgressMonitor monitor) throws CoreException{
 		HybridProject project = HybridProject.getHybridProject(getProject());
 		if( project == null ) return;
 		CordovaPluginManager pluginManager = new CordovaPluginManager(project);
