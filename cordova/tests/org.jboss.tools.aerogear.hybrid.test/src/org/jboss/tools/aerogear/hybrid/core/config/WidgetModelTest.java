@@ -1,18 +1,15 @@
 package org.jboss.tools.aerogear.hybrid.core.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -218,84 +215,6 @@ public class WidgetModelTest {
 		assertEquals(license.getText(), licenseNode.getTextContent());
 		assertEquals(license.getHref(), getAtrributeValue(licenseNode, WidgetModelConstants.LICENSE_ATTR_HREF));
 		
-	}
-	@Test
-	public void testPlugin() throws UnsupportedEncodingException, 
-	ParserConfigurationException, SAXException, IOException {
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
-		Plugin plugin = WidgetModel.getInstance().createPlugin(widget);
-		final String name = "test.name";
-		final String version = "test.version";
-		
-		plugin.setName(name);
-		plugin.setVersion(version);
-		assertEquals(name, plugin.getName());
-		assertEquals(version, plugin.getVersion());
-		widget.addPlugin(plugin);
-		List<Plugin> plugins = widget.getPlugins();
-		assertEquals(1, plugins.size());
-		assertEquals(plugin, plugins.get(0));
-		
-		Plugin plugin2 = WidgetModel.getInstance().createPlugin(widget);
-		plugin2.setName(name+"2");
-		
-		final String paramName = "test.param";
-		final String paramValue = "test.value";
-		plugin2.addParam(paramName, paramValue);
-		widget.addPlugin(plugin);// test adding second time same object
-		widget.addPlugin(plugin2);
-		Map<String, String> params = plugin2.getParams();
-		assertEquals(1, params.size());
-		
-		
-		NodeList nodes = doc.getElementsByTagName(WidgetModelConstants.WIDGET_TAG_PLUGIN);
-		assertEquals(2, nodes.getLength());
-		boolean foundName1 =false;
-		boolean foundName2 =false;
-		boolean foundVersion1 = false;
-		boolean foundVersion2 = false;
- 		for (int i = 0; i < nodes.getLength(); i++) {
-			Node node = nodes.item(i);
-			
-			String nameAttrib = getAtrributeValue(node, WidgetModelConstants.PLUGIN_ATTR_NAME);
-			if(nameAttrib.equals(name))
-				foundName1 = true;
-			if(nameAttrib.equals(name+"2")){
-				foundName2 =true;
-				String attribName = getAtrributeValue(node.getFirstChild(), WidgetModelConstants.PARAM_ATTR_NAME);
-				assertEquals(paramName, attribName);
-				String attribValue = getAtrributeValue(node.getFirstChild(), WidgetModelConstants.PARAM_ATTR_VALUE);
-				assertEquals(paramValue, attribValue);
-			}
-			NamedNodeMap attributes = node.getAttributes();
-			Node versionAttrib = attributes.getNamedItem(WidgetModelConstants.PLUGIN_ATTR_VERSION);
-			if(versionAttrib == null ){
-				foundVersion2 =true;
-			}else
-				if(versionAttrib.getNodeValue().equals(version)){
-					foundVersion1 =true;
-				}
-		}
- 		assertTrue("Name for first plugin instance is not found",foundName1);
- 		assertTrue("Name for second plugin instance is not found",foundName2);
- 		assertTrue("Version for first plugin instance is not found",foundVersion1);
- 		assertTrue("Version for second plugin instance is not found",foundVersion2);
- 		
-		
-	}
-	@Test
-	public void testPluginLoadFromXML() throws UnsupportedEncodingException, 
-	ParserConfigurationException, SAXException, IOException {
-		Document doc = loadXMLDocument(WIDGET_WITH_PLUGIN_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
-		List<Plugin> plugins = widget.getPlugins();
-		assertNotNull(plugins);
-		assertEquals(1, plugins.size());
-		Plugin plugin = plugins.get(0);
-		Map<String, String> params = plugin.getParams();
-		assertNotNull(params);
-		assertEquals(2, params.size());
 	}
 	
 	

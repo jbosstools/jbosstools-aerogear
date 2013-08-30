@@ -154,19 +154,6 @@ public class WidgetModel {
 	 * {@link Widget}'s proper set/add method is called
 	 * 
 	 * @param widget - parent widget
-	 * @return new Plugin 
-	 */
-	public Plugin createPlugin(Widget widget){
-		return createObject(widget,NS_PHONEGAP_1_0,WIDGET_TAG_PLUGIN,Plugin.class);
-	}
-	
-	/**
-	 * Creates a {@link Plugin} instance. This also creates the necessary 
-	 * DOM elements on the {@link Document} associated with the widget.
-	 * The new DOM elements are not inserted to the tree until 
-	 * {@link Widget}'s proper set/add method is called
-	 * 
-	 * @param widget - parent widget
 	 * @return new Splash 
 	 */	
 	public Icon createIcon(Widget widget){

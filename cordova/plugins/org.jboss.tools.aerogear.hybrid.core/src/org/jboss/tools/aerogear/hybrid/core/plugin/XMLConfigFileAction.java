@@ -31,9 +31,9 @@ import org.w3c.dom.NodeList;
 
 public class XMLConfigFileAction implements IPluginInstallationAction {
 	
-	private final File target;
-	private final String parent;
-	private final String xml;
+	protected final File target;
+	protected final String parent;
+	protected final String xml;
 	private XPathExpression xpathExpression;
 	
 	public XMLConfigFileAction(File target, String parent, String xml){

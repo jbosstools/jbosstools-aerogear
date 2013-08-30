@@ -113,6 +113,10 @@ public class CordovaPluginXMLHelper {
 		return getNodes(node, "./:config-file");
 	}	
 	
+	public static NodeList getAllConfigFileNodes(Node node) {
+		return getNodes(node, "//:config-file");
+	}	
+	
 	public static NodeList getLibFileNodes(Node node) {
 		return getNodes(node, "./:lib-file");
 	}

@@ -14,6 +14,7 @@ package org.jboss.tools.aerogear.hybrid.core.plugin;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAssets;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAttributeValue;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getConfigFileNodes;
+import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAllConfigFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getFrameworks;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getLibFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getPlatformNode;
@@ -314,18 +315,20 @@ public class CordovaPluginManager {
 	}
 
 	private List<IPluginInstallationAction> collectAllConfigXMLActions(Document doc){
-		NodeList configFiles = getConfigFileNodes(doc.getDocumentElement());
+		NodeList configFiles = getAllConfigFileNodes(doc.getDocumentElement());
 		ArrayList<IPluginInstallationAction> configList = new ArrayList<IPluginInstallationAction>();
 		for (int i = 0; i < configFiles.getLength(); i++) {
 			Node current = configFiles.item(i);
 			String target = getAttributeValue(current, "target");
+			if(!target.endsWith(PlatformConstants.FILE_XML_CONFIG)){
+				continue;
+			}
 			String parent = getAttributeValue(current, "parent");
 			String value = stringifyNode(current);
-			IPluginInstallationAction action = new ConfigFileAction(target, parent, value);
+			IPluginInstallationAction action = new ConfigXMLUpdateAction(this.project, parent, value);
 			configList.add(action);
 		}
 		return configList;
-		
 	}
 	
 	private List<IPluginInstallationAction> collectActionsForPlatform(Node node, AbstractPluginInstallationActionsFactory factory) throws CoreException{
@@ -376,7 +379,7 @@ public class CordovaPluginManager {
 		for (int i = 0; i < configFiles.getLength(); i++) {
 			Node current = configFiles.item(i);
 			String target = getAttributeValue(current, "target");
-			if(target.endsWith("config.xml")){//config.xmls are handled on #getAllConfigXMLActions
+			if(target.endsWith(PlatformConstants.FILE_XML_CONFIG)){//config.xmls are handled on #collectAllConfigXMLActions
 				continue;
 			}
 			String parent = getAttributeValue(current, "parent");
