@@ -44,11 +44,12 @@ public class XMLConfigFileAction implements IPluginInstallationAction {
 
 	@Override
 	public void install() throws CoreException {
-		Document doc = XMLUtil.loadXML(target);
+		Document doc = XMLUtil.loadXML(target,false);
 		Document newNode = XMLUtil.loadXML(xml);//config-file node
 		Node node = getParentNode(doc.getDocumentElement());
 		if(node == null ){
-			throw createParentNodeException();
+			handleParentNodeException();
+			return;
 		}
 		NodeList childNodes = newNode.getDocumentElement().getChildNodes(); //append child nodes of config-file
 		for(int i = 0; i < childNodes.getLength(); i++ ){
@@ -64,7 +65,8 @@ public class XMLConfigFileAction implements IPluginInstallationAction {
 		Document node = XMLUtil.loadXML(xml);         //because snippets usually can not be namespaces aware
 		Node parentNode = getParentNode(doc.getDocumentElement());
 		if(parentNode == null ){
-			throw createParentNodeException();
+			handleParentNodeException();
+			return;
 		}
 		NodeList childNodes = node.getDocumentElement().getChildNodes(); 
 		for(int i = 0; i < childNodes.getLength(); i++ ){
@@ -82,9 +84,11 @@ public class XMLConfigFileAction implements IPluginInstallationAction {
 		XMLUtil.saveXML(target, doc);
 	}
 
-	private CoreException createParentNodeException() {
-		return new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID,
-				"Parent node could not be retrieved on "+target.getName()+ " with expression " + parent));
+	private void handleParentNodeException() throws CoreException{
+		//It is common that a parent node can not be found because 
+		//plugins specify them on a platform specific way.
+		HybridCore.log(IStatus.ERROR, 
+				"Parent node could not be retrieved on "+target.getName()+ " with expression " + parent,null);
 	}
 
 	private XPathExpression getXPathExpression() throws XPathExpressionException {

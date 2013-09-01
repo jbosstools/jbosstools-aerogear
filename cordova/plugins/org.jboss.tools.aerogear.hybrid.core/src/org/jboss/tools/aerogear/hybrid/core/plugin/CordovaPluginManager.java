@@ -11,10 +11,10 @@
 package org.jboss.tools.aerogear.hybrid.core.plugin;
 
 
+import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAllConfigFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAssets;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAttributeValue;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getConfigFileNodes;
-import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAllConfigFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getFrameworks;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getLibFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getPlatformNode;
@@ -23,11 +23,14 @@ import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.stringifyNode;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -39,6 +42,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
@@ -107,7 +113,25 @@ public class CordovaPluginManager {
 	
 		
 		runActions(actions);
-		this.project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+	}
+	/**
+	 * Installs a Cordova plugin from a git repository. 
+	 * This method delegates to {@link #installPlugin(File)} after cloning the
+	 * repository to a temporary location to complete the installation of the 
+	 * plugin.
+	 * 
+	 * @param uri
+	 * @throws CoreException
+	 */
+	public void installPlugin(URI uri) throws CoreException{
+		File tempRepoDirectory = new File(FileUtils.getTempDirectory(), "cordova_plugin_tmp_"+Long.toString(System.currentTimeMillis()));
+		tempRepoDirectory.deleteOnExit();
+		try {
+			Git.cloneRepository().setDirectory(tempRepoDirectory).setURI(uri.toString()).call();
+			this.installPlugin(tempRepoDirectory);
+		} catch (GitAPIException e) {
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Error cloning the plugin repository", e));
+		}
 	}
 	
 	/**
@@ -253,6 +277,7 @@ public class CordovaPluginManager {
 		for (IPluginInstallationAction action : actions) {
 			try {
 				action.install();
+				this.project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 				executed.push(action);
 			} catch (CoreException e) {
 				HybridCore.log(IStatus.ERROR, "Error while installing plugin", e);
@@ -265,6 +290,7 @@ public class CordovaPluginManager {
 				IPluginInstallationAction action = executed.pop();
 				try {
 					action.unInstall();
+					this.project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 				} catch (CoreException e) {
 					HybridCore.log(IStatus.ERROR,
 							"Error rolling back install action", e);

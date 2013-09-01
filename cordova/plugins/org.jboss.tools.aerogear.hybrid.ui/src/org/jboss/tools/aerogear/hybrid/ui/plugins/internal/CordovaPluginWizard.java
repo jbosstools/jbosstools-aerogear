@@ -5,6 +5,7 @@ import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginS
 import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage.PLUGIN_SOURCE_REGISTRY;
 
 import java.io.File;
+import java.net.URI;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -41,7 +42,6 @@ public class CordovaPluginWizard extends Wizard {
 		switch (pageOne.getPluginSourceType()) {
 		case PLUGIN_SOURCE_DIRECTORY:
 			String directoryName = pageOne.getSelectedDirectory();
-			Assert.isTrue(directoryName != null && !directoryName.isEmpty());
 			try{
 				pm.installPlugin(new File(directoryName));}
 				catch(CoreException e){
@@ -50,6 +50,14 @@ public class CordovaPluginWizard extends Wizard {
 				}
 			break;
 		case PLUGIN_SOURCE_GIT:
+			String gitRepo = pageOne.getSpecifiedGitURL();
+			try{
+				pm.installPlugin(URI.create(gitRepo));
+				}
+				catch(CoreException e){
+					//TODO: Error/handling reporting
+					return false;
+				}			
 			break;
 		case PLUGIN_SOURCE_REGISTRY:
 			break;

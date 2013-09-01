@@ -13,7 +13,6 @@ package org.jboss.tools.aerogear.hybrid.core.config;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.FEATURE_ATTR_NAME;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.FEATURE_ATTR_REQUIRED;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.FEATURE_PARAM_TAG;
-import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NS_W3C_WIDGET;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.PARAM_ATTR_NAME;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.PARAM_ATTR_VALUE;
 
@@ -79,13 +78,13 @@ public class Feature extends AbstractConfigObject {
 
 	public void addParam(String name, String value){
 		HashMap<String, String> props = new HashMap<String, String>();
-		if(params.getValue() != null ){
+		if(params.getValue() != null ){ //replace to trigger property change
 			props.putAll(params.getValue());
 		}
 		props.put(name, value);
 		Document doc = itemNode.getOwnerDocument();
-		Element el = doc.createElementNS(NS_W3C_WIDGET, FEATURE_PARAM_TAG);
-		el.setAttributeNS(NS_W3C_WIDGET, PARAM_ATTR_NAME, name);
+		Element el = doc.createElement( FEATURE_PARAM_TAG);
+		el.setAttribute(PARAM_ATTR_NAME, name);
 		el.setAttribute(PARAM_ATTR_VALUE, value);
 		itemNode.appendChild(el);
 		

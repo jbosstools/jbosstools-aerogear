@@ -1,6 +1,8 @@
 package org.jboss.tools.aerogear.hybrid.ui.plugins.internal;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,14 +18,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.HybridProject;
-import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
-import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
-import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
-import org.jboss.tools.aerogear.hybrid.ui.wizard.export.DirectorySelectionGroup;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -33,6 +29,12 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.wizard.export.DirectorySelectionGroup;
 
 public class CordovaPluginSelectionPage extends WizardPage {
 
@@ -48,6 +50,8 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private TabItem directoryTab;
 	private DirectorySelectionGroup destinationDirectoryGroup;
 	private Text textProject;
+	private Group grpRepositoryUrl;
+	private Text gitUrlTxt;
 
 	protected CordovaPluginSelectionPage(String pageName) {
 		super(pageName);
@@ -110,6 +114,20 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		
 		gitTab = new TabItem(tabFolder, SWT.NONE);
 		gitTab.setText("Git");
+		
+		grpRepositoryUrl = new Group(tabFolder, SWT.NONE);
+		grpRepositoryUrl.setText("Repository");
+		gitTab.setControl(grpRepositoryUrl);
+		grpRepositoryUrl.setLayout(new GridLayout(2, false));
+		
+		Label lblUrl = new Label(grpRepositoryUrl, SWT.NONE);
+		lblUrl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblUrl.setText("URL:");
+		
+		gitUrlTxt = new Text(grpRepositoryUrl, SWT.BORDER);
+		gitUrlTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		
 		directoryTab = new TabItem(tabFolder, SWT.NONE);
 		directoryTab.setText("Directory");
 		
@@ -162,6 +180,10 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		return this.destinationDirectoryGroup.getValue();
 	}
 	
+	public String getSpecifiedGitURL(){
+		return this.gitUrlTxt.getText();
+	}
+	
 	public String getProjectName(){
 		return textProject.getText();
 	}
@@ -209,7 +231,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 			valid = validateDirectroyTab();
 			break;
 		case PLUGIN_SOURCE_GIT:	
-			valid = true; //TODO: implement
+			valid = validateGitTab(); 
 			break;
 		case PLUGIN_SOURCE_REGISTRY:
 			valid = true; //TODO implement
@@ -220,6 +242,22 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		}
 		return valid;
 	}
+	
+	private boolean validateGitTab(){
+		String url = gitUrlTxt.getText();
+		if( url == null || url.isEmpty() ){
+			setMessage("Specify a git repository for fetching the Cordova plugin",ERROR);
+			return false;
+		}
+		try {
+			new URI(url);
+		} catch (URISyntaxException e) {
+			setMessage("Specify a valid address",ERROR);
+			return false;
+		}
+		return true;
+	}
+	
 	private boolean validateDirectroyTab(){
 		String directory = destinationDirectoryGroup.getValue();
 		if(directory == null || directory.isEmpty() ){
@@ -257,6 +295,4 @@ public class CordovaPluginSelectionPage extends WizardPage {
 			destinationDirectoryGroup.restoreHistory(settings);
 		}
 	}
-	
-	
 }
