@@ -11,7 +11,6 @@
 package org.jboss.tools.aerogear.hybrid.core.plugin;
 
 
-import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAllConfigFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAssets;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getAttributeValue;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getConfigFileNodes;
@@ -23,7 +22,6 @@ import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.stringifyNode;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +42,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
@@ -109,7 +106,7 @@ public class CordovaPluginManager {
 		
 		CopyFileAction copy = new CopyFileAction(directory, destination);
 		actions.add(copy);
-		actions.addAll(collectAllConfigXMLActions(doc));
+		actions.addAll(collectAllConfigXMLActionsForSupporredPlatforms(doc));
 	
 		
 		runActions(actions);
@@ -340,21 +337,29 @@ public class CordovaPluginManager {
 		return actions;
 	}
 
-	private List<IPluginInstallationAction> collectAllConfigXMLActions(Document doc){
-		NodeList configFiles = getAllConfigFileNodes(doc.getDocumentElement());
-		ArrayList<IPluginInstallationAction> configList = new ArrayList<IPluginInstallationAction>();
-		for (int i = 0; i < configFiles.getLength(); i++) {
-			Node current = configFiles.item(i);
-			String target = getAttributeValue(current, "target");
-			if(!target.endsWith(PlatformConstants.FILE_XML_CONFIG)){
-				continue;
-			}
-			String parent = getAttributeValue(current, "parent");
-			String value = stringifyNode(current);
-			IPluginInstallationAction action = new ConfigXMLUpdateAction(this.project, parent, value);
-			configList.add(action);
+	private List<IPluginInstallationAction> collectAllConfigXMLActionsForSupporredPlatforms(Document doc){
+		List<ProjectGenerator> generators = HybridCore.getPlatformProjectGenerators();
+		ArrayList<IPluginInstallationAction> list = new ArrayList<IPluginInstallationAction>();
+		List<Node> nodes = new ArrayList<Node>();
+		nodes.add(doc.getDocumentElement());
+		for (ProjectGenerator projectGenerator : generators) {
+			nodes.add(getPlatformNode(doc, projectGenerator.getPlatformId()));
 		}
-		return configList;
+		for(Node node: nodes){
+			NodeList configFiles = getConfigFileNodes(node);
+			for (int i = 0; i < configFiles.getLength(); i++) {
+				Node current = configFiles.item(i);
+				String target = getAttributeValue(current, "target");
+				if(!target.endsWith(PlatformConstants.FILE_XML_CONFIG)){
+					continue;
+				}
+				String parent = getAttributeValue(current, "parent");
+				String value = stringifyNode(current);
+				IPluginInstallationAction action = new ConfigXMLUpdateAction(this.project, parent, value);
+				list.add(action);
+			}
+		}
+		return list;
 	}
 	
 	private List<IPluginInstallationAction> collectActionsForPlatform(Node node, AbstractPluginInstallationActionsFactory factory) throws CoreException{
