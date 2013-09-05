@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
-import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryClient;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
 @SuppressWarnings("restriction")
 public class CordovaPluginCatalogViewer extends FilteredViewer {
 	
@@ -24,7 +24,7 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 	private static class CordovaPluginInfoContentProvider implements
 			IStructuredContentProvider {
 		
-		private final CordovaPluginRegistryClient client = new CordovaPluginRegistryClient("http://registry.cordova.io/");
+		private final CordovaPluginRegistryManager client = new CordovaPluginRegistryManager("http://registry.cordova.io/");
 
 		@Override
 		public void dispose() {

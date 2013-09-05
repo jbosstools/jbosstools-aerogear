@@ -6,6 +6,7 @@ import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginS
 
 import java.io.File;
 import java.net.URI;
+import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -16,6 +17,8 @@ import org.eclipse.ui.actions.WorkspaceAction;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class CordovaPluginWizard extends Wizard {
@@ -52,7 +55,7 @@ public class CordovaPluginWizard extends Wizard {
 		case PLUGIN_SOURCE_GIT:
 			String gitRepo = pageOne.getSpecifiedGitURL();
 			try{
-				pm.installPlugin(URI.create(gitRepo));
+				pm.installPlugin(URI.create(gitRepo),null,null);
 				}
 				catch(CoreException e){
 					//TODO: Error/handling reporting
@@ -60,6 +63,17 @@ public class CordovaPluginWizard extends Wizard {
 				}			
 			break;
 		case PLUGIN_SOURCE_REGISTRY:
+			List<CordovaRegistryPluginVersion> plugins = pageTwo.getSelectedPluginVersions();
+			CordovaPluginRegistryManager regMgr = new CordovaPluginRegistryManager("http://registry.cordova.io");
+			for (CordovaRegistryPluginVersion cordovaRegistryPluginVersion : plugins) {
+				try {
+					pm.installPlugin(regMgr.getInstallationDirectory(cordovaRegistryPluginVersion));
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return false;
+				}
+			}
 			break;
 		default:
 			Assert.isTrue(false, "No valid plugin source can be determined");

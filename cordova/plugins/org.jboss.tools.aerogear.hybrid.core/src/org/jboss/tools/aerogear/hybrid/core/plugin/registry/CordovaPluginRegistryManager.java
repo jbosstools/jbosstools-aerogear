@@ -11,12 +11,14 @@
 package org.jboss.tools.aerogear.hybrid.core.plugin.registry;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -24,22 +26,36 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.filetransfer.IFileTransferListener;
+import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
+import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
+import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
+import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferEvent;
+import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.identity.FileCreateException;
+import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
-public class CordovaPluginRegistryClient {
+public class CordovaPluginRegistryManager {
 	
 	private long updated;
 	private List<CordovaRegistryPluginInfo> plugins;
 	private String registry;
+	private final File cacheHome;
 	
-	public CordovaPluginRegistryClient(String url) {
+	public CordovaPluginRegistryManager(String url) {
 		this.registry = url;
+		cacheHome = new File(FileUtils.getUserDirectory(), ".plugman"+File.separator+"cache");
 	}
 	
-	public CordovaRegistryPlugin getCordovaPlugin(String name) {
-
+	public CordovaRegistryPlugin getCordovaPluginInfo(String name) {
+		
 		HttpClient client = new DefaultHttpClient();
 		String url = registry.endsWith("/") ? registry + name : registry + "/"
 				+ name;
@@ -65,8 +81,62 @@ public class CordovaPluginRegistryClient {
 
 	}
 	
+	
+	/**
+	 * Returns a directory where the given version of the Cordova Plugin 
+	 * can be installed from. This method downloads the given 
+	 * cordova plugin if necessary.
+	 * 
+	 * @param plugin
+	 * @return
+	 */
+	public File getInstallationDirectory( CordovaRegistryPluginVersion plugin ){
+		File pluginDir = getFromCache(plugin);
+		if (pluginDir != null ){
+			return pluginDir;
+		}
+		File newCacheDir = calculateCacheDir(plugin);
+		
+		IRetrieveFileTransfer transfer = HybridCore.getDefault().getFileTransferService();
+		IFileID remoteFileID;
+		
+		try {
+			remoteFileID = FileIDFactory.getDefault().createFileID(transfer.getRetrieveNamespace(), plugin.getDistributionTarball());
+			PluginReceiver receiver = new PluginReceiver(newCacheDir);
+			transfer.sendRetrieveRequest(remoteFileID, receiver, null);
+		} catch (FileCreateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IncomingFileTransferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new File(newCacheDir, "package");
+	}
+	
+	private File getFromCache( CordovaRegistryPluginVersion plugin ){
+		File cachedPluginDir = calculateCacheDir(plugin);
+		File packageDir = new File(cachedPluginDir,"package");
+		if( !packageDir.isDirectory()){
+			return null;
+		}
+		File pluginxml = new File(packageDir, PlatformConstants.FILE_XML_PLUGIN);
+		if(cachedPluginDir.isDirectory() && pluginxml.exists())
+			return packageDir;
+		return null;
+	}
+
+	private File calculateCacheDir(CordovaRegistryPluginVersion plugin) {
+		File cachedPluginDir = new File(this.cacheHome, plugin.getName() + File.separator +
+				plugin.getVersionNumber());
+				
+		return cachedPluginDir;
+	}
+	
+	
 	public List<CordovaRegistryPluginInfo> retrievePluginInfos()
 	{
+		
 		HttpClient client = new DefaultHttpClient();
 		String url = registry.endsWith("/") ? registry+"-/all" : registry+"/-/all";
 		HttpGet get = new HttpGet(url);
@@ -282,4 +352,5 @@ public class CordovaPluginRegistryClient {
 		}
 		reader.endArray();
 	}
+
 }

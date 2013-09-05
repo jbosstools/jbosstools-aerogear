@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugin;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
-import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryClient;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 
 import static org.junit.Assert.*;
@@ -15,7 +15,7 @@ public class CordovaPluginRegistryTest {
 	
 	@Test
 	public void testRetrievePluginInfosFromCordovaRegistry(){
-		CordovaPluginRegistryClient client = getCordovaIORegistryClient();
+		CordovaPluginRegistryManager client = getCordovaIORegistryClient();
 		List<CordovaRegistryPluginInfo> infos = client.retrievePluginInfos();
 		assertNotNull(infos);
 		assertFalse(infos.isEmpty());
@@ -25,10 +25,10 @@ public class CordovaPluginRegistryTest {
 
 	@Test
 	public void testReadCordovaPluginFromCordovaRegistry(){
-		CordovaPluginRegistryClient client = getCordovaIORegistryClient();
+		CordovaPluginRegistryManager client = getCordovaIORegistryClient();
 		List<CordovaRegistryPluginInfo> infos = client.retrievePluginInfos();
 		CordovaRegistryPluginInfo info = infos.get(0);
-		CordovaRegistryPlugin plugin = client.getCordovaPlugin(info.getName());
+		CordovaRegistryPlugin plugin = client.getCordovaPluginInfo(info.getName());
 		assertNotNull(plugin);
 		assertNotNull(plugin.getName());
 		assertEquals(info.getName(), plugin.getName());
@@ -42,8 +42,8 @@ public class CordovaPluginRegistryTest {
 		assertNotNull(version.getDistributionTarball());
 	}
 
-	private CordovaPluginRegistryClient getCordovaIORegistryClient() {
-		CordovaPluginRegistryClient client = new CordovaPluginRegistryClient("http://registry.cordova.io/");
+	private CordovaPluginRegistryManager getCordovaIORegistryClient() {
+		CordovaPluginRegistryManager client = new CordovaPluginRegistryManager("http://registry.cordova.io/");
 		return client;
 	}
 }

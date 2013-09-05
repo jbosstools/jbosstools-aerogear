@@ -120,6 +120,10 @@ public class CordovaPluginXMLHelper {
 	public static NodeList getFrameworks(Node node){
 		return getNodes(node, "./:framework");
 	}
+	
+	public static NodeList getDependencies(Node node){
+		return getNodes(node, "./:dependency");
+	}
 		
 	private static NodeList getNodes(Node node, String xpathExpression){
 		try{
