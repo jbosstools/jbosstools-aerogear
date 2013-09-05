@@ -4,8 +4,11 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -42,7 +45,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	static final int PLUGIN_SOURCE_GIT =2;
 	static final int PLUGIN_SOURCE_DIRECTORY =3;
 	
-	
+	private final IStructuredSelection initialSelection;
 	private TabFolder tabFolder;
 	private TabItem registryTab;
 	private CordovaPluginCatalogViewer catalogViewer;
@@ -53,8 +56,9 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private Group grpRepositoryUrl;
 	private Text gitUrlTxt;
 
-	protected CordovaPluginSelectionPage(String pageName) {
+	protected CordovaPluginSelectionPage(String pageName,IStructuredSelection selection) {
 		super(pageName);
+		this.initialSelection = selection;
 		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, CordovaPluginWizard.IMAGE_WIZBAN));
 	}
 
@@ -151,7 +155,25 @@ public class CordovaPluginSelectionPage extends WizardPage {
 				setPageComplete(validatePage());
 			}
 		});
+		setupFromInitialSelection();
 		restoreWidgetValues();
+	}
+	
+	private void setupFromInitialSelection() {
+		if(initialSelection != null && !initialSelection.isEmpty()){
+			Iterator<?> selects = initialSelection.iterator();
+			while (selects.hasNext()) {
+				Object obj  = selects.next();
+				if(obj instanceof IResource ){
+					IResource res = (IResource)obj;
+					IProject project = res.getProject();
+					HybridProject hybrid = HybridProject.getHybridProject(project);
+					if(hybrid != null ){
+						textProject.setText(project.getName());
+					}
+				}
+			}
+		}
 	}
 	
 	@Override

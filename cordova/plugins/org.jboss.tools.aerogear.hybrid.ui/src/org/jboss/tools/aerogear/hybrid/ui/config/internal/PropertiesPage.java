@@ -21,7 +21,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,6 +29,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.IManagedForm;
@@ -44,8 +44,7 @@ import org.jboss.tools.aerogear.hybrid.core.config.Access;
 import org.jboss.tools.aerogear.hybrid.core.config.Feature;
 import org.jboss.tools.aerogear.hybrid.core.config.Preference;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
-import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginWizard;
-import org.eclipse.swt.widgets.Label;
+import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.LaunchCordovaPluginWizardAction;
 
 public class PropertiesPage extends FormPage {
 	private DataBindingContext m_bindingContext;
@@ -244,9 +243,9 @@ public class PropertiesPage extends FormPage {
 				btnFeatureAdd.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {	
-						CordovaPluginWizard wizard = new CordovaPluginWizard();
-						WizardDialog dialog = new WizardDialog(getSite().getShell(), wizard);
-						dialog.open();}
+						LaunchCordovaPluginWizardAction action = new LaunchCordovaPluginWizardAction();
+						action.run();
+					}
 				});
 				
 				Button btnFeatureRemove = managedForm.getToolkit().createButton(featureBtnsComposite, "Remove", SWT.NONE);
