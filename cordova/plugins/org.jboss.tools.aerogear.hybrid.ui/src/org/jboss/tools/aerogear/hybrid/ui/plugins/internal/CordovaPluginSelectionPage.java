@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ *  Contributors:
+ *       Red Hat, Inc. - initial API and implementation
+ *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.plugins.internal;
 
 import java.io.File;
@@ -12,7 +22,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -114,6 +126,13 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		registryTab.setText("Registry");
 		catalogViewer = new CordovaPluginCatalogViewer();
 		catalogViewer.createControl(tabFolder);
+		catalogViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				setPageComplete(validatePage());
+			}
+		});
 		registryTab.setControl(catalogViewer.getControl());
 		
 		gitTab = new TabItem(tabFolder, SWT.NONE);
@@ -256,7 +275,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 			valid = validateGitTab(); 
 			break;
 		case PLUGIN_SOURCE_REGISTRY:
-			valid = true; //TODO implement
+			valid = validateRegistryTab();
 			break;
 		}
 		if(valid){
@@ -265,6 +284,15 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		return valid;
 	}
 	
+	private boolean validateRegistryTab() {
+		List<CordovaRegistryPluginInfo> infos = getCheckedCordovaRegistryItems();
+		if (infos.isEmpty()){
+			setMessage("Specify Cordova plugin(s) for installation", ERROR);
+			return false;
+		}
+		return true;
+	}
+
 	private boolean validateGitTab(){
 		String url = gitUrlTxt.getText();
 		if( url == null || url.isEmpty() ){

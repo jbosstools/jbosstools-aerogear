@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ *  Contributors:
+ *       Red Hat, Inc. - initial API and implementation
+ *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.plugins.internal;
 
 import java.util.List;
@@ -6,6 +16,8 @@ import org.eclipse.equinox.internal.p2.ui.discovery.util.ControlListItem;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -21,9 +33,12 @@ public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 	private Label nameLabel;
 	private Label licenseLbl;
 	private Combo versionCombo;
+	private final CordovaPluginViewer viewer;
+	private CordovaRegistryPluginVersion currentSelectedVersion;
 
-	public CordovaPluginItem(Composite parent, int style, CordovaRegistryPlugin element, CordovaPluginWizardResources resources ) {
+	public CordovaPluginItem(Composite parent, int style, CordovaRegistryPlugin element, CordovaPluginWizardResources resources, CordovaPluginViewer viewer ) {
 		super(parent, style, element);
+		this.viewer = viewer;
 		this.resources = resources;
 		createContent();
 	}
@@ -49,10 +64,27 @@ public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(versionCombo);
 		versionCombo.add(LABEL_LATEST_VERSION);
 		versionCombo.select(0);
+		modifyVersionSelection(null);
 		List<CordovaRegistryPluginVersion> versions = getData().getVersions();
 		for ( CordovaRegistryPluginVersion cordovaPluginVersion : versions) {
 			versionCombo.add(cordovaPluginVersion.getVersionNumber());
 		}
+
+		versionCombo.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				modifyVersionSelection(versionCombo.getText());
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 		
 		nameLabel = new Label(this, SWT.NONE);
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.BEGINNING, SWT.CENTER).applyTo(nameLabel);
@@ -72,6 +104,20 @@ public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 
 
 		
+	}
+
+	private void modifyVersionSelection(String selectedVersion) {
+		List<CordovaRegistryPluginVersion> versions = getData().getVersions();
+		if(selectedVersion == null || LABEL_LATEST_VERSION.equals(selectedVersion))
+			selectedVersion = getData().getLatestVersion();
+		for ( CordovaRegistryPluginVersion cordovaPluginVersion : versions) {
+			if(selectedVersion.equals(cordovaPluginVersion.getVersionNumber())){
+				if(currentSelectedVersion != null)//remove the old version
+					this.viewer.modifySelection(currentSelectedVersion, true);
+				currentSelectedVersion = cordovaPluginVersion;
+				this.viewer.modifySelection(currentSelectedVersion, false);//now add the new one
+			}
+		}
 	}
 
 	private void updateValues() {
