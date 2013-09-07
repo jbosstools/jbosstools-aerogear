@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 
-import org.jboss.tools.aerogear.hybrid.core.test.FileUtilsTest;
-
 public class TestUtils {
 	
 	public static final String FILE_PLAIN = "plain.file";
@@ -20,7 +18,7 @@ public class TestUtils {
 		f.deleteOnExit();
 		FileOutputStream fout = null;
 		FileChannel out = null;
-		InputStream in = FileUtilsTest.class.getResourceAsStream("/"+fileName);;
+		InputStream in = TestUtils.class.getResourceAsStream("/"+fileName);;
 		try {
 			fout = new FileOutputStream(f);
 			out = fout.getChannel();

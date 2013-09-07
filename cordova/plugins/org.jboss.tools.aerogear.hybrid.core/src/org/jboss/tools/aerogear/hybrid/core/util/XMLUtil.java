@@ -58,11 +58,11 @@ public class XMLUtil {
 	    	return db.parse(f); 
 	    }
 		catch (ParserConfigurationException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing " + f.toString(), e));
 		} catch (SAXException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parsing error on plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parsing error "+f.toString(), e));
 		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing "+f.toString(), e));
 		} 
 	}
 
@@ -83,11 +83,11 @@ public class XMLUtil {
 	    	return db.parse(source); 
 	    }
 		catch (ParserConfigurationException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing ", e));
 		} catch (SAXException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parsing error on plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error ", e));
 		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing", e));
 		} 
 	}
 	
@@ -101,11 +101,11 @@ public class XMLUtil {
 	    	return db.parse(new InputSource(new StringReader(content))); 
 	    }
 		catch (ParserConfigurationException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing ", e));
 		} catch (SAXException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parsing error on plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parsing error ", e));
 		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing plugin.xml", e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing ", e));
 		} 
 		
 	}
