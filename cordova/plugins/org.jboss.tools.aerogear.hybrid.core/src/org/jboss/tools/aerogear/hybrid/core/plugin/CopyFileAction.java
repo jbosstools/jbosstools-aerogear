@@ -69,10 +69,10 @@ public class CopyFileAction implements IPluginInstallationAction {
 	@Override
 	public void unInstall() throws CoreException {
 		File todelete = target;
-		if(source.isFile() && target.isDirectory()){
+		if(source.isFile() && target.isDirectory()){//append the filename of this was a directory copy
 			 todelete = new File(target, source.getName());
 		}
-		if(target.isDirectory()){
+		if(todelete.isDirectory()){
 			try {
 				FileUtils.deleteDirectory(todelete);
 			} catch (IOException e) {
