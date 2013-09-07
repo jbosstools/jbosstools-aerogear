@@ -42,7 +42,7 @@ public interface IOSSimulatorLaunchConstants {
 	/**
 	 * Attribute to pass the desired simulator version to be launched
 	 */
-	public static final String ATTR_SIMULATOR_SDK_DESCRIPTION = IOSCore.PLUGIN_ID + ".ATTR_SIMULATOR_SDK_VERSION";
+	public static final String ATTR_SIMULATOR_SDK_VERSION = IOSCore.PLUGIN_ID + ".ATTR_SIMULATOR_SDK_VERSION";
 	
 	/**
 	 * Value for device family attribute

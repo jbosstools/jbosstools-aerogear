@@ -60,17 +60,21 @@ import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
-import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPlatformProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
+public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 
+	public AndroidProjectGenerator(){
+		super();
+	}
+	
 	public AndroidProjectGenerator(IProject project, File generationFolder) {
-		super(project, generationFolder);
+		init(project, generationFolder);
 	}
 
 
@@ -111,7 +115,6 @@ public class AndroidProjectGenerator extends AbstractPlatformProjectGenerator{
 			//Move cordova library to libs
 			URL sourcs = getTemplateFile("/templates/android/cordova.jar");
 			URL dests = toURL(new File(libsDir, FILE_JAR_CORDOVA ));
-			AndroidCore.log(IStatus.INFO, "Copying cordova android lib from " + sourcs + " to " + dests,  null);
  			fileCopy(sourcs, dests);
  			//Copy the android compatability jar required by PushPlugin. 
  			//This should change in the future with a more generic plugin support.

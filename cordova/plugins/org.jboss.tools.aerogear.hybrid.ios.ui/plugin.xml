@@ -5,7 +5,7 @@
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             class="org.jboss.tools.aerogear.hybrid.ios.ui.IOSLaunchShortcut"
-            icon="icons/elcl16/phone_16.png"
+            icon="icons/elcl16/ios_icon.png"
             id="org.jboss.tools.aerogear.hybrid.ios.ui.launch"
             label="Run on iOS Emulator"
             modes="run">
@@ -37,6 +37,15 @@
             id="org.jboss.tools.aerogear.hybrid.ios.ui.IOSSimlaunchConfigurationTabGroup"
             type="org.jboss.tools.aerogear.hybrid.ios.core.IOSSimulatorLaunchConfigType">
       </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.ui.platformImages">
+      <platformImage
+            icon="icons/elcl16/ios_icon.png"
+            id="org.jboss.tools.aerogear.hybrid.ios.ui.platformImage"
+            projectBuilder="org.jboss.tools.aerogear.hybrid.ios.core.nativeBuilder"
+            projectGenerator="org.jboss.tools.aerogear.hybrid.ios.core.projectGenerator">
+      </platformImage>
    </extension>
 
 </plugin>

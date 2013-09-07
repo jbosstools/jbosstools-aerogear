@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="org.jboss.tools.aerogear.hybrid.ui.platformImages" name="Platform mages" schema="schema/org.jboss.tools.aerogear.hybrid.ui.platformImage.exsd"/>
 
    <extension
          point="org.eclipse.ui.newWizards">
@@ -44,5 +45,34 @@
      <initializer
            class="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.PreferenceInitializer">
      </initializer>
+  </extension>
+  <extension
+        point="org.eclipse.ui.exportWizards">
+     <wizard
+           category="org.jboss.tools.aerogear.hybrid.ui.category"
+           class="org.jboss.tools.aerogear.hybrid.ui.wizard.export.NativeProjectExportWizard"
+           icon="icons/etool16/exportnativeprj_wiz.png"
+           id="org.jboss.tools.aerogear.hybrid.ui.exportNativeProjectWizard"
+           name="Export Native Platform Project">
+     </wizard>
+     <wizard
+           category="org.jboss.tools.aerogear.hybrid.ui.category"
+           class="org.jboss.tools.aerogear.hybrid.ui.wizard.export.NativeBinaryExportWizard"
+           icon="icons/etool16/exportnativeprj_wiz.png"
+           id="org.jboss.tools.aerogear.hybrid.ui.exportNativeBinaryWizard"
+           name="Export Mobile Application">
+     </wizard>
+     <category
+           id="org.jboss.tools.aerogear.hybrid.ui.category"
+           name="Mobile">
+     </category>
+  </extension>
+  <extension
+        point="org.eclipse.ui.ide.projectNatureImages">
+     <image
+           icon="icons/ovr16/cordova_botovr.png"
+           id="org.jboss.tools.aerogear.hybrid.ui.HybridAppNatureImage"
+           natureId="org.jboss.tools.aerogear.hybrid.core.HybridAppNature">
+     </image>
   </extension>
 </plugin>

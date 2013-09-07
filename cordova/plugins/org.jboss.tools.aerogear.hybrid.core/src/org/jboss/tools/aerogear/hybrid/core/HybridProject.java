@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
@@ -35,7 +36,7 @@ import org.xml.sax.SAXException;
  * @author Gorkem Ercan
  *
  */
-public class HybridProject {
+public class HybridProject implements IAdaptable{
 	
 	private static final String PATH_CONFIG_XML = "/"+PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG;
 	private IProject kernelProject;
@@ -145,6 +146,34 @@ public class HybridProject {
 		String name = getAppName();
 		name = name.replaceAll("\\W", "_");
 		return name;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(this.kernelProject == null )
+			return super.equals(obj);
+		if(obj == null ) 
+			return false;
+		if(!(obj instanceof HybridProject))
+			return false;
+		IProject prj = ((HybridProject)obj).getProject();
+		return kernelProject.equals(prj);
+	}
+	
+	@Override
+	public int hashCode() {
+		if(kernelProject == null )
+			return super.hashCode();
+		return kernelProject.hashCode();
+	}
+
+	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		if( kernelProject == null )
+			return null;
+		if(adapter.isInstance(IProject.class))
+			return kernelProject;
+		return kernelProject.getAdapter(adapter);
 	}
 	
 }

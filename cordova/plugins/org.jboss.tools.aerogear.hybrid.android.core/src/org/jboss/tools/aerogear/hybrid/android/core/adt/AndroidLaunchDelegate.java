@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
@@ -30,7 +29,7 @@ import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 
 public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 
-	private File buildDir;
+	private File artifactsDir;
 	private AndroidDevice device;
 	
 	@Override
@@ -43,7 +42,7 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		String packageName = widget.getId();
 		String name = project.getBuildArtifactAppName();
 
-		sdk.installApk(new File(buildDir,name+"-debug.apk" ), device.getSerialNumber());
+		sdk.installApk(new File(artifactsDir,name+"-debug.apk" ), device.getSerialNumber());
 		
 		sdk.startApp(packageName+"/."+name, device.getSerialNumber());
 		String logcatFilter = configuration.getAttribute(AndroidLaunchConstants.ATTR_LOGCAT_FILTER, "");
@@ -60,19 +59,13 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 	@Override
 	public boolean buildForLaunch(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
-		if( monitor.isCanceled() ){
-			return false;
-		}
-		AndroidProjectGenerator creator = new AndroidProjectGenerator(getProject(configuration), null);
-		SubProgressMonitor generateMonitor = new SubProgressMonitor(monitor, 1);
-		File projectDirectory = creator.generateNow(generateMonitor);
-		monitor.worked(1);
 		if(monitor.isCanceled() ){
 			return false;
 		}
-		AndroidSDKManager sdkManager = new AndroidSDKManager();
-		buildDir = sdkManager.buildProject(projectDirectory);
-		monitor.done();
+		BuildDelegate buildDelegate = new BuildDelegate();
+		buildDelegate.init(getProject(configuration), null);
+		buildDelegate.buildNow(monitor);
+		artifactsDir = buildDelegate.getBinaryDirectory();
 		return true;
 	}
 

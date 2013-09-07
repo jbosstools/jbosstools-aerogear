@@ -26,12 +26,12 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.osgi.framework.Bundle;
 /**
- * Abstract class for all the native project generators.
+ * Abstract class for all the native project generators delegates.
  * 
  * @author Gorkem Ercan
  *
  */
-public abstract class AbstractPlatformProjectGenerator {
+public abstract class AbstractProjectGeneratorDelegate {
 
 	private final static String ASSEMBLY_ROOT = "/proj_gen/";
 	
@@ -39,21 +39,28 @@ public abstract class AbstractPlatformProjectGenerator {
 	private File generationRoot;
 
 	/**
-	 * Constructs a project generator. If generationFolder is null generation folder 
+	 * Constructs a project generator. 
+	 */
+	public AbstractProjectGeneratorDelegate(){
+
+	}
+	
+	/**
+	 * Initializes this ProjectGenerator. init must be called before calling the 
+	 * generateNow. generationFoler can be null. If generationFolder is null generation folder 
 	 * defaults to a folder created under the {@link Bundle} dataFile folder.
 	 * 
 	 * @param project
 	 * @param generationFolder
 	 */
-	public AbstractPlatformProjectGenerator(IProject project, File generationFolder ){
+	public void init(IProject project, File generationFolder )
+	{
 		this.project = project;
 		this.generationRoot = generationFolder;
 		if(generationRoot == null ){
 			generationRoot = new File(getTempGenerationDirectory(), project.getName());
 		}
 	}
-	
-	
 	/**
 	 * Starts the target platform project generation.
 	 * 
@@ -62,9 +69,14 @@ public abstract class AbstractPlatformProjectGenerator {
 	 * @throws CoreException
 	 */
 	public File generateNow(IProgressMonitor monitor) throws CoreException{
+		if(project == null || generationRoot == null )
+			throw new IllegalStateException("Project generator delegate is not initializes properly");
 		long start = System.currentTimeMillis();
 		try {
-			monitor.beginTask("Generate Native Project", 40);
+			if(!generationRoot.exists() && !generationRoot.mkdirs() ){
+				throw new CoreException(new Status(IStatus.ERROR,HybridCore.PLUGIN_ID, "Can not create the destination directory for project generation at "+generationRoot.toString() ));
+			}
+			monitor.beginTask("Generate Native Project for "+this.getProjectName(), 40);
 			generateNativeFiles();
 			monitor.worked(10);
 			IFolder folder = getProject().getFolder("/"+PlatformConstants.DIR_WWW);
@@ -131,7 +143,13 @@ public abstract class AbstractPlatformProjectGenerator {
 	protected abstract File getPlatformWWWDirectory();
 	
 	
-	protected File getDestination(){
+	/**
+	 * The destination folder where the generated files are replaced. This is 
+	 * usually a directory named the short name for a target platform under a 
+	 * a root folder for project.
+	 * @return
+	 */
+	public File getDestination(){
 		return new File(generationRoot,getTargetShortName());
 	}
 	protected String getProjectName(){

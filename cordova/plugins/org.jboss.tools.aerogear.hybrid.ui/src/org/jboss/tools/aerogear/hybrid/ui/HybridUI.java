@@ -11,8 +11,11 @@
 package org.jboss.tools.aerogear.hybrid.ui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -105,5 +108,15 @@ public class HybridUI extends AbstractUIPlugin {
 			}
 		}
 		return null;
+    }
+    
+    public static List<PlatformImage> getPlatformImages(){
+    	IConfigurationElement[] configurationElements = Platform.getExtensionRegistry().getConfigurationElementsFor(PlatformImage.EXTENSION_POINT_ID);
+    	List<PlatformImage> images = new ArrayList<PlatformImage>();
+    	for (int i = 0; i < configurationElements.length; i++) {
+			PlatformImage image = new PlatformImage(configurationElements[i]);
+			images.add(image);
+		}
+    	return images;
     }
 }
