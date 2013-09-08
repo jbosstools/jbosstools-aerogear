@@ -2,6 +2,8 @@ package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
 import static org.junit.Assert.*;
 
+import java.io.InputStreamReader;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -19,6 +21,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public class HybridProjectCreatorTest {
 	private static final String PROJECT_NAME = "TestProject";
@@ -59,6 +69,20 @@ public class HybridProjectCreatorTest {
 			IFolder folder = theProject.getFolder( paths[i]);
 			assertTrue(paths[i]+ " is not created. ", folder.exists());
 		}
+	}
+	
+	@Test
+	public void configFileTest() throws JsonIOException, JsonParseException, CoreException{
+		IProject prj = getTheProject();
+		IFile f = prj.getFile(PlatformConstants.DIR_DOT_CORDOVA+"/config.json");
+		assertNotNull(f);
+		assertTrue(f.exists());
+		JsonParser parser = new JsonParser();
+		JsonElement el = parser.parse(new InputStreamReader(f.getContents()));
+		assertTrue(el.isJsonObject());
+		JsonObject object = el.getAsJsonObject();
+		assertEquals(APP_ID, object.get("id").getAsString());
+		assertEquals(APP_NAME, object.get("name").getAsString());
 	}
 	
 	@Test

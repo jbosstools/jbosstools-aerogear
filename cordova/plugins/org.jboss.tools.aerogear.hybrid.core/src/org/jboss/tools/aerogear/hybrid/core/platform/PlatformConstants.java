@@ -15,6 +15,7 @@ public interface PlatformConstants {
 	public static final String DIR_WWW = "www";
 	public static final String DIR_MERGES = "merges";
 	public static final String DIR_PLUGINS = "plugins";
+	public static final String DIR_DOT_CORDOVA = ".cordova";
 	
 	public static final String FILE_JS_CORDOVA = "cordova.js";
 	public static final String FILE_JS_CORDOVA_PLUGIN = "cordova_plugin.js";
