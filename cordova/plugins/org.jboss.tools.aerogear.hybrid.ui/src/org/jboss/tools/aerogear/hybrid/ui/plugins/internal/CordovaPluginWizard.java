@@ -15,16 +15,20 @@ import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginS
 import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage.PLUGIN_SOURCE_REGISTRY;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
@@ -38,6 +42,61 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 	private CordovaPluginSelectionPage pageOne;
 	private RegistryConfirmPage pageTwo;
 	private IStructuredSelection initialSelection;
+	private List<CordovaRegistryPluginVersion> plugins;
+	
+	private class PluginInstallOperation extends WorkspaceModifyOperation{
+		
+		private CordovaPluginManager pm;
+		private int opType;
+		private File dir;
+		private URI gitRepo;
+		private List<CordovaRegistryPluginVersion> plugins;
+		
+		private PluginInstallOperation(CordovaPluginManager pm){
+			this.pm = pm;
+		}
+		
+		public PluginInstallOperation(File directory, CordovaPluginManager pm ){
+			this(pm);
+			this.dir = directory;
+			opType = PLUGIN_SOURCE_DIRECTORY;
+		}
+		
+		public PluginInstallOperation(URI gitRepo, CordovaPluginManager pm ){
+			this(pm);
+			this.gitRepo = gitRepo;
+			opType = PLUGIN_SOURCE_GIT;
+		}
+		
+		public PluginInstallOperation(List<CordovaRegistryPluginVersion> plugins, CordovaPluginManager pm ){
+			this(pm);
+			this.plugins = plugins;
+			opType = PLUGIN_SOURCE_REGISTRY;
+		}
+
+		@Override
+		protected void execute(IProgressMonitor monitor) throws CoreException,
+				InvocationTargetException, InterruptedException {
+			
+			switch (opType){
+			case PLUGIN_SOURCE_DIRECTORY:
+				pm.installPlugin(this.dir,monitor);
+				break;
+			case PLUGIN_SOURCE_GIT:
+				pm.installPlugin(this.gitRepo,null,null,monitor );
+				break;
+			case PLUGIN_SOURCE_REGISTRY:
+				CordovaPluginRegistryManager regMgr = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
+				for (CordovaRegistryPluginVersion cordovaRegistryPluginVersion : plugins) {
+					pm.installPlugin(regMgr.getInstallationDirectory(cordovaRegistryPluginVersion,monitor),monitor);
+				}
+				break;
+			default:
+				Assert.isTrue(false, "No valid plugin source can be determined");
+				break;
+			}
+		}
+	}
 	
 	public CordovaPluginWizard() {
 		setWindowTitle("Cordova Plugin Discovery");
@@ -53,48 +112,39 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 	}
 
 	@Override
-	public boolean performFinish() {
-		String projectName = pageOne.getProjectName();
-		HybridProject project = HybridProject.getHybridProject(projectName);
+	public boolean performFinish() {	
+		HybridProject project = HybridProject.getHybridProject(pageOne.getProjectName());
+		if(project == null )
+			return false;
 		CordovaPluginManager pm = new CordovaPluginManager(project);
-		
+		PluginInstallOperation op = null;
 		switch (pageOne.getPluginSourceType()) {
 		case PLUGIN_SOURCE_DIRECTORY:
-			String directoryName = pageOne.getSelectedDirectory();
-			try{
-				pm.installPlugin(new File(directoryName));}
-				catch(CoreException e){
-					//TODO: Error/handling reporting
-					return false;
-				}
+			File directory = new File(pageOne.getSelectedDirectory());
+			op=new PluginInstallOperation(directory, pm);
 			break;
 		case PLUGIN_SOURCE_GIT:
-			String gitRepo = pageOne.getSpecifiedGitURL();
-			try{
-				pm.installPlugin(URI.create(gitRepo),null,null);
-				}
-				catch(CoreException e){
-					//TODO: Error/handling reporting
-					return false;
-				}			
+			URI uri = URI.create(pageOne.getSpecifiedGitURL());
+			op = new PluginInstallOperation(uri, pm);
 			break;
 		case PLUGIN_SOURCE_REGISTRY:
 			List<CordovaRegistryPluginVersion> plugins = pageTwo.getSelectedPluginVersions();
-			CordovaPluginRegistryManager regMgr = new CordovaPluginRegistryManager("http://registry.cordova.io");
-			for (CordovaRegistryPluginVersion cordovaRegistryPluginVersion : plugins) {
-				try {
-					pm.installPlugin(regMgr.getInstallationDirectory(cordovaRegistryPluginVersion));
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return false;
-				}
-			}
+			op = new PluginInstallOperation(plugins, pm);
 			break;
 		default:
 			Assert.isTrue(false, "No valid plugin source can be determined");
-			break;
 		}
+		
+		try {
+			getContainer().run(true, true, op);
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		savePageSettings();
 		return true;
 	}

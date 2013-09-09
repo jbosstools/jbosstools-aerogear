@@ -11,6 +11,7 @@
 package org.jboss.tools.aerogear.hybrid.ui.plugins.internal;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -20,8 +21,15 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -35,6 +43,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -47,6 +56,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.wizard.export.DirectorySelectionGroup;
@@ -67,6 +77,8 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private Text textProject;
 	private Group grpRepositoryUrl;
 	private Text gitUrlTxt;
+	private final CordovaPluginRegistryManager client = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
+	
 
 	protected CordovaPluginSelectionPage(String pageName,IStructuredSelection selection) {
 		super(pageName);
@@ -176,6 +188,46 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		});
 		setupFromInitialSelection();
 		restoreWidgetValues();
+		populatePluginInfos();
+	}
+
+	private void populatePluginInfos() {
+		try {
+			this.getContainer().run(true, true, new IRunnableWithProgress() {
+				
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException,
+						InterruptedException {
+					if(monitor.isCanceled())
+						return;
+					List<CordovaRegistryPluginInfo> infos=null;
+					try {
+						infos = client.retrievePluginInfos(monitor);
+						if(infos == null){
+							throw new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while retrieving the Cordova Plugin Registry Catalog"));
+						}
+					} catch (CoreException e) {
+						throw new InvocationTargetException(e);
+					}
+					final Object[] pluginInfos = infos.toArray();
+					Display display = getControl().getDisplay();
+					display.asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							catalogViewer.getViewer().setInput(pluginInfos);
+						}
+					});
+					monitor.done();
+				}
+			});
+		} catch (InvocationTargetException e1) {
+			if (e1.getTargetException() != null) {
+				ErrorDialog.openError(getShell(), "Error Retrieving Plugin Catalog",null, 
+						new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while retrieving the catalog for Cordova plugins", e1.getTargetException() ));
+			}
+		} catch (InterruptedException e1) {
+		}
+		
 	}
 	
 	private void setupFromInitialSelection() {

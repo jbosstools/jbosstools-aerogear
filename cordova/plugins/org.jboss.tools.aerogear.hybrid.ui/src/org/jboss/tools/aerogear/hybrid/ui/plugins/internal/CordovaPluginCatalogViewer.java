@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ *  Contributors:
+ *       Red Hat, Inc. - initial API and implementation
+ *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.plugins.internal;
 
 import java.util.ArrayList;
@@ -16,31 +26,27 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
-import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
+
 @SuppressWarnings("restriction")
 public class CordovaPluginCatalogViewer extends FilteredViewer {
 	
-
+	
 	private static class CordovaPluginInfoContentProvider implements
 			IStructuredContentProvider {
 		
-		private final CordovaPluginRegistryManager client = new CordovaPluginRegistryManager("http://registry.cordova.io/");
-
+		private Object[] pluginInfos;
 		@Override
 		public void dispose() {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// TODO Auto-generated method stub
-
+			this.pluginInfos = (Object[]) newInput;
 		}
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			return client.retrievePluginInfos().toArray();
+			return pluginInfos;
 		}
 	}
 	
@@ -88,8 +94,9 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 				return doCreateViewerItem(parent, element);
 			}
 		};
-		viewer.setContentProvider(new CordovaPluginInfoContentProvider());
-		viewer.setInput(new Object());
+		
+		CordovaPluginInfoContentProvider provider = new CordovaPluginInfoContentProvider();
+		viewer.setContentProvider(provider);
 		return viewer;
 	}
 	

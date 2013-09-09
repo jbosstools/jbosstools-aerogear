@@ -118,7 +118,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 		HybridProject project = HybridProject.getHybridProject(getProject());
 		if( project == null ) return;
 		CordovaPluginManager pluginManager = new CordovaPluginManager(project);
-		pluginManager.completePluginInstallationsForPlatform(getDestination(), getTargetShortName());
+		pluginManager.completePluginInstallationsForPlatform(getDestination(), getTargetShortName(),monitor);
 	}
 
 	/**

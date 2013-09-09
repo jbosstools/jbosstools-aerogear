@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -26,12 +27,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
-import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.FileCreateException;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -44,17 +45,23 @@ import com.google.gson.stream.JsonToken;
 
 public class CordovaPluginRegistryManager {
 	
+	public static final String DEFAULT_REGISTRY_URL = "http://registry.cordova.io/";
 	private long updated;
 	private List<CordovaRegistryPluginInfo> plugins;
 	private String registry;
 	private final File cacheHome;
+	private HashMap<String, CordovaRegistryPlugin> detailedPluginInfoCache = new HashMap<String, CordovaRegistryPlugin>();
 	
 	public CordovaPluginRegistryManager(String url) {
 		this.registry = url;
 		cacheHome = new File(FileUtils.getUserDirectory(), ".plugman"+File.separator+"cache");
 	}
 	
-	public CordovaRegistryPlugin getCordovaPluginInfo(String name) {
+	public CordovaRegistryPlugin getCordovaPluginInfo(String name) throws CoreException {
+		
+		CordovaRegistryPlugin plugin = detailedPluginInfoCache.get(name);
+		if(plugin != null )
+			return plugin;
 		
 		HttpClient client = new DefaultHttpClient();
 		String url = registry.endsWith("/") ? registry + name : registry + "/"
@@ -66,17 +73,14 @@ public class CordovaPluginRegistryManager {
 			HttpEntity entity = response.getEntity();
 			InputStream stream = entity.getContent();
 			JsonReader reader = new JsonReader(new InputStreamReader(stream));
-			CordovaRegistryPlugin plugin = new CordovaRegistryPlugin();
+			plugin = new CordovaRegistryPlugin();
 			readPluginInfo(reader, plugin);
+			this.detailedPluginInfoCache.put(name, plugin);
 			return plugin;
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Can not retrieve plugin information for " + name, e));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Can not retrieve plugin information for " + name, e));
 		}
 
 	}
@@ -90,7 +94,10 @@ public class CordovaPluginRegistryManager {
 	 * @param plugin
 	 * @return
 	 */
-	public File getInstallationDirectory( CordovaRegistryPluginVersion plugin ){
+	public File getInstallationDirectory( CordovaRegistryPluginVersion plugin, IProgressMonitor monitor ){
+		if(monitor == null )
+			monitor = new NullProgressMonitor();
+		
 		File pluginDir = getFromCache(plugin);
 		if (pluginDir != null ){
 			return pluginDir;
@@ -102,12 +109,19 @@ public class CordovaPluginRegistryManager {
 		
 		try {
 			remoteFileID = FileIDFactory.getDefault().createFileID(transfer.getRetrieveNamespace(), plugin.getDistributionTarball());
-			PluginReceiver receiver = new PluginReceiver(newCacheDir);
-			transfer.sendRetrieveRequest(remoteFileID, receiver, null);
+			Object lock = new Object();
+			PluginReceiver receiver = new PluginReceiver(newCacheDir,monitor, lock);
+		    synchronized (lock) {
+		    	transfer.sendRetrieveRequest(remoteFileID, receiver, null);
+		    	lock.wait();
+			}
 		} catch (FileCreateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IncomingFileTransferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -134,8 +148,10 @@ public class CordovaPluginRegistryManager {
 	}
 	
 	
-	public List<CordovaRegistryPluginInfo> retrievePluginInfos()
+	public List<CordovaRegistryPluginInfo> retrievePluginInfos(IProgressMonitor monitor) throws CoreException
 	{
+		if(monitor == null )
+			monitor = new NullProgressMonitor();
 		
 		HttpClient client = new DefaultHttpClient();
 		String url = registry.endsWith("/") ? registry+"-/all" : registry+"/-/all";
@@ -143,9 +159,13 @@ public class CordovaPluginRegistryManager {
 		HttpResponse response;
 		
 		try {
+			if(monitor.isCanceled()){
+				return null;
+			}
 			response = client.execute(get);
 			HttpEntity entity = response.getEntity();
 			InputStream stream = entity.getContent();
+			monitor.worked(9);
 			JsonReader reader = new JsonReader(new InputStreamReader(stream));
 			reader.beginObject();//start the Registry
 			plugins = new ArrayList<CordovaRegistryPluginInfo>();
@@ -178,13 +198,11 @@ public class CordovaPluginRegistryManager {
 			return plugins;
 
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Can not retrieve plugin catalog",e));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Can not retrieve plugin catalog", e));
+		}finally{
+			monitor.done();
 		}
 		
 	}

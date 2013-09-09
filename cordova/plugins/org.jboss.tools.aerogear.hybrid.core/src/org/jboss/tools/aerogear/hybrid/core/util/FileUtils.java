@@ -205,7 +205,7 @@ public final class FileUtils {
 	private static void checkCanCopy(URL source, URL destination ){
 		if(source == null || destination == null )
 			throw new IllegalArgumentException("null source or destination value");
-		source = getFileURL(source);
+		getFileURL(source);
 		destination = getFileURL(destination);
 		if(!isFile(destination))
 			throw new IllegalArgumentException("destination is not a file URL");

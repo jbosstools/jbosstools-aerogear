@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
@@ -27,6 +32,40 @@ import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 public class RegistryConfirmPage extends WizardPage {
 
 	private CordovaPluginViewer pluginViewer;
+	final CordovaPluginRegistryManager client = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
+	
+	private class DetailedPluginInfoRetrieveJob extends Job{
+		
+		private List<String> pluginNames;
+
+		public DetailedPluginInfoRetrieveJob(List<String> pluginNames) {
+			super("Retrieve Cordova Plugin Details");
+			this.pluginNames = pluginNames;
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			final ArrayList<CordovaRegistryPlugin> plugins = new ArrayList<CordovaRegistryPlugin>();
+			try {
+				for (String plugin : pluginNames) {
+					if(monitor.isCanceled())
+						return Status.CANCEL_STATUS;
+					plugins.add(client.getCordovaPluginInfo(plugin));
+				}
+			} catch (CoreException e) {
+				return new Status(e.getStatus().getSeverity(), HybridUI.PLUGIN_ID, "Problem while getting Cordova plugin details", e);
+			}
+			pluginViewer.getControl().getDisplay().asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					pluginViewer.getViewer().setInput(plugins);
+				}
+			});
+			return Status.OK_STATUS; 
+		}
+		
+	}
 
 	protected RegistryConfirmPage(String pageName) {
 		super(pageName);
@@ -42,13 +81,13 @@ public class RegistryConfirmPage extends WizardPage {
 		setControl(pluginViewer.getControl());
 	}
 	
-	void setSelectedPlugins(List<CordovaRegistryPluginInfo> selected){
-		CordovaPluginRegistryManager client = new CordovaPluginRegistryManager("http://registry.cordova.io");
-		ArrayList<CordovaRegistryPlugin> plugins = new ArrayList<CordovaRegistryPlugin>();
-		for (CordovaRegistryPluginInfo cordovaPluginInfo : selected) {
-			plugins.add(client.getCordovaPluginInfo(cordovaPluginInfo.getName()));
+	void setSelectedPlugins(List<CordovaRegistryPluginInfo> selected) {
+		List<String> pluginNames = new ArrayList<String>(selected.size());
+		for (CordovaRegistryPluginInfo cordovaRegistryPluginInfo : selected) {
+			pluginNames.add(cordovaRegistryPluginInfo.getName());
 		}
-		pluginViewer.getViewer().setInput(plugins);
+		DetailedPluginInfoRetrieveJob job = new DetailedPluginInfoRetrieveJob(pluginNames);
+		job.schedule();
 	}
 	
 	public List<CordovaRegistryPluginVersion> getSelectedPluginVersions(){

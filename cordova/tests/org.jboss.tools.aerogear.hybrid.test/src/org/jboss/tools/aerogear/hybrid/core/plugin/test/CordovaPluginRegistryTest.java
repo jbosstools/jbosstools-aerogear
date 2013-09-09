@@ -2,6 +2,8 @@ package org.jboss.tools.aerogear.hybrid.core.plugin.test;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugin;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
@@ -14,9 +16,9 @@ import org.junit.Test;
 public class CordovaPluginRegistryTest {
 	
 	@Test
-	public void testRetrievePluginInfosFromCordovaRegistry(){
+	public void testRetrievePluginInfosFromCordovaRegistry() throws CoreException{
 		CordovaPluginRegistryManager client = getCordovaIORegistryClient();
-		List<CordovaRegistryPluginInfo> infos = client.retrievePluginInfos();
+		List<CordovaRegistryPluginInfo> infos = client.retrievePluginInfos(new NullProgressMonitor());
 		assertNotNull(infos);
 		assertFalse(infos.isEmpty());
 		CordovaRegistryPluginInfo info = infos.get(0);
@@ -24,9 +26,9 @@ public class CordovaPluginRegistryTest {
 	}
 
 	@Test
-	public void testReadCordovaPluginFromCordovaRegistry(){
+	public void testReadCordovaPluginFromCordovaRegistry() throws CoreException{
 		CordovaPluginRegistryManager client = getCordovaIORegistryClient();
-		List<CordovaRegistryPluginInfo> infos = client.retrievePluginInfos();
+		List<CordovaRegistryPluginInfo> infos = client.retrievePluginInfos(new NullProgressMonitor());
 		CordovaRegistryPluginInfo info = infos.get(0);
 		CordovaRegistryPlugin plugin = client.getCordovaPluginInfo(info.getName());
 		assertNotNull(plugin);

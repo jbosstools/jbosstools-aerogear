@@ -13,6 +13,7 @@ package org.jboss.tools.aerogear.hybrid.core.plugin;
 import java.net.URI;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
 
@@ -38,14 +39,14 @@ public class DependencyInstallAction implements IPluginInstallationAction {
 	public void install() throws CoreException {
 		CordovaPluginManager pluginManager = project.getPluginManager();
 		if(!pluginManager.isPluginInstalled(dependencyPluginId)){
-			pluginManager.installPlugin(uri,commit,subdir);
+			pluginManager.installPlugin(uri,commit,subdir, new NullProgressMonitor());
 		}
 	}
 
 	@Override
 	public void unInstall() throws CoreException {
 		CordovaPluginManager pluginManager = project.getPluginManager();
-		pluginManager.unInstallPlugin(dependencyPluginId);
+		pluginManager.unInstallPlugin(dependencyPluginId, new NullProgressMonitor());
 
 	}
 

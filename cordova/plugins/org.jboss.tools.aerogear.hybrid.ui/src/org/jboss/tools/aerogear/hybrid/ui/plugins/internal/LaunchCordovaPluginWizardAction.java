@@ -52,6 +52,7 @@ public class LaunchCordovaPluginWizardAction extends Action {
 		CordovaPluginWizard wizard = new CordovaPluginWizard();
 		wizard.init(workbench, selectionToPass);
 		WizardDialog dialog = new WizardDialog(workbench.getActiveWorkbenchWindow().getShell(), wizard);
+		dialog.setMinimumPageSize(550, 450);//TODO: needs a more clever way to set this values
 		dialog.open();
 	}
 }

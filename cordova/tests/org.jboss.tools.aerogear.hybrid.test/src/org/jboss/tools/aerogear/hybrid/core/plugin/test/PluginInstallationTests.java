@@ -10,6 +10,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.core.config.Access;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
@@ -62,7 +63,7 @@ public class PluginInstallationTests {
 	@Test
 	public void installPluginTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER));
+		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER), new NullProgressMonitor());
 		IProject prj = project.getProject();
 		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_CHILDBROWSER);
 		assertNotNull(plgFolder);
@@ -89,7 +90,7 @@ public class PluginInstallationTests {
 	@Test
 	public void listPluginsTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER));
+		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER), new NullProgressMonitor());
 		List<CordovaPlugin> plugins = pm.getInstalledPlugins();
 		boolean found = false;
 		for (CordovaPlugin cordovaPlugin : plugins) {
@@ -104,7 +105,7 @@ public class PluginInstallationTests {
 	@Test
 	public void pluginNotInstalledTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER));
+		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER), new NullProgressMonitor());
 		assertFalse(pm.isPluginInstalled("my.madeup.id"));
 		assertTrue(pm.isPluginInstalled(PLUGIN_ID_CHILDBROWSER));
 	}

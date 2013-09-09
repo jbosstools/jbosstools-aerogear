@@ -212,6 +212,9 @@ public class AndroidSDKManager {
 				BufferedReader read = new BufferedReader(reader);
 				try {
 					String line = read.readLine();
+					if(line==null){
+						return "";
+					}
 					return line.substring(7);
 				} catch (IOException e) {
 					AndroidCore.log(IStatus.ERROR, "Error parsing the create project command result", e);

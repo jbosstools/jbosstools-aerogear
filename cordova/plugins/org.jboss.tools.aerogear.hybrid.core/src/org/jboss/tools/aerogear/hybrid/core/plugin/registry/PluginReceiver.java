@@ -3,6 +3,7 @@ package org.jboss.tools.aerogear.hybrid.core.plugin.registry;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -23,9 +24,15 @@ import org.jboss.tools.aerogear.hybrid.core.util.TarException;
  ******************************************************************************/
 public class PluginReceiver implements IFileTransferListener{
 	private final File cacheDirectory;
+	private final Object lock;
+	private final IProgressMonitor monitor;
+	private int percentComplete;
+
 	
-	public PluginReceiver(File directory) {
+	public PluginReceiver(File directory, IProgressMonitor monitor,Object lock) {
 		this.cacheDirectory = directory;
+		this.lock = lock;
+		this.monitor = monitor;
 	}
 
 	@Override
@@ -45,22 +52,27 @@ public class PluginReceiver implements IFileTransferListener{
 			}
 		 }else if(event instanceof IIncomingFileTransferReceiveDataEvent){
 			 IIncomingFileTransferReceiveDataEvent dataEvent = (IIncomingFileTransferReceiveDataEvent) event;
-			 System.out.println("percent complete:" + dataEvent.getSource().getPercentComplete());
+			 int completed = (int) (dataEvent.getSource().getPercentComplete() *100);
+			 monitor.worked((percentComplete - completed));
+			 percentComplete = completed;
 		 }else if(event instanceof IIncomingFileTransferReceiveDoneEvent ){
-			 IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) event;
-			 Exception ex = doneEvent.getException();
-			 if(ex == null){
-				 try {
+			 try {
+				 IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) event;
+				 Exception ex = doneEvent.getException();
+				 if(ex == null){
+			
 					FileUtils.untarFile(tarFile, cacheDirectory);
-				} catch (IOException e) {
+				 }
+			 }catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (TarException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
-				 
-				 
+				}finally{
+					synchronized (lock) {
+						lock.notifyAll();
+					}
 			 }
 		 }
 	
