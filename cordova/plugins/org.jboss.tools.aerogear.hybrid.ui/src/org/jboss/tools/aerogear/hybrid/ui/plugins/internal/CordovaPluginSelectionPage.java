@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -67,7 +66,8 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	static final int PLUGIN_SOURCE_GIT =2;
 	static final int PLUGIN_SOURCE_DIRECTORY =3;
 	
-	private final IStructuredSelection initialSelection;
+	private HybridProject fixedProject;
+	private IStructuredSelection initialSelection;
 	private TabFolder tabFolder;
 	private TabItem registryTab;
 	private CordovaPluginCatalogViewer catalogViewer;
@@ -81,10 +81,26 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	
 
 	protected CordovaPluginSelectionPage(String pageName,IStructuredSelection selection) {
-		super(pageName);
+		this(pageName);
 		this.initialSelection = selection;
+	}
+	/**
+	 * If constructed with a {@link HybridProject} this page does not 
+	 * present a project selection UI and all operations are assumed to be
+	 * fixed to the passed project.
+	 * @param pageName
+	 * @param project
+	 */
+	protected CordovaPluginSelectionPage(String pageName, HybridProject project){
+		this(pageName);
+		this.fixedProject= project;
+	}
+	
+	private CordovaPluginSelectionPage(String pageName){
+		super(pageName);
 		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, CordovaPluginWizard.IMAGE_WIZBAN));
 	}
+	
 
 	@SuppressWarnings("restriction")
 	@Override
@@ -94,42 +110,9 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		setControl(container);
 		container.setLayout(new GridLayout(1, false));
 		
-		Group grpProject = new Group(container, SWT.NONE);
-		grpProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		grpProject.setText("Project");
-		grpProject.setLayout(new GridLayout(3, false));
-		
-		Label lblProject = new Label(grpProject, SWT.NONE);
-		lblProject.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblProject.setText("Project:");
-		
-		textProject = new Text(grpProject, SWT.BORDER);
-		textProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		textProject.addListener(SWT.Modify, new Listener() {
-			
-			@Override
-			public void handleEvent(Event event) {
-				setPageComplete(validatePage());
-			}
-		});
-		
-		
-		Button btnProjectBrowse = new Button(grpProject, SWT.NONE);
-		btnProjectBrowse.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
-				es.setElements(HybridCore.getHybridProjects().toArray());
-				es.setTitle("Project Selection");
-				es.setMessage("Select a project to run");
-				if (es.open() == Window.OK) {			
-					HybridProject project = (HybridProject) es.getFirstResult();
-					textProject.setText(project.getProject().getName());
-				}		
-			}
-		});
-		btnProjectBrowse.setText("Browse...");
-		
+		if( fixedProject == null){//let user select a project
+			createProjectGroup(container);
+		}
 		
 		tabFolder = new TabFolder(container, SWT.NONE);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tabFolder);
@@ -189,6 +172,44 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		setupFromInitialSelection();
 		restoreWidgetValues();
 		populatePluginInfos();
+	}
+
+	private void createProjectGroup(Composite container) {
+		Group grpProject = new Group(container, SWT.NONE);
+		grpProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		grpProject.setText("Project");
+		grpProject.setLayout(new GridLayout(3, false));
+		
+		Label lblProject = new Label(grpProject, SWT.NONE);
+		lblProject.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblProject.setText("Project:");
+		
+		textProject = new Text(grpProject, SWT.BORDER);
+		textProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		textProject.addListener(SWT.Modify, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				setPageComplete(validatePage());
+			}
+		});
+		
+		
+		Button btnProjectBrowse = new Button(grpProject, SWT.NONE);
+		btnProjectBrowse.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
+				es.setElements(HybridCore.getHybridProjects().toArray());
+				es.setTitle("Project Selection");
+				es.setMessage("Select a project to run");
+				if (es.open() == Window.OK) {			
+					HybridProject project = (HybridProject) es.getFirstResult();
+					textProject.setText(project.getProject().getName());
+				}		
+			}
+		});
+		btnProjectBrowse.setText("Browse...");
 	}
 
 	private void populatePluginInfos() {
@@ -278,6 +299,9 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	}
 	
 	public String getProjectName(){
+		if(fixedProject != null ){
+			return fixedProject.getProject().getName();
+		}
 		return textProject.getText();
 	}
 	
@@ -296,26 +320,27 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	
 	private boolean validatePage() {
 		//Check project
-		String projectName = textProject.getText();
-		if(projectName == null || projectName.isEmpty()){
-			setMessage("Specify a project",ERROR);
-			return false;
-		}
-		List<HybridProject> projects = HybridCore.getHybridProjects();
-		boolean projectValid = false;
-		for (HybridProject hybridProject : projects) {
-			if (hybridProject.getProject().getName().equals(projectName)) {
-				projectValid = true;
-				break;
+		if (fixedProject == null) {
+			String projectName = textProject.getText();
+			if (projectName == null || projectName.isEmpty()) {
+				setMessage("Specify a project", ERROR);
+				return false;
+			}
+			List<HybridProject> projects = HybridCore.getHybridProjects();
+			boolean projectValid = false;
+			for (HybridProject hybridProject : projects) {
+				if (hybridProject.getProject().getName().equals(projectName)) {
+					projectValid = true;
+					break;
+				}
+			}
+			if (!projectValid) {
+				setMessage(
+						"Specified project is not a valid project for this operation",
+						ERROR);
+				return false;
 			}
 		}
-		if (!projectValid) {
-			setMessage(
-					"Specified project is not a valid project for this operation",
-					ERROR);
-			return false;
-		}
-		
 		//Now tabs
 		
 		boolean valid = false;

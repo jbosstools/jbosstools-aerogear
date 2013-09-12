@@ -15,6 +15,7 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -40,6 +41,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Access;
 import org.jboss.tools.aerogear.hybrid.core.config.Feature;
 import org.jboss.tools.aerogear.hybrid.core.config.Preference;
@@ -243,7 +245,15 @@ public class PropertiesPage extends FormPage {
 				btnFeatureAdd.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {	
-						LaunchCordovaPluginWizardAction action = new LaunchCordovaPluginWizardAction();
+						
+						LaunchCordovaPluginWizardAction action =null;
+						IResource resource = (IResource) getEditorInput().getAdapter(IResource.class);
+						if(resource != null && HybridProject.getHybridProject(resource.getProject()) != null){
+						action = new LaunchCordovaPluginWizardAction(HybridProject.getHybridProject(resource.getProject()));
+						}
+						else{
+							action = new LaunchCordovaPluginWizardAction();
+						}
 						action.run();
 					}
 				});

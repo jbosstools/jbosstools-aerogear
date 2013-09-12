@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
@@ -43,6 +42,7 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 	private RegistryConfirmPage pageTwo;
 	private IStructuredSelection initialSelection;
 	private List<CordovaRegistryPluginVersion> plugins;
+	private HybridProject fixedProject;
 	
 	private class PluginInstallOperation extends WorkspaceModifyOperation{
 		
@@ -110,7 +110,15 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		initialSelection = selection;
 	}
-
+	/**
+	 * Causes the wizard to work with a fixed project, and does not enable
+	 * users to select a different project to operate on.
+	 * @param project
+	 */
+	public void init(HybridProject project){
+		this.fixedProject = project;
+	}
+	
 	@Override
 	public boolean performFinish() {	
 		HybridProject project = HybridProject.getHybridProject(pageOne.getProjectName());
@@ -151,7 +159,11 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 	
 	@Override
 	public void addPages() {
-		pageOne = new CordovaPluginSelectionPage("Cordova Plugin Selection Page", this.initialSelection);
+		if(fixedProject == null ){
+			pageOne = new CordovaPluginSelectionPage("Cordova Plugin Selection Page", this.initialSelection);
+		}else{
+			pageOne = new CordovaPluginSelectionPage("Cordova Plugin Selection Page", fixedProject);
+		}
 		pageOne.setTitle("Install Cordova Plugin");
 		pageOne.setDescription("Discover and Install Cordova Plugins");
 		addPage(pageOne);
@@ -165,6 +177,10 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 		return pageTwo;
 	}
 	
+	HybridProject getFixedProject(){
+		return fixedProject;
+	}
+	
 	private void savePageSettings() {
 		IDialogSettings workbenchSettings = HybridUI.getDefault()
 				.getDialogSettings();
@@ -176,6 +192,8 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 		setDialogSettings(section);
 		pageOne.saveWidgetValues();
 	}
+	
+	
 	
 
 }

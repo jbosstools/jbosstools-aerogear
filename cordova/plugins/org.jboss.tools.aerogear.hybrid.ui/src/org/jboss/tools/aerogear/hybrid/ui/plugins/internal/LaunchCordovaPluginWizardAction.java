@@ -20,10 +20,28 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.ui.config.internal.ConfigEditor;
 
 public class LaunchCordovaPluginWizardAction extends Action {
 
+	
+	private HybridProject project;
+	
+	public LaunchCordovaPluginWizardAction() {
+		super();
+	}
+	
+	/**
+	 * Causes the launched Wizard to be initialized and fixed with the 
+	 * project. 
+	 * @param project
+	 */
+	public LaunchCordovaPluginWizardAction(HybridProject project) {
+		this();
+		this.project = project;
+	}
+	
 	
 	/*
 	 * @see IAction.run()
@@ -50,7 +68,11 @@ public class LaunchCordovaPluginWizardAction extends Action {
 			selectionToPass = StructuredSelection.EMPTY;
 	
 		CordovaPluginWizard wizard = new CordovaPluginWizard();
-		wizard.init(workbench, selectionToPass);
+		if(this.project == null ){
+			wizard.init(workbench, selectionToPass);
+		}else{
+			wizard.init(project);
+		}
 		WizardDialog dialog = new WizardDialog(workbench.getActiveWorkbenchWindow().getShell(), wizard);
 		dialog.setMinimumPageSize(550, 450);//TODO: needs a more clever way to set this values
 		dialog.open();
