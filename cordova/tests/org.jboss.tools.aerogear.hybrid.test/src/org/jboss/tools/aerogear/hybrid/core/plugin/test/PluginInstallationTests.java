@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.core.config.Access;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
@@ -68,7 +69,8 @@ public class PluginInstallationTests {
 		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_CHILDBROWSER);
 		assertNotNull(plgFolder);
 		assertTrue(plgFolder.exists());
-		Widget widget = project.hybridProject().getWidget();
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForRead();
 		List<Access> aces = widget.getAccesses();
 		int found =0;
 		for (Access access : aces) {

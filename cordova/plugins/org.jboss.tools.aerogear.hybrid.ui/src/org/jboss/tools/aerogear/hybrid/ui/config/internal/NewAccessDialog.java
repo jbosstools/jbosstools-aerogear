@@ -11,6 +11,7 @@
 package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -32,6 +33,7 @@ public class NewAccessDialog extends Dialog {
 	private Text txtOrigin;
 	private Access access;
 	private Widget widget;
+	private WidgetModel model;
 	private Button btnSubdomains;
 	private Button btnBrowserOnly;
 
@@ -39,10 +41,16 @@ public class NewAccessDialog extends Dialog {
 	 * Create the dialog.
 	 * @param parentShell
 	 */
-	public NewAccessDialog(Shell parentShell, Widget widget) {
+	public NewAccessDialog(Shell parentShell, WidgetModel widgetModel) {
 		super(parentShell);
-		Assert.isNotNull(widget);
-		this.widget = widget;
+		Assert.isNotNull(widgetModel);
+		try {
+			this.widget = widgetModel.getWidgetForEdit();
+			this.model = widgetModel;
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -101,7 +109,8 @@ public class NewAccessDialog extends Dialog {
 	protected void okPressed() {
 		String origin = txtOrigin.getText();
 		
-		access = WidgetModel.getInstance().createAccess(widget);
+		
+		access = model.createAccess(widget);
 		if(origin != null && !origin.isEmpty()){
 			access.setOrigin(origin);
 		}

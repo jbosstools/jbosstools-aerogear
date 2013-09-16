@@ -59,6 +59,7 @@ import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.osgi.framework.Bundle;
@@ -85,7 +86,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		if(hybridProject == null ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Not a hybrid mobile project, can not generate files"));
 		}
-		Widget widgetModel = hybridProject.getWidget();
+		Widget widgetModel = WidgetModel.getModel(hybridProject).getWidgetForRead();
 		
 		// Create the basic android project
 		String packageName = widgetModel.getId();

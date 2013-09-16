@@ -45,10 +45,12 @@ public class ConfigXMLUpdateAction extends XMLConfigFileAction {
 		if(featureNode == null ){// let parent handle it
 			super.install();
 		}else{
-			Widget widget = this.project.getWidget();
+			WidgetModel widgetModel = WidgetModel.getModel(project);
+			Widget widget = widgetModel.getWidgetForEdit();
+			
 			Feature feature = getExistingFeature(featureNode, widget);
 			if(feature == null ){
-				feature = WidgetModel.getInstance().createFeature(widget);
+				feature = widgetModel.createFeature(widget);
 				feature.setName(featureNode.getAttribute("name"));
 				String required = featureNode.getAttribute("required");
 				boolean isRequired = Boolean.parseBoolean(required);
@@ -65,7 +67,7 @@ public class ConfigXMLUpdateAction extends XMLConfigFileAction {
 					feature.addParam(el.getAttribute("name"), el.getAttribute("value"));
 				}
 			}
-			WidgetModel.getInstance().save(widget, target);
+			widgetModel.save();
 		}
 	}
 

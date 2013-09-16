@@ -11,6 +11,7 @@
 package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
 import static org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,7 @@ import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
 import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
@@ -82,10 +84,11 @@ public class HybridProjectCreator {
 	private void updateConfig(IProject project, String appName, String appID, IProgressMonitor  monitor) throws CoreException{
 		HybridProject hybridProject = HybridProject.getHybridProject(project);
 		try {
-			Widget w = hybridProject.getWidget();
+			WidgetModel model = WidgetModel.getModel(hybridProject);
+			Widget w = model.getWidgetForEdit();
 			w.setId(appID);
 			w.setName(appName);
-			hybridProject.saveWidget(w);
+			model.save();
 		} catch (CoreException e) {
 			HybridCore.log(IStatus.ERROR, "Error updating application name and id to config.xml", e);
 		}

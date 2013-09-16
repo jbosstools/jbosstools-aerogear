@@ -130,7 +130,8 @@ public class IconsPage extends FormPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String src = getImageSrc();
-				Icon icon = WidgetModel.getInstance().createIcon(getWidget());
+				ConfigEditor editor = (ConfigEditor) getEditor();
+				Icon icon = editor.getWidgetModel().createIcon(getWidget());
 				icon.setSrc(src);
 				getWidget().addIcon(icon);
 			}
@@ -212,7 +213,7 @@ public class IconsPage extends FormPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String src = getImageSrc();
-				Splash splash = WidgetModel.getInstance().createSplash(getWidget());
+				Splash splash = ((ConfigEditor) getEditor()).getWidgetModel().createSplash(getWidget());
 				splash.setSrc(src);
 				getWidget().addSplash(splash);
 			}

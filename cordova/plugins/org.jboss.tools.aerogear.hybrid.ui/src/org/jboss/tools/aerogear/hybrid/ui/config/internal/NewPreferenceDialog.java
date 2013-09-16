@@ -11,6 +11,7 @@
 package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -31,17 +32,24 @@ public class NewPreferenceDialog extends TitleAreaDialog {
 	private Text txtValue;
 	private Preference preference;
 	private Widget widget;
+	private WidgetModel model;
 
 	/**
 	 * Create the dialog.
 	 * 
 	 * @param parentShell
 	 */
-	public NewPreferenceDialog(Shell parentShell, Widget widget) {
+	public NewPreferenceDialog(Shell parentShell, WidgetModel widgetModel) {
 		super(parentShell);
 		setShellStyle(SWT.APPLICATION_MODAL);
 		Assert.isNotNull(widget);
-		this.widget = widget;
+		try {
+			this.widget = widgetModel.getWidgetForEdit();
+			this.model = widgetModel;
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -92,7 +100,7 @@ public class NewPreferenceDialog extends TitleAreaDialog {
 			return;
 		}
 		
-		preference = WidgetModel.getInstance().createPreference(widget);
+		preference = model.createPreference(widget);
 		preference.setName(name);
 		preference.setValue(value);
 		super.okPressed();

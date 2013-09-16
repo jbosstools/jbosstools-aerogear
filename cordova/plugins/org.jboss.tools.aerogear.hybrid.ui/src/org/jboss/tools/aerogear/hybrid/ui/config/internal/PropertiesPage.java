@@ -46,6 +46,7 @@ import org.jboss.tools.aerogear.hybrid.core.config.Access;
 import org.jboss.tools.aerogear.hybrid.core.config.Feature;
 import org.jboss.tools.aerogear.hybrid.core.config.Preference;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.LaunchCordovaPluginWizardAction;
 
 public class PropertiesPage extends FormPage {
@@ -66,6 +67,10 @@ public class PropertiesPage extends FormPage {
 	
 	private Widget getWidget(){
 		return ((ConfigEditor)getEditor()).getWidget();
+	}
+	
+	private WidgetModel getWidgetModel(){
+		return ((ConfigEditor)getEditor()).getWidgetModel();
 	}
 	
 	@Override
@@ -125,7 +130,7 @@ public class PropertiesPage extends FormPage {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						
-						NewPreferenceDialog dialog = new NewPreferenceDialog(getSite().getShell(), getWidget());
+						NewPreferenceDialog dialog = new NewPreferenceDialog(getSite().getShell(), getWidgetModel());
 						if (dialog.open() == Window.OK &&  dialog.getPreference() != null ){
 							getWidget().addPreference(dialog.getPreference());
 						}
@@ -190,7 +195,7 @@ public class PropertiesPage extends FormPage {
 		btnAccessAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				NewAccessDialog dialog = new NewAccessDialog(getSite().getShell(), getWidget());
+				NewAccessDialog dialog = new NewAccessDialog(getSite().getShell(), getWidgetModel());
 				if(dialog.open() == Window.OK && dialog.getAccess() != null){
 					getWidget().addAccess(dialog.getAccess());
 				}

@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugin;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
@@ -59,7 +60,10 @@ public class RegistryConfirmPage extends WizardPage {
 				
 				@Override
 				public void run() {
-					pluginViewer.getViewer().setInput(plugins);
+					Control c = pluginViewer.getViewer().getControl();
+					if(c != null && !c.isDisposed()){
+						pluginViewer.getViewer().setInput(plugins);
+					}
 				}
 			});
 			return Status.OK_STATUS; 
