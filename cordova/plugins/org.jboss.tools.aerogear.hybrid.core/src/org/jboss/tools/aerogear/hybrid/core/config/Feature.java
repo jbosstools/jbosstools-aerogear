@@ -16,6 +16,7 @@ import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.F
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.PARAM_ATTR_NAME;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.PARAM_ATTR_VALUE;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,8 +92,32 @@ public class Feature extends AbstractConfigObject {
 		params.setValue(props);
 	}
 	
+	public void removeParam(String name ){
+		if(!params.getValue().containsKey(name))
+			return;
+		HashMap<String, String> props = new HashMap<String, String>();
+		if(params.getValue() != null ){ //replace to trigger property change
+			props.putAll(params.getValue());
+		}
+		Node child = itemNode.getFirstChild();
+		while(child != null ){
+			if(child.getNodeType() == Node.ELEMENT_NODE ){
+				Element e = (Element)child;
+				if(name.equals(e.getAttribute(PARAM_ATTR_NAME))){
+					itemNode.removeChild(child);
+				}
+			}
+			child = child.getNextSibling();
+		}
+		props.remove(name);
+		params.setValue(props);
+	}
+	/**
+	 * Returns an unmodifiable copy of parameter map. 
+	 * @return
+	 */
 	public Map<String, String> getParams() {
-		return params.getValue();
+		return Collections.unmodifiableMap(params.getValue());
 	}
 		
 	

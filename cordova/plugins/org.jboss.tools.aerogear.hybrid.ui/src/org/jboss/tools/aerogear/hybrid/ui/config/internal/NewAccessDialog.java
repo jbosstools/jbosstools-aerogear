@@ -102,7 +102,9 @@ public class NewAccessDialog extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(450, 300);
+		Point p = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+		p.x = p.x+p.x/2;
+		return p;
 	}
 	
 	@Override

@@ -143,23 +143,17 @@ public class WidgetModel implements IModelLifecycleListener{
 	
 	
 	public Widget getWidgetForEdit() throws CoreException {
-		if (editableWidget == null ||
-				underLyingModel.getSynchronizationStamp() != underLyingModel.computeModificationStamp(getConfigXml())) {
+		if (editableWidget == null){
 			synchronized (this) {
 				IFile configXml = getConfigXml();
 				IModelManager manager = StructuredModelManager
 						.getModelManager();
 				try {
-					if(underLyingModel != null ){
-						underLyingModel = underLyingModel.reinit();
-					}else{
-						underLyingModel = manager.getModelForEdit(configXml);
-					}
+					underLyingModel = manager.getModelForEdit(configXml);
 					if ((underLyingModel != null) && (underLyingModel instanceof IDOMModel)) {
 						underLyingModel.addModelLifecycleListener(this);
 						IDOMModel domModel = (IDOMModel) underLyingModel;
 						editableWidget = load(domModel.getDocument());
-						underLyingModel.resetSynchronizationStamp(getConfigXml());
 					}
 				} catch (IOException e) {
 					throw new CoreException(new Status(IStatus.ERROR,

@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -23,43 +20,36 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.jboss.tools.aerogear.hybrid.core.config.Preference;
-import org.jboss.tools.aerogear.hybrid.core.config.Widget;
-import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 
-public class NewPreferenceDialog extends TitleAreaDialog {
+public class NewNameValueDialog extends Dialog {
 	private Text txtName;
 	private Text txtValue;
-	private Preference preference;
-	private Widget widget;
-	private WidgetModel model;
+	private String name;
+	private String value;
+	private String title;
+
 
 	/**
 	 * Create the dialog.
 	 * 
 	 * @param parentShell
 	 */
-	public NewPreferenceDialog(Shell parentShell, WidgetModel widgetModel) {
+	public NewNameValueDialog(Shell parentShell, String title ) {
 		super(parentShell);
-		setShellStyle(SWT.APPLICATION_MODAL);
-		Assert.isNotNull(widget);
-		try {
-			this.widget = widgetModel.getWidgetForEdit();
-			this.model = widgetModel;
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.setShellStyle(SWT.DIALOG_TRIM);
+		this.title = title;
 	}
-
+	
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		setTitle("New Preference");
-		setMessage("Create a new feature for the target platform");
+		if(title != null )
+			getShell().setText(title);
 
 		Composite contents = new Composite(parent, SWT.NONE);
 		contents.setLayoutData(new GridData(GridData.FILL_BOTH));
-		contents.setLayout(new GridLayout(2, false));
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginTop = 10;
+		contents.setLayout(layout);
 
 		Label lblName = new Label(contents, SWT.NONE);
 		lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
@@ -86,28 +76,27 @@ public class NewPreferenceDialog extends TitleAreaDialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(450, 300);
+		Point p = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+		p.x = p.x+p.x/2;
+		return p;
 	}
 
 	@Override
 	protected void okPressed() {
-		setMessage(null);
-		String name = txtName.getText();
-		String value = txtValue.getText();
+		name = txtName.getText();
+		value = txtValue.getText();
 		
 		if(name == null || name.isEmpty()){
-			setMessage("Name can not be empty" , IMessageProvider.ERROR);
 			return;
 		}
-		
-		preference = model.createPreference(widget);
-		preference.setName(name);
-		preference.setValue(value);
 		super.okPressed();
 	}
-	
-	public Preference getPreference(){
-		return preference;
+
+	public String getValue() {
+		return value;
 	}
 	
+	public String getName(){
+		return name;
+	}
 }
