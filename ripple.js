@@ -1,5 +1,5 @@
 /*! 
-  Ripple Mobile Environment Emulator v0.9.18 :: Built On Thu Jul 25 2013 19:11:32 GMT+0300 (FET)
+  Ripple Mobile Environment Emulator v0.9.18 :: Built On Wed Sep 18 2013 13:51:12 GMT+0300 (FET)
 
                                 Apache License
                            Version 2.0, January 2004
@@ -29557,7 +29557,9 @@ function exec(func) {
         var val = $("#exec-response").val();
 
         //TODO: handle multiple args
-        func.apply(null, val ? [JSON.parse(val)] : []);
+        if (func) {
+            func.apply(null, val ? [JSON.parse(val)] : []);
+        }
         $("#exec-dialog").dialog("close");
     };
 }
@@ -39102,7 +39104,6 @@ ripple.define('platform/cordova/2.0.0/bridge/compass', function (ripple, exports
  */
 var geo = ripple('geo'),
     bridge = ripple('emulatorBridge'),
-    CompassHeading = bridge.window().CompassHeading,
     _success,
     _error,
     _interval;
@@ -39112,7 +39113,8 @@ module.exports = {
         // TODO: build facility to trigger onError() from emulator
         // see pivotal item: https://www.pivotaltracker.com/story/show/7040343
         CompassHeading = ripple('emulatorBridge').window().CompassHeading;
-        var heading = new CompassHeading();
+        var win = bridge.window(),
+            heading = new win.CompassHeading();
         heading.trueHeading = geo.getPositionInfo().heading;
         heading.magneticHeading = geo.getPositionInfo().heading;
         heading.headingAccuracy = 100;
@@ -39128,7 +39130,8 @@ module.exports = {
         _error = error;
 
         _interval = window.setInterval(function () {
-            var heading = new CompassHeading();
+            var win = bridge.window(),
+                heading = new win.CompassHeading();
             heading.trueHeading = geo.getPositionInfo().heading;
             heading.magneticHeading = geo.getPositionInfo().heading;
             heading.headingAccuracy = 100;
@@ -39140,6 +39143,35 @@ module.exports = {
         _success = null;
         _error = null;
         window.clearInterval(_interval);
+    }
+};
+
+});
+ripple.define('platform/cordova/2.0.0/bridge/logger', function (ripple, exports, module) {
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+module.exports = {
+    logLevel: function (success, fail, args) {
+        console.log(args.join(":"));
+        return true;
     }
 };
 
@@ -40788,30 +40820,33 @@ ripple.define('platform/cordova/2.0.0/bridge', function (ripple, exports, module
  * under the License.
  *
  */
-var _prompt = ripple('ui/plugins/exec-dialog');
-
-module.exports = {
-    exec: function (success, fail, service, action, args) {
-        var emulator = {
-            "App": ripple('platform/cordova/2.0.0/bridge/app'),
-            "Accelerometer": ripple('platform/cordova/2.0.0/bridge/accelerometer'),
-            "Compass": ripple('platform/cordova/2.0.0/bridge/compass'),
-            "Camera": ripple('platform/cordova/2.0.0/bridge/camera'),
-            "Capture": ripple('platform/cordova/2.0.0/bridge/capture'),
-            "Contacts": ripple('platform/cordova/2.0.0/bridge/contacts'),
-            "Debug Console": ripple('platform/cordova/2.0.0/bridge/console'),
-            "Device": ripple('platform/cordova/2.0.0/bridge/device'),
-            "File": ripple('platform/cordova/2.0.0/bridge/file'),
-            "Geolocation": ripple('platform/cordova/2.0.0/bridge/geolocation'),
-            "Globalization": ripple('platform/cordova/2.0.0/bridge/globalization'),
-            "Media": ripple('platform/cordova/2.0.0/bridge/media'),
-            "Network Status": ripple('platform/cordova/2.0.0/bridge/network'),
-            "NetworkStatus": ripple('platform/cordova/2.0.0/bridge/network'),
+var _prompt = ripple('ui/plugins/exec-dialog'),
+    emulator = {
+        "App": ripple('platform/cordova/2.0.0/bridge/app'),
+        "Accelerometer": ripple('platform/cordova/2.0.0/bridge/accelerometer'),
+        "Compass": ripple('platform/cordova/2.0.0/bridge/compass'),
+        "Camera": ripple('platform/cordova/2.0.0/bridge/camera'),
+        "Capture": ripple('platform/cordova/2.0.0/bridge/capture'),
+        "Contacts": ripple('platform/cordova/2.0.0/bridge/contacts'),
+        "Debug Console": ripple('platform/cordova/2.0.0/bridge/console'),
+        "Device": ripple('platform/cordova/2.0.0/bridge/device'),
+        "File": ripple('platform/cordova/2.0.0/bridge/file'),
+        "Geolocation": ripple('platform/cordova/2.0.0/bridge/geolocation'),
+        "Globalization": ripple('platform/cordova/2.0.0/bridge/globalization'),
+        "Logger": ripple('platform/cordova/2.0.0/bridge/logger'),
+        "Media": ripple('platform/cordova/2.0.0/bridge/media'),
+        "Network Status": ripple('platform/cordova/2.0.0/bridge/network'),
+        "NetworkStatus": ripple('platform/cordova/2.0.0/bridge/network'),
             "Notification": ripple('platform/cordova/2.0.0/bridge/notification'),
             "Vibration": ripple('platform/cordova/2.0.0/bridge/notification'),
             "BarcodeScanner": ripple('phonegap-plugin/BarcodeScanner')
-        };
+    };
 
+module.exports = {
+    add: function (service, module) {
+        emulator[service] = module;
+    },
+    exec: function (success, fail, service, action, args) {
         try {
             emulator[service][action](success, fail, args);
         }
@@ -40893,6 +40928,519 @@ module.exports = {
     },
     destroy: function () {
         throw "this shouldn't be called";
+    }
+};
+
+});
+ripple.define('platform/cordova/3.0.0/spec/config', function (ripple, exports, module) {
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+var constants = ripple('constants');
+
+module.exports = {
+    fileName: "config.xml",
+    validateVersion: function (configValidationObject) {
+        var valid = true;
+        valid = !((!configValidationObject.widget.validationResult[0].attributes.xmlns.valid) ||
+            (!configValidationObject.widget.validationResult[0].attributes["xmlns:gap"].valid));
+
+        return valid;
+    },
+    extractInfo: function (configValidationObject) {
+        if (!configValidationObject) {
+            return null;
+        }
+
+        var widgetInfo = {};
+
+        widgetInfo.id = configValidationObject.widget.validationResult[0].attributes.id.value || "";
+        widgetInfo.name = configValidationObject.widget.children.name.validationResult[0].value;
+        widgetInfo.icon = configValidationObject.widget.children.icon.validationResult[0].attributes.src.value;
+        widgetInfo.version = configValidationObject.widget.validationResult[0].attributes.version.value;
+
+        widgetInfo.whitelist = configValidationObject.widget.children.access.validationResult.map(function (r) {
+            return {
+                origin: r.attributes.origin.value,
+                subdomains: r.attributes.subdomains.value
+            }
+        });
+
+        return widgetInfo;
+    },
+    schema: {
+        rootElement: "widget",
+        widget: {
+            nodeName: "widget",
+            required: true,
+            occurrence: 1,
+            attributes: {
+                xmlns: {
+                    attributeName: "xmlns",
+                    required: true,
+                    type: "list",
+                    listValues: ["http://www.w3.org/ns/widgets"]
+                },
+                "xmlns:gap": {
+                    attributeName: "xmlns:gap",
+                    required: true,
+                    type: "list",
+                    listValues: ["http://phonegap.com/ns/1.0"]
+                },
+                "xml:lang": {
+                    attributeName: "xml:lang",
+                    required: false,
+                    type: "iso-language"
+                },
+                dir: {
+                    attributeName: "dir",
+                    required: false,
+                    type: "list",
+                    listValues: ["ltr", "rtl", "lro", "rlo"]
+                },
+                id: {
+                    attributeName: "id",
+                    required: false,
+                    type: "string"
+                },
+                version: {
+                    attributeName: "version",
+                    required: false,
+                    type: "string"
+                },
+                height: {
+                    attributeName: "height",
+                    required: false,
+                    type: "integer"
+                },
+                width: {
+                    attributeName: "width",
+                    required: false,
+                    type: "integer"
+                },
+                viewmodes: {
+                    attributeName: "viewmodes",
+                    required: false,
+                    type: "list",
+                    listValues: ["floating", "fullscreen"]
+                }
+            },
+            children: {
+                name: {
+                    nodeName: "name",
+                    required: false,
+                    occurrence: 0,
+                    type: "string",
+                    attributes: {
+                        "short": {
+                            attributeName: "short",
+                            type: "string",
+                            required: false
+                        },
+                        "xml:lang": {
+                            attributeName: "xml:lang",
+                            type: "string",
+                            required: false,
+                            unique: true
+                        }
+                    }
+                },
+                description: {
+                    nodeName: "description",
+                    required: false,
+                    occurrence: 0,
+                    type: "string",
+                    attributes: {
+                        "xml:lang": {
+                            attributeName: "xml:lang",
+                            type: "string",
+                            required: false,
+                            unique: true
+                        }
+                    }
+                },
+                author: {
+                    nodeName: "author",
+                    required: false,
+                    occurrence: 1,
+                    type: "string",
+                    attributes: {
+                        email: {
+                            attributeName: "email",
+                            type: "regex",
+                            required: false,
+                            regex: constants.REGEX.EMAIL
+                        },
+                        href: {
+                            attributeName: "href",
+                            type: "regex",
+                            required: false,
+                            regex: constants.REGEX.URL
+                        }
+                    }
+                },
+                license: {
+                    nodeName: "license",
+                    required: false,
+                    occurrence: 1,
+                    type: "string",
+                    attributes: {
+                        href: {
+                            attributeName: "href",
+                            type: "regex",
+                            required: false,
+                            regex: constants.REGEX.URL
+                        },
+                        "xml:lang": {
+                            attributeName: "xml:lang",
+                            type: "string",
+                            required: false,
+                            unique: true
+                        }
+                    }
+                },
+                icon: {
+                    nodeName: "icon",
+                    required: false,
+                    occurrence: 0,
+                    attributes: {
+                        src: {
+                            attributeName: "src",
+                            type: "string",
+                            required: true
+                        },
+                        height: {
+                            attributeName: "height",
+                            required: false,
+                            type: "integer"
+                        },
+                        width: {
+                            attributeName: "width",
+                            required: false,
+                            type: "integer"
+                        }
+                    }
+                },
+                content: {
+                    nodeName: "content",
+                    required: false,
+                    occurrence: 1,
+                    attributes: {
+                        src: {
+                            attributeName: "src",
+                            type: "string",
+                            required: true
+                        },
+                        encoding: {
+                            attributeName: "encoding",
+                            type: "string",
+                            required: false
+                        },
+                        type: {
+                            attributeName: "type",
+                            type: "string",
+                            required: false
+                        }
+                    }
+                },
+                access: {
+                    nodeName: "access",
+                    required: false,
+                    occurrence: 0,
+                    attributes: {
+                        origin: {
+                            attributeName: "origin",
+                            type: "string",
+                            required: true
+                        },
+                        subdomains: {
+                            attributeName: "subdomains",
+                            type: "boolean",
+                            required: false
+                        }
+                    }
+                },
+                feature: {
+                    nodeName: "feature",
+                    required: false,
+                    occurrence: 0,
+                    attributes: {
+                        name: {
+                            attributeName: "name",
+                            type: "list",
+                            required: true,
+                            listValues: ["http://api.phonegap.com/1.0/accelerometer", "http://api.phonegap.com/1.0/camera",
+                                "http://api.phonegap.com/1.0/compass", "http://api.phonegap.com/1.0/contacts", "http://api.phonegap.com/1.0/device",
+                                "http://api.phonegap.com/1.0/events", "http://api.phonegap.com/1.0/file", "http://api.phonegap.com/1.0/geolocation",
+                                "http://api.phonegap.com/1.0/media", "http://api.phonegap.com/1.0/network", "http://api.phonegap.com/1.0/notification",
+                                "http://api.phonegap.com/1.0/storage"]
+                        },
+                        required: {
+                            attributeName: "required",
+                            type: "boolean",
+                            required: false
+                        }
+                    }
+                },
+                preference: {
+                    nodeName: "preference",
+                    required: false,
+                    occurrence: 0,
+                    attributes: {
+                        name: {
+                            attributeName: "name",
+                            type: "string",
+                            required: true
+                        },
+                        value: {
+                            type: "string",
+                            attributeName: "value",
+                            required: false
+                        },
+                        readonly: {
+                            attributeName: "readonly",
+                            type: "boolean",
+                            required: false
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+});
+ripple.define('platform/cordova/3.0.0/spec', function (ripple, exports, module) {
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+module.exports = {
+    id: "cordova",
+    version: "3.0.0",
+    name: "Apache Cordova",
+    type: "platform",
+    nativeMethods: {},
+
+    config: ripple('platform/cordova/3.0.0/spec/config'),
+    device: ripple('platform/cordova/2.0.0/spec/device'),
+    ui: ripple('platform/cordova/2.0.0/spec/ui'),
+    events: ripple('platform/cordova/2.0.0/spec/events'),
+
+    initialize: function (win) {
+        var honeypot = ripple('honeypot'),
+            bridge = ripple('platform/cordova/2.0.0/bridge'),
+            cordova,
+            get = function () {
+                return cordova;
+            },
+            set = function (orig) {
+                if (cordova) return;
+
+                cordova = orig;
+
+                cordova.define.remove("cordova/exec");
+                cordova.define("cordova/exec", function (require, exports, module) {
+                    module.exports = bridge.exec;
+                });
+            };
+
+        bridge.add("PluginManager", ripple('platform/cordova/3.0.0/bridge/PluginManager'));
+        bridge.add("SplashScreen", ripple('platform/cordova/3.0.0/bridge/splashscreen'));
+        bridge.add("InAppBrowser", ripple('platform/cordova/3.0.0/bridge/inappbrowser'));
+        honeypot.monitor(win, "cordova").andRun(get, set);
+    },
+
+    objects: {
+        MediaError: {
+            path: "cordova/2.0.0/MediaError"
+        },
+        Acceleration: {
+            path: "w3c/1.0/Acceleration"
+        },
+        Coordinates: {
+            path: "w3c/1.0/Coordinates"
+        },
+        Position: {
+            path: "w3c/1.0/Position"
+        },
+        PositionError: {
+            path: "w3c/1.0/PositionError"
+        },
+        navigator: {
+            path: "w3c/1.0/navigator",
+            children: {
+                geolocation: {
+                    path: "w3c/1.0/geolocation"
+                }
+            }
+        },
+        org: {
+            children: {
+                apache: {
+                    children: {
+                        cordova: {
+                            children: {
+                                Logger: {
+                                    path: "cordova/2.0.0/logger"
+                                },
+                                JavaPluginManager: {
+                                    path: "cordova/2.0.0/JavaPluginManager"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+});
+ripple.define('platform/cordova/3.0.0/bridge/splashscreen', function (ripple, exports, module) {
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+var ui = ripple('ui');
+
+module.exports = {
+    show: function () {
+        ui.showOverlay('splashscreen');
+    },
+    hide: function () {
+        ui.hideOverlay('splashscreen');
+    }
+};
+
+});
+ripple.define('platform/cordova/3.0.0/bridge/PluginManager', function (ripple, exports, module) {
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+module.exports = {
+    startup: function (success) {
+        return success && success();
+    }
+};
+
+});
+ripple.define('platform/cordova/3.0.0/bridge/inappbrowser', function (ripple, exports, module) {
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+module.exports = {
+    open: function (win, fail, args) {
+        var url = args[0],
+            target = args[1],
+            options = args[2];
+
+        console.log(args);
+    },
+
+    show: function (win, fail, args) {
+        console.log(args);
+    },
+
+    close: function (win, fail, args) {
+        console.log(args);
+    },
+
+    injectScriptCode: function (win, fail, args) {
+        console.log(args);
+    },
+
+    injectScriptFile: function (win, fail, args) {
+        console.log(args);
+    },
+
+    injectStyleCode: function (win, fail, args) {
+        console.log(args);
+    },
+
+    injectStyleFile: function (win, fail, args) {
+        console.log(args);
     }
 };
 
@@ -52034,7 +52582,8 @@ ripple.define('platform/spec', function (ripple, exports, module) {
 module.exports = {
     "cordova": {
         "1.0.0": ripple('platform/cordova/1.0.0/spec'),
-        "2.0.0": ripple('platform/cordova/2.0.0/spec')
+        "2.0.0": ripple('platform/cordova/2.0.0/spec'),
+        "3.0.0": ripple('platform/cordova/3.0.0/spec')
     },
     "webworks.bb10": { "1.0.0": ripple('platform/webworks.bb10/1.0.0/spec') },
     "webworks.handset": { "2.0.0": ripple('platform/webworks.handset/2.0.0/spec') },
@@ -53765,6 +54314,7 @@ ripple.define('touchEventEmulator', function (ripple, exports, module) {
  */
 
 var utils = ripple('utils'),
+    _lastMouseEvent,
     _isMouseDown,
     _win,
     _doc,
@@ -53784,6 +54334,13 @@ function _simulateTouchEvent(type, mouseevent) {
     var simulatedEvent,
         touchObj,
         eventData;
+
+    if( _lastMouseEvent &&
+        mouseevent.type === _lastMouseEvent.type &&
+        mouseevent.pageX === _lastMouseEvent.pageX &&
+        mouseevent.pageY === _lastMouseEvent.pageY) return;
+
+    _lastMouseEvent = mouseevent;
 
     touchObj = {
         clientX: mouseevent.pageX,
@@ -53808,8 +54365,15 @@ function _simulateTouchEvent(type, mouseevent) {
 
     utils.mixin(touchObj, eventData);
 
-    simulatedEvent = _initTouchEvent(type, true, true, eventData);
+    var itemFn = function(index) {
+        return this[index];
+    };
 
+    eventData.touches.item = itemFn;
+    eventData.changedTouches.item = itemFn;
+    eventData.targetTouches.item = itemFn;
+
+    simulatedEvent = _initTouchEvent(type, true, true, eventData);
     mouseevent.target.dispatchEvent(simulatedEvent);
 
     if (typeof mouseevent.target["on" + type] === "function") {
