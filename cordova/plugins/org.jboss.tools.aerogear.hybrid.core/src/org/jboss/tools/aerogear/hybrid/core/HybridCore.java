@@ -24,6 +24,7 @@ import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.osgi.service.debug.DebugTrace;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ExtensionPointProxy;
 import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
@@ -83,6 +84,7 @@ final public class HybridCore implements BundleActivator, DebugOptionsListener {
 		if(retrievalFactoryTracker != null ){
 			retrievalFactoryTracker.close();
 		}
+		WidgetModel.shutdown();
 		HybridCore.context = null;
 	}
 	

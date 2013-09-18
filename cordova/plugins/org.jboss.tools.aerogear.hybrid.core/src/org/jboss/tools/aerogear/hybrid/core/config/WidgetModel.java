@@ -22,6 +22,7 @@ import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.W
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_SPLASH;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,6 +92,13 @@ public class WidgetModel implements IModelLifecycleListener{
 		return widgetModels.get(project);
 	}
 	
+	public static final void shutdown(){
+		Collection<WidgetModel> createdModels = widgetModels.values();
+		for (WidgetModel widgetModel : createdModels) {
+			widgetModel.dispose();
+		}
+	}
+	
 	
 	
 	/**
@@ -105,6 +113,7 @@ public class WidgetModel implements IModelLifecycleListener{
 	 *
 	 */
 	public Widget getWidgetForRead() throws CoreException{
+		long enter = System.currentTimeMillis();
 		if (readonlyWidget == null ) {
 			synchronized (this) {
 				IFile configXml = getConfigXml();
@@ -138,11 +147,13 @@ public class WidgetModel implements IModelLifecycleListener{
 				}
 			}
 		}
+		HybridCore.trace("Completed WidgetModel.getWidgetForRead it "+ Long.toString(System.currentTimeMillis() - enter)+ "ms");
 		return readonlyWidget;
 	}
 	
 	
 	public Widget getWidgetForEdit() throws CoreException {
+		long enter = System.currentTimeMillis();
 		if (editableWidget == null){
 			synchronized (this) {
 				IFile configXml = getConfigXml();
@@ -151,7 +162,7 @@ public class WidgetModel implements IModelLifecycleListener{
 				try {
 					underLyingModel = manager.getModelForEdit(configXml);
 					if ((underLyingModel != null) && (underLyingModel instanceof IDOMModel)) {
-						underLyingModel.addModelLifecycleListener(this);
+//						underLyingModel.addModelLifecycleListener(this);
 						IDOMModel domModel = (IDOMModel) underLyingModel;
 						editableWidget = load(domModel.getDocument());
 					}
@@ -162,6 +173,7 @@ public class WidgetModel implements IModelLifecycleListener{
 				}
 			}
 		}
+		HybridCore.trace("Completed WidgetModel.getWidgetForEdit it "+ Long.toString(System.currentTimeMillis() - enter)+ "ms");
 		return editableWidget;
 	}
 
@@ -328,8 +340,14 @@ public class WidgetModel implements IModelLifecycleListener{
 
 	@Override
 	public void processPreModelEvent(ModelLifecycleEvent event) {
-		// TODO Auto-generated method stub
-		
+	}
+	
+	synchronized void dispose(){
+		if(underLyingModel != null ){
+			underLyingModel.releaseFromEdit();
+		}
+		this.editableWidget = null;
+		this.readonlyWidget = null;
 	}
 	
 }
