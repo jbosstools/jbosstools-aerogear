@@ -23,7 +23,6 @@ import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.W
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,7 +66,7 @@ public class WidgetModel implements IModelLifecycleListener{
 	
 	private static final String PATH_CONFIG_XML = "/"+PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG;
 	
-	private static Map<HybridProject, WidgetModel> widgetModels = Collections.synchronizedMap(new HashMap<HybridProject, WidgetModel>());
+	private static Map<HybridProject, WidgetModel> widgetModels = new HashMap<HybridProject, WidgetModel>();
 	public static final String[] ICON_EXTENSIONS = {"gif", "ico", "jpeg", "jpg", "png","svg" };
 	
 	private HybridProject project;
@@ -162,7 +161,7 @@ public class WidgetModel implements IModelLifecycleListener{
 				try {
 					underLyingModel = manager.getModelForEdit(configXml);
 					if ((underLyingModel != null) && (underLyingModel instanceof IDOMModel)) {
-//						underLyingModel.addModelLifecycleListener(this);
+						underLyingModel.addModelLifecycleListener(this);
 						IDOMModel domModel = (IDOMModel) underLyingModel;
 						editableWidget = load(domModel.getDocument());
 					}
