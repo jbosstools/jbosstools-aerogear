@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.equinox.internal.p2.ui.discovery.util.ControlListItem;
 import org.eclipse.equinox.internal.p2.ui.discovery.util.ControlListViewer;
 import org.eclipse.equinox.internal.p2.ui.discovery.util.FilteredViewer;
+import org.eclipse.equinox.internal.p2.ui.discovery.util.PatternFilter;
 import org.eclipse.equinox.internal.p2.ui.discovery.util.SelectionProviderAdapter;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -81,6 +82,10 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 		selectionProvider.setSelection(new StructuredSelection(selectedItems));
 	}
 	
+	@Override
+	protected PatternFilter doCreateFilter() {
+		return new CordovaPluginFilter();
+	}
 	
 	@Override
 	protected StructuredViewer doCreateViewer(Composite container) {
