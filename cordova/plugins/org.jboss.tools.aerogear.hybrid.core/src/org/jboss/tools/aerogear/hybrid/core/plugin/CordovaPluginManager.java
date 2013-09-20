@@ -120,10 +120,16 @@ public class CordovaPluginManager {
 	 * Installs a Cordova plugin from a git repository. 
 	 * This method delegates to {@link #installPlugin(File)} after cloning the
 	 * repository to a temporary location to complete the installation of the 
-	 * plugin.
+	 * plugin. 
+	 * <br/>
+	 * If commit is not null the cloned repository will be checked out to 
+	 * commit. 
+	 * <br/>
+	 * If subdir is not null it is assumed that the subdir path exists and installation 
+	 * will be done from that location. 
 	 * 
 	 * @param uri
-	 * @param commit
+	 * @param commit 
 	 * @param subdir 
 	 * @throws CoreException
 	 */
@@ -134,11 +140,21 @@ public class CordovaPluginManager {
 			if(monitor.isCanceled())
 				return;
 			monitor.subTask("Clone plugin repository");
-			Git.cloneRepository().setDirectory(tempRepoDirectory).setURI(uri.toString()).call();
+			Git git = Git.cloneRepository().setDirectory(tempRepoDirectory).setURI(uri.toString()).call();
+			if(commit != null && !monitor.isCanceled()){
+				git.checkout().setName(commit).call();
+			}
 			monitor.worked(1);
 			SubProgressMonitor sm = new SubProgressMonitor(monitor, 1);
 			sm.setTaskName("Installing to "+this.project.getProject().getName());
-			this.installPlugin(tempRepoDirectory,sm);
+			File pluginDirectory = tempRepoDirectory;
+			if(subdir != null ){
+				pluginDirectory = new File(tempRepoDirectory, subdir);
+				if(!pluginDirectory.isDirectory()){
+					throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, subdir + " does not exist in this repo"));
+				}
+			}
+			this.installPlugin(pluginDirectory,sm);
 		} catch (GitAPIException e) {
 			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Error cloning the plugin repository", e));
 		} finally{

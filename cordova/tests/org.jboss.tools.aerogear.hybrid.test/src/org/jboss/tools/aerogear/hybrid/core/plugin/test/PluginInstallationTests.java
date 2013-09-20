@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -79,8 +80,22 @@ public class PluginInstallationTests {
 				found++;
 		}
 		assertEquals(2, found);
-		
 	}
+	
+	@Test
+	public void gitInstallPluginTest() throws CoreException{
+		CordovaPluginManager pm = getCordovaPluginManager();
+		File repo = new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER);
+		pm.installPlugin(repo.toURI(), "test_tag", null, new NullProgressMonitor());
+		IProject prj = project.getProject();
+		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_CHILDBROWSER);
+		assertNotNull(plgFolder);
+		assertTrue(plgFolder.exists());
+		IFile file = plgFolder.getFile("test.file");
+		assertTrue(file.exists());
+		IFile anotherFile = plgFolder.getFile("anothertest.file");
+		assertFalse(anotherFile.exists());
+		}
 
 	@Test
 	public void listNoPluginsTest() throws CoreException{
