@@ -25,6 +25,7 @@ Export-Package: org.jboss.tools.aerogear.hybrid.core,
  org.jboss.tools.aerogear.hybrid.core.natures;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
  org.jboss.tools.aerogear.hybrid.core.platform;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
  org.jboss.tools.aerogear.hybrid.core.plugin,
+ org.jboss.tools.aerogear.hybrid.core.plugin.actions,
  org.jboss.tools.aerogear.hybrid.core.plugin.registry,
  org.jboss.tools.aerogear.hybrid.core.util;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core"
 Bundle-Localization: plugin

@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.plugin;
+package org.jboss.tools.aerogear.hybrid.core.plugin.actions;
 
 import java.net.URI;
 
@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 
 public class DependencyInstallAction implements IPluginInstallationAction {
 

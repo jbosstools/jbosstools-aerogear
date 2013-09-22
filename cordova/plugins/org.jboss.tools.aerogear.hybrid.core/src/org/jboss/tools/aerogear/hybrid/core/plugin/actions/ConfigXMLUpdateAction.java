@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.plugin;
+package org.jboss.tools.aerogear.hybrid.core.plugin.actions;
 
 import java.util.List;
 

@@ -113,19 +113,15 @@ public class WidgetModel implements IModelLifecycleListener{
 	 */
 	public Widget getWidgetForRead() throws CoreException{
 		long enter = System.currentTimeMillis();
-		if (readonlyWidget == null ) {
+		IFile configXml = getConfigXml();
+		if (!configXml.exists()) {
+			return null;
+		}
+		if (readonlyWidget == null || readonlyTimestamp != configXml.getModificationStamp()) {
 			synchronized (this) {
-				IFile configXml = getConfigXml();
-				if (!configXml.exists()) {
-					return null;
-				}
-				if(configXml.getModificationStamp() == readonlyTimestamp){
-					return readonlyWidget;
-				}
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				dbf.setNamespaceAware(true);
 				DocumentBuilder db;
-				
 				try {
 					db = dbf.newDocumentBuilder();
 					Document configDocument = db.parse(configXml.getLocation().toFile());
@@ -333,6 +329,7 @@ public class WidgetModel implements IModelLifecycleListener{
 				reloadEditableWidget(dom.getDocument());
 				//release the readOnly model to be reloaded
 				this.readonlyWidget = null;
+				this.readonlyTimestamp = -1;
 			}
 		}
 	}

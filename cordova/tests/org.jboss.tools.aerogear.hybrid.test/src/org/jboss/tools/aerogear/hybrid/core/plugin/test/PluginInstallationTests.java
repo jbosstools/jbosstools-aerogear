@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -13,6 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.core.config.Access;
+import org.jboss.tools.aerogear.hybrid.core.config.Preference;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
@@ -33,6 +35,8 @@ public class PluginInstallationTests {
 	private TestProject project;
 	private final static String PLUGIN_DIR_CHILDBROWSER = "ChildBrowser";
 	private final static String PLUGIN_ID_CHILDBROWSER = "com.phonegap.plugins.childbrowser";
+	private final static String PLUGIN_DIR_VARIABLE = "VariablePlugin";
+	private final static String PLUGIN_ID_VARIABLE = "org.jboss.variable";
 	
 	@BeforeClass
 	public static void setUpPlugins() throws IOException{
@@ -80,6 +84,25 @@ public class PluginInstallationTests {
 				found++;
 		}
 		assertEquals(2, found);
+	}
+	
+	@Test
+	public void installVariablePluginTest() throws CoreException{
+		CordovaPluginManager pm = getCordovaPluginManager();
+		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_VARIABLE), new NullProgressMonitor());
+		IProject prj = project.getProject();
+		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_VARIABLE);
+		assertNotNull(plgFolder);
+		assertTrue(plgFolder.exists());
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForRead();
+		List<Preference> prefs = widget.getPreferences();
+		for (Preference preference : prefs) {
+			if(preference.getName().equals("API_KEY")){
+				return;
+			}
+		}
+		fail("Replaced key is not found");
 	}
 	
 	@Test

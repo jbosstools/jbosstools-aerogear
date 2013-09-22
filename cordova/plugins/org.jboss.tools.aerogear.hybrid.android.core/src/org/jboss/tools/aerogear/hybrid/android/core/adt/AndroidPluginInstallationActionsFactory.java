@@ -21,9 +21,9 @@ import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPluginInstallationActionsFactory;
 import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CopyFileAction;
-import org.jboss.tools.aerogear.hybrid.core.plugin.CreateFileAction;
-import org.jboss.tools.aerogear.hybrid.core.plugin.XMLConfigFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CopyFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CreateFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.XMLConfigFileAction;
 
 public class AndroidPluginInstallationActionsFactory extends AbstractPluginInstallationActionsFactory
 {

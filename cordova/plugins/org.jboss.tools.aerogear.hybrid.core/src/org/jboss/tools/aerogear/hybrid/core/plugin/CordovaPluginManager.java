@@ -52,6 +52,10 @@ import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPluginInstallationActionsFactory;
 import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.ActionVariableHelper;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.ConfigXMLUpdateAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CopyFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.DependencyInstallAction;
 import org.jboss.tools.aerogear.hybrid.core.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -447,8 +451,14 @@ public class CordovaPluginManager {
 					continue;
 				}
 				String parent = getAttributeValue(current, "parent");
-				String value = stringifyNode(current);
-				IPluginInstallationAction action = new ConfigXMLUpdateAction(this.project, parent, value);
+				String resolvedValue = stringifyNode(current);
+				try{
+					resolvedValue = ActionVariableHelper.replaceVariables(this.project, resolvedValue);
+				}
+				catch(CoreException ex){
+					HybridCore.log(IStatus.ERROR, "Error while resolving variables", ex);
+				}
+				IPluginInstallationAction action = new ConfigXMLUpdateAction(this.project, parent, resolvedValue);
 				list.add(action);
 			}
 		}
@@ -507,8 +517,13 @@ public class CordovaPluginManager {
 				continue;
 			}
 			String parent = getAttributeValue(current, "parent");
-			String value = stringifyNode(current);
-			IPluginInstallationAction action = factory.getConfigFileAction(target,parent, value);
+			String resolvedValue = stringifyNode(current);
+			try{
+				resolvedValue = ActionVariableHelper.replaceVariables(this.project, resolvedValue);
+			}catch(CoreException e){
+				HybridCore.log(IStatus.ERROR, "Error while resolving the variables", e);
+			}
+			IPluginInstallationAction action = factory.getConfigFileAction(target,parent, resolvedValue);
 			list.add(action);
 		}
 		return list;
