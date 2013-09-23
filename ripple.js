@@ -41310,13 +41310,49 @@ ripple.define('platform/cordova/3.0.0/bridge/inappbrowser', function (ripple, ex
  * under the License.
  *
  */
+
+var emulatorBridge = ripple('emulatorBridge'),
+    event = ripple('event'),
+    backbuttonFunction,
+    csInAppBrowser,
+    callbackCounter = 0;
+    formatCode = function (code) {
+      if (code) {
+        return (code) ? code.replace(/(\r\n|\n|\r|\t)/gm,"") : null;
+      }
+    }, 
+    getAbsoluteUrl = function (link) {
+         var anchor = document.createElement('a');
+         anchor.href = link;
+         return anchor.href;
+    };
+
 module.exports = {
     open: function (win, fail, args) {
         var url = args[0],
-            target = args[1],
-            options = args[2];
+            target = args[1],  // _self, _blank, _system - doesn't matter for CordovaSim
+            options = args[2]; // only "location" (set to 'yes' or 'no' to turn the location bar) is supported on all platforms - CordovaSim doesn't support it  
+            trigger = function (event) {
+                return function () {
+                    win({type: event, url: url});
+                };
+            };
 
-        console.log(args);
+            if (!csInAppBrowser) {
+                window.needToOpenInAppBrowser = true; // see org.jboss.tools.vpe.cordovasim.plugins.inappbrowser.InAppBrowserLoader
+                window.needToProcessInAppBrowserEvents = true; // see org.jboss.tools.vpe.cordovasim.CordovaSimControlHandler 
+
+                backbuttonFunction = function () {
+                    module.exports.close();
+                } 
+                emulatorBridge.document().addEventListener("backbutton", backbuttonFunction, false);
+                csInAppBrowser = emulatorBridge.window()._bsOriginalWindowOpen(url, "_csInAppBrowser");
+
+                event.on("browser-start", trigger('loadstart'));
+                event.on("browser-stop", trigger('loadstop'));
+                event.on("browser-error", trigger('loaderror'));
+                event.once("browser-close", trigger('exit'));
+            }
     },
 
     show: function (win, fail, args) {
@@ -41324,23 +41360,69 @@ module.exports = {
     },
 
     close: function (win, fail, args) {
-        console.log(args);
+        if (csInAppBrowser) {
+            window.needToProcessInAppBrowserEvents = false;
+            emulatorBridge.document().removeEventListener("backbutton", backbuttonFunction, false);
+            csInAppBrowser.close();
+            csInAppBrowser = null; 
+        }
     },
 
     injectScriptCode: function (win, fail, args) {
-        console.log(args);
+        var code = args[0];
+        code = formatCode(code);
+        
+        if (csInAppBrowser) {
+              var result;
+              var successName = "csInAppBrowserSuccessCallBackName" + callbackCounter++;
+              var failName =  "csInAppBrowserFailCallBackName" + callbackCounter++;
+              emulatorBridge.window()[successName] = win;
+              emulatorBridge.window()[failName] = fail;
+            try {
+              result = emulatorBridge.window().csInAppExecScript(code, successName, failName); // BrowserFunction - see org.jboss.tools.vpe.cordovasim.plugins.inappbrowser.ExecScriptFunction
+            } catch (e) {
+              console.log("Java error occurred:" + e.message);
+            }
+        }
     },
 
     injectScriptFile: function (win, fail, args) {
-        console.log(args);
+        jsFileLink = args[0];
+        jsFileLink = getAbsoluteUrl(jsFileLink);
+
+        if(csInAppBrowser) {
+             var code  = "var injectedJsFile = document.createElement('script');"
+                       + "injectedJsFile.setAttribute('type','text/javascript');"
+                       + "injectedJsFile.setAttribute('src', '" + jsFileLink + "');"
+                       + "document.getElementsByTagName('head')[0].appendChild(injectedJsFile);";
+          module.exports.injectScriptCode(win, fail, [code]); 
+        }
     },
 
     injectStyleCode: function (win, fail, args) {
-        console.log(args);
+        cssStyle = args[0];
+        
+        if (csInAppBrowser) {
+           var code  = "var injectedCss = document.createElement('style');"
+                     + "injectedCss.type = 'text/css';"
+                     + "injectedCss.innerHTML = '" + cssStyle + "';"
+                     + "document.getElementsByTagName('head')[0].appendChild(injectedCss);";
+           module.exports.injectScriptCode(win, fail, [code]); 
+        }
     },
 
     injectStyleFile: function (win, fail, args) {
-        console.log(args);
+        cssFileLink = args[0];
+        cssFileLink = getAbsoluteUrl(cssFileLink);
+
+        if (csInAppBrowser) {
+          var code = "var injectedCssFile = document.createElement('link');"
+                   + "injectedCssFile.setAttribute('rel',  'stylesheet');"
+                   + "injectedCssFile.setAttribute('type', 'text/css');"
+                   + "injectedCssFile.setAttribute('href', '" + cssFileLink + "');"
+                   + "document.getElementsByTagName('head')[0].appendChild(injectedCssFile);";
+          module.exports.injectScriptCode(win, fail, [code]); 
+        }
     }
 };
 
