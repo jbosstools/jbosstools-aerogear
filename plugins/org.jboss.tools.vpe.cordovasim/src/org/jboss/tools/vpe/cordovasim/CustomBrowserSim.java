@@ -9,6 +9,9 @@
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
+import org.eclipse.swt.browser.LocationAdapter;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.widgets.Shell;
 import org.jboss.tools.vpe.browsersim.browser.BrowserSimBrowser;
 import org.jboss.tools.vpe.browsersim.model.preferences.CommonPreferences;
@@ -47,5 +50,16 @@ public class CustomBrowserSim extends BrowserSim {
 
 	public CordovaSimSpecificPreferences getSpecificPreferences() {
 		return (CordovaSimSpecificPreferences)super.getSpecificPreferences();
+	}
+	
+	@Override
+	protected LocationListener createNavButtonsListener() {
+		return new LocationAdapter() {
+			public void changed(LocationEvent event) {
+				if (event.top) {
+					skin.locationChanged(event.location, true, true);
+				}
+			}
+		};
 	}
 }
