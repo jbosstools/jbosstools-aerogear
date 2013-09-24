@@ -81,7 +81,8 @@ public class CordovaSimRunner {
 			setShellAttributes(shell);
 			shell.setLayout(new FillLayout());
 			final Browser browser = new Browser(shell, SWT.WEBKIT);
-			browser.setUrl("http://localhost:" + port + "/" + cordovaSimArgs.getStartPage() + "?enableripple=true");
+			final String homeUrl = "http://localhost:" + port + "/" + cordovaSimArgs.getStartPage();
+			browser.setUrl(homeUrl + "?enableripple=true");
 			
 			shell.addListener(SWT.Close, new Listener() {
 				@Override
@@ -112,7 +113,7 @@ public class CordovaSimRunner {
 				public void open(WindowEvent event) {
 					if (browserSim == null || browserSim.getBrowser().isDisposed()
 							|| browserSim.getBrowser().getShell().isDisposed()) {
-						createBrowserSim(sp, browser);
+						createBrowserSim(sp, browser, homeUrl);
 					} else if (oldBrowser == browserSim.getBrowser()) {
 						browserSim.reinitSkin();
 						browserSim.getBrowser().addLocationListener(new RippleInjector());
@@ -171,10 +172,10 @@ public class CordovaSimRunner {
 		display.dispose();
 	}
 
-	private static void createBrowserSim(final SpecificPreferences sp, final Browser browser) {
+	private static void createBrowserSim(final SpecificPreferences sp, final Browser browser, final String homeUrl) {
 		Shell parentShell = browser.getShell();
 		if (parentShell != null) {
-			browserSim = new CustomBrowserSim("about:blank", parentShell);
+			browserSim = new CustomBrowserSim(homeUrl, parentShell);
 			browserSim.open(sp, null);
 			browserSim.addSkinChangeListener(new SkinChangeListener() {
 				@Override
