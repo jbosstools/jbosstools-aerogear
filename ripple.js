@@ -41232,13 +41232,31 @@ ripple.define('platform/cordova/3.0.0/bridge/splashscreen', function (ripple, ex
  *
  */
 var ui = ripple('ui');
+var emulatorBridge = ripple('emulatorBridge');
 
 module.exports = {
     show: function () {
-        ui.showOverlay('splashscreen');
+        var splashScreen = document.getElementById("splashscreen");
+        var csSplashScreen = emulatorBridge.document().getElementById("splashscreen");
+        if (!csSplashScreen) { 
+          var csSplashScreen = splashScreen.cloneNode(true);
+          emulatorBridge.document().body.appendChild(csSplashScreen);
+          csSplashScreen.style.cssText = "position: fixed;"  // div covers 100% of page (not screen) 
+                                       + "left: 0px;" 
+                                       + "top: 0px;" 
+                                       + "width: 100%;" 
+                                       + "height: 100%;" 
+                                       + "z-index: 2147483646;"
+                                       + "text-align:center;" 
+                                       + "font-family: Tahoma, Geneva, sans-serif;" 
+                                       + "background-color: white;";
+        }
     },
     hide: function () {
-        ui.hideOverlay('splashscreen');
+        var csSplashScreen =  emulatorBridge.document().getElementById("splashscreen");
+        if (csSplashScreen) {
+            csSplashScreen.parentNode.removeChild(csSplashScreen);
+        } 
     }
 };
 
