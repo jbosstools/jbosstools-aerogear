@@ -45,6 +45,15 @@ import org.w3c.dom.NodeList;
 
 public class CordovaPluginXMLHelper {
 	
+	public static final String PLGN_PROPERTY_INFO = "info";
+	public static final String PLGN_PROPERTY_KEYWORDS = "keywords";
+	public static final String PLGN_PROPERTY_LICENSE = "license";
+	public static final String PLGN_PROPERTY_NAME = "name";
+	public static final String DESCRIPTION = "description";
+	public static final String PLGN_PROPERTY_AUTHOR = "author";
+	public static final String PLGN_PROPERTY_VERSION = "version";
+	public static final String PLGN_PROPERTY_ID = "id";
+
 	private static class PluginXMLNamespaceContext implements NamespaceContext{
 
 		private Document document;
@@ -169,20 +178,20 @@ public class CordovaPluginXMLHelper {
 		Document doc = XMLUtil.loadXML(contents,true);
 		CordovaPlugin plugin = new CordovaPlugin();
 		Element rootNode = doc.getDocumentElement();
-		plugin.setId(getAttributeValue(rootNode, "id"));
-		plugin.setVersion(getAttributeValue(rootNode, "version"));
-		plugin.setAuthor(getChildNodeValue(rootNode, "author"));
-		plugin.setDescription(getChildNodeValue(rootNode, "description"));
-		plugin.setName(getChildNodeValue(rootNode, "name"));
-		plugin.setLicense(getChildNodeValue(rootNode, "license"));
-		plugin.setKeywords(getChildNodeValue(rootNode, "keywords"));
-		plugin.setInfo(getChildNodeValue(rootNode, "info"));
+		plugin.setId(getAttributeValue(rootNode, PLGN_PROPERTY_ID));
+		plugin.setVersion(getAttributeValue(rootNode, PLGN_PROPERTY_VERSION));
+		plugin.setAuthor(getChildNodeValue(rootNode, PLGN_PROPERTY_AUTHOR));
+		plugin.setDescription(getChildNodeValue(rootNode, DESCRIPTION));
+		plugin.setName(getChildNodeValue(rootNode, PLGN_PROPERTY_NAME));
+		plugin.setLicense(getChildNodeValue(rootNode, PLGN_PROPERTY_LICENSE));
+		plugin.setKeywords(getChildNodeValue(rootNode, PLGN_PROPERTY_KEYWORDS));
+		plugin.setInfo(getChildNodeValue(rootNode, PLGN_PROPERTY_INFO));
 		//js-modules
 		NodeList moduleNodes = rootNode.getElementsByTagName("js-module");
 		for (int i = 0; i < moduleNodes.getLength(); i++) {
 			Node n = moduleNodes.item(i);
 			PluginJavaScriptModule module = new PluginJavaScriptModule();
-			module.setName(plugin.getId()+"."+getAttributeValue(n, "name"));
+			module.setName(plugin.getId()+"."+getAttributeValue(n, PLGN_PROPERTY_NAME));
 			module.setSource(getAttributeValue(n, "src"));
 			NodeList childNodes = n.getChildNodes();
 			for (int j = 0; j < childNodes.getLength(); j++) {
@@ -205,8 +214,8 @@ public class CordovaPluginXMLHelper {
 			Node engineNode = engineNodes.item(i);
 
 			CordovaEngine engine = new CordovaEngine();
-			engine.setName(getAttributeValue(engineNode, "name"));
-			engine.setVersion(getAttributeValue(engineNode, "version"));
+			engine.setName(getAttributeValue(engineNode, PLGN_PROPERTY_NAME));
+			engine.setVersion(getAttributeValue(engineNode, PLGN_PROPERTY_VERSION));
 			plugin.addSupportedEngine(engine);
 		}
 		return plugin;

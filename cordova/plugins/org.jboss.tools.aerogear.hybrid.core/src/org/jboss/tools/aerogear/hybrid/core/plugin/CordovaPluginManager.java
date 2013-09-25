@@ -332,6 +332,7 @@ public class CordovaPluginManager {
 	
 	private void addInstalledPlugin(IFile pluginxml) throws CoreException{
 		CordovaPlugin plugin = CordovaPluginXMLHelper.createCordovaPlugin(pluginxml.getContents());
+		plugin.setFolder((IFolder)pluginxml.getParent().getAdapter(IFolder.class));
 		int index = installedPlugins.indexOf(plugin);
 		if(index>-1){
 			installedPlugins.set(index, plugin);

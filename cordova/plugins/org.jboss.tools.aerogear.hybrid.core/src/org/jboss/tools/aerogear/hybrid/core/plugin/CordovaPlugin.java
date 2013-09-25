@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.PlatformObject;
 import org.jboss.tools.aerogear.hybrid.core.CordovaEngine;
 
-public class CordovaPlugin {
+public class CordovaPlugin extends PlatformObject{
 
 	private String id;
 	private String version;
@@ -28,6 +30,7 @@ public class CordovaPlugin {
 	private List<CordovaEngine> supportedEngines;
 	private String info;
 	private List<PluginJavaScriptModule> modules;
+	private IFolder folder;
 
 	public String getVersion() {
 		return version;
@@ -114,6 +117,14 @@ public class CordovaPlugin {
 		this.info = info;
 	}
 	
+	public IFolder getFolder(){
+		return folder;
+	}
+
+	public void setFolder(IFolder adapter) {
+		this.folder = adapter;
+	}
+	
 	@Override
 	public String toString() {
 		if(getId() == null )
@@ -133,4 +144,5 @@ public class CordovaPlugin {
 		}
 		return super.equals(obj);
 	}
+
 }
