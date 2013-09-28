@@ -36,13 +36,18 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.internal.libraries.CordovaLibraryJsContainerInitializer;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
 import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
@@ -71,13 +76,28 @@ public class HybridProjectCreator {
 		
 		IProject project = createBasicProject(projectName, location, monitor);
 		addNature(project, new SubProgressMonitor(monitor, 5));
+		
+		
+		
 		addCommonPaths(project, new SubProgressMonitor(monitor, 5));
 		addPlatformPaths(project, new SubProgressMonitor( monitor, 5));
 		addCommonFiles(project, appName, appID,new SubProgressMonitor(monitor, 5));
 		addTemplateFiles(project, new SubProgressMonitor(monitor, 5));
+		setUpJavaScriptProject(monitor, project);
 		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		updateConfig(project, appName, appID, new SubProgressMonitor(monitor, 5) );
 		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+	}
+
+
+	private void setUpJavaScriptProject(IProgressMonitor monitor,
+			IProject project) throws JavaScriptModelException {
+		IIncludePathEntry entry = JavaScriptCore.newContainerEntry(new Path(CordovaLibraryJsContainerInitializer.CONTAINER_ID));
+		IJavaScriptProject javascriptProject = JavaScriptCore.create(project);
+		IIncludePathEntry[] entries = javascriptProject.getRawIncludepath();
+		IIncludePathEntry[] newEntries = Arrays.copyOf(entries, entries.length +1);
+		newEntries[newEntries.length -1 ] = entry;
+		javascriptProject.setRawIncludepath(newEntries, monitor);
 	}
 
 	
