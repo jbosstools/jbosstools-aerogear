@@ -34,4 +34,11 @@
                uri="res/w3c-xsd/widget.xsd">
          </uri></catalogContribution>
    </extension>
+   <extension
+         point="org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer">
+      <JsGlobalScopeContainerInitializer
+            class="org.jboss.tools.aerogear.hybrid.core.internal.libraries.CordovaLibraryJsContainerInitializer"
+            id="org.jboss.tools.aerogear.hybrid.core.CordovaContainerInitializer">
+      </JsGlobalScopeContainerInitializer>
+   </extension>
 </plugin>

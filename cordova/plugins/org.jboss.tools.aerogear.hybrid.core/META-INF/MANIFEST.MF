@@ -16,12 +16,15 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.io;bundle-version="[2.0.0,2.1.0)",
  org.eclipse.jgit;bundle-version="[3.0.0,4.0.0)",
  org.eclipse.ecf.filetransfer;bundle-version="[5.0.0,6.0.0)",
- org.eclipse.ecf;bundle-version="[3.2.0,4.0.0)"
+ org.eclipse.ecf;bundle-version="[3.2.0,4.0.0)",
+ org.eclipse.wst.jsdt.core;bundle-version="[1.1.0,2.0.0)",
+ org.jboss.tools.aerogear.hybrid.cordova;bundle-version="2.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.tools.aerogear.hybrid.core,
  org.jboss.tools.aerogear.hybrid.core.config;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
  org.jboss.tools.aerogear.hybrid.core.extensions,
+ org.jboss.tools.aerogear.hybrid.core.internal.libraries;x-friends:="org.jboss.tools.aerogear.hybrid.ui",
  org.jboss.tools.aerogear.hybrid.core.natures;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
  org.jboss.tools.aerogear.hybrid.core.platform;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
  org.jboss.tools.aerogear.hybrid.core.plugin,

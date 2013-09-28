@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 /**
- * Provides utilities for checking against Hybrid mobile projec conventions
+ * Provides utilities for checking against Hybrid mobile project conventions
  * such as the naming syntax
  * @author Gorkem Ercan
  *
