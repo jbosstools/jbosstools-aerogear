@@ -78,6 +78,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private Group grpRepositoryUrl;
 	private Text gitUrlTxt;
 	private final CordovaPluginRegistryManager client = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
+	private InstalledPluginFilter installedPluginsFilter;
 	
 
 	protected CordovaPluginSelectionPage(String pageName,IStructuredSelection selection) {
@@ -128,6 +129,8 @@ public class CordovaPluginSelectionPage extends WizardPage {
 				setPageComplete(validatePage());
 			}
 		});
+		
+		
 		registryTab.setControl(catalogViewer.getControl());
 		
 		gitTab = new TabItem(tabFolder, SWT.NONE);
@@ -362,12 +365,34 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	}
 	
 	private boolean validateRegistryTab() {
+		//pigybacking filter update here is not probably ideal 
+		// however it is the cheapest way.
+		updateInstalledPluginsFilter();
 		List<CordovaRegistryPluginInfo> infos = getCheckedCordovaRegistryItems();
 		if (infos.isEmpty()){
 			setMessage("Specify Cordova plugin(s) for installation", ERROR);
 			return false;
 		}
 		return true;
+	}
+	@SuppressWarnings("restriction")
+	private void updateInstalledPluginsFilter() {
+		HybridProject project = null;
+		if(fixedProject != null ){
+			project = fixedProject;
+		}else{
+			project = HybridProject.getHybridProject(textProject.getText());
+		}
+		
+		if(installedPluginsFilter == null ){
+			installedPluginsFilter = new InstalledPluginFilter();
+			installedPluginsFilter.setProject(project);
+			catalogViewer.getViewer().addFilter(installedPluginsFilter);
+		}else{
+			catalogViewer.getViewer().removeFilter(installedPluginsFilter);
+			installedPluginsFilter.setProject(project);
+			catalogViewer.getViewer().addFilter(installedPluginsFilter);
+		}
 	}
 
 	private boolean validateGitTab(){

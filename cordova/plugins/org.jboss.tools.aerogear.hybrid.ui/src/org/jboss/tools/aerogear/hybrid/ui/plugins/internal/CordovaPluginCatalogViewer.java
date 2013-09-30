@@ -109,5 +109,7 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 		return new CordovaPluginInfoItem(parent, SWT.NONE,
 				(CordovaRegistryPluginInfo) element,resources, this);
 	}
+	
+	
 
 }
