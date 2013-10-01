@@ -77,7 +77,6 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 	
 	@Override
 	public IIncludePathEntry[] getIncludepathEntries() {
-		System.out.printf("\ngetIncludepathEntries==> instance: %s", this.toString());
 		IIncludePathEntry[] entries = new IIncludePathEntry[NUMBER_OF_FILES];
 		entries[0] = getCordovaJsIncludePathEntry();
 		entries[1] = getPluginJsIncludePathEntry();
@@ -150,8 +149,6 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 	@Override
 	public boolean canUpdateJsGlobalScopeContainer(IPath containerPath,
 			IJavaScriptProject project) {
-		System.out.printf("\ncanUpdateJsGlobalScopeContainer ==> project: %s container path: %s ", project.toString(), containerPath.toString());
-		
 		return true;
 	}
 
@@ -159,9 +156,6 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 	public void requestJsGlobalScopeContainerUpdate(IPath containerPath,
 			IJavaScriptProject project,
 			IJsGlobalScopeContainer containerSuggestion) throws CoreException {
-		// TODO Auto-generated method stub
-		System.out.printf("\n==>requestJsGlobalScopeContainerUpdate project: %s containerPath: %s containerSuggestion: %s", project, containerPath, containerSuggestion);
-		
 	}
 
 	@Override
