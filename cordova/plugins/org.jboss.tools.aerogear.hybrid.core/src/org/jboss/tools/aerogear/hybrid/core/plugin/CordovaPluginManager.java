@@ -25,6 +25,7 @@ import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
@@ -89,13 +90,15 @@ public class CordovaPluginManager {
 	 * 
 	 * @see #completePluginInstallationsForPlatform(File, String)
 	 * @param directory
+	 * @param overwrite
+	 * @param monitor
 	 * @throws CoreException <ul>
 	 *<li>if plugin.xml is missing</li>
 	 *<li>if plugins directory is missing on the project</li>
 	 *<li>if an error occurs during installation</li>
 	 *</ul>
 	 */
-	public void installPlugin(File directory, IProgressMonitor monitor) throws CoreException{
+	public void installPlugin(File directory, FileOverwriteCallback overwrite, IProgressMonitor monitor) throws CoreException{
 		if(monitor == null )
 			monitor = new NullProgressMonitor();
 		File pluginFile = new File(directory, PlatformConstants.FILE_XML_PLUGIN);
@@ -104,8 +107,9 @@ public class CordovaPluginManager {
 			return;
 		Document doc = XMLUtil.loadXML(pluginFile); 
 		String id = CordovaPluginXMLHelper.getAttributeValue(doc.getDocumentElement(), "id");
-		if(isPluginInstalled(id))
-			return;
+		if(isPluginInstalled(id)){
+			HybridCore.log(IStatus.WARNING, "Cordova Plugin ("+id+") is already installed, skipping.",null);
+		}
 		if( !pluginFile.exists() ){
 			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Not a valid plugin directory, no plugin.xml exists"));
 		}
@@ -116,8 +120,8 @@ public class CordovaPluginManager {
 		
 		
 		List<IPluginInstallationAction> actions = collectInstallActions(
-				directory, doc, id, dir);
-		runActions(actions,false,monitor);
+				directory, doc, id, dir, overwrite);
+		runActions(actions,false,overwrite,monitor);
 	}
 
 	/**
@@ -134,10 +138,12 @@ public class CordovaPluginManager {
 	 * 
 	 * @param uri
 	 * @param commit 
-	 * @param subdir 
+	 * @param subdir
+	 * @param overwrite
+	 * @param monitor 
 	 * @throws CoreException
 	 */
-	public void installPlugin(URI uri, String commit, String subdir,IProgressMonitor monitor) throws CoreException{
+	public void installPlugin(URI uri, String commit, String subdir,FileOverwriteCallback overwrite,IProgressMonitor monitor) throws CoreException{
 		File tempRepoDirectory = new File(FileUtils.getTempDirectory(), "cordova_plugin_tmp_"+Long.toString(System.currentTimeMillis()));
 		tempRepoDirectory.deleteOnExit();
 		try {
@@ -158,7 +164,7 @@ public class CordovaPluginManager {
 					throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, subdir + " does not exist in this repo"));
 				}
 			}
-			this.installPlugin(pluginDirectory,sm);
+			this.installPlugin(pluginDirectory,overwrite,sm);
 		} catch (GitAPIException e) {
 			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Error cloning the plugin repository", e));
 		} finally{
@@ -168,6 +174,9 @@ public class CordovaPluginManager {
 	/**
 	 * Removes the plugin with given id
 	 * @param id
+	 * @param overwrite
+	 * @param monitor
+	 * 
 	 * @throws CoreException
 	 */
 	public void unInstallPlugin(String id, IProgressMonitor monitor) throws CoreException{
@@ -180,12 +189,17 @@ public class CordovaPluginManager {
 		}
 		Document doc = XMLUtil.loadXML(pluginFile); 
 		
+		FileOverwriteCallback cb = new FileOverwriteCallback() {
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		};
+		IResource pluginsDir = this.project.getProject().findMember("/"+PlatformConstants.DIR_PLUGINS);
 		List<IPluginInstallationAction> actions = collectInstallActions(
 				dir.getLocation().toFile(),             // TODO: replace with values from .fetch.json
-				doc, id, dir);                           
-				
-		
-		runActions(actions,true,monitor);
+				doc, id, pluginsDir,cb);                           
+		runActions(actions,true,cb, monitor);
 
 	}
 	
@@ -197,14 +211,16 @@ public class CordovaPluginManager {
 	 * 
 	 * @param platformProjectLocation
 	 * @param platform
+	 * @param overwrite
+	 * @param monitor
 	 * 
 	 * @throws CoreException
 	 */
-	public void completePluginInstallationsForPlatform(File platformProjectLocation, String platform,IProgressMonitor monitor) throws CoreException{
+	public void completePluginInstallationsForPlatform(File platformProjectLocation, String platform, FileOverwriteCallback overwrite, IProgressMonitor monitor) throws CoreException{
 		List<CordovaPlugin> plugins  = getInstalledPlugins();
 		ProjectGenerator generator = HybridCore.getPlatformProjectGenerator(platform);
 		for (CordovaPlugin cordovaPlugin : plugins) {
- 			completePluginInstallationToPlatform(cordovaPlugin, generator, platformProjectLocation, monitor);
+ 			completePluginInstallationToPlatform(cordovaPlugin, generator, platformProjectLocation, overwrite, monitor);
 		}
 	}
 	
@@ -290,7 +306,7 @@ public class CordovaPluginManager {
 	 * Collects all the actions for first stage install/uninstall
 	 */
 	private List<IPluginInstallationAction> collectInstallActions(
-			File directory, Document doc, String id, IResource dir) {
+			File directory, Document doc, String id, IResource dir, FileOverwriteCallback overwrite) {
 		List<IPluginInstallationAction> actions = new ArrayList<IPluginInstallationAction>();
 		NodeList dependencyNodes = getDependencies(doc.getDocumentElement());
 		for (int i = 0; i < dependencyNodes.getLength(); i++) {
@@ -299,7 +315,7 @@ public class CordovaPluginManager {
 			String url = getAttributeValue(dependencyNode, "url");
 			String commit = getAttributeValue(dependencyNode, "commit");
 			String subdir = getAttributeValue(dependencyNode, "subdir");
-			DependencyInstallAction action = new DependencyInstallAction(dependencyId, URI.create(url), commit, subdir, this.project);
+			DependencyInstallAction action = new DependencyInstallAction(dependencyId, URI.create(url), commit, subdir, this.project, overwrite);
 			actions.add(action);
 		}
 		File destination = new File(dir.getLocation().toFile(), id);
@@ -350,7 +366,21 @@ public class CordovaPluginManager {
 		throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Plugin folder does not exist"));
 	}
 	
-	private void runActions(final List<IPluginInstallationAction> actions, boolean runUnInstall, IProgressMonitor monitor ){
+	private void runActions(final List<IPluginInstallationAction> actions, boolean runUnInstall, FileOverwriteCallback overwrite, IProgressMonitor monitor ){
+		
+		if (overwrite != null) {
+			ArrayList<String> list = new ArrayList<String>();
+			for (IPluginInstallationAction action : actions) {
+				String[] files = action.filesToOverwrite();
+				if (files != null && files.length > 0) {
+					list.addAll(Arrays.asList(files));
+				}
+			}
+			if(!list.isEmpty() && overwrite.isOverwiteAllowed(list.toArray(new String[list.size()])) == false ){
+				HybridCore.log(IStatus.INFO, "File overwrite not allowed cancelled Cordova plugin installation", null);
+				return;
+			}
+		}
 		
 		Stack<IPluginInstallationAction> executed = new Stack<IPluginInstallationAction>();
 		boolean rollback = false;
@@ -399,7 +429,10 @@ public class CordovaPluginManager {
 	 * 4. collect all platform specific tags
 	 * 	
 	 */
-	private void completePluginInstallationToPlatform(CordovaPlugin plugin, ProjectGenerator generator, File platformProject, IProgressMonitor monitor) throws CoreException{
+	private void completePluginInstallationToPlatform(CordovaPlugin plugin, 
+			ProjectGenerator generator, 
+			File platformProject, FileOverwriteCallback overwrite,
+			IProgressMonitor monitor) throws CoreException{
 		if(generator == null ) return;
 			
 		File pluginHome = getPluginHomeDirectory(plugin);
@@ -420,7 +453,7 @@ public class CordovaPluginManager {
 			allActions.add(actionFactory.getCreatePluginJSAction(this.getCordovaPluginJSContent()));
 			allActions.addAll(collectActionsForPlatform(node, actionFactory));
 		}
-		runActions(allActions,false,monitor);
+		runActions(allActions,false,overwrite,monitor);
 	}
 	
 	private List<IPluginInstallationAction> getJSModuleActionsForPlatform(CordovaPlugin plugin,AbstractPluginInstallationActionsFactory factory) {

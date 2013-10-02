@@ -22,26 +22,57 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
-public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
+public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, FileOverwriteCallback{
 	static final String IMAGE_WIZBAN = "/icons/wizban/cordova_plugin_wiz.png";
 	private static final String DIALOG_SETTINGS_KEY = "CordovaPluginWizard";
+	
+	private static class OverwriteDialog extends MessageDialog{
+		public static final int YES_TO_ALL_INDEX = 0;
+		private String[] paths;
+
+		public OverwriteDialog(Shell parentShell, String[] paths) {
+			super(parentShell, "Overwrite Files", null, "Listed files will be overwritten, would you like to proceed with the installation?",
+					MessageDialog.QUESTION, new String[]{IDialogConstants.YES_TO_ALL_LABEL, IDialogConstants.CANCEL_LABEL}, 1);
+			this.paths = paths;
+		}
+		
+		@Override
+		protected Control createCustomArea(Composite parent) {
+			org.eclipse.swt.widgets.List list = new org.eclipse.swt.widgets.List(parent, SWT.SINGLE);
+			for (int i = 0; i < paths.length; i++) {
+				list.add(paths[i]);
+			}
+			return list;
+		}
+		
+	}
 	
 	private CordovaPluginSelectionPage pageOne;
 	private RegistryConfirmPage pageTwo;
 	private IStructuredSelection initialSelection;
-	private List<CordovaRegistryPluginVersion> plugins;
 	private HybridProject fixedProject;
 	
 	private class PluginInstallOperation extends WorkspaceModifyOperation{
@@ -51,25 +82,27 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 		private File dir;
 		private URI gitRepo;
 		private List<CordovaRegistryPluginVersion> plugins;
+		private FileOverwriteCallback fileOverwriteCallback;
 		
-		private PluginInstallOperation(CordovaPluginManager pm){
+		private PluginInstallOperation(CordovaPluginManager pm, FileOverwriteCallback overwrite){
 			this.pm = pm;
+			this.fileOverwriteCallback = overwrite;
 		}
 		
-		public PluginInstallOperation(File directory, CordovaPluginManager pm ){
-			this(pm);
+		public PluginInstallOperation(File directory, CordovaPluginManager pm, FileOverwriteCallback overwite ){
+			this(pm,overwite);
 			this.dir = directory;
 			opType = PLUGIN_SOURCE_DIRECTORY;
 		}
 		
-		public PluginInstallOperation(URI gitRepo, CordovaPluginManager pm ){
-			this(pm);
+		public PluginInstallOperation(URI gitRepo, CordovaPluginManager pm, FileOverwriteCallback overwite){
+			this(pm, overwite);
 			this.gitRepo = gitRepo;
 			opType = PLUGIN_SOURCE_GIT;
 		}
 		
-		public PluginInstallOperation(List<CordovaRegistryPluginVersion> plugins, CordovaPluginManager pm ){
-			this(pm);
+		public PluginInstallOperation(List<CordovaRegistryPluginVersion> plugins, CordovaPluginManager pm, FileOverwriteCallback overwite ){
+			this(pm,overwite);
 			this.plugins = plugins;
 			opType = PLUGIN_SOURCE_REGISTRY;
 		}
@@ -80,15 +113,15 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 			
 			switch (opType){
 			case PLUGIN_SOURCE_DIRECTORY:
-				pm.installPlugin(this.dir,monitor);
+				pm.installPlugin(this.dir,fileOverwriteCallback, monitor);
 				break;
 			case PLUGIN_SOURCE_GIT:
-				pm.installPlugin(this.gitRepo,null,null,monitor );
+				pm.installPlugin(this.gitRepo,null,null,fileOverwriteCallback,monitor );
 				break;
 			case PLUGIN_SOURCE_REGISTRY:
 				CordovaPluginRegistryManager regMgr = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
 				for (CordovaRegistryPluginVersion cordovaRegistryPluginVersion : plugins) {
-					pm.installPlugin(regMgr.getInstallationDirectory(cordovaRegistryPluginVersion,monitor),monitor);
+					pm.installPlugin(regMgr.getInstallationDirectory(cordovaRegistryPluginVersion,monitor),fileOverwriteCallback,monitor);
 				}
 				break;
 			default:
@@ -129,15 +162,15 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 		switch (pageOne.getPluginSourceType()) {
 		case PLUGIN_SOURCE_DIRECTORY:
 			File directory = new File(pageOne.getSelectedDirectory());
-			op=new PluginInstallOperation(directory, pm);
+			op=new PluginInstallOperation(directory, pm,this); 
 			break;
 		case PLUGIN_SOURCE_GIT:
 			URI uri = URI.create(pageOne.getSpecifiedGitURL());
-			op = new PluginInstallOperation(uri, pm);
+			op = new PluginInstallOperation(uri, pm, this);
 			break;
 		case PLUGIN_SOURCE_REGISTRY:
 			List<CordovaRegistryPluginVersion> plugins = pageTwo.getSelectedPluginVersions();
-			op = new PluginInstallOperation(plugins, pm);
+			op = new PluginInstallOperation(plugins, pm, this);
 			break;
 		default:
 			Assert.isTrue(false, "No valid plugin source can be determined");
@@ -192,8 +225,17 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard{
 		setDialogSettings(section);
 		pageOne.saveWidgetValues();
 	}
-	
-	
-	
 
+	@Override
+	public boolean isOverwiteAllowed(String[] files) {
+		final OverwriteDialog dialog = new OverwriteDialog(this.getShell(), files);
+		getShell().getDisplay().syncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				dialog.open();
+			}
+		});
+		return dialog.getReturnCode() == OverwriteDialog.YES_TO_ALL_INDEX;
+	}
 }

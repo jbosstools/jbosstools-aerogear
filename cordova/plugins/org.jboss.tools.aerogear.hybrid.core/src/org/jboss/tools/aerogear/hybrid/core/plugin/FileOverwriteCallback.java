@@ -8,20 +8,8 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.platform;
+package org.jboss.tools.aerogear.hybrid.core.plugin;
 
-import org.eclipse.core.runtime.CoreException;
-
-public interface IPluginInstallationAction {
-	
-	/** 
-	 * Returns a list of files that will be overwritten 
-	 * by the completion of this action.
-	 *
-	 * @return path(s) representing the files to be overwritten
-	 */
-	public String[] filesToOverwrite();
-	public void install() throws CoreException;
-	public void unInstall() throws CoreException;
-
+public interface FileOverwriteCallback {
+	public boolean isOverwiteAllowed(String[] files);
 }

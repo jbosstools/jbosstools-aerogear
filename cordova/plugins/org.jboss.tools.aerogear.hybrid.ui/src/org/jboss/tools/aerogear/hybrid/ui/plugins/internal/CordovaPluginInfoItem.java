@@ -31,6 +31,7 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 
 	private final CordovaPluginWizardResources resources;
 	private final CordovaPluginCatalogViewer viewer;
+	private Button checkbox;
 
 	public CordovaPluginInfoItem(Composite parent, int style, CordovaRegistryPluginInfo element, CordovaPluginWizardResources resources, CordovaPluginCatalogViewer viewer) {
 		super(parent, style, element);
@@ -41,8 +42,9 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 
 	@Override
 	protected void refresh() {
-		// TODO Auto-generated method stub
-
+		if(checkbox != null ){
+			viewer.modifySelection(getData(), checkbox.getSelection());
+		}
 	}
 	
 	private void createContent(){
@@ -56,7 +58,7 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.BEGINNING).span(1, 2).applyTo(checkboxContainer);
 		GridLayoutFactory.fillDefaults().spacing(1, 1).numColumns(2).applyTo(checkboxContainer);
 
-		final Button checkbox = new Button(checkboxContainer, SWT.CHECK | SWT.INHERIT_FORCE);
+		checkbox = new Button(checkboxContainer, SWT.CHECK | SWT.INHERIT_FORCE);
 		checkbox.setText(" "); //$NON-NLS-1$
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(checkbox);
 		checkbox.addListener(SWT.Selection, new Listener() {

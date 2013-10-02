@@ -34,7 +34,7 @@ public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 	private Label licenseLbl;
 	private Combo versionCombo;
 	private final CordovaPluginViewer viewer;
-	private CordovaRegistryPluginVersion currentSelectedVersion;
+	private static CordovaRegistryPluginVersion currentSelectedVersion;//static because multiple UI elements are created 
 
 	public CordovaPluginItem(Composite parent, int style, CordovaRegistryPlugin element, CordovaPluginWizardResources resources, CordovaPluginViewer viewer ) {
 		super(parent, style, element);

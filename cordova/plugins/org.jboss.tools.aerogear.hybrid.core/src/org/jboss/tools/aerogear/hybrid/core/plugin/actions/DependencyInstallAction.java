@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 
 public class DependencyInstallAction implements IPluginInstallationAction {
 
@@ -25,30 +26,38 @@ public class DependencyInstallAction implements IPluginInstallationAction {
 	private final URI uri;
 	private final String commit;
 	private final String  subdir;
+	private final FileOverwriteCallback overwriteCallback;
 	
 	
 	public DependencyInstallAction(String dependencyId, URI uri,
-			String commit, String subdir, HybridProject project) {
+			String commit, String subdir, HybridProject project, FileOverwriteCallback overwrite) {
 		this.project = project;
 		this.uri = uri;
 		this.dependencyPluginId = dependencyId;
 		this.commit = commit;
 		this.subdir = subdir;
+		this.overwriteCallback = overwrite;
 	}
 
 	@Override
 	public void install() throws CoreException {
 		CordovaPluginManager pluginManager = project.getPluginManager();
 		if(!pluginManager.isPluginInstalled(dependencyPluginId)){
-			pluginManager.installPlugin(uri,commit,subdir, new NullProgressMonitor());
+			pluginManager.installPlugin(uri,commit,subdir, overwriteCallback, new NullProgressMonitor());
 		}
 	}
 
 	@Override
 	public void unInstall() throws CoreException {
-		CordovaPluginManager pluginManager = project.getPluginManager();
-		pluginManager.unInstallPlugin(dependencyPluginId, new NullProgressMonitor());
+		// Let user uninstall them manually.
+//		CordovaPluginManager pluginManager = project.getPluginManager();
+//		pluginManager.unInstallPlugin(dependencyPluginId, new NullProgressMonitor());
+	}
 
+	@Override
+	public String[] filesToOverwrite() {
+		// no need to report here.
+		return null;
 	}
 
 }

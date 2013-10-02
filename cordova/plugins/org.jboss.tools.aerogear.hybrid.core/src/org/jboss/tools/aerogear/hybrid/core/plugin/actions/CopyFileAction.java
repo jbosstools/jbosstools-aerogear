@@ -45,14 +45,14 @@ public class CopyFileAction implements IPluginInstallationAction {
 			if(source.isDirectory()){
 				FileUtils.copyDirectory(source, target);
 			}
-			else if(target.exists() ){//source is a file
+			//source is a file
+			else if(target.exists() ){
 				if(target.isDirectory()){
 					FileUtils.copyFileToDirectory(source, target);
 					}
 				else{
 					FileUtils.copyFile(source, target);
 				}
-				
 			}else if(FilenameUtils.getExtension(target.toString()).isEmpty() ){// it is likely a directory
 				FileUtils.copyFileToDirectory(source, target);
 			}else{
@@ -69,7 +69,7 @@ public class CopyFileAction implements IPluginInstallationAction {
 	@Override
 	public void unInstall() throws CoreException {
 		File todelete = target;
-		if(source.isFile() && target.isDirectory()){//append the filename of this was a directory copy
+		if(source.isFile() && target.isDirectory()){//append the filename, this was a directory copy
 			 todelete = new File(target, source.getName());
 		}
 		if(todelete.isDirectory()){
@@ -79,9 +79,27 @@ public class CopyFileAction implements IPluginInstallationAction {
 				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Error deleting file "+target, e));
 			}
 		}else
-		if(!todelete.delete()){
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Could not delete "+ target));
+		{
+			try {
+				FileUtils.deleteDirectory(todelete);
+			} catch (IOException e) {
+				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Could not delete "+ target));
+			}
 		}
+	}
+
+	@Override
+	public String[] filesToOverwrite() {
+		if(target.exists()){
+			if(source.isFile() && target.isDirectory()){
+				File file = new File(target,source.getName());
+				if(file.exists()){
+					return new String[]{file.toString()};
+				}
+			}
+			return new String[]{target.toString()};
+		}
+		return null;
 	}
 
 }

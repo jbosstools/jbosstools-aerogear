@@ -109,6 +109,12 @@ public class XMLConfigFileAction implements IPluginInstallationAction {
 							+ " with xpath expression "+ parent, e));
 		}
 	}
+
+	@Override
+	public String[] filesToOverwrite() {
+		// nothing is overwritten but modified
+		return null;
+	}
 	
 
 }

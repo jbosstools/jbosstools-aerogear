@@ -50,4 +50,12 @@ public class CreateFileAction implements IPluginInstallationAction {
 		}
 	}
 
+	@Override
+	public String[] filesToOverwrite() {
+		if(target.exists()){
+			return new String[]{target.toString()};
+		}
+		return null;
+	}
+
 }

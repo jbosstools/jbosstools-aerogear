@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.osgi.framework.Bundle;
 /**
  * Abstract class for all the native project generators delegates.
@@ -118,7 +119,13 @@ public abstract class AbstractProjectGeneratorDelegate {
 		HybridProject project = HybridProject.getHybridProject(getProject());
 		if( project == null ) return;
 		CordovaPluginManager pluginManager = new CordovaPluginManager(project);
-		pluginManager.completePluginInstallationsForPlatform(getDestination(), getTargetShortName(),monitor);
+		pluginManager.completePluginInstallationsForPlatform(getDestination(), getTargetShortName(),new FileOverwriteCallback() {
+			
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		},monitor);
 	}
 
 	/**

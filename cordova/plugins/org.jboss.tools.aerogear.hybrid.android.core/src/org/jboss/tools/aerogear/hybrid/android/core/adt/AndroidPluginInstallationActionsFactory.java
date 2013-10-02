@@ -27,7 +27,8 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.actions.XMLConfigFileAction;
 
 public class AndroidPluginInstallationActionsFactory extends AbstractPluginInstallationActionsFactory
 {
-	 public static class AndroidSourceFileAction extends CopyFileAction{
+	//same as copy only removes empty directories. 
+	public static class AndroidSourceFileAction extends CopyFileAction{
 		private File target;
 
 		public AndroidSourceFileAction(File source, File target) {

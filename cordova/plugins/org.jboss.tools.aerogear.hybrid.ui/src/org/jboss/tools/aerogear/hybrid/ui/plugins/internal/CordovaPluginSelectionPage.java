@@ -194,6 +194,9 @@ public class CordovaPluginSelectionPage extends WizardPage {
 			@Override
 			public void handleEvent(Event event) {
 				setPageComplete(validatePage());
+				if(getPluginSourceType()==PLUGIN_SOURCE_REGISTRY){
+					updateInstalledPluginsFilter();
+				}
 			}
 		});
 		
@@ -365,9 +368,6 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	}
 	
 	private boolean validateRegistryTab() {
-		//pigybacking filter update here is not probably ideal 
-		// however it is the cheapest way.
-		updateInstalledPluginsFilter();
 		List<CordovaRegistryPluginInfo> infos = getCheckedCordovaRegistryItems();
 		if (infos.isEmpty()){
 			setMessage("Specify Cordova plugin(s) for installation", ERROR);

@@ -19,6 +19,7 @@ import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.test.Activator;
 import org.jboss.tools.aerogear.hybrid.test.TestProject;
@@ -69,7 +70,14 @@ public class PluginInstallationTests {
 	@Test
 	public void installPluginTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER), new NullProgressMonitor());
+		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER), new FileOverwriteCallback() {
+			
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		},
+		new NullProgressMonitor());
 		IProject prj = project.getProject();
 		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_CHILDBROWSER);
 		assertNotNull(plgFolder);
@@ -89,7 +97,13 @@ public class PluginInstallationTests {
 	@Test
 	public void installVariablePluginTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_VARIABLE), new NullProgressMonitor());
+		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_VARIABLE), new FileOverwriteCallback() {
+			
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		},new NullProgressMonitor());
 		IProject prj = project.getProject();
 		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_VARIABLE);
 		assertNotNull(plgFolder);
@@ -109,7 +123,13 @@ public class PluginInstallationTests {
 	public void gitInstallPluginTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
 		File repo = new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER);
-		pm.installPlugin(repo.toURI(), "test_tag", null, new NullProgressMonitor());
+		pm.installPlugin(repo.toURI(), "test_tag", null,new FileOverwriteCallback() {
+			
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		}, new NullProgressMonitor());
 		IProject prj = project.getProject();
 		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_CHILDBROWSER);
 		assertNotNull(plgFolder);
@@ -130,7 +150,13 @@ public class PluginInstallationTests {
 	@Test
 	public void listPluginsTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER), new NullProgressMonitor());
+		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER),new FileOverwriteCallback() {
+			
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		}, new NullProgressMonitor());
 		List<CordovaPlugin> plugins = pm.getInstalledPlugins();
 		boolean found = false;
 		for (CordovaPlugin cordovaPlugin : plugins) {
@@ -145,7 +171,13 @@ public class PluginInstallationTests {
 	@Test
 	public void pluginNotInstalledTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER), new NullProgressMonitor());
+		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER),new FileOverwriteCallback() {
+			
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		}, new NullProgressMonitor());
 		assertFalse(pm.isPluginInstalled("my.madeup.id"));
 		assertTrue(pm.isPluginInstalled(PLUGIN_ID_CHILDBROWSER));
 	}
