@@ -10,7 +10,9 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.plugin.actions;
 
+import java.io.File;
 import java.net.URI;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -18,6 +20,9 @@ import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugin;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 
 public class DependencyInstallAction implements IPluginInstallationAction {
 
@@ -43,7 +48,20 @@ public class DependencyInstallAction implements IPluginInstallationAction {
 	public void install() throws CoreException {
 		CordovaPluginManager pluginManager = project.getPluginManager();
 		if(!pluginManager.isPluginInstalled(dependencyPluginId)){
-			pluginManager.installPlugin(uri,commit,subdir, overwriteCallback, new NullProgressMonitor());
+			if( uri != null){
+				pluginManager.installPlugin(uri,commit,subdir, overwriteCallback, new NullProgressMonitor());
+			}else{//install from registry
+				CordovaPluginRegistryManager manager = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
+				CordovaRegistryPlugin plugin = manager.getCordovaPluginInfo(dependencyPluginId);
+				List<CordovaRegistryPluginVersion> versions = plugin.getVersions();
+				for (CordovaRegistryPluginVersion version : versions) {
+					if(plugin.getLatestVersion().equals(version.getVersionNumber())){
+						File f =manager.getInstallationDirectory(version, new NullProgressMonitor());
+						pluginManager.installPlugin(f, this.overwriteCallback, new NullProgressMonitor());
+					}
+				}
+			}
+			
 		}
 	}
 

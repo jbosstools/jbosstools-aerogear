@@ -315,7 +315,11 @@ public class CordovaPluginManager {
 			String url = getAttributeValue(dependencyNode, "url");
 			String commit = getAttributeValue(dependencyNode, "commit");
 			String subdir = getAttributeValue(dependencyNode, "subdir");
-			DependencyInstallAction action = new DependencyInstallAction(dependencyId, URI.create(url), commit, subdir, this.project, overwrite);
+			URI uri = null;
+			if(url != null && !url.isEmpty()){
+				uri = URI.create(url);
+			}
+			DependencyInstallAction action = new DependencyInstallAction(dependencyId, uri, commit, subdir, this.project, overwrite);
 			actions.add(action);
 		}
 		File destination = new File(dir.getLocation().toFile(), id);
