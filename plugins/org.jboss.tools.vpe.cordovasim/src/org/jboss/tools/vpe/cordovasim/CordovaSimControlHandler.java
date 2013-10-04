@@ -24,9 +24,34 @@ public class CordovaSimControlHandler extends BrowserSimControlHandler {
 
 	@Override
 	public void goBack() {
-		boolean backButtonProcessed = (Boolean) browser.evaluate("return !!window.opener.bsBackbuttonPressed && !window.opener.bsBackbuttonPressed()"); //$NON-NLS-1$
-		if (!backButtonProcessed) {
+		if (!isBackButtonProcessed()) {
 			super.goBack(); 
 		}
+	}
+	
+	@Override
+	public void goHome() { 
+		if (!isHomeButtonProcessed()) {
+			super.goHome(); 
+		}
+	}
+	
+	
+	/**
+	 * @return {@link Boolean} that indicates whether device's backButton was overridden via PhoneGap's Event API 
+	 */
+	private boolean isBackButtonProcessed() { 
+		return (Boolean) browser.evaluate("return !!window.opener.bsBackbuttonPressed && !window.opener.bsBackbuttonPressed()");
+	}
+	
+	/**
+	 * This method will return true only when inAppBrowser is shown. 
+	 * Moreover it's impossible to override homeButton for Android 4.0. 
+	 * Pressing home button when inAppBrowser is shown will simply close it  
+	 * 
+	 * @return {@link Boolean} that indicates whether device's homeButton was overridden 
+	 */
+	private boolean isHomeButtonProcessed() { // XXX 
+		return (Boolean) browser.evaluate("return !!window.opener.overrideHomeButtonForInAppBrowser && !!window.opener.bsBackbuttonPressed && !window.opener.bsBackbuttonPressed()");
 	}
 }
