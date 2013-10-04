@@ -41,6 +41,7 @@ import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPreferencesStorage;
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
+import org.jboss.tools.vpe.cordovasim.plugins.inappbrowser.InAppBrowserLoader;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
 
 /**
@@ -111,17 +112,24 @@ public class CordovaSimRunner {
 
 				@Override
 				public void open(WindowEvent event) {
-					if (browserSim == null || browserSim.getBrowser().isDisposed()
+					if (InAppBrowserLoader.isInAppBrowserEvent(event) && (browserSim != null)) {
+						Browser browserSimBrowser = browserSim.getBrowser();
+						if (browserSimBrowser != null) {
+							InAppBrowserLoader.processInAppBrowser(browser, browserSimBrowser, event);
+						}
+					} else {
+						if (browserSim == null || browserSim.getBrowser().isDisposed()
 							|| browserSim.getBrowser().getShell().isDisposed()) {
 						createBrowserSim(sp, browser, homeUrl);
-					} else if (oldBrowser == browserSim.getBrowser()) {
-						browserSim.reinitSkin();
-						browserSim.getBrowser().addLocationListener(new RippleInjector());
-					} else if (oldBrowser != browserSim.getBrowser()) {
-						browserSim.getBrowser().addLocationListener(new RippleInjector());
+						} else if (oldBrowser == browserSim.getBrowser()) {
+							browserSim.reinitSkin();
+							browserSim.getBrowser().addLocationListener(new RippleInjector());
+						} else if (oldBrowser != browserSim.getBrowser()) {
+							browserSim.getBrowser().addLocationListener(new RippleInjector());
+						}					
+						event.browser = browserSim.getBrowser();
+						oldBrowser = browserSim.getBrowser();
 					}
-					event.browser = browserSim.getBrowser();
-					oldBrowser = browserSim.getBrowser();
 				}
 			});
 			shell.addControlListener(new ControlAdapter() {
