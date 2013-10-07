@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>vpe</artifactId>
-		<version>3.5.0-SNAPSHOT</version>
+		<version>3.5.100-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.vpe</groupId>
 	<artifactId>vpe.site</artifactId>
 	<name>vpe.site</name>
-	<version>3.5.0-SNAPSHOT</version>
+	<version>3.5.100-SNAPSHOT</version>
 	<packaging>eclipse-repository</packaging>
 </project>
