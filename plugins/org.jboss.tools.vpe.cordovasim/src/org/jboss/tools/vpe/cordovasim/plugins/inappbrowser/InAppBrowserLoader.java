@@ -45,7 +45,7 @@ public class InAppBrowserLoader {
 				browserSimBrowser.setParent(browserSimParentComposite);
 				inAppBrowser.dispose();
 				browserSimParentComposite.layout();		
-				rippleToolBarBrowser.execute("ripple('event').trigger('browser-close');"); // fire 'exit'
+				rippleToolBarBrowser.execute("ripple('event').trigger('browser-close');"); // fire 'exit' event
 			}
 		});
 		
@@ -53,17 +53,23 @@ public class InAppBrowserLoader {
 			
 			@Override
 			public void changing(LocationEvent event) {
-				rippleToolBarBrowser.execute("ripple('event').trigger('browser-start');"); // fire 'loadstart'
+				if (isChildBrowserPluginPlugged(rippleToolBarBrowser)) {
+					rippleToolBarBrowser.execute("ripple('emulatorBridge').window().ChildBrowser.onLocationChange('" + event.location  +"');"); // fire 'ChildBrowser.onLocationChange' event 
+				}
+				rippleToolBarBrowser.execute("ripple('event').trigger('browser-start');"); // fire 'loadstart' event
 			}
 			
 			@Override
 			public void changed(LocationEvent event) {
-				rippleToolBarBrowser.execute("ripple('event').trigger('browser-stop');"); // fire 'loadstop'
+				rippleToolBarBrowser.execute("ripple('event').trigger('browser-stop');"); // fire 'loadstop' event
 			}
 		});
 				
 		new ExecScriptFunction(browserSimBrowser, inAppBrowser, "csInAppExecScript");
 	}
-
+	
+	private static boolean isChildBrowserPluginPlugged (Browser browser) {
+		return (Boolean) browser.evaluate("return !! ripple('emulatorBridge').window().ChildBrowser");
+	}
 }
 
