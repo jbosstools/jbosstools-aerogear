@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.ui.CocoaUIEnhancer;
@@ -66,22 +65,22 @@ public class CordovaSimRunner {
 			if (PlatformUtil.OS_MACOSX.equals(PlatformUtil.getOs())) {
 				CocoaUIEnhancer.initializeMacOSMenuBar(Messages.CordovaSim_CORDOVA_SIM);
 			}
-			CordovaSimArgs cordovaSimArgs = CordovaSimArgs.parseArgs(args);
-			BrowserSimArgs.standalone = CordovaSimArgs.standalone;
-			port = Integer.parseInt(cordovaSimArgs.getPort());
-			File rootFolder = new File(cordovaSimArgs.getRootFolder());
+			CordovaSimArgs.parseArgs(args);
+			port = CordovaSimArgs.getPort();
+			File rootFolder = new File(CordovaSimArgs.getRootFolder());
 			
 			server = ServerCreator.createServer(rootFolder.getAbsolutePath(), port);// XXX
 			server.start();
 			Connector connector = server.getConnectors()[0];
 			port = connector.getLocalPort(); // for the case if port equals 0 is requested (any free port)
+			CordovaSimArgs.setPort(port);
 
 			display = Display.getDefault();
 			final Shell shell = new Shell(display);
 			setShellAttributes(shell);
 			shell.setLayout(new FillLayout());
 			final Browser browser = new Browser(shell, SWT.WEBKIT);
-			final String homeUrl = "http://localhost:" + port + "/" + cordovaSimArgs.getStartPage();
+			final String homeUrl = "http://localhost:" + port + "/" + CordovaSimArgs.getStartPage();
 			browser.setUrl(homeUrl + "?enableripple=true");
 			
 			shell.addListener(SWT.Close, new Listener() {

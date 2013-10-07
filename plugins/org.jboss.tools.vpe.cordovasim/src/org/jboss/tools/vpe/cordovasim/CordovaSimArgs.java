@@ -15,66 +15,66 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
+import org.jboss.tools.vpe.browsersim.BrowserSimLogger;
 
 public class CordovaSimArgs {
-	private static final String DEFAULT_PORT = "0";// any free port
-	private String rootFolder;
-	private String startPage;
-	private String port;
-	public static boolean standalone;
+	private static final int DEFAULT_PORT = 0;// any free port
 	
-	public CordovaSimArgs(String rootFolder, String startPage, String port, boolean isStandalone) {
-		this.rootFolder = rootFolder;
-		this.startPage = startPage;
-		this.port = port;
-		standalone = isStandalone;
-	}
+	private static String rootFolder;
+	private static String startPage;
+	private static int port;
+	public static boolean standalone;
 
-	public static CordovaSimArgs parseArgs(String[] args) {
+	public static void parseArgs(String[] args) {
 		List<String> params = new ArrayList<String>(Arrays.asList(args));
-		boolean notStandalone = params.contains(BrowserSimArgs.NOT_STANDALONE);
-		if (notStandalone) {
+		standalone = !params.contains(BrowserSimArgs.NOT_STANDALONE);
+		if (!standalone) {
 			params.remove(BrowserSimArgs.NOT_STANDALONE);
 		}
 		
 		int portParameterIndex = params.indexOf("-port");
-		String port;
 		if (portParameterIndex >= 0) {
 			params.remove(portParameterIndex);
-			port = params.remove(portParameterIndex);
+			try {
+				port = Integer.parseInt(params.remove(portParameterIndex));
+			} catch (NumberFormatException e) {
+				BrowserSimLogger.logError("Incorrect port value", e); //$NON-NLS-1$
+				port = DEFAULT_PORT;
+			}
 		} else {
 			port = DEFAULT_PORT;
 		}
-		String startPage;
+		
 		if (params.size() > 0) {
 			startPage = params.remove(params.size() - 1); // the last parameter
 		} else {
 			startPage = "";
 		}
 		
-		String rootFolder;
 		if (params.size() > 0) {
 			rootFolder = params.remove(params.size() - 1); // the parameter before the last one
 		} else {
 			rootFolder = ".";
-		}	
-
-		return new CordovaSimArgs(rootFolder, startPage, port, !notStandalone);
+		}
 	}
 
-	public String getRootFolder() {
+	public static String getRootFolder() {
 		return rootFolder;
 	}
 
-	public String getStartPage() {
+	public static String getStartPage() {
 		return startPage;
 	}
 
-	public String getPort() {
+	public static int getPort() {
 		return port;
 	}
+	
+	public static void setPort(int port) {
+		CordovaSimArgs.port = port;
+	}
 
-	public boolean isStandalone() {
+	public static boolean isStandalone() {
 		return standalone;
 	}
 }

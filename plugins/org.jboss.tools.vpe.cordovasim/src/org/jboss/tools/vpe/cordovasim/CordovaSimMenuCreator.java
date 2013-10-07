@@ -22,7 +22,6 @@ import org.jboss.tools.vpe.browsersim.ui.skin.BrowserSimSkin;
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CordovaSimMenuCreator extends BrowserSimMenuCreator {
-
 	public CordovaSimMenuCreator(BrowserSimSkin skin, CommonPreferences cp, SpecificPreferences sp, ControlHandler controlHandler, String homeUrl) {
 		super(skin, cp, sp, controlHandler, homeUrl);
 	}
@@ -33,5 +32,10 @@ public class CordovaSimMenuCreator extends BrowserSimMenuCreator {
 		ToolsMenuCreator.addScreenshotMenuItem(contextMenu, skin, commonPreferences);
 		ToolsMenuCreator.addLiveReloadItem(contextMenu, specificPreferences);
 		ToolsMenuCreator.addTouchEventsItem(contextMenu, specificPreferences);
+	}
+	
+	@Override
+	protected void addFileItems(Menu menu, BrowserSimSkin skin,	CommonPreferences commonPreferences, SpecificPreferences specificPreferences) {
+		new CordovaSimFileMenuCreator().addItems(menu, skin, commonPreferences, specificPreferences);	
 	}
 }
