@@ -25,15 +25,15 @@ public class InAppBrowserLoader {
 
 	public static boolean isInAppBrowserEvent(WindowEvent openWindowEvent) {
 		Browser parentBrowser = (Browser) openWindowEvent.widget;
-		return Boolean.TRUE.equals(parentBrowser.evaluate("return !!window._csInAppBrowserOpen"));
+		return Boolean.TRUE.equals(parentBrowser.evaluate("return !!window.needToOpenInAppBrowser"));
 	}
 	
 	public static void processInAppBrowser(final Browser rippleToolBarBrowser, final Browser browserSimBrowser, WindowEvent openWindowEvent) {
-		rippleToolBarBrowser.execute("window._csInAppBrowserOpen = false");
+		rippleToolBarBrowser.execute("window.needToOpenInAppBrowser = false");
 		final Composite browserSimParentComposite = browserSimBrowser.getParent();
 		final Browser inAppBrowser = new Browser(browserSimParentComposite, SWT.WEBKIT);
 		inAppBrowser.setLayoutData(browserSimBrowser.getLayoutData());
-		browserSimBrowser.setParent(inAppBrowser); // just change browsers parent for hiding browserSim's browser
+		browserSimBrowser.setParent(inAppBrowser); // hiding browserSim's browser by changing parent   
 		
 		openWindowEvent.browser = inAppBrowser;  
 		browserSimParentComposite.layout();
@@ -53,15 +53,20 @@ public class InAppBrowserLoader {
 			
 			@Override
 			public void changing(LocationEvent event) {
-				if (isChildBrowserPluginPlugged(rippleToolBarBrowser)) {
-					rippleToolBarBrowser.execute("ripple('emulatorBridge').window().ChildBrowser.onLocationChange('" + event.location  +"');"); // fire 'ChildBrowser.onLocationChange' event 
+				if (event.top) {
+					if (isChildBrowserPluginPlugged(rippleToolBarBrowser)) {
+						rippleToolBarBrowser.execute("ripple('emulatorBridge').window().ChildBrowser.onLocationChange('" + event.location  +"');"); // fire 'ChildBrowser.onLocationChange' event 
+					} else {
+						rippleToolBarBrowser.execute("ripple('event').trigger('browser-start');"); // fire 'loadstart' event
+					}
 				}
-				rippleToolBarBrowser.execute("ripple('event').trigger('browser-start');"); // fire 'loadstart' event
 			}
 			
 			@Override
 			public void changed(LocationEvent event) {
-				rippleToolBarBrowser.execute("ripple('event').trigger('browser-stop');"); // fire 'loadstop' event
+				if (event.top) {
+					rippleToolBarBrowser.execute("ripple('event').trigger('browser-stop');"); //  fire 'loadstop' event
+				}
 			}
 		});
 				
