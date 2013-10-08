@@ -113,10 +113,7 @@ public class CordovaSimRunner {
 				@Override
 				public void open(WindowEvent event) {
 					if (InAppBrowserLoader.isInAppBrowserEvent(event) && (browserSim != null)) {
-						Browser browserSimBrowser = browserSim.getBrowser();
-						if (browserSimBrowser != null) {
-							InAppBrowserLoader.processInAppBrowser(browser, browserSimBrowser, event);
-						}
+						InAppBrowserLoader.processInAppBrowser(browser, browserSim, event);
 					} else {
 						if (browserSim == null || browserSim.getBrowser().isDisposed()
 							|| browserSim.getBrowser().getShell().isDisposed()) {
