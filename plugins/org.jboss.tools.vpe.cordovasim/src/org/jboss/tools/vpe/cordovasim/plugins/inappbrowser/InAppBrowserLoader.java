@@ -16,6 +16,8 @@ import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.jboss.tools.vpe.browsersim.browser.BrowserSimBrowser;
 import org.jboss.tools.vpe.browsersim.browser.WebKitBrowserFactory;
@@ -53,6 +55,15 @@ public class InAppBrowserLoader {
 				inAppBrowser.dispose();
 				browserSimParentComposite.layout();		
 				rippleToolBarBrowser.execute("ripple('event').trigger('browser-close');"); // fire 'exit' event
+			}
+		});
+		
+		inAppBrowser.addDisposeListener(new DisposeListener() {
+			
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				browserSimBrowser.setParent(browserSimParentComposite);
+				browserSimParentComposite.layout();		
 			}
 		});
 		
