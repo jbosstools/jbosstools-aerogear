@@ -67,7 +67,7 @@ public class AndroidPluginInstallationActionsFactory extends AbstractPluginInsta
 
 	@Override
 	public IPluginInstallationAction getSourceFileAction(String src,
-			String targetDir, String framework, String compilerFlags) {
+			String targetDir, String framework, String pluginId, String compilerFlags) {
 		File source = new File(getPluginDirectory(), src);
 		File target = new File(getProjectDirectory(), targetDir);
 		return new AndroidSourceFileAction(source, target);
@@ -79,7 +79,7 @@ public class AndroidPluginInstallationActionsFactory extends AbstractPluginInsta
 	}
 
 	@Override
-	public IPluginInstallationAction getHeaderFileAction(String src) {
+	public IPluginInstallationAction getHeaderFileAction(String src, String targetDir, String pluginId) {
 		throw new UnsupportedOperationException("Not relevant for Android");
 	}
 
@@ -116,7 +116,7 @@ public class AndroidPluginInstallationActionsFactory extends AbstractPluginInsta
 	public IPluginInstallationAction getJSModuleAction(String src,
 			String pluginId) {
 		File source = new File(getPluginDirectory(), src);
-		File target = new File(AndroidProjectUtils.getPlatformWWWDirectory(getProjectDirectory()), "plugins/"+pluginId+"/" );
+		File target = new File(AndroidProjectUtils.getPlatformWWWDirectory(getProjectDirectory()), PlatformConstants.DIR_PLUGINS+File.separator+pluginId+File.separator );
 		if(!target.isDirectory()){// create the target directory
 			target.mkdirs();
 		}

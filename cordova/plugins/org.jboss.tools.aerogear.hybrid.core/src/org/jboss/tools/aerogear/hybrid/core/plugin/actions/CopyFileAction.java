@@ -29,8 +29,8 @@ import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
  */
 public class CopyFileAction implements IPluginInstallationAction {
 	
-	private final File source;
-	private final File target;
+	protected final File source;
+	protected final File target;
 	
 	public CopyFileAction(File source, File target ){
 		Assert.isNotNull(source);
@@ -81,8 +81,8 @@ public class CopyFileAction implements IPluginInstallationAction {
 		}else
 		{
 			try {
-				FileUtils.deleteDirectory(todelete);
-			} catch (IOException e) {
+				todelete.delete();
+			} catch (SecurityException e) {
 				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Could not delete "+ target));
 			}
 		}

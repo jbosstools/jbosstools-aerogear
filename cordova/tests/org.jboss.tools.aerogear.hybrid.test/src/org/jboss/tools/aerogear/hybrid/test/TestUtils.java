@@ -18,7 +18,7 @@ public class TestUtils {
 		f.deleteOnExit();
 		FileOutputStream fout = null;
 		FileChannel out = null;
-		InputStream in = TestUtils.class.getResourceAsStream("/"+fileName);;
+		InputStream in = TestUtils.class.getResourceAsStream("/"+fileName);
 		try {
 			fout = new FileOutputStream(f);
 			out = fout.getChannel();

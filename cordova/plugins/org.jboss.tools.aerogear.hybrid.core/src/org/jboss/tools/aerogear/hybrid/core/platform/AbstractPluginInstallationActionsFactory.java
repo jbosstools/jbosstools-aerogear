@@ -27,11 +27,11 @@ public abstract class AbstractPluginInstallationActionsFactory {
 	}
 
 	public abstract  IPluginInstallationAction getSourceFileAction(String src,
-			String targetDir, String framework, String compilerFlags);
+			String targetDir, String framework, String pluginId, String compilerFlags);
 
 	public abstract IPluginInstallationAction getResourceFileAction(String src);
 	 
-	public abstract IPluginInstallationAction getHeaderFileAction(String src);
+	public abstract IPluginInstallationAction getHeaderFileAction(String src, String targetDir, String pluginId);
 
 	public abstract IPluginInstallationAction getAssetAction(String src, String target);
 

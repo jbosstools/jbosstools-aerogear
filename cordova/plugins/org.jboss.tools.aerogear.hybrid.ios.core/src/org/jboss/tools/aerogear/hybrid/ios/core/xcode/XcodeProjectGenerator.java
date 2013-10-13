@@ -120,7 +120,7 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 
 	@Override
 	protected File getPlatformWWWDirectory() {
-		return new File(getDestination(), "www");
+		return XCodeProjectUtils.getPlatformWWWDirectory(getDestination());
 	}
 	
 	private URL getTemplateFile(String path){

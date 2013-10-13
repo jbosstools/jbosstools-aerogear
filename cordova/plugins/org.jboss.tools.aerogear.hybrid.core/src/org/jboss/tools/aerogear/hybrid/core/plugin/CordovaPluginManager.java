@@ -572,8 +572,11 @@ public class CordovaPluginManager {
 		ArrayList<IPluginInstallationAction> list = new ArrayList<IPluginInstallationAction>();
 		NodeList headerFiles = CordovaPluginXMLHelper.getHeaderFileNodes(node);
 		for (int i = 0; i < headerFiles.getLength(); i++) {
-			String src = getAttributeValue(headerFiles.item(i), "src");
-			IPluginInstallationAction action = factory.getHeaderFileAction(src);
+			Node current = headerFiles.item(i);
+			String src = getAttributeValue(current, "src");
+			String targetDir = getAttributeValue(current,"target-dir" );
+			String id = CordovaPluginXMLHelper.getAttributeValue(node.getOwnerDocument().getDocumentElement(), "id");
+			IPluginInstallationAction action = factory.getHeaderFileAction(src,targetDir,id);
 			list.add(action);
 		}
 		return list;
@@ -601,7 +604,8 @@ public class CordovaPluginManager {
 			String targetDir = getAttributeValue(current,"target-dir" );
 			String framework = getAttributeValue(current,"framework" );
 			String compilerFlags = getAttributeValue(current, "compiler-flags");
-			IPluginInstallationAction action = factory.getSourceFileAction(src, targetDir, framework, compilerFlags);
+			String id = CordovaPluginXMLHelper.getAttributeValue(node.getOwnerDocument().getDocumentElement(), "id");
+			IPluginInstallationAction action = factory.getSourceFileAction(src, targetDir, framework,id, compilerFlags);
 			list.add(action);
 		}
 		return list;
