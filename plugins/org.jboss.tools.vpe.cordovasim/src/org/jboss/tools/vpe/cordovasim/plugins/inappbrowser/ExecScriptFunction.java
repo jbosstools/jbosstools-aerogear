@@ -19,41 +19,69 @@ import org.eclipse.swt.browser.BrowserFunction;
  */
 public class ExecScriptFunction extends BrowserFunction {
 	private Browser inAppBrowser;
-	
-	public ExecScriptFunction(Browser browser, Browser inAppBrowser, String name) {
-		super(browser, name);
+
+	public ExecScriptFunction(Browser BrowserSimBrowser, Browser inAppBrowser, String name) {
+		super(BrowserSimBrowser, name);
 		this.inAppBrowser = inAppBrowser;
 	}
-	
-	
+
 	@Override
-	public Object function(Object[] arguments) {
+	public Object function(Object[] arguments) { // called from ripple.js 'injectScriptCode' function
 		String code = null;
-		String success = null;
-		String fail = null;
-		
+		String successCallBackName = null;
+		String failCallBackName = null;
+
 		if (arguments != null) {
-			if (arguments[0] != null) {
+			if (arguments.length > 0 && arguments[0] != null) {
 				code = arguments[0].toString();
 			}
-			if (arguments[1] != null) {
-				success = arguments[1].toString();
+			if (arguments.length > 1 && arguments[1] != null) {
+				successCallBackName = arguments[1].toString();
 			}
-			if (arguments[2] != null) {
-				fail = arguments[2].toString();
+			if (arguments.length > 2 && arguments[2] != null) {
+				failCallBackName = arguments[2].toString();
 			}
 
 			if (code != null) {
-				inAppBrowser.execute(code);
-				if (success != null) {
-					getBrowser().execute("(" + success + "())");
-				} 
-			} else { //XXX not really good
-				getBrowser().execute("(" + fail + "())");
-			}		
+				executeCode(code, successCallBackName, failCallBackName);
+			} else if (failCallBackName != null) {
+				processCallBackFunction(failCallBackName);
+			}
+		}
+
+		return null;
+	}
+	
+	private void executeCode(String code, String successCallBackName, String failCallBackName) {
+		boolean codeSuccessfullyExecuted = false;
+		codeSuccessfullyExecuted = inAppBrowser.execute(
+													"(function(){"
+														+ "var f = function(){" + code + "};"
+														+ "if (document.readyState === 'complete') {"
+													    + 	"f();"
+													    + "} else {"
+													    + 	"window.addEventListener('load', f);"
+													    + "}"
+													+ "})()");
+		
+		if (successCallBackName != null && codeSuccessfullyExecuted) {
+			processCallBackFunction(successCallBackName);
+		} else if (failCallBackName != null) {
+			processCallBackFunction(failCallBackName);
 		}
 		
-		return null;
+		deleteCallBacksFromWindowProperties(successCallBackName, failCallBackName);
+	}
+	
+	private void processCallBackFunction(String callBackName) {
+		getBrowser().execute("(window['" + callBackName + "']())()");
+	}
+	
+	private void deleteCallBacksFromWindowProperties(String successCallBackName, String failCallBackName) {
+		getBrowser().execute("(function(){"
+								+ "delete window['" + successCallBackName + "'];"
+								+ "delete window['" + failCallBackName + "'];"
+							 +"})()");
 	}
 	
 }
