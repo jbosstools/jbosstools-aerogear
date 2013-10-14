@@ -64,6 +64,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 		boolean useSkins = true;
 		boolean enableLiveReload = false;
 		int liveReloadPort = DEFAULT_LIVE_RELOAD_PORT;
+		boolean enableTouchEvents = false;
 		Point cordovaBrowserLocation = null;
 		Point cordovaBrowserSize = null;
 
@@ -96,6 +97,11 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 				node = document.getElementsByTagName(PREFERENCES_LIVE_RELOAD_PORT).item(0);
 				if (!PreferencesUtil.isNullOrEmpty(node)) {
 					liveReloadPort = Integer.parseInt(node.getTextContent());
+				}
+				
+				node = document.getElementsByTagName(PREFERENCES_TOUCH_EVENTS).item(0);
+				if (!PreferencesUtil.isNullOrEmpty(node)) {
+					enableTouchEvents = Boolean.parseBoolean(node.getTextContent());
 				}
 				
 				node = document.getElementsByTagName(PREFERENCES_ORIENTATION_ANGLE).item(0);
@@ -141,7 +147,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 					}
 				}
 				
-				return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort,
+				return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents,
 						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize);
 			}
 		} catch (SAXException e) {
@@ -169,7 +175,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 
 	@Override
 	protected SpecificPreferences createBlankPreferences() {
-		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, 0, null, null, null);
+		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, false, 0, null, null, null);
 	}
 
 	@Override
@@ -212,6 +218,10 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			Element liveReloadPort = doc.createElement(PREFERENCES_LIVE_RELOAD_PORT);
 			liveReloadPort.setTextContent(String.valueOf(sp.getLiveReloadPort()));
 			rootElement.appendChild(liveReloadPort);
+			
+			Element enableTouchEvents = doc.createElement(PREFERENCES_TOUCH_EVENTS);
+			enableTouchEvents.setTextContent(String.valueOf(sp.isEnableTouchEvents()));
+			rootElement.appendChild(enableTouchEvents);
 			
 			Element cordova = doc.createElement(PREFERENCES_CORDOVA);
 			
