@@ -17,15 +17,17 @@
  under the License.
  */
 
-@interface CDVConfigParser : NSObject <NSXMLParserDelegate>
-{
-    NSString* featureName;
-}
+#import <Foundation/Foundation.h>
+#import <CoreLocation/CoreLocation.h>
 
-@property (nonatomic, readonly, strong) NSMutableDictionary* pluginsDict;
-@property (nonatomic, readonly, strong) NSMutableDictionary* settings;
-@property (nonatomic, readonly, strong) NSMutableArray* whitelistHosts;
-@property (nonatomic, readonly, strong) NSMutableArray* startupPluginNames;
-@property (nonatomic, readonly, strong) NSString* startPage;
+@interface NSError (JSONMethods)
+
+- (NSString*)JSONRepresentation;
+
+@end
+
+@interface CLLocation (JSONMethods)
+
+- (NSString*)JSONRepresentation;
 
 @end

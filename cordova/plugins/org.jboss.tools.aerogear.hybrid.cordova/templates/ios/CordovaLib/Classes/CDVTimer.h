@@ -17,15 +17,11 @@
  under the License.
  */
 
-@interface CDVConfigParser : NSObject <NSXMLParserDelegate>
-{
-    NSString* featureName;
-}
+#import <Foundation/Foundation.h>
 
-@property (nonatomic, readonly, strong) NSMutableDictionary* pluginsDict;
-@property (nonatomic, readonly, strong) NSMutableDictionary* settings;
-@property (nonatomic, readonly, strong) NSMutableArray* whitelistHosts;
-@property (nonatomic, readonly, strong) NSMutableArray* startupPluginNames;
-@property (nonatomic, readonly, strong) NSString* startPage;
+@interface CDVTimer : NSObject
+
++ (void)start:(NSString*)name;
++ (void)stop:(NSString*)name;
 
 @end

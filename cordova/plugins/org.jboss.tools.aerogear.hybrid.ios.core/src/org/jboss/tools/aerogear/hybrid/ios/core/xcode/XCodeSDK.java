@@ -38,4 +38,14 @@ public class XCodeSDK {
 		return "";
 	}
 	
+	public String getIdentifierString(){
+		if(isIOS()){
+			if(isSimulator()){
+				return "iphonesimulator"+getVersion();
+			}
+			return "iphoneos"+getVersion();
+		}
+		return "macosx"+getVersion();
+	}
+	
 }
