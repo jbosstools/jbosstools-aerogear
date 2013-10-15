@@ -121,7 +121,18 @@ public class AbstractConfigObject {
 	protected void setTextContentValue(Element element, String value ){
 		if(element == null )
 			throw new IllegalArgumentException("Element is null");
-		element.setTextContent(value);
+		//We are going through all this trouble instead of using DOM 3 
+		//APIs to set textContent because the underlying implementation 
+		//through Structured Source Editor does not support it. 
+		Node child = element.getFirstChild();
+		while(child != null ){
+			if(child.getNodeType() == Node.TEXT_NODE){
+				element.removeChild(child);
+			}
+			child = child.getNextSibling();
+		}
+		Node textNode = element.getOwnerDocument().createTextNode(value);
+		element.appendChild(textNode);
 	}
 	
 	/**

@@ -52,11 +52,8 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 					if(!clean.isEmpty()){
 					sdkList.add(new XCodeSDK(clean));
 					}
-					
 				}
-				
 			}
-			
 		}
 	}
 	
@@ -68,9 +65,7 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 				version = text.substring("XCode".length()+1, text.indexOf('\n'));
 			}
 		}
-		
 	}
-	
 	
 	/**
 	 * Returns the actual folder where the build artifacts can be found.
@@ -107,7 +102,8 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 		
 		try {
 			monitor.beginTask("Build Cordova project for iOS", 10);
-			XcodeProjectGenerator creator = new XcodeProjectGenerator(getProject(),null);
+			//TODO: use extension point to create the generator.
+			XcodeProjectGenerator creator = new XcodeProjectGenerator(getProject(),null,"ios");
 			SubProgressMonitor generateMonitor = new SubProgressMonitor(monitor, 1);
 			File xcodeProjectDir  = creator.generateNow(generateMonitor);
 			
@@ -159,16 +155,13 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 				throw new CoreException(new Status(IStatus.ERROR, IOSCore.PLUGIN_ID, "xcodebuild has failed: build artifact does not exist"));
 			}
 		} finally {
-
 			monitor.done();
 		}
-
-		
 	}
 
 	private Object selectSDK() {
 		if(isRelease()){
-			return "iphoneos6.1";
+			return "iphoneos7.0";
 		}
 		if( getLaunchConfiguration() != null ){
 			try {
@@ -176,7 +169,7 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 			} catch (CoreException e) {
 			}
 		}
-		return "iphonesimulator6.1";
+		return "iphonesimulator7.0";
 	}
 
 	public ILaunchConfiguration getLaunchConfiguration() {

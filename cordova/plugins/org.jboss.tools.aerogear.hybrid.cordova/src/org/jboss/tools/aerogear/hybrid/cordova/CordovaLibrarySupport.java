@@ -15,6 +15,7 @@ import org.osgi.framework.BundleContext;
 
 public class CordovaLibrarySupport implements BundleActivator {
 
+	public static final String PLUGIN_ID = "org.jboss.tools.aerogear.hybrid.cordova";
 	private static BundleContext context;
 
 	public static BundleContext getContext() {

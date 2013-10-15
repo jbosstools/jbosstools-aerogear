@@ -15,7 +15,9 @@
       <generator
             delegate="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidProjectGenerator"
             id="org.jboss.tools.aerogear.hybrid.android.core.projectGenerator"
-            platform="Android">
+            platform="Android"
+            platformID="android"
+            pluginInstallActionFactory="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidPluginInstallationActionsFactory">
       </generator>
    </extension>
    <extension

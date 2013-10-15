@@ -254,7 +254,7 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		IStructuredSelection selection = (IStructuredSelection) comboViewer.getSelection();
 		if(!selection.isEmpty()){
 			XCodeSDK selectedSDK = (XCodeSDK) selection.getFirstElement();
-			configuration.setAttribute(ATTR_SIMULATOR_SDK_VERSION, selectedSDK.getVersion());
+			configuration.setAttribute(ATTR_SIMULATOR_SDK_VERSION, selectedSDK.getIdentifierString());
 		}
 	}
 

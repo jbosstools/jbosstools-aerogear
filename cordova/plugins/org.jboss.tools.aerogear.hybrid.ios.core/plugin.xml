@@ -15,7 +15,9 @@
       <generator
             delegate="org.jboss.tools.aerogear.hybrid.ios.core.xcode.XcodeProjectGenerator"
             id="org.jboss.tools.aerogear.hybrid.ios.core.projectGenerator"
-            platform="iOS (XCode)">
+            platform="iOS (XCode)"
+            platformID="ios"
+            pluginInstallActionFactory="org.jboss.tools.aerogear.hybrid.ios.core.xcode.IOSPluginInstallationActionsFactory">
          <enablement>
             <systemTest
                   property="os.name"

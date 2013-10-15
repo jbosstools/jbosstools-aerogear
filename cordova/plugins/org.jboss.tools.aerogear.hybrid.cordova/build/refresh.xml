@@ -3,7 +3,7 @@
       Retrieves the cordova libraries from cordova project
     </description>
 
-	<property name="cordovaVersion" value="2.6.0" />
+	<property name="cordovaVersion" value="3.1.0" />
 	<property name="androidDir" location="../templates/android" />
 	<property name="iOSDir" location="../templates/ios" />
 	<property name="androidRepo" value="./cordova-android"/>
@@ -45,24 +45,22 @@
 		</exec>
 		<ant antfile="build.xml" dir="${androidRepo}/framework"></ant>
 		<copy tofile="${androidDir}/cordova.jar" file="${androidRepo}/framework/cordova-${cordovaVersion}.jar"/>
-		<copy tofile="${androidDir}/cordova.android.js" file="${androidRepo}/framework/assets/js/cordova.android.js"/>
+		<copy tofile="${androidDir}/cordova.android.js" file="${androidRepo}/framework/assets/www/cordova.js"/>
 		<copy todir="${androidDir}/project" >
 				<fileset dir="${androidRepo}/bin/templates/project"></fileset>
 		</copy>
 		
 	</target>
-	<target name="prepateIOS" depends="fetchCordovaRepos">
+	<target name="prepareIOS" depends="fetchCordovaRepos">
 		<copy todir="${iOSDir}/CordovaLib" >
 			<fileset dir="${iosRepo}/CordovaLib"></fileset>
 		</copy>
-		<delete dir="${iosRepo}/bin/templates/project/www"></delete>
-		<delete dir="${iosRepo}/bin/templates/project/cordova"></delete>
 		
-		<copy todir="${iOSDir}/project" >
-			<fileset dir="${iosRepo}/bin/templates/project"></fileset>
+		<copy todir="${iOSDir}" >
+			<fileset dir="${iosRepo}/bin/templates/"></fileset>
 		</copy>
 	</target>
-	<target name="prepare" depends="prepateIOS,prepareAndroid">
+	<target name="prepare" depends="prepareIOS,prepareAndroid">
 		<delete dir="${iosRepo}" />
 		<delete dir="${androidRepo}" />
 	</target>

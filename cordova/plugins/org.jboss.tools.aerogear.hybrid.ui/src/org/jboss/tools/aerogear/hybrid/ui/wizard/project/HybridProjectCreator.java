@@ -10,7 +10,12 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
+import static org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants.*;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -19,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -30,21 +36,30 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.internal.libraries.CordovaLibraryJsContainerInitializer;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
-import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.osgi.framework.Bundle;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 public class HybridProjectCreator {
 	
-	private static final String[] COMMON_PATHS={ ".cordova", PlatformConstants.DIR_MERGES, "plugins", PlatformConstants.DIR_WWW };
+	private static final String[] COMMON_PATHS={ DIR_DOT_CORDOVA, DIR_MERGES, 
+		DIR_PLUGINS, DIR_WWW };
 	
 	/**
 	 * Creates a hybrid project with the given name and location. Location can be null, if location is null 
@@ -61,23 +76,39 @@ public class HybridProjectCreator {
 		
 		IProject project = createBasicProject(projectName, location, monitor);
 		addNature(project, new SubProgressMonitor(monitor, 5));
+		
+		
+		
 		addCommonPaths(project, new SubProgressMonitor(monitor, 5));
 		addPlatformPaths(project, new SubProgressMonitor( monitor, 5));
-		addCommonFiles(project, new SubProgressMonitor(monitor, 5));
+		addCommonFiles(project, appName, appID,new SubProgressMonitor(monitor, 5));
 		addTemplateFiles(project, new SubProgressMonitor(monitor, 5));
+		setUpJavaScriptProject(monitor, project);
 		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		updateConfig(project, appName, appID, new SubProgressMonitor(monitor, 5) );
 		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+	}
+
+
+	private void setUpJavaScriptProject(IProgressMonitor monitor,
+			IProject project) throws JavaScriptModelException {
+		IIncludePathEntry entry = JavaScriptCore.newContainerEntry(new Path(CordovaLibraryJsContainerInitializer.CONTAINER_ID));
+		IJavaScriptProject javascriptProject = JavaScriptCore.create(project);
+		IIncludePathEntry[] entries = javascriptProject.getRawIncludepath();
+		IIncludePathEntry[] newEntries = Arrays.copyOf(entries, entries.length +1);
+		newEntries[newEntries.length -1 ] = entry;
+		javascriptProject.setRawIncludepath(newEntries, monitor);
 	}
 
 	
 	private void updateConfig(IProject project, String appName, String appID, IProgressMonitor  monitor) throws CoreException{
 		HybridProject hybridProject = HybridProject.getHybridProject(project);
 		try {
-			Widget w = hybridProject.getWidget();
+			WidgetModel model = WidgetModel.getModel(hybridProject);
+			Widget w = model.getWidgetForEdit();
 			w.setId(appID);
 			w.setName(appName);
-			hybridProject.saveWidget(w);
+			model.save();
 		} catch (CoreException e) {
 			HybridCore.log(IStatus.ERROR, "Error updating application name and id to config.xml", e);
 		}
@@ -88,13 +119,13 @@ public class HybridProjectCreator {
 	private void addTemplateFiles(IProject project, IProgressMonitor monitor) throws CoreException{
 		Bundle bundle = HybridUI.getDefault().getBundle();
 	    URL source = bundle.getEntry("/templates/www");
-	    IFolder folder = project.getFolder(PlatformConstants.DIR_WWW);
+	    IFolder folder = project.getFolder(DIR_WWW);
 	    if (!folder.exists()){
 	    	folder.create(true, true, monitor);
 	    }
 	    
 		try {
-			FileUtils.directoryCopy(source, folder.getLocation().toFile().toURL());
+			FileUtils.directoryCopy(source, FileUtils.toURL(folder.getLocation().toFile()));
 			monitor.done();
 		} catch (MalformedURLException e) {
 			throw new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error adding template files", e));
@@ -104,14 +135,30 @@ public class HybridProjectCreator {
 	}
 
 
-	private void addCommonFiles(IProject project, IProgressMonitor monitor) throws CoreException{
-		//TODO: write config.json to do .cordova directory 
-		//Should look sth like this
-//			{
-//			id:id,
-//			name:name
-//			} 
-		
+	private void addCommonFiles(IProject project, String applicationName, String applicationID, IProgressMonitor monitor) throws CoreException{
+		IFolder folder = project.getFolder(DIR_DOT_CORDOVA);
+		if(folder != null && folder.exists()){
+			JsonObject obj = new JsonObject();
+			obj.addProperty("id", applicationID);
+			obj.addProperty("name", applicationName);
+			Gson gson = new Gson();
+			String json = gson.toJson(obj);
+			IFile file = folder.getFile("config.json");
+			InputStream stream = null;
+			try {
+				stream = new ByteArrayInputStream(json.getBytes("utf-8"));
+				file.create(stream,true,monitor);
+			} catch (UnsupportedEncodingException e) {
+				HybridUI.log(IStatus.ERROR, "Error while persisting config.json", e);
+			}
+			finally{
+				if(stream !=null){
+						try { stream.close();
+						} catch (IOException e) {/*unhandled*/ }
+				}
+				monitor.done();
+			}
+		}
 	}
 
 

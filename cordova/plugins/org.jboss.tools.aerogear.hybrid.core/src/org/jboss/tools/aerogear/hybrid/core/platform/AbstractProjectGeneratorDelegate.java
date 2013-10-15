@@ -24,6 +24,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.osgi.framework.Bundle;
 /**
  * Abstract class for all the native project generators delegates.
@@ -37,6 +40,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 	
 	private IProject project;
 	private File generationRoot;
+	private String platform;
 
 	/**
 	 * Constructs a project generator. 
@@ -47,16 +51,17 @@ public abstract class AbstractProjectGeneratorDelegate {
 	
 	/**
 	 * Initializes this ProjectGenerator. init must be called before calling the 
-	 * generateNow. generationFoler can be null. If generationFolder is null generation folder 
+	 * generateNow. generationFolder can be null. If generationFolder is null generation folder 
 	 * defaults to a folder created under the {@link Bundle} dataFile folder.
 	 * 
 	 * @param project
 	 * @param generationFolder
 	 */
-	public void init(IProject project, File generationFolder )
+	public void init(IProject project, File generationFolder, String platformID )
 	{
 		this.project = project;
 		this.generationRoot = generationFolder;
+		this.platform = platformID;
 		if(generationRoot == null ){
 			generationRoot = new File(getTempGenerationDirectory(), project.getName());
 		}
@@ -76,7 +81,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 			if(!generationRoot.exists() && !generationRoot.mkdirs() ){
 				throw new CoreException(new Status(IStatus.ERROR,HybridCore.PLUGIN_ID, "Can not create the destination directory for project generation at "+generationRoot.toString() ));
 			}
-			monitor.beginTask("Generate Native Project for "+this.getProjectName(), 40);
+			monitor.beginTask("Generate Native Project for "+this.getProjectName(), 50);
 			generateNativeFiles();
 			monitor.worked(10);
 			IFolder folder = getProject().getFolder("/"+PlatformConstants.DIR_WWW);
@@ -96,6 +101,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 			}
 			monitor.worked(10);
 			replaceCordovaPlatformFiles();
+			completeCordovaPluginInstallations(monitor);
 		}
 		catch (IOException e) {
 			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, " Unable to generate native project ",e));
@@ -109,6 +115,19 @@ public abstract class AbstractProjectGeneratorDelegate {
 	}
 	
 	
+	protected void completeCordovaPluginInstallations(IProgressMonitor monitor) throws CoreException{
+		HybridProject project = HybridProject.getHybridProject(getProject());
+		if( project == null ) return;
+		CordovaPluginManager pluginManager = new CordovaPluginManager(project);
+		pluginManager.completePluginInstallationsForPlatform(getDestination(), getTargetShortName(),new FileOverwriteCallback() {
+			
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		},monitor);
+	}
+
 	/**
 	 * Template method to be implemented by the platform implementations. 
 	 * Platform implementations should generate native project files 
@@ -123,7 +142,9 @@ public abstract class AbstractProjectGeneratorDelegate {
 	 * such as <i>ios, android</i> etc.
 	 * @return
 	 */
-	protected abstract String getTargetShortName();
+	protected String getTargetShortName(){
+		return platform;
+	}
 	
 	/**
 	 * Template method to be implemented by the platform implementations. 

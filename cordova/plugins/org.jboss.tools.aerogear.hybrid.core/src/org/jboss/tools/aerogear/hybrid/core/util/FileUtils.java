@@ -14,17 +14,21 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -239,7 +243,7 @@ public final class FileUtils {
 	private static void checkCanCopy(URL source, URL destination ){
 		if(source == null || destination == null )
 			throw new IllegalArgumentException("null source or destination value");
-		source = getFileURL(source);
+		getFileURL(source);
 		destination = getFileURL(destination);
 		if(!isFile(destination))
 			throw new IllegalArgumentException("destination is not a file URL");
@@ -385,4 +389,64 @@ public final class FileUtils {
 	        }
 	    }
 	}
+	
+	public static File[] untarFile(File source, File outputDir) throws IOException, TarException {
+		TarFile tarFile = new TarFile(source);
+		List<File> untarredFiles = new ArrayList<File>();
+		try {
+			for (Enumeration<TarEntry> e = tarFile.entries(); e.hasMoreElements();) {
+				TarEntry entry = e.nextElement();
+				InputStream input = tarFile.getInputStream(entry);
+				try {
+					File outFile = new File(outputDir, entry.getName());
+					outFile = outFile.getCanonicalFile(); //bug 266844
+					untarredFiles.add(outFile);
+					if (entry.getFileType() == TarEntry.DIRECTORY) {
+						outFile.mkdirs();
+					} else {
+						if (outFile.exists())
+							outFile.delete();
+						else
+							outFile.getParentFile().mkdirs();
+						try {
+							copyStream(input, false, new FileOutputStream(outFile), true);
+						} catch (FileNotFoundException e1) {
+							// TEMP: ignore this for now in case we're trying to replace
+							// a running eclipse.exe
+						}
+						outFile.setLastModified(entry.getTime());
+					}
+				} finally {
+					input.close();
+				}
+			}
+		} finally {
+			tarFile.close();
+		}
+		return untarredFiles.toArray(new File[untarredFiles.size()]);
+	}
+	
+	public static int copyStream(InputStream in, boolean closeIn, OutputStream out, boolean closeOut) throws IOException {
+		try {
+			int written = 0;
+			byte[] buffer = new byte[16 * 1024];
+			int len;
+			while ((len = in.read(buffer)) != -1) {
+				out.write(buffer, 0, len);
+				written += len;
+			}
+			return written;
+		} finally {
+			try {
+				if (closeIn) {
+					in.close();
+				}
+			} finally {
+				if (closeOut) {
+					out.close();
+				}
+			}
+		}
+	}
+	
 }

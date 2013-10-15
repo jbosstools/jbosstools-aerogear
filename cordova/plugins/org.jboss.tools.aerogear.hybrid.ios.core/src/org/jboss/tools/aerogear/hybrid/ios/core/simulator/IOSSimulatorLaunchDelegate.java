@@ -44,7 +44,7 @@ public class IOSSimulatorLaunchDelegate implements
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 
-		monitor.beginTask("Launch iOS Enulator", 10);
+		monitor.beginTask("Launch iOS Emulator", 10);
 		IOSSimulator simulator = new IOSSimulator();
 		IProject project = getProject(configuration);
 		Assert.isNotNull(project, "Can not launch with a null project");

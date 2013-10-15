@@ -1,22 +1,31 @@
 package org.jboss.tools.aerogear.hybrid.core.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import static org.junit.Assert.*;
-
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.jboss.tools.aerogear.hybrid.test.TestProject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -26,27 +35,27 @@ import org.xml.sax.SAXException;
 @SuppressWarnings("restriction")
 public class WidgetModelTest {
 
-	public static String  SIMPLE_WIDGET_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-					"<widget xmlns=\"http://www.w3.org/ns/widgets\" " +
-					"xmlns:gap=\"http://phonegap.com/ns/1.0\" id=\"simple widget\">"+
-					"</widget>";
+	private  TestProject project;
 	
-	public static String WIDGET_WITH_PLUGIN_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-			"<widget xmlns=\"http://www.w3.org/ns/widgets\" " +
-			"xmlns:gap=\"http://phonegap.com/ns/1.0\" id=\"simple widget\">"+
-			"<plugin name=\"test.plugin\" version=\"1.0\">"+
-			"<param name=\"param1\" value=\"value1\" />"+
-			"<param name=\"param2\" value=\"value2\" />"+
-		     "</plugin>"+
-			"</widget>";
+	@Before
+	public void setUpTestProject(){
+		project = new TestProject();
+	}
 	
-	private Document loadXMLDocument(String xml)
+	@After
+	public void cleanProject() throws CoreException{
+		if(this.project != null ){
+			this.project.delete();
+			this.project = null;
+		}
+	}
+		
+	private Document loadXMLDocument(InputStream xml)
 			throws ParserConfigurationException, UnsupportedEncodingException,
 			SAXException, IOException {
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		
-		ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
-		Document doc = builder.parse(is);
+		Document doc = builder.parse(xml);
 		return doc;
 	}
 	
@@ -68,63 +77,60 @@ public class WidgetModelTest {
 	}
 	
 	@Test
-	public void testSimpleWidgetRead() throws SAXException, IOException, ParserConfigurationException{
-		
-		Bundle b = FrameworkUtil.getBundle(WidgetModelTest.class);
-		if (b != null ){ // Because of the extra security on OSGi creating a widget directly
-			return;      // only be tested on a non-OSGi runtime
-		}
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Widget widget = new Widget(doc.getDocumentElement());
-		assertNotNull(widget);
-		assertEquals(widget.getId(), "simple widget");
+	public void testSimpleWidgetRead() throws CoreException{
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget rm = model.getWidgetForRead();
+		assertNotNull(rm);
 	}
 
 	@Test
-	public void testSimpleWidgetModelLoad() throws UnsupportedEncodingException, 
-	ParserConfigurationException, SAXException, IOException{
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Bundle b = FrameworkUtil.getBundle(WidgetModelTest.class);
-		boolean osgiRunning = b!=null;
-		WidgetModel model = WidgetModel.getInstance();
-		Widget mw = model.load(doc);
-		assertNotNull(mw);
-
-		// If there is no OSGi running lets go the extra mile and 
-		// do a comparison 
-		if(!osgiRunning){
-			Widget widget = new Widget(doc.getDocumentElement());
-			assertNotNull(widget);
-			assertEquals(mw, widget);
-		}
+	public void testSimpleWidgetEdit() throws CoreException{
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget em = model.getWidgetForEdit();
+		assertNotNull(em);
 	}
 	
 	@Test
 	public void testWidgetAttributes() throws UnsupportedEncodingException, 
-	ParserConfigurationException, SAXException, IOException{
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
+	ParserConfigurationException, SAXException, IOException, CoreException{
+		
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForEdit();
+		
 		widget.setId("test.id");
 		widget.setVersion("1.0");
 		widget.setViewmodes("testmode");
 		widget.setVersion("1.0.1");
+		model.save();
 		
 		assertEquals("test.id", widget.getId());
 		assertEquals("1.0.1", widget.getVersion());
 		assertEquals("testmode", widget.getViewmodes());
 		
+		Document doc = getConfigXMLDocument();
 		Node widgetNode = getNamedSingleNode(doc, "widget");
+		
 		assertEquals(widget.getId(), getAtrributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_ID));
 		assertEquals(widget.getVersion(), getAtrributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_VERSION));
 		assertEquals(widget.getViewmodes(), getAtrributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_VIEWMODES));
 		
 	}
+
+	private Document getConfigXMLDocument()
+			throws ParserConfigurationException, UnsupportedEncodingException,
+			SAXException, IOException, CoreException {
+		IFile file = project.getProject().getFile("/www/config.xml");
+		Document doc = loadXMLDocument(file.getContents());
+		return doc;
+	}
 	
 	@Test
 	public void testWidgetTags() throws UnsupportedEncodingException,
-	ParserConfigurationException, SAXException, IOException{
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
+	ParserConfigurationException, SAXException, IOException, CoreException{
+		
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForEdit();
+
 		final String name = "test.name";
 		final String shortname = "test.shortname";
 		final String description = "test.description";
@@ -132,11 +138,14 @@ public class WidgetModelTest {
 		widget.setName(name);
 		widget.setDescription(description);
 		widget.setShortname(shortname);
+		model.save();
 		
 		assertEquals(name, widget.getName());
 		assertEquals(description, widget.getDescription());
 		assertEquals(shortname, widget.getShortname());
 		
+		
+		Document doc = getConfigXMLDocument();
 		Node nameNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_NAME);
 		assertEquals(widget.getName(), nameNode.getTextContent());
 		assertEquals(widget.getShortname(), getAtrributeValue(nameNode, WidgetModelConstants.NAME_ATTR_SHORT));
@@ -147,10 +156,11 @@ public class WidgetModelTest {
 	
 	@Test
 	public void testAuthor() throws UnsupportedEncodingException,
-	ParserConfigurationException, SAXException, IOException{
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
-		Author author = WidgetModel.getInstance().createAuthor(widget);
+	ParserConfigurationException, SAXException, IOException, CoreException{
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForEdit();
+
+		Author author = model.createAuthor(widget);
 		final String name = "test.name";
 		final String href = "test.href";
 		final String email = "test.email";
@@ -165,7 +175,9 @@ public class WidgetModelTest {
 		
 		widget.setAuthor(author);
 		assertEquals(author, widget.getAuthor());
+		model.save();
 
+		Document doc = getConfigXMLDocument();
 		Node authorNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_AUTHOR);
 		assertEquals(author.getName(), authorNode.getTextContent());
 		assertEquals(author.getHref(), getAtrributeValue(authorNode, WidgetModelConstants.AUTHOR_ATTR_HREF));
@@ -174,10 +186,11 @@ public class WidgetModelTest {
 	}
 	
 	@Test
-	public void testContent() throws UnsupportedEncodingException, ParserConfigurationException, SAXException, IOException{
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
-		Content content = WidgetModel.getInstance().createContent(widget);
+	public void testContent() throws UnsupportedEncodingException, ParserConfigurationException, SAXException, IOException, CoreException{
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForEdit();
+
+		Content content = model.createContent(widget);
 		final String src = "test.src";
 		final String encoding = "test.encoding";
 		final String type = "test.type";
@@ -191,7 +204,9 @@ public class WidgetModelTest {
 		
 		widget.setContent(content);
 		assertEquals(content, widget.getContent());
+		model.save();
 		
+		Document doc = getConfigXMLDocument();
 		Node contentNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_CONTENT);
 		assertEquals(content.getSrc(), getAtrributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_SRC));
 		assertEquals(content.getType(),getAtrributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_TYPE));
@@ -199,10 +214,11 @@ public class WidgetModelTest {
 	}
 	
 	@Test
-	public void testLicense() throws UnsupportedEncodingException, ParserConfigurationException, SAXException, IOException{
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
-		License license = WidgetModel.getInstance().createLicense(widget);
+	public void testLicense() throws UnsupportedEncodingException, ParserConfigurationException, SAXException, IOException, CoreException{
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForEdit();
+
+		License license = model.createLicense(widget);
 		final String text = "test.text";
 		final String href = "test.href";
 		
@@ -213,91 +229,40 @@ public class WidgetModelTest {
 		
 		widget.setLicense(license);
 		assertEquals(license, widget.getLicense());
+		model.save();
 
+		Document doc = getConfigXMLDocument();
 		Node licenseNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_LICENSE);
 		assertEquals(license.getText(), licenseNode.getTextContent());
 		assertEquals(license.getHref(), getAtrributeValue(licenseNode, WidgetModelConstants.LICENSE_ATTR_HREF));
-		
-	}
-	@Test
-	public void testPlugin() throws UnsupportedEncodingException, 
-	ParserConfigurationException, SAXException, IOException {
-		Document doc = loadXMLDocument(SIMPLE_WIDGET_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
-		Plugin plugin = WidgetModel.getInstance().createPlugin(widget);
-		final String name = "test.name";
-		final String version = "test.version";
-		
-		plugin.setName(name);
-		plugin.setVersion(version);
-		assertEquals(name, plugin.getName());
-		assertEquals(version, plugin.getVersion());
-		widget.addPlugin(plugin);
-		List<Plugin> plugins = widget.getPlugins();
-		assertEquals(1, plugins.size());
-		assertEquals(plugin, plugins.get(0));
-		
-		Plugin plugin2 = WidgetModel.getInstance().createPlugin(widget);
-		plugin2.setName(name+"2");
-		
-		final String paramName = "test.param";
-		final String paramValue = "test.value";
-		plugin2.addParam(paramName, paramValue);
-		widget.addPlugin(plugin);// test adding second time same object
-		widget.addPlugin(plugin2);
-		Map<String, String> params = plugin2.getParams();
-		assertEquals(1, params.size());
-		
-		
-		NodeList nodes = doc.getElementsByTagName(WidgetModelConstants.WIDGET_TAG_PLUGIN);
-		assertEquals(2, nodes.getLength());
-		boolean foundName1 =false;
-		boolean foundName2 =false;
-		boolean foundVersion1 = false;
-		boolean foundVersion2 = false;
- 		for (int i = 0; i < nodes.getLength(); i++) {
-			Node node = nodes.item(i);
-			
-			String nameAttrib = getAtrributeValue(node, WidgetModelConstants.PLUGIN_ATTR_NAME);
-			if(nameAttrib.equals(name))
-				foundName1 = true;
-			if(nameAttrib.equals(name+"2")){
-				foundName2 =true;
-				String attribName = getAtrributeValue(node.getFirstChild(), WidgetModelConstants.PARAM_ATTR_NAME);
-				assertEquals(paramName, attribName);
-				String attribValue = getAtrributeValue(node.getFirstChild(), WidgetModelConstants.PARAM_ATTR_VALUE);
-				assertEquals(paramValue, attribValue);
-			}
-			NamedNodeMap attributes = node.getAttributes();
-			Node versionAttrib = attributes.getNamedItem(WidgetModelConstants.PLUGIN_ATTR_VERSION);
-			if(versionAttrib == null ){
-				foundVersion2 =true;
-			}else
-				if(versionAttrib.getNodeValue().equals(version)){
-					foundVersion1 =true;
-				}
-		}
- 		assertTrue("Name for first plugin instance is not found",foundName1);
- 		assertTrue("Name for second plugin instance is not found",foundName2);
- 		assertTrue("Version for first plugin instance is not found",foundVersion1);
- 		assertTrue("Version for second plugin instance is not found",foundVersion2);
- 		
-		
-	}
-	@Test
-	public void testPluginLoadFromXML() throws UnsupportedEncodingException, 
-	ParserConfigurationException, SAXException, IOException {
-		Document doc = loadXMLDocument(WIDGET_WITH_PLUGIN_XML);
-		Widget widget = WidgetModel.getInstance().load(doc);
-		List<Plugin> plugins = widget.getPlugins();
-		assertNotNull(plugins);
-		assertEquals(1, plugins.size());
-		Plugin plugin = plugins.get(0);
-		Map<String, String> params = plugin.getParams();
-		assertNotNull(params);
-		assertEquals(2, params.size());
 	}
 	
+	@Test
+	public void testUpdateToXML() throws IOException, ParserConfigurationException, SAXException, IOException, CoreException, TransformerException{
+		
+		Document doc = getConfigXMLDocument();
+		doc.getDocumentElement().setAttribute(WidgetModelConstants.WIDGET_ATTR_ID, "rev.id");
+		doc.getDocumentElement().setAttribute(WidgetModelConstants.WIDGET_ATTR_VERSION, "rev.ver");
+		IFile file = project.getProject().getFile("/www/config.xml");
+		TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
+		Transformer xformer = transformerFactory.newTransformer();
+		StringWriter stringWriter = new StringWriter();
+		StreamResult result = new StreamResult(stringWriter);
+		
+		xformer.transform(new DOMSource(doc), result);
+		file.setContents(new ByteArrayInputStream(stringWriter.getBuffer().toString().getBytes()),
+				IResource.FORCE, new NullProgressMonitor());
+
+		
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForEdit();
+		
+		assertEquals("rev.id",widget.getId());
+		assertEquals("rev.ver", widget.getVersion());
+		
+		
+	}
 	
 }
 	

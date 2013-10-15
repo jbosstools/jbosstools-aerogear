@@ -11,7 +11,6 @@
 package org.jboss.tools.aerogear.hybrid.android.core.adt;
 
 
-import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_ASSETS;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_LIBS;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_RES;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_SRC;
@@ -60,6 +59,7 @@ import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.osgi.framework.Bundle;
@@ -73,10 +73,9 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		super();
 	}
 	
-	public AndroidProjectGenerator(IProject project, File generationFolder) {
-		init(project, generationFolder);
+	public AndroidProjectGenerator(IProject project, File generationFolder,String platform) {
+		init(project, generationFolder,platform);
 	}
-
 
 	@Override
 	protected void generateNativeFiles() throws CoreException {
@@ -87,7 +86,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		if(hybridProject == null ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Not a hybrid mobile project, can not generate files"));
 		}
-		Widget widgetModel = hybridProject.getWidget();
+		Widget widgetModel = WidgetModel.getModel(hybridProject).getWidgetForRead();
 		
 		// Create the basic android project
 		String packageName = widgetModel.getId();
@@ -116,10 +115,6 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 			URL sourcs = getTemplateFile("/templates/android/cordova.jar");
 			URL dests = toURL(new File(libsDir, FILE_JAR_CORDOVA ));
  			fileCopy(sourcs, dests);
- 			//Copy the android compatability jar required by PushPlugin. 
- 			//This should change in the future with a more generic plugin support.
- 			fileCopy(getTemplateFile("/templates/android/android-support-v13.jar"), toURL(new File(libsDir,"android-support-v13.jar")));
- 			
  			
 			directoryCopy(getTemplateFile("/templates/android/project/res/"),
 					toURL(new File(getDestination(), DIR_RES )));
@@ -205,11 +200,6 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 
 	@Override
-	protected String getTargetShortName() {
-		return "android";
-	}
-
-	@Override
 	protected void replaceCordovaPlatformFiles() throws IOException {
 		fileCopy(getTemplateFile("/templates/android/cordova.android.js"), 
 				toURL(new File(getPlatformWWWDirectory(), PlatformConstants.FILE_JS_CORDOVA )));
@@ -222,10 +212,9 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		return url;
 	}
 	
-	
 	@Override
 	protected File getPlatformWWWDirectory() {
-		return new File(getDestination(), DIR_ASSETS + File.separator +PlatformConstants.DIR_WWW);
+		return AndroidProjectUtils.getPlatformWWWDirectory(getDestination());
 	}
 
 }

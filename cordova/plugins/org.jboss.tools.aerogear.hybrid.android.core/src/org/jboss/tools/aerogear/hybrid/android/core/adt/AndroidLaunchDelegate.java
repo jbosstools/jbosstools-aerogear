@@ -26,6 +26,7 @@ import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 
 public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 
@@ -38,7 +39,8 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		AndroidSDKManager sdk = new AndroidSDKManager();
 	
 		HybridProject project = HybridProject.getHybridProject(getProject(configuration));
-		Widget widget = project.getWidget();
+		WidgetModel model = WidgetModel.getModel(project);
+		Widget widget = model.getWidgetForRead();
 		String packageName = widget.getId();
 		String name = project.getBuildArtifactAppName();
 

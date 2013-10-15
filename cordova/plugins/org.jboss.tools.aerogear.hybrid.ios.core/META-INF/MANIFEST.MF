@@ -15,6 +15,9 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/dd-plist.jar
 Export-Package: org.jboss.tools.aerogear.hybrid.ios.core;x-friends:="org.jboss.tools.aerogear.hybrid.ios.ui",
+ org.jboss.tools.aerogear.hybrid.ios.core.pbxproject,
  org.jboss.tools.aerogear.hybrid.ios.core.simulator;x-friends:="org.jboss.tools.aerogear.hybrid.ios.ui",
  org.jboss.tools.aerogear.hybrid.ios.core.xcode;x-friends:="org.jboss.tools.aerogear.hybrid.ios.ui"
 Bundle-Localization: plugin
+Import-Package: org.apache.commons.codec.binary,
+ org.apache.commons.io

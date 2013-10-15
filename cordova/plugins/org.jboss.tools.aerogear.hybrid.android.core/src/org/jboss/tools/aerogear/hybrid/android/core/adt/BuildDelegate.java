@@ -40,7 +40,10 @@ public class BuildDelegate extends AbstractNativeBinaryBuildDelegate {
 		if(monitor.isCanceled())
 			return;
 		
-		AndroidProjectGenerator creator = new AndroidProjectGenerator(this.getProject(), getDestination());
+		//TODO: use extension point to create
+		// the generator.
+		AndroidProjectGenerator creator = new AndroidProjectGenerator(this.getProject(), getDestination(),"android"); 
+           		
 		SubProgressMonitor generateMonitor = new SubProgressMonitor(monitor, 1);
 		File projectDirectory = creator.generateNow(generateMonitor);
 		monitor.worked(1);
