@@ -95,7 +95,7 @@ public class AndroidPluginInstallationActionsFactory extends AbstractPluginInsta
 			String parent, String value) {
 		
 		File configFile = new File(getProjectDirectory(),target);
-		if(target.endsWith("config.xml")){
+		if(target.endsWith(PlatformConstants.FILE_XML_CONFIG)){
 			//TODO: return the global config.xml action
 			return null; 
 		}
@@ -104,7 +104,13 @@ public class AndroidPluginInstallationActionsFactory extends AbstractPluginInsta
 
 	@Override
 	public IPluginInstallationAction getLibFileAction(String src, String arch) {
-		throw new UnsupportedOperationException("Not relevant for Android");
+		File source  = new File(getPluginDirectory(),src);
+		File target = new File (getProjectDirectory(), "libs");
+		if( !target.isDirectory()){//it should be created during project generation but just in case.
+			target.mkdir();
+		}
+		CopyFileAction action = new CopyFileAction(source, target);
+		return action;
 	}
 
 	@Override
