@@ -117,9 +117,11 @@ public class Feature extends AbstractConfigObject {
 	 * @return
 	 */
 	public Map<String, String> getParams() {
+		if(params.getValue() == null ){
+			return Collections.emptyMap();
+		}
 		return Collections.unmodifiableMap(params.getValue());
 	}
-		
 	
 	@Override
 	public boolean equals(Object obj) {

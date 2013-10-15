@@ -1,7 +1,6 @@
 package org.jboss.tools.aerogear.hybrid.core.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -211,6 +210,33 @@ public class WidgetModelTest {
 		assertEquals(content.getSrc(), getAtrributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_SRC));
 		assertEquals(content.getType(),getAtrributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_TYPE));
 		assertEquals(content.getEncoding(), getAtrributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_ENCODING));
+	}
+	
+	@Test 
+	public void testFeature() throws CoreException, IOException, ParserConfigurationException, SAXException{
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForEdit();
+		
+		Feature feature = model.createFeature(widget);
+		String name = "org.aerogear.plugin.test";
+		feature.setName(name);
+		assertEquals(name, feature.getName());
+		assertNotNull(feature.getParams());
+		assertTrue(feature.getParams().isEmpty());
+		assertFalse(feature.getRequired());
+		widget.addFeature(feature);
+		model.save();
+		
+		Document doc = getConfigXMLDocument();
+		NodeList list = doc.getDocumentElement().getElementsByTagName("feature");
+		for (int i = 0; i < list.getLength(); i++) {
+			Node curr = list.item(i);
+			String nameAtt = getAtrributeValue(curr, WidgetModelConstants.FEATURE_ATTR_NAME);
+			if(name.equals(nameAtt)){
+				return;
+			}
+		}
+		fail("Inserted feature is not persisted");
 	}
 	
 	@Test
