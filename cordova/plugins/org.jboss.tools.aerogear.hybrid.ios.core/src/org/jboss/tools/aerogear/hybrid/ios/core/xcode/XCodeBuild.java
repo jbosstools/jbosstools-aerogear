@@ -163,11 +163,39 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 		if(isRelease()){
 			return "iphoneos7.0";
 		}
-		if( getLaunchConfiguration() != null ){
-			try {
-				return getLaunchConfiguration().getAttribute(IOSSimulatorLaunchConstants.ATTR_SIMULATOR_SDK_VERSION, "iphonesimulator6.1");
-			} catch (CoreException e) {
+		XCodeSDK fallbackSDK = null;
+		String launchConfigSDK=null;
+		try {
+			if (getLaunchConfiguration() != null) {
+				launchConfigSDK = getLaunchConfiguration().getAttribute(
+						IOSSimulatorLaunchConstants.ATTR_SIMULATOR_SDK_VERSION,
+						(String) null);
 			}
+			List<XCodeSDK> sdks = this.showSdks();
+			for (XCodeSDK sdk : sdks) {
+				if (launchConfigSDK != null
+						&& launchConfigSDK.equals(sdk.getIdentifierString())) {
+					return launchConfigSDK;
+				}
+				if (sdk.isIOS() && sdk.isSimulator()) {
+					if (fallbackSDK != null) {
+						double sdkver = Double.parseDouble(sdk.getVersion());
+						double fallbackVer = Double.parseDouble(fallbackSDK
+								.getVersion());
+						if (fallbackVer < sdkver) {
+							fallbackSDK = sdk;
+						}
+					} else {
+						fallbackSDK = sdk;
+					}
+				}
+			}
+
+			if (fallbackSDK != null) {
+				return fallbackSDK.getIdentifierString();
+			}
+		} catch (CoreException e) {
+			//ignored
 		}
 		return "iphonesimulator7.0";
 	}
