@@ -9,6 +9,7 @@ import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CopyFileAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CreateFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.JSModuleAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.XMLConfigFileAction;
 
 public class IOSPluginInstallationActionsFactory extends
@@ -81,14 +82,11 @@ public class IOSPluginInstallationActionsFactory extends
 
 	@Override
 	public IPluginInstallationAction getJSModuleAction(String src,
-			String pluginId) {
+			String pluginId, String jsModuleName) {
 		File sourceFile = new File(getPluginDirectory(),src);
 		File targetFile = new File(XCodeProjectUtils.getPlatformWWWDirectory(getProjectDirectory()),
 				PlatformConstants.DIR_PLUGINS+File.separator+pluginId+File.separator+src);
-		if(!targetFile.getParentFile().isDirectory()){// create the target directory
-			targetFile.getParentFile().mkdirs();
-		}
-		return new CopyFileAction(sourceFile, targetFile);
+		return new JSModuleAction(sourceFile, targetFile,jsModuleName);
 	}
 
 	@Override

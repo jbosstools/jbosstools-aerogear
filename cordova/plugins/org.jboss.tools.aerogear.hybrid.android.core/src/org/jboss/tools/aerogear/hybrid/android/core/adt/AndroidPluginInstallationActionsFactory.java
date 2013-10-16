@@ -23,6 +23,7 @@ import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CopyFileAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CreateFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.JSModuleAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.XMLConfigFileAction;
 
 public class AndroidPluginInstallationActionsFactory extends AbstractPluginInstallationActionsFactory
@@ -120,14 +121,12 @@ public class AndroidPluginInstallationActionsFactory extends AbstractPluginInsta
 
 	@Override
 	public IPluginInstallationAction getJSModuleAction(String src,
-			String pluginId) {
+			String pluginId, String jsModuleName) {
 		File source = new File(getPluginDirectory(), src);
 		File target = new File(AndroidProjectUtils.getPlatformWWWDirectory(getProjectDirectory()), 
 				PlatformConstants.DIR_PLUGINS+File.separator+pluginId+File.separator+src );
-		if(!target.getParentFile().isDirectory()){// create the target directory
-			target.getParentFile().mkdirs();
-		}
-		CopyFileAction action = new CopyFileAction(source, target);
+
+		JSModuleAction action  = new JSModuleAction(source, target, jsModuleName);
 		return action;
 	}
 

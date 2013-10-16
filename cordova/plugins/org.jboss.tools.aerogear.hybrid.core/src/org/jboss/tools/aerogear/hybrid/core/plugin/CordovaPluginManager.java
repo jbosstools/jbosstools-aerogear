@@ -470,7 +470,8 @@ public class CordovaPluginManager {
 		List<IPluginInstallationAction> actions = new ArrayList<IPluginInstallationAction>();
 		for (PluginJavaScriptModule scriptModule : modules) {
 			if(scriptModule.getPlatform() == null || scriptModule.getPlatform().equals(platformId)){
-				IPluginInstallationAction action = factory.getJSModuleAction(scriptModule.getSource(), plugin.getId());
+				IPluginInstallationAction action = factory.getJSModuleAction(scriptModule.getSource(), 
+						plugin.getId(), scriptModule.getName());
 				actions.add(action);
 			}
 		}

@@ -41,7 +41,7 @@ public abstract class AbstractPluginInstallationActionsFactory {
 
 	public abstract IPluginInstallationAction getFrameworkAction(String src, String weak); 
 	
-	public abstract IPluginInstallationAction getJSModuleAction(String src, String pluginId);
+	public abstract IPluginInstallationAction getJSModuleAction(String src, String pluginId, String jsModuleName);
 	
 	public abstract IPluginInstallationAction getCreatePluginJSAction(String content); 
 	
