@@ -122,9 +122,10 @@ public class AndroidPluginInstallationActionsFactory extends AbstractPluginInsta
 	public IPluginInstallationAction getJSModuleAction(String src,
 			String pluginId) {
 		File source = new File(getPluginDirectory(), src);
-		File target = new File(AndroidProjectUtils.getPlatformWWWDirectory(getProjectDirectory()), PlatformConstants.DIR_PLUGINS+File.separator+pluginId+File.separator );
-		if(!target.isDirectory()){// create the target directory
-			target.mkdirs();
+		File target = new File(AndroidProjectUtils.getPlatformWWWDirectory(getProjectDirectory()), 
+				PlatformConstants.DIR_PLUGINS+File.separator+pluginId+File.separator+src );
+		if(!target.getParentFile().isDirectory()){// create the target directory
+			target.getParentFile().mkdirs();
 		}
 		CopyFileAction action = new CopyFileAction(source, target);
 		return action;

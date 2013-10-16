@@ -187,10 +187,14 @@ public class CordovaPluginXMLHelper {
 		plugin.setKeywords(getChildNodeValue(rootNode, PLGN_PROPERTY_KEYWORDS));
 		plugin.setInfo(getChildNodeValue(rootNode, PLGN_PROPERTY_INFO));
 		//js-modules
-		NodeList moduleNodes = rootNode.getElementsByTagName("js-module");
+		NodeList moduleNodes = getNodes(rootNode, "//:js-module");
 		for (int i = 0; i < moduleNodes.getLength(); i++) {
 			Node n = moduleNodes.item(i);
+
 			PluginJavaScriptModule module = new PluginJavaScriptModule();
+			if(n.getParentNode().getLocalName().equals("platform")){
+				module.setPlatform(getAttributeValue(n.getParentNode(), PLGN_PROPERTY_NAME));
+			}
 			module.setName(plugin.getId()+"."+getAttributeValue(n, PLGN_PROPERTY_NAME));
 			module.setSource(getAttributeValue(n, "src"));
 			NodeList childNodes = n.getChildNodes();

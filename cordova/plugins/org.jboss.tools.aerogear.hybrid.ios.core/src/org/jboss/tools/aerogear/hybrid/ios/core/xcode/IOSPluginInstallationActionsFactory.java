@@ -84,9 +84,9 @@ public class IOSPluginInstallationActionsFactory extends
 			String pluginId) {
 		File sourceFile = new File(getPluginDirectory(),src);
 		File targetFile = new File(XCodeProjectUtils.getPlatformWWWDirectory(getProjectDirectory()),
-				PlatformConstants.DIR_PLUGINS+File.separator+pluginId+File.separator);
-		if(!targetFile.isDirectory()){// create the target directory
-			targetFile.mkdirs();
+				PlatformConstants.DIR_PLUGINS+File.separator+pluginId+File.separator+src);
+		if(!targetFile.getParentFile().isDirectory()){// create the target directory
+			targetFile.getParentFile().mkdirs();
 		}
 		return new CopyFileAction(sourceFile, targetFile);
 	}

@@ -92,7 +92,7 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 			if(project != null ){ 
 				HybridProject prj = HybridProject.getHybridProject(project.getProject());
 				if(prj != null){
-					content = prj.getPluginManager().getCordovaPluginJSContent();
+					content = prj.getPluginManager().getCordovaPluginJSContent(null);
 				}
 				projectName = project.getProject().getName();
 			}

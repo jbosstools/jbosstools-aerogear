@@ -10,6 +10,7 @@ public class PluginJavaScriptModule {
 	private boolean runs;
 	private List<String> merges;
 	private List<String> clobbers;
+	private String platform;
 	
 	public String getName() {
 		return name;
@@ -46,6 +47,12 @@ public class PluginJavaScriptModule {
 			this.clobbers = new ArrayList<String>();
 		}
 		this.clobbers.add(clobber);
+	}
+	public String getPlatform() {
+		return platform;
+	}
+	public void setPlatform(String platform) {
+		this.platform = platform;
 	}
 
 }

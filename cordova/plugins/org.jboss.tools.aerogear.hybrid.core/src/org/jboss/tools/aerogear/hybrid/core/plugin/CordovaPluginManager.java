@@ -262,36 +262,41 @@ public class CordovaPluginManager {
 	 * @return 
 	 * @throws CoreException
 	 */
-	public String getCordovaPluginJSContent() throws CoreException{
+	public String getCordovaPluginJSContent(String platformId) throws CoreException{
 		JsonArray moduleObjects = new JsonArray();
 		
 		List<CordovaPlugin> plugins =  getInstalledPlugins();
 		for (CordovaPlugin cordovaPlugin : plugins) {
 			List<PluginJavaScriptModule> modules = cordovaPlugin.getModules();
 			for (PluginJavaScriptModule pluginJavaScriptModule : modules) {
-				JsonObject obj = new JsonObject();
-				obj.addProperty("file", (new Path("plugins")).append(cordovaPlugin.getId()).append(pluginJavaScriptModule.getSource()).toString());
-				obj.addProperty("name", pluginJavaScriptModule.getName());
-				if(pluginJavaScriptModule.isRuns()) {
-					obj.addProperty("runs", true);
-				}
-				if( pluginJavaScriptModule.getClobbers() != null ){
-					List<String> clobbers = pluginJavaScriptModule.getClobbers();
-					JsonArray clobbersArray = new JsonArray();
-					for (String string : clobbers) {
-						clobbersArray.add(new JsonPrimitive(string));
+				if( platformId == null || pluginJavaScriptModule.getPlatform() == null ||
+						pluginJavaScriptModule.getPlatform().equals(platformId))
+				{
+
+					JsonObject obj = new JsonObject();
+					obj.addProperty("file", (new Path("plugins")).append(cordovaPlugin.getId()).append(pluginJavaScriptModule.getSource()).toString());
+					obj.addProperty("id", pluginJavaScriptModule.getName());
+					if(pluginJavaScriptModule.isRuns()) {
+						obj.addProperty("runs", true);
 					}
-					obj.add("clobbers", clobbersArray);
-				}
-				if( pluginJavaScriptModule.getMerges() != null ){
-					List<String> merges = pluginJavaScriptModule.getMerges();
-					JsonArray mergesArray = new JsonArray();
-					for (String string : merges) {
-						mergesArray.add(new JsonPrimitive(string));
+					if( pluginJavaScriptModule.getClobbers() != null ){
+						List<String> clobbers = pluginJavaScriptModule.getClobbers();
+						JsonArray clobbersArray = new JsonArray();
+						for (String string : clobbers) {
+							clobbersArray.add(new JsonPrimitive(string));
+						}
+						obj.add("clobbers", clobbersArray);
 					}
-					obj.add("merges", mergesArray);
+					if( pluginJavaScriptModule.getMerges() != null ){
+						List<String> merges = pluginJavaScriptModule.getMerges();
+						JsonArray mergesArray = new JsonArray();
+						for (String string : merges) {
+							mergesArray.add(new JsonPrimitive(string));
+						}
+						obj.add("merges", mergesArray);
+					}
+					moduleObjects.add(obj);
 				}
-				moduleObjects.add(obj);
 			}
 		}
 		StringBuilder finalContents = new StringBuilder();
@@ -451,21 +456,23 @@ public class CordovaPluginManager {
 					pluginHome, platformProject);
 			allActions.addAll(getAssetActionsForPlatform(doc.getDocumentElement(),actionFactory ));// add common assets
 			allActions.addAll(getConfigFileActionsForPlatform(doc.getDocumentElement(), actionFactory)); // common config changes
-			allActions.addAll(getJSModuleActionsForPlatform(plugin, actionFactory)); // add all js-module actions
+			allActions.addAll(getJSModuleActionsForPlatform(plugin, generator.getPlatformId(), actionFactory)); // add all js-module actions
 			//We do not need to create this file 
 			//with every plugin. TODO: find a better place
-			allActions.add(actionFactory.getCreatePluginJSAction(this.getCordovaPluginJSContent()));
+			allActions.add(actionFactory.getCreatePluginJSAction(this.getCordovaPluginJSContent(generator.getPlatformId())));
 			allActions.addAll(collectActionsForPlatform(node, actionFactory));
 		}
 		runActions(allActions,false,overwrite,monitor);
 	}
 	
-	private List<IPluginInstallationAction> getJSModuleActionsForPlatform(CordovaPlugin plugin,AbstractPluginInstallationActionsFactory factory) {
+	private List<IPluginInstallationAction> getJSModuleActionsForPlatform(CordovaPlugin plugin,String platformId,AbstractPluginInstallationActionsFactory factory) {
 		List<PluginJavaScriptModule> modules =  plugin.getModules(); 
 		List<IPluginInstallationAction> actions = new ArrayList<IPluginInstallationAction>();
 		for (PluginJavaScriptModule scriptModule : modules) {
-			IPluginInstallationAction action = factory.getJSModuleAction(scriptModule.getSource(), plugin.getId());
-			actions.add(action);
+			if(scriptModule.getPlatform() == null || scriptModule.getPlatform().equals(platformId)){
+				IPluginInstallationAction action = factory.getJSModuleAction(scriptModule.getSource(), plugin.getId());
+				actions.add(action);
+			}
 		}
 		return actions;
 	}
