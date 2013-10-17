@@ -10,23 +10,22 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.config;
 
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NAME_ATTR_SHORT;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NS_PHONEGAP_1_0;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NS_W3C_WIDGET;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_ATTR_ID;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_ATTR_VERSION;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_ATTR_VIEWMODES;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_ACCESS;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_AUTHOR;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_CONTENT;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_DESCRIPTION;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_FEATURE;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_ICON;
+import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_LICENSE;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_NAME;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_PREFERENCE;
-import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_FEATURE;
-import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_ACCESS;
-import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_PLUGIN;
-import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_ICON;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_SPLASH;
-import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.NAME_ATTR_SHORT;
-import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_LICENSE;
 
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -63,7 +62,6 @@ public class Widget extends AbstractConfigObject {
 	private Property<List<Preference>> preferences = new Property<List<Preference>>("preferences");
 	private Property<List<Access>> accesses = new Property<List<Access>>("accesses");
 	private Property<List<Feature>> features = new Property<List<Feature>>("features");
-	private Property<List<Plugin>> plugins = new Property<List<Plugin>>("plugins");
 	private Property<List<Icon>> icons = new Property<List<Icon>>("icons");
 	private Property<List<Splash>> splashes = new Property<List<Splash>>("splashes");
 	
@@ -99,7 +97,6 @@ public class Widget extends AbstractConfigObject {
 		loadListItem(WIDGET_TAG_PREFERENCE,null,node, preferences, Preference.class);
 		loadListItem(WIDGET_TAG_ACCESS,null, node, accesses, Access.class);
 		loadListItem(WIDGET_TAG_FEATURE, null,node,features, Feature.class);
-		loadListItem(WIDGET_TAG_PLUGIN, null, node, plugins, Plugin.class);
 		loadListItem(WIDGET_TAG_ICON, null, node, icons, Icon.class);
 		loadListItem(WIDGET_TAG_SPLASH,NS_PHONEGAP_1_0, node, splashes, Splash.class);
 	}
@@ -212,10 +209,6 @@ public class Widget extends AbstractConfigObject {
 		return features.getValue();
 	}
 	
-	public List<Plugin> getPlugins() {
-		return plugins.getValue();
-	}
-	
 	public List<Icon> getIcons() {
 		return icons.getValue();
 	}
@@ -288,10 +281,6 @@ public class Widget extends AbstractConfigObject {
 		addItem(feature,features);
 	}
 	
-	public void addPlugin( Plugin plugin ){
-		addItem(plugin,plugins);
-	}
-	
 	public void addIcon( Icon icon ){
 		addItem(icon,icons);
 	}
@@ -311,10 +300,6 @@ public class Widget extends AbstractConfigObject {
 	
 	public void removeFeature( Feature feature ){
 		removeItem(feature, this.features);
-	}
-	
-	public void removePlugin( Plugin plugin ){
-		removeItem(plugin, this.plugins );
 	}
 	
 	public void removeIcon( Icon icon ){

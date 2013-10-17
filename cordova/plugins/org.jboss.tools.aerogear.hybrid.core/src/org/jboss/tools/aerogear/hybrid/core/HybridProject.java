@@ -11,82 +11,29 @@
 package org.jboss.tools.aerogear.hybrid.core;
 
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IAdaptable;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
-import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 
 /**
  * Handle for the mobile hybrid project types 
  * @author Gorkem Ercan
  *
  */
-public class HybridProject {
+public class HybridProject implements IAdaptable {
 	
-	private static final String PATH_CONFIG_XML = "/"+PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG;
+
 	private IProject kernelProject;
-	private Document configDocument;
+	private CordovaPluginManager pluginManager;
 	
 	private HybridProject(IProject project) {
 		this.kernelProject = project;
 	} 
-	
-	/**
-	 * Returns the {@link Widget} model for the config.xml
-	 * 
-	 * @return widget
-	 * @throws CoreException
-	 * 	<ul>
-	 *   <li>if config.xml can not be parsed</li>
-	 *   <li>its contents is not readable</li>
-	 *   </ul>
-	 *
-	 */
-	public Widget getWidget() throws CoreException{
-		
-	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-	    dbf.setNamespaceAware(true);
-	    DocumentBuilder db;
-
-	    try{
-	    	db = dbf.newDocumentBuilder();
-	    	configDocument = db.parse( kernelProject.getFile(
-	    			PATH_CONFIG_XML).getContents()); 
-	    }
-		catch (ParserConfigurationException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing config.xml", e));
-		} catch (SAXException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parsing error on config.xml", e));
-		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing config.xml", e));
-		} 
-		
-		 Widget widget = WidgetModel.getInstance().load(configDocument);
-		 return widget;
-	}
-
-	public void saveWidget(Widget widget) throws CoreException{
-		IFile file = kernelProject.getFile(PATH_CONFIG_XML);
-		if( !file.exists()){
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, kernelProject.getName() + " does not have a config.xml"));
-		}
-		File config = file.getLocation().toFile();
-		WidgetModel.getInstance().save(widget, config);
-	}
 	
 	/**
 	 * Returns the underlying {@link IProject} instance.
@@ -116,6 +63,34 @@ public class HybridProject {
 		}
 		return null;
 	}
+	/**
+	 * Convenience method for getting a handle  to the hybrid project with 
+	 * name projectName. 
+	 * 
+	 * @see #getHybridProject(IProject)
+	 * @param projectName
+	 * @return
+	 */
+	public static HybridProject getHybridProject(String projectName) {
+		if(projectName == null || projectName.isEmpty())
+			return null;
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		if(project == null )
+			return null; 
+		return getHybridProject(project);
+	}
+	
+	/**
+	 * Retrieves the {@link CordovaPluginManager} instance for this project.
+	 *  
+	 * @return plugin manager
+	 */
+	public CordovaPluginManager getPluginManager(){
+		if(pluginManager == null ){
+			pluginManager = new CordovaPluginManager(this);
+		}
+		return pluginManager;
+	}
 
 	/**
 	 * Returns the app name from the config.xml 
@@ -125,8 +100,11 @@ public class HybridProject {
 	public String getAppName(){
 		String name = null;
 		try{
-			Widget widgetModel = this.getWidget();
-			name = widgetModel.getName();	
+			WidgetModel widgetModel = WidgetModel.getModel(this);
+			Widget w = widgetModel.getWidgetForRead();
+			if(w != null){ 
+				name = w.getName();
+			}
 		}catch(CoreException e){
 			//let it come from project name
 		}
@@ -147,4 +125,31 @@ public class HybridProject {
 		return name;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(this.kernelProject == null )
+			return super.equals(obj);
+		if(obj == null ) 
+			return false;
+		if(!(obj instanceof HybridProject))
+			return false;
+		IProject prj = ((HybridProject)obj).getProject();
+		return kernelProject.equals(prj);
+	}
+	
+	@Override
+	public int hashCode() {
+		if(kernelProject == null )
+			return super.hashCode();
+		return kernelProject.hashCode();
+	}
+
+	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		if( kernelProject == null )
+			return null;
+		if(adapter.isInstance(IProject.class))
+			return kernelProject;
+		return kernelProject.getAdapter(adapter);
+	}
 }

@@ -19,13 +19,23 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.osgi.service.debug.DebugTrace;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.extensions.ExtensionPointProxy;
+import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
+import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.util.tracker.ServiceTracker;
 
-public class HybridCore implements BundleActivator, DebugOptionsListener {
+final public class HybridCore implements BundleActivator, DebugOptionsListener {
 
 	/**
 	 * Plugin ID
@@ -36,6 +46,18 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	public static boolean DEBUG;
 	private static DebugTrace TRACE;
 	private static ILog logger;
+	private ServiceTracker<IRetrieveFileTransferFactory, IRetrieveFileTransferFactory> retrievalFactoryTracker;
+	private static HybridCore inst;
+
+	public HybridCore(){
+		super();
+		inst =this;
+	}
+	
+	
+	public static HybridCore getDefault(){
+		return inst;
+	}
 	
 	public static BundleContext getContext() {
 		return context;
@@ -51,6 +73,7 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 		Hashtable<String,Object> props = new Hashtable<String, Object>();
 		props.put(org.eclipse.osgi.service.debug.DebugOptions.LISTENER_SYMBOLICNAME, PLUGIN_ID);
 		context.registerService(DebugOptionsListener.class.getName(), this, props);
+		
 	}
 
 	/*
@@ -58,7 +81,56 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
+		if(retrievalFactoryTracker != null ){
+			retrievalFactoryTracker.close();
+		}
+		WidgetModel.shutdown();
 		HybridCore.context = null;
+	}
+	
+	/**
+	 * Get an ECF based file transfer service.
+	 * 
+	 * @return retrieve file transfer
+	 */
+	public IRetrieveFileTransfer getFileTransferService(){
+		IRetrieveFileTransferFactory factory =  getFileTransferServiceTracker().getService();
+		return factory.newInstance();
+	}
+	
+	private synchronized ServiceTracker<IRetrieveFileTransferFactory, IRetrieveFileTransferFactory> getFileTransferServiceTracker() {
+		if (retrievalFactoryTracker == null) {
+			retrievalFactoryTracker = new ServiceTracker<IRetrieveFileTransferFactory, IRetrieveFileTransferFactory>(getContext(), IRetrieveFileTransferFactory.class, null);
+			retrievalFactoryTracker.open();
+			startBundle("org.eclipse.ecf"); //$NON-NLS-1$
+			startBundle("org.eclipse.ecf.provider.filetransfer"); //$NON-NLS-1$
+		}
+		return retrievalFactoryTracker;
+	}
+	
+	private boolean startBundle(String bundleId) {
+		ServiceTracker<PackageAdmin, PackageAdmin> packageAdminTracker = new ServiceTracker<PackageAdmin, PackageAdmin>(getContext(), PackageAdmin.class.getName(),null);
+		packageAdminTracker.open();
+		PackageAdmin packageAdmin = packageAdminTracker.getService();
+		
+		if (packageAdmin == null)
+			return false;
+
+		Bundle[] bundles = packageAdmin.getBundles(bundleId, null);
+		if (bundles != null && bundles.length > 0) {
+			for (int i = 0; i < bundles.length; i++) {
+				try {
+					if ((bundles[i].getState() & Bundle.INSTALLED) == 0) {
+						bundles[i].start(Bundle.START_ACTIVATION_POLICY);
+						bundles[i].start(Bundle.START_TRANSIENT);
+						return true;
+					}
+				} catch (BundleException e) {
+					// failed, try next bundle
+				}
+			}
+		}
+		return false;
 	}
 	
 	public static List<HybridProject> getHybridProjects(){
@@ -90,4 +162,43 @@ public class HybridCore implements BundleActivator, DebugOptionsListener {
 		logger.log(new Status(status, message, PLUGIN_ID,throwable));
 	}
 
+	/**
+	 * Get the {@link ProjectGenerator} objects defined by the extensions. 
+	 * Returns all the defined ProjectGenerators, it is up to the clients 
+	 * to filter enabled/disabled ProjectGenerators @see {@link ProjectGenerator#isEnabled(org.eclipse.core.expressions.IEvaluationContext)}.
+	 * 	
+	 * @return list of project generators if any
+	 */
+	public static List<ProjectGenerator> getPlatformProjectGenerators(){
+		return ExtensionPointProxy.getNativeExtensionPointProxy(ProjectGenerator.EXTENSION_POINT_ID, ProjectGenerator.class);
+	}
+	
+	/**
+	 * Returns the {@link ProjectGenerator} for the given platformID or null if none is present.
+	 * 
+	 * @param platformID
+	 * @return ProjectGenerator or null if no generator for the platformID is present
+	 */
+	public static ProjectGenerator getPlatformProjectGenerator(String platformID){
+		List<ProjectGenerator> generators = getPlatformProjectGenerators();
+		for (ProjectGenerator projectGenerator : generators) {
+			if(projectGenerator.getPlatformId().equals(platformID)){
+				return projectGenerator;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the {@link NativeProjectBuilder} proxy objects defined by the 
+	 * extensions. 
+	 * 
+	 * @return project builder extension points if any
+	 */
+	public static List<NativeProjectBuilder> getNativeProjectBuilders(){
+		return ExtensionPointProxy.getNativeExtensionPointProxy(NativeProjectBuilder.EXTENSION_POINT_ID, NativeProjectBuilder.class);
+	}
+	
+
+	
 }

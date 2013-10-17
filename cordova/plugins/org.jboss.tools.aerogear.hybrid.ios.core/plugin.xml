@@ -10,5 +10,35 @@
             name="iOS Simulator">
       </launchConfigurationType>
    </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.core.projectGenerator">
+      <generator
+            delegate="org.jboss.tools.aerogear.hybrid.ios.core.xcode.XcodeProjectGenerator"
+            id="org.jboss.tools.aerogear.hybrid.ios.core.projectGenerator"
+            platform="iOS (XCode)"
+            platformID="ios"
+            pluginInstallActionFactory="org.jboss.tools.aerogear.hybrid.ios.core.xcode.IOSPluginInstallationActionsFactory">
+         <enablement>
+            <systemTest
+                  property="os.name"
+                  value="Mac OS X">
+            </systemTest>
+         </enablement>
+      </generator>
+   </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.core.projectBuilder">
+      <builder
+            delegate="org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeBuild"
+            id="org.jboss.tools.aerogear.hybrid.ios.core.nativeBuilder"
+            platform="iOS (XCode)">
+            <enablement>
+            <systemTest
+                  property="os.name"
+                  value="Mac OS X">
+            </systemTest>
+         </enablement>
+      </builder>
+   </extension>
 
 </plugin>

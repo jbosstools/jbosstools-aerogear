@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="org.jboss.tools.aerogear.hybrid.core.projectGenerator" name="Native Platform Project Generators" schema="schema/org.jboss.tools.aerogear.hybrid.core.projectGenerator.exsd"/>
+   <extension-point id="org.jboss.tools.aerogear.hybrid.core.projectBuilder" name="Native Binary Builder" schema="schema/org.jboss.tools.aerogear.hybrid.core.projectBuilder.exsd"/>
    <extension
          id="org.jboss.tools.aerogear.hybrid.core.HybridAppNature"
          name="Aerogear Hybrid Application Nature"
@@ -10,6 +12,9 @@
                class="org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature">
          </run>
       </runtime>
+      <requires-nature
+            id="org.eclipse.wst.jsdt.core.jsNature">
+      </requires-nature>
    </extension>
    <extension
          point="org.eclipse.core.contenttype.contentTypes">
@@ -28,5 +33,12 @@
          <uri name="http://www.w3.org/ns/widgets"
                uri="res/w3c-xsd/widget.xsd">
          </uri></catalogContribution>
+   </extension>
+   <extension
+         point="org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer">
+      <JsGlobalScopeContainerInitializer
+            class="org.jboss.tools.aerogear.hybrid.core.internal.libraries.CordovaLibraryJsContainerInitializer"
+            id="org.jboss.tools.aerogear.hybrid.core.CordovaContainerInitializer">
+      </JsGlobalScopeContainerInitializer>
    </extension>
 </plugin>

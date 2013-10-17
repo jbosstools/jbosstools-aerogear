@@ -10,16 +10,27 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,13 +50,16 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Access;
 import org.jboss.tools.aerogear.hybrid.core.config.Feature;
-import org.jboss.tools.aerogear.hybrid.core.config.Plugin;
 import org.jboss.tools.aerogear.hybrid.core.config.Preference;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.LaunchCordovaPluginWizardAction;
 
 public class PropertiesPage extends FormPage {
+	
 	private DataBindingContext m_bindingContext;
 
 	private FormToolkit formToolkit;
@@ -55,8 +69,9 @@ public class PropertiesPage extends FormPage {
 	private TableViewer accessViewer;
 	private TableViewer featuresTableViewer;
 	private Table featuresTable;
-	private Table pluginsTable;
-	private TableViewer pluginsTableViewer;
+	private Table paramsTable;
+
+	private TableViewer featureParamsTableViewer;
 	
 	public PropertiesPage(FormEditor editor) {
 		super(editor, "properties", "Platform Properties");
@@ -65,6 +80,10 @@ public class PropertiesPage extends FormPage {
 	
 	private Widget getWidget(){
 		return ((ConfigEditor)getEditor()).getWidget();
+	}
+	
+	private WidgetModel getWidgetModel(){
+		return ((ConfigEditor)getEditor()).getWidgetModel();
 	}
 	
 	@Override
@@ -84,8 +103,168 @@ public class PropertiesPage extends FormPage {
 			managedForm.getForm().getBody().setLayout(tableWrapLayout);
 		}
 		
+		Section sctnFeatures = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
+		TableWrapData twd_sctnFeatures = new TableWrapData(TableWrapData.LEFT, TableWrapData.TOP, 1, 2);
+		twd_sctnFeatures.grabVertical = true;
+		twd_sctnFeatures.valign = TableWrapData.FILL;
+		twd_sctnFeatures.align = TableWrapData.FILL;
+		sctnFeatures.setLayoutData(twd_sctnFeatures);
+		managedForm.getToolkit().paintBordersFor(sctnFeatures);
+		sctnFeatures.setText("Features");
+		
+		Composite featuresComposite = managedForm.getToolkit().createComposite(sctnFeatures, SWT.NONE);
+		managedForm.getToolkit().paintBordersFor(featuresComposite);
+		sctnFeatures.setClient(featuresComposite);
+		featuresComposite.setLayout(new GridLayout(5, false));
+		
+		featuresTableViewer = new TableViewer(featuresComposite, SWT.BORDER | SWT.FULL_SELECTION);
+		featuresTable = featuresTableViewer.getTable();
+		featuresTable.setLinesVisible(false);
+		featuresTable.setHeaderVisible(false);
+		GridData featureTableLayoutData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		featureTableLayoutData.heightHint= featuresTable.getItemHeight() *10;
+		featuresTable.setLayoutData(featureTableLayoutData);
+		managedForm.getToolkit().paintBordersFor(featuresTable);
+
+		TableViewerColumn tableViewerColumnURI = new TableViewerColumn(featuresTableViewer, SWT.NONE);
+		TableColumn tblclmnFeatureURI = tableViewerColumnURI.getColumn();
+		tblclmnFeatureURI.setWidth(200);
+
+		Composite featureBtnsComposite= managedForm.getToolkit().createComposite(featuresComposite, SWT.NONE);
+		managedForm.getToolkit().paintBordersFor(featureBtnsComposite);
+		featureBtnsComposite.setLayout(new FillLayout(SWT.VERTICAL));
+
+		Button btnFeatureAdd = managedForm.getToolkit().createButton(featureBtnsComposite, "Add...", SWT.NONE);
+		btnFeatureAdd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {	
+
+				LaunchCordovaPluginWizardAction action =null;
+				IResource resource = (IResource) getEditorInput().getAdapter(IResource.class);
+				if(resource != null && HybridProject.getHybridProject(resource.getProject()) != null){
+					action = new LaunchCordovaPluginWizardAction(HybridProject.getHybridProject(resource.getProject()));
+				}
+				else{
+					action = new LaunchCordovaPluginWizardAction();
+				}
+				action.run();
+			}
+		});
+
+		Button btnFeatureRemove = managedForm.getToolkit().createButton(featureBtnsComposite, "Remove", SWT.NONE);
+
+		featureParamsTableViewer = new TableViewer(featuresComposite, SWT.BORDER | SWT.FULL_SELECTION);
+		featuresTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				if( !(event.getSelection() instanceof IStructuredSelection)) return;
+				IStructuredSelection sel = (IStructuredSelection)event.getSelection();
+				if(sel.isEmpty()) {
+					return;
+				}
+				Feature feature = (Feature)sel.getFirstElement();
+				featureParamsTableViewer.setInput(feature.getParams());
+				feature.addPropertyChangeListener("param", new PropertyChangeListener() {
+
+					@Override
+					public void propertyChange(PropertyChangeEvent event) {
+						featureParamsTableViewer.setInput(event.getNewValue());
+					}
+				});
+			}
+		});
+		featureParamsTableViewer.setContentProvider(new IStructuredContentProvider() {
+			private	Map<String, String> items;
+
+			@Override
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+				this.items =(Map)newInput;
+			}
+			@Override
+			public void dispose() {
+			}
+			@Override
+			public Object[] getElements(Object inputElement) {
+				return items.entrySet().toArray();
+			}
+		});
+
+		paramsTable = featureParamsTableViewer.getTable();
+		paramsTable.setLinesVisible(true);
+		paramsTable.setHeaderVisible(true);
+		paramsTable.setLayoutData(featureTableLayoutData);
+		managedForm.getToolkit().paintBordersFor(paramsTable);
+
+		TableViewerColumn tableViewerColumn = new TableViewerColumn(featureParamsTableViewer, SWT.NONE);
+		TableColumn tblclmnName_1 = tableViewerColumn.getColumn();
+		tblclmnName_1.setWidth(100);
+		tblclmnName_1.setText("name");
+		tableViewerColumn.setLabelProvider(new ColumnLabelProvider(){
+			@Override
+			public String getText(Object element) {
+				Entry<String, String> entry = (Entry<String, String>) element;
+				return entry.getKey();
+			}
+		});
+
+		TableViewerColumn tableViewerColumn_1 = new TableViewerColumn(featureParamsTableViewer, SWT.NONE);
+		TableColumn tblclmnColumn = tableViewerColumn_1.getColumn();
+		tblclmnColumn.setWidth(200);
+		tblclmnColumn.setText("value");
+		tableViewerColumn_1.setLabelProvider(new ColumnLabelProvider(){
+			@Override
+			public String getText(Object element) {
+				Entry<String, String> entry = (Entry<String, String>) element;
+				return entry.getValue();
+			}
+		});
+
+		Composite featureParamBtnsComposite = new Composite(featuresComposite, SWT.NONE);
+		managedForm.getToolkit().adapt(featureParamBtnsComposite);
+		managedForm.getToolkit().paintBordersFor(featureParamBtnsComposite);
+		featureParamBtnsComposite.setLayout(new FillLayout(SWT.VERTICAL));
+
+		Button btnAdd = managedForm.getToolkit().createButton(featureParamBtnsComposite, "Add...", SWT.NONE);
+		btnAdd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				NewNameValueDialog dialog = new NewNameValueDialog(getSite().getShell(),"New Parameter");
+				if (dialog.open() == Window.OK ){
+					IStructuredSelection sel = (IStructuredSelection) featuresTableViewer.getSelection();
+					Feature selectedFeature = (Feature) sel.getFirstElement();
+					selectedFeature.addParam(dialog.getName(), dialog.getValue());
+				}
+			}
+		});
+
+		Button btnRemove = managedForm.getToolkit().createButton(featureParamBtnsComposite, "Remove", SWT.NONE);
+		btnRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection sel = (IStructuredSelection) featuresTableViewer.getSelection();
+				Feature selectedFeature = (Feature) sel.getFirstElement();
+				sel = (IStructuredSelection)featureParamsTableViewer.getSelection();
+				Entry<String,String > param = (Entry<String, String>) sel.getFirstElement();
+				selectedFeature.removeParam(param.getKey());
+			}
+		});
+
+		btnFeatureRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection = (IStructuredSelection) featuresTableViewer.getSelection();
+				if (selection.isEmpty())
+					return;
+				Feature feature = (Feature) selection.getFirstElement();
+				getWidget().removeFeature(feature);
+				featureParamsTableViewer.setInput(null);
+			}
+		});
+		
 		Section sctnPreferences = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
 		TableWrapData twd_sctnPreferences = new TableWrapData(TableWrapData.LEFT, TableWrapData.TOP, 1, 1);
+		twd_sctnPreferences.grabHorizontal = true;
 		twd_sctnPreferences.grabVertical = true;
 		twd_sctnPreferences.align = TableWrapData.FILL;
 		twd_sctnPreferences.valign = TableWrapData.FILL;
@@ -102,7 +281,7 @@ public class PropertiesPage extends FormPage {
 		preferencesTable = preferencesViewer.getTable();
 		preferencesTable.setLinesVisible(true);
 		preferencesTable.setHeaderVisible(true);
-		preferencesTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		preferencesTable.setLayoutData(featureTableLayoutData);
 		managedForm.getToolkit().paintBordersFor(preferencesTable);
 		
 		TableViewerColumn tableViewerColumnName = new TableViewerColumn(preferencesViewer, SWT.NONE);
@@ -115,151 +294,40 @@ public class PropertiesPage extends FormPage {
 		tblclmnValue.setWidth(100);
 		tblclmnValue.setText("value");
 		
-				Composite composite_1 = managedForm.getToolkit().createComposite(composite, SWT.NONE);
-				managedForm.getToolkit().paintBordersFor(composite_1);
-				composite_1.setLayout(new FillLayout(SWT.VERTICAL));
-				
-				Button btnPreferenceAdd = managedForm.getToolkit().createButton(composite_1, "Add...", SWT.NONE);
-				btnPreferenceAdd.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						
-						NewPreferenceDialog dialog = new NewPreferenceDialog(getSite().getShell(), getWidget());
-						if (dialog.open() == Window.OK &&  dialog.getPreference() != null ){
-							getWidget().addPreference(dialog.getPreference());
-						}
-					}
-				});
-				
-				Button btnPreferenceRemove = managedForm.getToolkit().createButton(composite_1, "Remove", SWT.NONE);
-				btnPreferenceRemove.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						IStructuredSelection selection = (IStructuredSelection)preferencesViewer.getSelection();
-						if(selection.isEmpty() )
-							return;
-						Preference preference = (Preference)selection.getFirstElement();
-						getWidget().removePreference(preference);
-					}
-				});
-				
-				Button btnPreferenceEdit = managedForm.getToolkit().createButton(composite_1, "Edit...", SWT.NONE);
-		
-		Section sctnFeatures = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
-		TableWrapData twd_sctnFeatures = new TableWrapData(TableWrapData.LEFT, TableWrapData.TOP, 1, 1);
-		twd_sctnFeatures.grabVertical = true;
-		twd_sctnFeatures.valign = TableWrapData.FILL;
-		twd_sctnFeatures.align = TableWrapData.FILL;
-		sctnFeatures.setLayoutData(twd_sctnFeatures);
-		managedForm.getToolkit().paintBordersFor(sctnFeatures);
-		sctnFeatures.setText("Features");
-		
-		Composite featuresComposite = managedForm.getToolkit().createComposite(sctnFeatures, SWT.NONE);
-		managedForm.getToolkit().paintBordersFor(featuresComposite);
-		sctnFeatures.setClient(featuresComposite);
-		featuresComposite.setLayout(new GridLayout(2, false));
-		
-		featuresTableViewer = new TableViewer(featuresComposite, SWT.BORDER | SWT.FULL_SELECTION);
-		featuresTable = featuresTableViewer.getTable();
-		featuresTable.setLinesVisible(true);
-		featuresTable.setHeaderVisible(true);
-		featuresTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		managedForm.getToolkit().paintBordersFor(featuresTable);
+		Composite composite_1 = managedForm.getToolkit().createComposite(composite, SWT.NONE);
+		managedForm.getToolkit().paintBordersFor(composite_1);
+		composite_1.setLayout(new FillLayout(SWT.VERTICAL));
 
-		TableViewerColumn tableViewerColumnURI = new TableViewerColumn(featuresTableViewer, SWT.NONE);
-		TableColumn tblclmnFeatureURI = tableViewerColumnURI.getColumn();
-		tblclmnFeatureURI.setWidth(200);
-		tblclmnFeatureURI.setText("URI");
-		
-		Composite featureBtnsComposite= managedForm.getToolkit().createComposite(featuresComposite, SWT.NONE);
-		managedForm.getToolkit().paintBordersFor(featureBtnsComposite);
-		featureBtnsComposite.setLayout(new FillLayout(SWT.VERTICAL));
-		
-		Button btnFeatureAdd = managedForm.getToolkit().createButton(featureBtnsComposite, "Add...", SWT.NONE);
-		btnFeatureAdd.addSelectionListener(new SelectionAdapter() {
+		Button btnPreferenceAdd = managedForm.getToolkit().createButton(composite_1, "Add...", SWT.NONE);
+		btnPreferenceAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				NewFeatureDialog dialog = new NewFeatureDialog(getSite().getShell(), getWidget());
-				if(dialog.open() == Window.OK && dialog.getFeature() != null ){
-					getWidget().addFeature(dialog.getFeature());
+
+				NewNameValueDialog dialog = new NewNameValueDialog(getSite().getShell(),"New Preference");
+				if (dialog.open() == Window.OK ){
+					Preference pref = getWidgetModel().createPreference(getWidget());
+					pref.setName(dialog.getName());
+					pref.setValue(dialog.getValue());
+					getWidget().addPreference(pref);
 				}
 			}
 		});
-		
-		Button btnFeatureRemove = managedForm.getToolkit().createButton(featureBtnsComposite, "Remove", SWT.NONE);
-		btnFeatureRemove.addSelectionListener(new SelectionAdapter() {
+				
+		Button btnPreferenceRemove = managedForm.getToolkit().createButton(composite_1, "Remove", SWT.NONE);
+		btnPreferenceRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection selection = (IStructuredSelection) featuresTableViewer.getSelection();
-				if (selection.isEmpty())
+				IStructuredSelection selection = (IStructuredSelection)preferencesViewer.getSelection();
+				if(selection.isEmpty() )
 					return;
-				Feature feature = (Feature) selection.getFirstElement();
-				getWidget().removeFeature(feature);
+				Preference preference = (Preference)selection.getFirstElement();
+				getWidget().removePreference(preference);
 			}
 		});
-		
-		Section sctnPlugins = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
-		TableWrapData twd_sctnPlugins = new TableWrapData(TableWrapData.LEFT, TableWrapData.TOP, 1, 1);
-		twd_sctnPlugins.grabVertical = true;
-		twd_sctnPlugins.valign = TableWrapData.FILL;
-		twd_sctnPlugins.align = TableWrapData.FILL;
-		sctnPlugins.setLayoutData(twd_sctnPlugins);
-		managedForm.getToolkit().paintBordersFor(sctnPlugins);
-		sctnPlugins.setText("Plugins");
-		
-		Composite pluginsSctnComposite = managedForm.getToolkit().createComposite(sctnPlugins, SWT.NONE);
-		managedForm.getToolkit().paintBordersFor(pluginsSctnComposite);
-		sctnPlugins.setClient(pluginsSctnComposite);
-		pluginsSctnComposite.setLayout(new GridLayout(2, false));
-		
-		pluginsTableViewer = new TableViewer(pluginsSctnComposite, SWT.BORDER | SWT.FULL_SELECTION);
-		pluginsTable = pluginsTableViewer.getTable();
-		pluginsTable.setLinesVisible(true);
-		pluginsTable.setHeaderVisible(true);
-		pluginsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		managedForm.getToolkit().paintBordersFor(pluginsTable);
-		
-		TableViewerColumn tableViewerColumnPluginName = new TableViewerColumn(pluginsTableViewer, SWT.NONE);
-		TableColumn tblclmnPluginName = tableViewerColumnPluginName.getColumn();
-		tblclmnPluginName.setWidth(100);
-		tblclmnPluginName.setText("name");
-		
-		TableViewerColumn tableViewerColumnVersion = new TableViewerColumn(pluginsTableViewer, SWT.NONE);
-		TableColumn tblclmnVersion = tableViewerColumnVersion.getColumn();
-		tblclmnVersion.setWidth(100);
-		tblclmnVersion.setText("version");
-		
-		Composite composite_3 = managedForm.getToolkit().createComposite(pluginsSctnComposite, SWT.NONE);
-		managedForm.getToolkit().paintBordersFor(composite_3);
-		composite_3.setLayout(new FillLayout(SWT.VERTICAL));
-		
-		Button btnPluginAdd = managedForm.getToolkit().createButton(composite_3, "Add...", SWT.NONE);
-		btnPluginAdd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				NewPluginDialog dialog = new NewPluginDialog(getSite().getShell(), getWidget());
-				if (dialog.open() == Window.OK && dialog.getPlugin() != null){
-					getWidget().addPlugin(dialog.getPlugin());
-				}
-			}
-		});
-		
-		Button btnPluginRemove = managedForm.getToolkit().createButton(composite_3, "Remove...", SWT.NONE);
-		btnPluginRemove.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection selection = (IStructuredSelection) pluginsTableViewer.getSelection();
-				if( selection.isEmpty() )
-					return;
-				Plugin plugin = (Plugin) selection.getFirstElement();
-				getWidget().removePlugin(plugin);
-			}
-		});
-		
-		Button btnPluginProperties = managedForm.getToolkit().createButton(composite_3, "Properties...", SWT.NONE);
 		
 		Section sctnAccess = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
 		TableWrapData twd_sctnAccess = new TableWrapData(TableWrapData.LEFT, TableWrapData.TOP, 1, 1);
+		twd_sctnAccess.grabHorizontal = true;
 		twd_sctnAccess.grabVertical = true;
 		twd_sctnAccess.align = TableWrapData.FILL;
 		twd_sctnAccess.valign = TableWrapData.FILL;
@@ -276,7 +344,7 @@ public class PropertiesPage extends FormPage {
 		accessTable = accessViewer.getTable();
 		accessTable.setLinesVisible(true);
 		accessTable.setHeaderVisible(true);
-		accessTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		accessTable.setLayoutData(featureTableLayoutData);
 		managedForm.getToolkit().paintBordersFor(accessTable);
 		
 		TableViewerColumn tableViewerColumnOrigin = new TableViewerColumn(accessViewer, SWT.NONE);
@@ -302,7 +370,7 @@ public class PropertiesPage extends FormPage {
 		btnAccessAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				NewAccessDialog dialog = new NewAccessDialog(getSite().getShell(), getWidget());
+				NewAccessDialog dialog = new NewAccessDialog(getSite().getShell(), getWidgetModel());
 				if(dialog.open() == Window.OK && dialog.getAccess() != null){
 					getWidget().addAccess(dialog.getAccess());
 				}
@@ -320,8 +388,6 @@ public class PropertiesPage extends FormPage {
 				getWidget().removeAccess(access);
 			}
 		});
-		
-		Button btnAccessEdit = managedForm.getToolkit().createButton(composite_2, "Edit...", SWT.NONE);
 		
 		
 		m_bindingContext = initDataBindings();
@@ -353,14 +419,6 @@ public class PropertiesPage extends FormPage {
 		//
 		IObservableList featuresGetWidgetObserveList = BeanProperties.list("features").observe(getWidget());
 		featuresTableViewer.setInput(featuresGetWidgetObserveList);
-		//
-		ObservableListContentProvider listContentProvider_3 = new ObservableListContentProvider();
-		IObservableMap[] observeMaps_2 = BeansObservables.observeMaps(listContentProvider_3.getKnownElements(), Plugin.class, new String[]{"name", "version"});
-		pluginsTableViewer.setLabelProvider(new ObservableMapLabelProvider(observeMaps_2));
-		pluginsTableViewer.setContentProvider(listContentProvider_3);
-		//
-		IObservableList pluginsGetWidgetObserveList = BeanProperties.list("plugins").observe(getWidget());
-		pluginsTableViewer.setInput(pluginsGetWidgetObserveList);
 		//
 		return bindingContext;
 	}

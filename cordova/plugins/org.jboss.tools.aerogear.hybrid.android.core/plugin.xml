@@ -10,5 +10,23 @@
             name="Android">
       </launchConfigurationType>
    </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.core.projectGenerator">
+      <generator
+            delegate="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidProjectGenerator"
+            id="org.jboss.tools.aerogear.hybrid.android.core.projectGenerator"
+            platform="Android"
+            platformID="android"
+            pluginInstallActionFactory="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidPluginInstallationActionsFactory">
+      </generator>
+   </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.core.projectBuilder">
+      <builder
+            delegate="org.jboss.tools.aerogear.hybrid.android.core.adt.BuildDelegate"
+            id="org.jboss.tools.aerogear.hybrid.android.core.projectBuilder"
+            platform="Android">
+      </builder>
+   </extension>
 
 </plugin>

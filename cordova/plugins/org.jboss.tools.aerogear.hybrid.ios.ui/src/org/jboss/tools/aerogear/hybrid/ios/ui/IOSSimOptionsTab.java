@@ -12,12 +12,13 @@ package org.jboss.tools.aerogear.hybrid.ios.ui;
 
 import static org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants.ATTR_BUILD_SCOPE;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_DEVICE_FAMILY;
-import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_SIMULATOR_SDK_DESCRIPTION;
+import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_SIMULATOR_SDK_VERSION;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_RETINA;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_TALL;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.VAL_DEVICE_FAMILY_IPAD;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.VAL_DEVICE_FAMILY_IPHONE;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -26,13 +27,15 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -43,22 +46,21 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeBuild;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeSDK;
 
 public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
-	private static final String TXT_SDK_VER_DEFAULT = "Default";
 	private Text textProject;
 	private Combo comboDeviceFamily;
 	private Listener dirtyFlagListener;
 	private Button btnCheckRetina;
 	private Button btnTall;
 	private Combo comboSDKVer;
+	private ComboViewer comboViewer;
 	
 	private class DirtyListener implements Listener{
 		@Override
@@ -68,26 +70,6 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		}
 	}
 	
-	private class HybridProjectLabelProvider extends LabelProvider{
-		private ImageDescriptor DESC_OBJ_PROJECT;
-		{
-			DESC_OBJ_PROJECT = PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(IDE.SharedImages.IMG_OBJ_PROJECT);
-		}
-		@Override
-		public String getText(Object element) {
-			if (element instanceof HybridProject ){
-				HybridProject hp = (HybridProject) element;
-				return hp.getProject().getName();
-			}
-			return null;
-		}
-		
-		@Override
-		public Image getImage(Object element) {
-			return DESC_OBJ_PROJECT.createImage();
-		}
-	}
-
 	public IOSSimOptionsTab() {
 		this.dirtyFlagListener = new DirtyListener();
 	}
@@ -119,8 +101,10 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		btnProjectBrowse.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), new HybridProjectLabelProvider());
+				ElementListSelectionDialog es = new ElementListSelectionDialog(getShell(), WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
 				es.setElements(HybridCore.getHybridProjects().toArray());
+				es.setTitle("Project Selection");
+				es.setMessage("Select a project to run");
 				if (es.open() == Window.OK) {			
 					HybridProject project = (HybridProject) es.getFirstResult();
 					textProject.setText(project.getProject().getName());
@@ -138,16 +122,55 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		lblSdkVersion.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblSdkVersion.setText("SDK Version:");
 		
-		comboSDKVer = new Combo(grpSimulator, SWT.NONE);
+		comboSDKVer = new Combo(grpSimulator, SWT.READ_ONLY);
+		
 		comboSDKVer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		comboSDKVer.addListener(SWT.Selection, dirtyFlagListener);
-		comboSDKVer.add(TXT_SDK_VER_DEFAULT, 0);
+	
+		comboViewer = new ComboViewer(comboSDKVer);
+		comboViewer.setContentProvider(new IStructuredContentProvider() {
+			
+			@Override
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			}
+			
+			@Override
+			public void dispose() {
+				
+			}
+			
+			@Override
+			public Object[] getElements(Object inputElement) {
+				try{
+					XCodeBuild build = new XCodeBuild();
+					List<XCodeSDK> list = build.showSdks();
+					ArrayList<XCodeSDK> simulators = new ArrayList<XCodeSDK>(list.size());
+					for (XCodeSDK sdk : list) {
+						if(sdk.isSimulator()){
+							simulators.add(sdk);
+						}
+					}
+					return simulators.toArray();
+				}
+				catch (CoreException e) {
+						return new Object[0];
+					}
+			}
+		});
+		comboViewer.setLabelProvider( new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				XCodeSDK sdk = (XCodeSDK) element;
+				return sdk.getDescription();
+			}
+		});
+		comboViewer.setInput(new Object());
 		
 		Label lblDeviceFamily = new Label(grpSimulator, SWT.NONE);
 		lblDeviceFamily.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblDeviceFamily.setText("Device Family:");
 		
-		comboDeviceFamily = new Combo(grpSimulator, SWT.NONE);
+		comboDeviceFamily = new Combo(grpSimulator, SWT.READ_ONLY);
 		comboDeviceFamily.setItems(new String[] {VAL_DEVICE_FAMILY_IPHONE, VAL_DEVICE_FAMILY_IPAD});
 		comboDeviceFamily.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		comboDeviceFamily.select(0);
@@ -160,18 +183,7 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		btnTall = new Button(grpSimulator, SWT.CHECK);
 		btnTall.setText("Tall");
 		btnTall.addListener(SWT.Selection, dirtyFlagListener);
-		XCodeBuild build = new XCodeBuild();
-		try{
-			List<XCodeSDK> list = build.showSdks();
-			for (XCodeSDK sdk : list) {
-				if(sdk.isSimulator()){
-					comboSDKVer.add(sdk.getDescription());
-				}
-			}
-		}
-		catch (CoreException e) {
-				comboSDKVer.add("error: defaults to latest");
-			}
+		
 	}
 
 	@Override
@@ -198,7 +210,7 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		
 		
 		try{ 
-			String sdkVer = configuration.getAttribute(ATTR_SIMULATOR_SDK_DESCRIPTION, TXT_SDK_VER_DEFAULT);
+			String sdkVer = configuration.getAttribute(ATTR_SIMULATOR_SDK_VERSION,new String());
 			int index = comboSDKVer.indexOf(sdkVer);
 			if(index <0 )//it is possible that the selected SDK version is no longer available
 				index=0; // it can be either uninstalled or the launch config is shared. fall back to default
@@ -239,8 +251,10 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		configuration.setAttribute(ATTR_DEVICE_FAMILY, comboDeviceFamily.getText());
 		configuration.setAttribute(ATTR_USE_RETINA, btnCheckRetina.getSelection() );
 		configuration.setAttribute(ATTR_USE_TALL, btnTall.getSelection());
-		if(!TXT_SDK_VER_DEFAULT.equals(comboSDKVer.getText())){
-			configuration.setAttribute(ATTR_SIMULATOR_SDK_DESCRIPTION, comboSDKVer.getText());
+		IStructuredSelection selection = (IStructuredSelection) comboViewer.getSelection();
+		if(!selection.isEmpty()){
+			XCodeSDK selectedSDK = (XCodeSDK) selection.getFirstElement();
+			configuration.setAttribute(ATTR_SIMULATOR_SDK_VERSION, selectedSDK.getIdentifierString());
 		}
 	}
 

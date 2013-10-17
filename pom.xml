@@ -5,12 +5,15 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>parent</artifactId>
-		<version>4.1.1.Alpha1-SNAPSHOT</version>
+		<version>4.2.0.Alpha1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools</groupId>
 	<artifactId>aerogear</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.100-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<properties>
+		<tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-aerogear.git</tycho.scmUrl>
+	</properties>
 	
 	<modules>
 		<module>cordova</module>

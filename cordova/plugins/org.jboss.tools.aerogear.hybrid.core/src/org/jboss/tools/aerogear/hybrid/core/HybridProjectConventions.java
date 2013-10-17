@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 /**
- * Provides utilities for checking against Hybrid mobile projec conventions
+ * Provides utilities for checking against Hybrid mobile project conventions
  * such as the naming syntax
  * @author Gorkem Ercan
  *
@@ -47,7 +47,7 @@ public class HybridProjectConventions {
 	 * @return
 	 */
 	public static IStatus validateProjectID(String id ){
-		if(id == null | id.trim().isEmpty() )
+		if(id == null || id.trim().isEmpty() )
 			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Application ID must be specified");
 
 		Pattern pattern  = Pattern.compile("([a-zA-Z][a-zA-Z\\d_]*[\\.])+[a-zA-Z_][a-zA-Z\\d_]*");
