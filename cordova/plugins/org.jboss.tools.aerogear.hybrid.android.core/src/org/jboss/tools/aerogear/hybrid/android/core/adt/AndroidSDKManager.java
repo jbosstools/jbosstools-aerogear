@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -305,7 +306,11 @@ public class AndroidSDKManager {
 		DeviceListParser parser = new DeviceListParser();
 		processUtility.execSync(getADBCommand()+" devices", null, parser, parser, 
 				new NullProgressMonitor(), null, null);
-		return parser.getDeviceList();
+		List<AndroidDevice> devices = parser.getDeviceList();
+		if(devices == null ){
+			devices = Collections.emptyList();
+		}
+		return devices;
 		
 	}
 	
