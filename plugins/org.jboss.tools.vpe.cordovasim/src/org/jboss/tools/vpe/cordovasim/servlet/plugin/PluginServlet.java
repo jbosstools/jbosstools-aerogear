@@ -38,10 +38,11 @@ public class PluginServlet extends HttpServlet {
 		String pathInfo = req.getPathInfo();
 		File file = new File(pluginDir, pathInfo);
 
+		resp.setHeader(ServletUtil.CACHE_CONTROL, ServletUtil.NO_CACHE);
+		
 		if (file.exists()) {
 			String ifNoneMatchValue = req.getHeader(ServletUtil.IF_NONE_MATCH);
 			String eTag = ServletUtil.generateEtag(file);
-
 			if ((ifNoneMatchValue != null) && (eTag.equals(ifNoneMatchValue))) {
 				resp.setHeader(ServletUtil.ETAG, eTag);
 				resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
