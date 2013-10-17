@@ -52482,8 +52482,8 @@ ripple.define('platform/spec', function (ripple, exports, module) {
 module.exports = {
     "cordova": {
         "1.0.0": ripple('platform/cordova/1.0.0/spec'),
-        "2.0.0": ripple('platform/cordova/2.0.0/spec')
-        // "3.0.0": ripple('platform/cordova/3.0.0/spec') // !!! UNCOMMENT this later for cordova 3.0.0 support !!!
+        "2.0.0": ripple('platform/cordova/2.0.0/spec'),
+        "3.0.0": ripple('platform/cordova/3.0.0/spec') 
     },
     "webworks.bb10": { "1.0.0": ripple('platform/webworks.bb10/1.0.0/spec') },
     "webworks.handset": { "2.0.0": ripple('platform/webworks.handset/2.0.0/spec') },
@@ -54874,7 +54874,7 @@ if (!localStorage.ripple) {
                                           {
                                             "id":"tinyhippos-api-key",
                                            "key":"api-key",
-                                            "value":"{\"name\":\"cordova\",\"version\":\"2.0.0\"}",  // set default values on startup: 'cordova 2.0.0'
+                                            "value":"{\"name\":\"cordova\",\"version\":\"3.0.0\"}",  // set default values on startup: 'cordova 3.0.0'
                                             "prefix":"tinyhippos-"},
                       "tinyhippos-device-key":
                                           {
