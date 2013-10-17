@@ -49,7 +49,7 @@ public class CordovaPluginJsServlet extends HttpServlet {
 		} else {
 			try {
 				List<File> pluginXmlFiles = CordovaFileUtil.getPluginXmlFiles(pluginDir); // get all plugin.xml files from the "plugins" folder of the hybrid project
-				List<Plugin> plugins = CordovaPluginXmlUtil.getPluginsfromFiles(pluginXmlFiles); // generate Plugins from the plugin.xml files
+				List<Plugin> plugins = CordovaPluginXmlUtil.getPluginsfromFiles(pluginXmlFiles, CordovaPluginXmlUtil.PLATFORM_ANDROID); // generate Plugins from the plugin.xml files
 
 				PluginIdCache.update(plugins); // Cache with mapping plugin's file to id is needed in PluginServlet
 				String content = CordovaFileUtil.generateCordovaPluginsJsContent(plugins);

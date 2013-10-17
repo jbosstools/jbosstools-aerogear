@@ -134,7 +134,7 @@ public class ServerCreator {
 						return "/ripple/cordova/cordova-3.1.0.js";
 					}
 					return null;
-				} else { 
+				} else { // Will be implemented in the context of multiple version support issue
 					if (pathInfo.equals("/cordova.js")) { // JBIDE-14319
 						return "/ripple/cordova/cordova-2.7.0.js";
 					} else if (pathInfo.equals("/cordova_plugins.json")) { // JBIDE-14453
