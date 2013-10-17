@@ -13,6 +13,7 @@ package org.jboss.tools.vpe.cordovasim.plugin.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,47 +28,57 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CordovaPluginXmlUtil {
-	private static final String ID = "id";
-	private static final String JS_MODULE = "js-module";
-	private static final String SRC_ATTRIBUTE = "src";
-	private static final String NAME_ATTRIBUTE = "name";
-	private static final String MERGES = "merges";
-	private static final String CLOBBERS = "clobbers";
-	private static final String TARGET_ATTRIBUTE = "target";
-	private static final String ANDROID = "android";
-	private static final String PLUGINS_DIR = "plugins";
+	public static final String PLATFORM_ANDROID = "android";
+	public static final String PLATFORM_IOS = "ios";
 
-	public static List<Plugin> getPluginsFromDocument(Document doc) {
+	private static final String ATTRIBUTE_ID = "id";
+	private static final String ATTRIBUTE_NAME = "name";
+	private static final String ATTRIBUTE_SRC = "src";
+	private static final String ATTRIBUTE_TARGET = "target";
+	private static final String PLUGINS_DIR = "plugins";
+	private static final String TAG_CLOBBERS = "clobbers";
+	private static final String TAG_JS_MODULE = "js-module";
+	private static final String TAG_MERGES = "merges";
+	private static final String TAG_PLATFORM = "platform";
+	
+	/**
+	 * Returns a {@link List} of all plugins for the specific platform from the {@link Document} of the plugin.xml 
+	 */
+	public static List<Plugin> getPluginsFromDocument(Document document, String platformName) {
 		List<Plugin> plugins = new ArrayList<Plugin>();
-		String pluginXmlId = getId(doc); // plugin.xml id, not plugin id
-		NodeList nodeList = doc.getElementsByTagName(JS_MODULE);
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node node = nodeList.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				if (isAndroidJsModule(node)) {
-					Element jsModuleElement = (Element) node;
-					Plugin plugin = createPlugin(jsModuleElement, pluginXmlId);
-					if (plugin != null) {
-						plugins.add(plugin);
-					}
-				}
+		String pluginXmlId = getPluginXmlId(document); // plugin.xml id, not plugin id
+
+		List<Element> suitableJsModules = getJsModulesForSpecificPlatform(document, platformName);
+		Iterator<Element> iterator = suitableJsModules.iterator();
+
+		while (iterator.hasNext()) {
+			Element jsModuleElement = (Element) iterator.next();
+			Plugin plugin = createPlugin(jsModuleElement, pluginXmlId);
+			if (plugin != null) {
+				plugins.add(plugin);
 			}
 		}
+
 		return plugins;
 	}
 
-	public static List<Plugin> getPluginsfromFiles(List<File> pluginXmlFiles) throws PluginJsException {
+	/** 
+	 *  Returns a {@link List} of all plugins for the specific platfom from the {@link List} of plugin.xml files
+	 */
+	public static List<Plugin> getPluginsfromFiles(List<File> pluginXmlFiles, String platformName)
+			throws PluginJsException {
 		List<Plugin> allPlugins = new ArrayList<Plugin>();
 		for (File file : pluginXmlFiles) {
 			try {
 				DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				Document doc = dBuilder.parse(file);
 				doc.getDocumentElement().normalize();
-				List<Plugin> pluginsFromDocument = CordovaPluginXmlUtil.getPluginsFromDocument(doc);
+				List<Plugin> pluginsFromDocument = CordovaPluginXmlUtil.getPluginsFromDocument(doc, platformName);
 				allPlugins.addAll(pluginsFromDocument);
 			} catch (ParserConfigurationException e) {
 				throw new PluginJsException(e);
@@ -82,15 +93,15 @@ public class CordovaPluginXmlUtil {
 
 	private static Plugin createPlugin(Element jsModuleElement, String pluginXmlId) {
 		Plugin plugin = null;
-		String moduleName = jsModuleElement.getAttribute(NAME_ATTRIBUTE);
-		String src = jsModuleElement.getAttribute(SRC_ATTRIBUTE);
+		String moduleName = jsModuleElement.getAttribute(ATTRIBUTE_NAME);
+		String src = jsModuleElement.getAttribute(ATTRIBUTE_SRC);
 
 		if ((moduleName != null) && (src != null)) {
-			NodeList clobberList = jsModuleElement.getElementsByTagName(CLOBBERS);
-			NodeList mergeList = jsModuleElement.getElementsByTagName(MERGES);
+			List<Element> mergesList = getChildElementsByName(jsModuleElement, TAG_MERGES);
+			List<Element> clobbersList = getChildElementsByName(jsModuleElement, TAG_CLOBBERS);
 
-			List<String> clobbers = getMappers(clobberList);
-			List<String> merges = getMappers(mergeList);
+			List<String> clobbers = getMappers(clobbersList);
+			List<String> merges = getMappers(mergesList);
 
 			String pluginId = pluginXmlId + "." + moduleName; // plugin id = pligin.xml.id + moduleName
 			String file = PLUGINS_DIR + "/" + pluginXmlId + "/" + src;
@@ -99,37 +110,73 @@ public class CordovaPluginXmlUtil {
 				plugin = new Plugin(file, pluginId, clobbers, merges);
 			}
 		}
+
 		return plugin;
 	}
 
-	private static List<String> getMappers(NodeList clobberList) {
-		List<String> mappers = new ArrayList<String>();
-		for (int j = 0; j < clobberList.getLength(); j++) {
-			Node mapperNode = clobberList.item(j);
-			if (mapperNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element cloberElement = (Element) mapperNode;
-				String clober = cloberElement.getAttribute(TARGET_ATTRIBUTE);
-				mappers.add(clober);
+	private static List<Element> getJsModulesForSpecificPlatform(Document doc, String platformName) {
+		List<Element> suitableJsModules = new ArrayList<Element>();
+		Element documentElement = doc.getDocumentElement();
+		NodeList childNodes = documentElement.getChildNodes();
+
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node node = childNodes.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				Element element = (Element) node;
+
+				if (isJsModuleElement(element)) { // Common js-module for all types of projects (ios, android, wp8 etc.)
+					suitableJsModules.add(element);
+				} else if (isPlatformElement(element) && (element.getAttribute(ATTRIBUTE_NAME) != null)
+						&& element.getAttribute(ATTRIBUTE_NAME).equals(platformName)) { // platform-specific js-module
+					List<Element> androidJsModules = getChildElementsByName(element, TAG_JS_MODULE);
+					suitableJsModules.addAll(androidJsModules);
+				}
 			}
 		}
+
+		return suitableJsModules;
+	}
+
+	private static List<String> getMappers(List<Element> mappersList) {
+		List<String> mappers = new ArrayList<String>();
+		for (int i = 0; i < mappersList.size(); i++) {
+			Element mapperElement = mappersList.get(i);
+			String mapper = mapperElement.getAttribute(ATTRIBUTE_TARGET);
+			mappers.add(mapper);
+		}
+
 		return mappers;
 	}
 
-	private static boolean isAndroidJsModule(Node node) {
-		Node parentNode = node.getParentNode();
-		if (parentNode.getNodeType() == Node.ELEMENT_NODE) {
-			Element parentElement = (Element) parentNode;
-			String platformName = parentElement.getAttribute(NAME_ATTRIBUTE);
-			if (platformName == null || platformName.trim().equals("") || platformName.equals(ANDROID)) { // HACK - need to do this better
-				return true;
+	private static List<Element> getChildElementsByName(Element parentElement, String childElementName) {
+		List<Element> elementList = new ArrayList<Element>();
+		NodeList childNodes = parentElement.getChildNodes();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node node = childNodes.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				Element childElement = (Element) node;
+				if (childElement.getNodeName().equals(childElementName)) {
+					elementList.add(childElement);
+				}
 			}
 		}
-		return false;
+
+		return elementList;
 	}
 
-	private static String getId(Document doc) {
+	private static boolean isJsModuleElement(Element element) {
+		String elementName = element.getNodeName();
+		return elementName.equals(TAG_JS_MODULE);
+	}
+
+	private static boolean isPlatformElement(Element element) {
+		String elementName = element.getNodeName();
+		return elementName.equals(TAG_PLATFORM);
+	}
+
+	private static String getPluginXmlId(Document doc) {
 		Element element = doc.getDocumentElement();
-		return element.getAttribute(ID);
+		return element.getAttribute(ATTRIBUTE_ID);
 	}
-
+	
 }

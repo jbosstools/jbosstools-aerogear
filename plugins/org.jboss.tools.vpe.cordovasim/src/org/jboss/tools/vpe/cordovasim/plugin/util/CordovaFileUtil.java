@@ -36,7 +36,10 @@ public class CordovaFileUtil {
 	private static final String CORDOVA_DEFINE = "cordova.define(";
 	private static final String FUNCTION_BEGINNING = "function(require, exports, module) {\n";
 	private static final String FUNCTION_END = "});";
-
+	
+	/**
+	 * Returns {@link List} of plugin.xml files from the "plugins" directory of the hybrid project
+	 */
 	public static List<File> getPluginXmlFiles(File pluginsDir) {
 		List<File> pluginXmlFiles = new ArrayList<File>();
 		File[] pluginDirs = pluginsDir.listFiles();
@@ -51,7 +54,13 @@ public class CordovaFileUtil {
 
 		return pluginXmlFiles;
 	}
-
+	
+	
+	/**
+	 * Returns {@link String} representation of the cordova_plugins.js 
+	 * 
+	 * @param plugins {@link List} of cordova {@link Plugin}
+	 */
 	public static String generateCordovaPluginsJsContent(List<Plugin> plugins) {
 		String pluginContent = "";
 		Iterator<Plugin> pluginIterator = plugins.iterator();
@@ -85,7 +94,11 @@ public class CordovaFileUtil {
 		}
 		return CORDOVA_PLUGINS_JS_BEGINNING + pluginContent + CORDOVA_PLUGINS_JS_END;
 	}
-
+	
+	/** 
+	 * Wraps the plugin's  .js file content in a function 
+	 * (adds "cordova.define( pluginId, function(require, exports, module) {...} ) 
+	 */
 	public static String generatePluginContent(File file, String pluginId) throws FileNotFoundException {
 		String content = null;
 		if (file.exists()) {
