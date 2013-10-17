@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.MultipartConfigElement;
@@ -28,15 +29,20 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jboss.tools.vpe.cordovasim.plugin.util.CordovaFileUtil;
+import org.jboss.tools.vpe.cordovasim.servlet.plugin.CordovaPluginJsServlet;
+import org.jboss.tools.vpe.cordovasim.servlet.plugin.PluginServlet;
 import org.jboss.tools.vpe.cordovasim.servlets.camera.FormatDataServlet;
 import org.jboss.tools.vpe.cordovasim.servlets.camera.HostFileServlet;
 import org.jboss.tools.vpe.cordovasim.servlets.camera.UploadFileServlet;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
+ * @author Ilya Buziuk (ibuziuk)
  */
-public class ServerCreator {
-	public static Server createServer(String resourceBase, int port) {
+public class ServerCreator {	
+
+	public static Server createServer(final String resourceBase, int port) {
 		Server server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setReuseAddress(false);
@@ -44,7 +50,6 @@ public class ServerCreator {
 		connector.setPort(port);
 		connector.setHost("localhost");
 		server.addConnector(connector);
-		
 				
 		ServletHolder userAgentServletHolder = new ServletHolder(new StaticResponseServlet("OK"));
 		ServletHandler userAgentServletHandler = new ServletHandler();
@@ -88,6 +93,15 @@ public class ServerCreator {
 		ContextHandler wwwContextHandler = new ContextHandler("/");
 		wwwContextHandler.setHandler(wwwResourceHandler);
 		
+		File pluginDir = CordovaFileUtil.getPluginDir(resourceBase); 
+		ServletHolder cordovaPluginJsServletHolder = new ServletHolder(new CordovaPluginJsServlet(pluginDir));
+		ServletHandler cordovaPluginJsServetHandler = new ServletHandler();
+		cordovaPluginJsServetHandler.addServletWithMapping(cordovaPluginJsServletHolder, "/cordova_plugins.js");
+		
+		ServletHolder pluginServletHolder = new ServletHolder(new PluginServlet(pluginDir));
+		ServletHandler pluginServletHandler = new ServletHandler();
+		pluginServletHandler.addServletWithMapping(pluginServletHolder, "/plugins/*");
+		
 		RewriteHandler rippleRewriteHandler = new RewriteHandler();
 		rippleRewriteHandler.setRewriteRequestURI(true);
 		rippleRewriteHandler.setRewritePathInfo(true);
@@ -112,11 +126,20 @@ public class ServerCreator {
 			@Override
 			public String matchAndApply(String target, HttpServletRequest request,
 					HttpServletResponse response) throws IOException {
-				if (request.getPathInfo().equals("/cordova.js")){ // JBIDE-14319
-					return "/ripple/cordova/cordova-2.7.0.js";
-				} else if (request.getPathInfo().equals("/cordova_plugins.json")){ // JBIDE-14453
-					return "/ripple/cordova/cordova_plugins.json";
-				} else {
+				String pathInfo = request.getPathInfo(); 
+				String cordovaVersion = CordovaFileUtil.getCordovaVersion(resourceBase);
+				
+				if (cordovaVersion.equals("3.1.0")) {
+					if (pathInfo.equals("/cordova.js")) {
+						return "/ripple/cordova/cordova-3.1.0.js";
+					}
+					return null;
+				} else { // Will be implemented in the context of multiple version support issue
+					if (pathInfo.equals("/cordova.js")) { // JBIDE-14319
+						return "/ripple/cordova/cordova-2.7.0.js";
+					} else if (pathInfo.equals("/cordova_plugins.json")) { // JBIDE-14453
+						return "/ripple/cordova/cordova_plugins.json";
+					}
 					return null;
 				}
 			}
@@ -128,6 +151,8 @@ public class ServerCreator {
 				rippleRewriteHandler,
 				wwwContextHandler,
 				cordovaRewriteHandler,
+				cordovaPluginJsServetHandler,
+				pluginServletHandler,
 				proxyServletHandler,
 				fileUploadContextHandler,
 				hostFileServletHandler,
@@ -137,4 +162,5 @@ public class ServerCreator {
 		server.setHandler(handlers);
 		return server;
 	}
+	
 }
