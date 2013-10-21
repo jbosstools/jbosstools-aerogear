@@ -65,9 +65,10 @@ public class UploadFileServlet extends HttpServlet {
 		out.flush();
 	}
 
+	@SuppressWarnings("nls")
 	private String generateJSON(File tempFile) {
 		String url = RESOURCE_MAPPING + tempFile.getName();
-		String json = "{\"" + JSON_KEY + "\": " + "\"" + url + "\"}";  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		String json = "{\"" + JSON_KEY + "\": " + "\"" + url + "\"}";  
 		return json;
 	}
 
@@ -93,11 +94,12 @@ public class UploadFileServlet extends HttpServlet {
 		return tempFile;
 	}
 	
+	@SuppressWarnings("nls")
 	private String getFileNameFromPart(Part part) {
-		for (String cd : part.getHeader(CONTENT_DISPOSITION).split(";")) { //$NON-NLS-1$
+		for (String cd : part.getHeader(CONTENT_DISPOSITION).split(";")) { 
 			if (cd.trim().startsWith(FILE_NAME)) {
 				return cd.substring(cd.indexOf('=') + 1).trim()
-						.replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
+						.replace("\"", ""); 
 			}
 		}
 		return null;

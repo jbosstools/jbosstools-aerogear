@@ -20,10 +20,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.tools.vpe.cordovasim.plugin.exception.PluginJsException;
-import org.jboss.tools.vpe.cordovasim.plugin.model.PluginIdCache;
 import org.jboss.tools.vpe.cordovasim.plugin.model.Plugin;
-import org.jboss.tools.vpe.cordovasim.plugin.util.CordovaPluginXmlUtil;
+import org.jboss.tools.vpe.cordovasim.plugin.model.PluginIdCache;
 import org.jboss.tools.vpe.cordovasim.plugin.util.CordovaFileUtil;
+import org.jboss.tools.vpe.cordovasim.plugin.util.CordovaPluginXmlUtil;
 import org.jboss.tools.vpe.cordovasim.servlet.util.ServletUtil;
 
 /**
@@ -55,7 +55,7 @@ public class CordovaPluginJsServlet extends HttpServlet {
 
 				PluginIdCache.update(plugins); // Cache with mapping plugin's file to id is needed in PluginServlet
 				String content = CordovaFileUtil.generateCordovaPluginsJsContent(plugins);
-
+				
 				resp.setStatus(HttpServletResponse.SC_OK);
 				resp.setContentType(ServletUtil.APPLICATION_JAVASCRIPT_CONTENT_TYPE);
 				resp.setHeader(ServletUtil.ETAG, eTag);
