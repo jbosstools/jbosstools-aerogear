@@ -99,14 +99,15 @@ public class FormatDataServlet extends HttpServlet {
 		return tempFileName;
 	}
 	
+	@SuppressWarnings("nls")
 	private String generateJSON(String height, String width) {
-		String json = "{" +  //$NON-NLS-1$
-							"\"" + CODECS    +   "\""  +    ": \"null\", "  + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							"\"" + BITRATE   +   "\""  +    ": \"0\", "     + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							"\"" + HEIGHT    +   "\""  +    ": \"" +  height + "\", " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-							"\"" + WIDTH     +   "\""  +    ": \"" +  width  + "\", " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-							"\"" + DURATION  +   "\""  +    ": \"0\""       + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					   "}"; //$NON-NLS-1$
+		String json = "{" +  
+							"\"" + CODECS    +   "\""  +    ": \"null\", "  + 
+							"\"" + BITRATE   +   "\""  +    ": \"0\", "     + 
+							"\"" + HEIGHT    +   "\""  +    ": \"" +  height + "\", " + 
+							"\"" + WIDTH     +   "\""  +    ": \"" +  width  + "\", " + 
+							"\"" + DURATION  +   "\""  +    ": \"0\""       + 
+					   "}"; 
 		return json;
 	}
 }

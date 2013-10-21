@@ -63,7 +63,6 @@ public class CordovaPluginXmlUtil {
 				plugins.add(plugin);
 			}
 		}
-
 		return plugins;
 	}
 
@@ -91,6 +90,7 @@ public class CordovaPluginXmlUtil {
 		return allPlugins;
 	}
 
+	@SuppressWarnings("nls")
 	private static Plugin createPlugin(Element jsModuleElement, String pluginXmlId) {
 		Plugin plugin = null;
 		String moduleName = jsModuleElement.getAttribute(ATTRIBUTE_NAME);
@@ -103,8 +103,8 @@ public class CordovaPluginXmlUtil {
 			List<String> clobbers = getMappers(clobbersList);
 			List<String> merges = getMappers(mergesList);
 
-			String pluginId = pluginXmlId + "." + moduleName; // plugin id = pligin.xml.id + moduleName //$NON-NLS-1$
-			String file = PLUGINS_DIR + "/" + pluginXmlId + "/" + src; //$NON-NLS-1$ //$NON-NLS-2$
+			String pluginId = pluginXmlId + "." + moduleName; // plugin id = pligin.xml.id + moduleName 
+			String file = PLUGINS_DIR + "/" + pluginXmlId + "/" + src; 
 
 			if (clobbers.size() > 0 || merges.size() > 0) {
 				plugin = new Plugin(file, pluginId, clobbers, merges);

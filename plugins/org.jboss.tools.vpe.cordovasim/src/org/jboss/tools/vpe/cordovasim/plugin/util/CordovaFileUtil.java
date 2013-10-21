@@ -51,7 +51,6 @@ public class CordovaFileUtil {
 				}
 			}
 		}
-
 		return pluginXmlFiles;
 	}
 	
@@ -61,45 +60,46 @@ public class CordovaFileUtil {
 	 * 
 	 * @param plugins {@link List} of cordova {@link Plugin}
 	 */
+	@SuppressWarnings("nls")
 	public static String generateCordovaPluginsJsContent(List<Plugin> plugins) {
-		String pluginContent = ""; //$NON-NLS-1$
+		String pluginContent = "";
 		Iterator<Plugin> pluginIterator = plugins.iterator();
 		while (pluginIterator.hasNext()) {
 			Plugin plugin = pluginIterator.next();
-			pluginContent += "\n\t{\n"; //$NON-NLS-1$
-			pluginContent += "\t\t" + FILE + "\"" + plugin.getFile() + "\",\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			pluginContent += "\t\t" + ID + "\"" + plugin.getId() + "\",\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			pluginContent += "\n\t{\n";
+			pluginContent += "\t\t" + FILE + "\"" + plugin.getFile() + "\",\n";
+			pluginContent += "\t\t" + ID + "\"" + plugin.getId() + "\",\n";
 			Iterator<String> mapperIterator = null;
 			if (plugin.getClobbers().size() > 0) {
-				pluginContent += "\t\t" + CLOBBERS; //$NON-NLS-1$
+				pluginContent += "\t\t" + CLOBBERS;
 				mapperIterator = plugin.getClobbers().iterator();
 			} else if (plugin.getMerges().size() > 0) {
-				pluginContent += "\t\t" + MERGES; //$NON-NLS-1$
+				pluginContent += "\t\t" + MERGES;
 				mapperIterator = plugin.getMerges().iterator();
 			}
 			while (mapperIterator.hasNext()) {
 				String clobber = mapperIterator.next();
-				pluginContent += "\t\t\t\"" + clobber + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+				pluginContent += "\t\t\t\"" + clobber + "\"";
 				if (mapperIterator.hasNext()) {
-					pluginContent += ",\n"; //$NON-NLS-1$
+					pluginContent += ",\n";
 				} else {
-					pluginContent += "\n\t\t]"; //$NON-NLS-1$
+					pluginContent += "\n\t\t]";
 				}
 			}
 			if (pluginIterator.hasNext()) {
-				pluginContent += "\n\t},"; //$NON-NLS-1$
+				pluginContent += "\n\t},";
 			} else {
-				pluginContent += "\n\t}\n"; //$NON-NLS-1$
+				pluginContent += "\n\t}\n";
 			}
 		}
 		return CORDOVA_PLUGINS_JS_BEGINNING + pluginContent + CORDOVA_PLUGINS_JS_END;
 	}
 	
+
 	/** 
 	 * Wraps the plugin's  .js file content in a function 
 	 * (adds "cordova.define( pluginId, function(require, exports, module) {...} ) 
 	 */
-	@SuppressWarnings("resource")
 	public static String generatePluginContent(File file, String pluginId) throws FileNotFoundException {
 		String content = null;
 		if (file.exists()) {
