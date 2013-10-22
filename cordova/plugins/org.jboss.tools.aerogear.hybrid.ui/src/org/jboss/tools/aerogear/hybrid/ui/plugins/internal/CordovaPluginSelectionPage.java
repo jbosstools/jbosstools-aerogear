@@ -29,6 +29,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -65,6 +66,9 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	static final int PLUGIN_SOURCE_REGISTRY =1;
 	static final int PLUGIN_SOURCE_GIT =2;
 	static final int PLUGIN_SOURCE_DIRECTORY =3;
+	private static final String PAGE_NAME = "Cordova Plug-in Selection Page";
+	private static final String PAGE_TITLE = "Install Cordova Plug-in";
+	private static final String PAGE_DESCRIPTION = "Discover and Install Cordova Plug-ins";
 	
 	private HybridProject fixedProject;
 	private IStructuredSelection initialSelection;
@@ -81,8 +85,13 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private InstalledPluginFilter installedPluginsFilter;
 	
 
-	protected CordovaPluginSelectionPage(String pageName,IStructuredSelection selection) {
-		this(pageName);
+	protected CordovaPluginSelectionPage(){
+		super(PAGE_NAME,PAGE_TITLE, HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, CordovaPluginWizard.IMAGE_WIZBAN));
+		setDescription(PAGE_DESCRIPTION);
+	}
+	
+	protected CordovaPluginSelectionPage(IStructuredSelection selection) {
+		this();
 		this.initialSelection = selection;
 	}
 	/**
@@ -92,16 +101,10 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	 * @param pageName
 	 * @param project
 	 */
-	protected CordovaPluginSelectionPage(String pageName, HybridProject project){
-		this(pageName);
+	protected CordovaPluginSelectionPage(HybridProject project){
+		this();
 		this.fixedProject= project;
 	}
-	
-	private CordovaPluginSelectionPage(String pageName){
-		super(pageName);
-		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, CordovaPluginWizard.IMAGE_WIZBAN));
-	}
-	
 
 	@SuppressWarnings("restriction")
 	@Override
@@ -153,7 +156,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		directoryTab.setText("Directory");
 		
 		destinationDirectoryGroup = new DirectorySelectionGroup(tabFolder, SWT.NONE);
-		destinationDirectoryGroup.setText("Plugin:");
+		destinationDirectoryGroup.setText("Plug-in:");
 		destinationDirectoryGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		destinationDirectoryGroup.addListener(SWT.Modify, new Listener() {
 			
@@ -231,7 +234,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 					try {
 						infos = client.retrievePluginInfos(monitor);
 						if(infos == null){
-							throw new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while retrieving the Cordova Plugin Registry Catalog"));
+							throw new CoreException(new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while retrieving the Cordova Plug-in Registry Catalog"));
 						}
 					} catch (CoreException e) {
 						throw new InvocationTargetException(e);
@@ -250,7 +253,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		} catch (InvocationTargetException e1) {
 			if (e1.getTargetException() != null) {
 				ErrorDialog.openError(getShell(), "Error Retrieving Plugin Catalog",null, 
-						new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while retrieving the catalog for Cordova plugins", e1.getTargetException() ));
+						new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while retrieving the catalog for Cordova plug-ins", e1.getTargetException() ));
 			}
 		} catch (InterruptedException e1) {
 		}
@@ -370,7 +373,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private boolean validateRegistryTab() {
 		List<CordovaRegistryPluginInfo> infos = getCheckedCordovaRegistryItems();
 		if (infos.isEmpty()){
-			setMessage("Specify Cordova plugin(s) for installation", ERROR);
+			setMessage("Specify Cordova plug-in(s) for installation", ERROR);
 			return false;
 		}
 		return true;
@@ -398,7 +401,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private boolean validateGitTab(){
 		String url = gitUrlTxt.getText();
 		if( url == null || url.isEmpty() ){
-			setMessage("Specify a git repository for fetching the Cordova plugin",ERROR);
+			setMessage("Specify a git repository for fetching the Cordova plug-in",ERROR);
 			return false;
 		}
 		try {
@@ -413,7 +416,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private boolean validateDirectroyTab(){
 		String directory = destinationDirectoryGroup.getValue();
 		if(directory == null || directory.isEmpty() ){
-			setMessage("Select the directory for the Cordova plugin",ERROR);
+			setMessage("Select the directory for the Cordova plug-in",ERROR);
 			return false;
 		}
 		File pluginFile = new File(directory);
@@ -427,7 +430,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		}
 		File pluginXML = new File(pluginFile, PlatformConstants.FILE_XML_PLUGIN);
 		if(!pluginXML.isFile()){
-			setMessage("Specified directory is not a valid plugin directory",ERROR);
+			setMessage("Specified directory is not a valid plug-in directory",ERROR);
 			return false;
 		}
 		return true;
