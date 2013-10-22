@@ -25,10 +25,8 @@ import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
@@ -36,6 +34,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -375,60 +374,9 @@ public class CordovaPluginManager {
 		throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Plugin folder does not exist"));
 	}
 	
-	private void runActions(final List<IPluginInstallationAction> actions, boolean runUnInstall, FileOverwriteCallback overwrite, IProgressMonitor monitor ){
-		
-		if (overwrite != null) {
-			ArrayList<String> list = new ArrayList<String>();
-			for (IPluginInstallationAction action : actions) {
-				String[] files = action.filesToOverwrite();
-				if (files != null && files.length > 0) {
-					list.addAll(Arrays.asList(files));
-				}
-			}
-			if(!list.isEmpty() && overwrite.isOverwiteAllowed(list.toArray(new String[list.size()])) == false ){
-				HybridCore.log(IStatus.INFO, "File overwrite not allowed cancelled Cordova plugin installation", null);
-				return;
-			}
-		}
-		
-		Stack<IPluginInstallationAction> executed = new Stack<IPluginInstallationAction>();
-		boolean rollback = false;
-		for (IPluginInstallationAction action : actions) {
-			try {
-				if(monitor.isCanceled()){
-					rollback = true;
-					break;
-				}
-				if(runUnInstall){
-					action.unInstall();
-				}else{
-					action.install();
-				}
-				monitor.worked(1);
-				this.project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-				executed.push(action);
-			} catch (CoreException e) {
-				HybridCore.log(IStatus.ERROR, "Error while installing plugin", e);
-				rollback = true;
-				break;
-			}
-		}
-		if (rollback) {
-			while (!executed.empty()) {
-				IPluginInstallationAction action = executed.pop();
-				try {
-					if(runUnInstall){
-						action.install();
-					}else{
-						action.unInstall();
-					}
-					this.project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-				} catch (CoreException e) {
-					HybridCore.log(IStatus.ERROR,
-							"Error rolling back install action", e);
-				}
-			}
-		}
+	private void runActions(final List<IPluginInstallationAction> actions, boolean runUnInstall, FileOverwriteCallback overwrite, IProgressMonitor monitor ) throws CoreException{
+		PluginInstallActionsRunOperation op = new PluginInstallActionsRunOperation(actions, runUnInstall, overwrite,project.getProject());
+		ResourcesPlugin.getWorkspace().run(op, monitor);
 	}
 	/*
 	 * 1. collect common asset tags 
