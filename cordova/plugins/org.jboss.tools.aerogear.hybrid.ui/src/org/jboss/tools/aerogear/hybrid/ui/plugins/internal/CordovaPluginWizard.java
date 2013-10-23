@@ -132,7 +132,7 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 	}
 	
 	public CordovaPluginWizard() {
-		setWindowTitle("Cordova Plugin Discovery");
+		setWindowTitle("Cordova Plug-in Discovery");
 		setNeedsProgressMonitor(true);
 		IDialogSettings workbenchSettings= HybridUI.getDefault().getDialogSettings();
 		IDialogSettings section= workbenchSettings.getSection(DIALOG_SETTINGS_KEY);
@@ -193,16 +193,12 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 	@Override
 	public void addPages() {
 		if(fixedProject == null ){
-			pageOne = new CordovaPluginSelectionPage("Cordova Plugin Selection Page", this.initialSelection);
+			pageOne = new CordovaPluginSelectionPage(this.initialSelection);
 		}else{
-			pageOne = new CordovaPluginSelectionPage("Cordova Plugin Selection Page", fixedProject);
+			pageOne = new CordovaPluginSelectionPage(fixedProject);
 		}
-		pageOne.setTitle("Install Cordova Plugin");
-		pageOne.setDescription("Discover and Install Cordova Plugins");
 		addPage(pageOne);
-		pageTwo = new RegistryConfirmPage("Fetch from Registry");
-		pageTwo.setTitle("Confirm plugins to be downloaded from registry");
-		pageTwo.setDescription("Confirm the plugins to be downloaded and installed from registry or go back to select again.");
+		pageTwo = new RegistryConfirmPage();
 		addPage(pageTwo);
 	}
 	

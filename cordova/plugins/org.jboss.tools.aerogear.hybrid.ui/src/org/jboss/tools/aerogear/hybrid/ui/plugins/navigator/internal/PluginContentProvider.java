@@ -13,31 +13,41 @@ package org.jboss.tools.aerogear.hybrid.ui.plugins.navigator.internal;
 import java.util.List;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
-public class PluginContentProvider implements ITreeContentProvider {
+public class PluginContentProvider implements ITreeContentProvider, IResourceChangeListener {
+	
+	private Viewer viewer;
+	
+	public PluginContentProvider() {
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
+	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 
 	}
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
-
+		this.viewer = viewer;
 	}
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -63,7 +73,6 @@ public class PluginContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(Object element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -84,6 +93,25 @@ public class PluginContentProvider implements ITreeContentProvider {
 			HybridUI.log(IStatus.ERROR, "Error determining the installed plugins", e);
 		}
 		return false;
+	}
+
+	@Override
+	public void resourceChanged(IResourceChangeEvent event) {
+		IResourceDelta delta = event.getDelta();
+		if(viewer == null || delta == null )
+			return;
+		IResourceDelta[] deltas = delta.getAffectedChildren();
+		for (int i = 0; i < deltas.length; i++) {
+			if(deltas[i].findMember(new Path(PlatformConstants.DIR_PLUGINS)) != null){
+				viewer.getControl().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						viewer.refresh();
+					}
+				});
+				return;
+			}
+		}
 	}
 
 }

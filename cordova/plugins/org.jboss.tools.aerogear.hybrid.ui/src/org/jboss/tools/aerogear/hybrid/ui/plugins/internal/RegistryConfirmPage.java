@@ -34,13 +34,17 @@ public class RegistryConfirmPage extends WizardPage {
 
 	private CordovaPluginViewer pluginViewer;
 	final CordovaPluginRegistryManager client = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
+	private static final String PAGE_NAME = "Fetch from Registry";
+	private static final String PAGE_TITLE = "Confirm plug-ins to be downloaded from registry";
+	private static final String PAGE_DESC = "Confirm the plug-ins to be downloaded and installed from registry or go back to select again.";
+	
 	
 	private class DetailedPluginInfoRetrieveJob extends Job{
 		
 		private List<String> pluginNames;
 
 		public DetailedPluginInfoRetrieveJob(List<String> pluginNames) {
-			super("Retrieve Cordova Plugin Details");
+			super("Retrieve Cordova Plug-in Details");
 			this.pluginNames = pluginNames;
 		}
 
@@ -71,10 +75,9 @@ public class RegistryConfirmPage extends WizardPage {
 		
 	}
 
-	protected RegistryConfirmPage(String pageName) {
-		super(pageName);
-		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, CordovaPluginWizard.IMAGE_WIZBAN));
-
+	protected RegistryConfirmPage() {
+		super(PAGE_NAME,PAGE_TITLE,HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, CordovaPluginWizard.IMAGE_WIZBAN));
+		setDescription(PAGE_DESC);	
 	}
 
 	@Override
