@@ -54,6 +54,7 @@ public class CordovaSimControlHandler extends BrowserSimControlHandler {
 	/**
 	 * @return {@link Boolean} that indicates whether device's backButton was overridden via PhoneGap's Event API 
 	 */
+	@SuppressWarnings("nls")
 	private boolean isBackButtonProcessed() { 
 		return (Boolean) browser.evaluate("return !!window.opener.bsBackbuttonPressed && !window.opener.bsBackbuttonPressed()");
 	}
@@ -72,6 +73,7 @@ public class CordovaSimControlHandler extends BrowserSimControlHandler {
 		return false;
 	}
 	
+	@SuppressWarnings("nls")
 	private boolean needToProcessInAppBrowserEvents() {
 		return (Boolean) browser.evaluate("return !!window.opener.needToProcessInAppBrowserEvents");
 	}

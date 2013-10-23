@@ -52,6 +52,7 @@ public class ExecScriptFunction extends BrowserFunction {
 		return null;
 	}
 	
+	@SuppressWarnings("nls")
 	private void executeCode(String code, String successCallBackName, String failCallBackName) {
 		boolean codeSuccessfullyExecuted = false;
 		codeSuccessfullyExecuted = inAppBrowser.execute(
@@ -73,10 +74,12 @@ public class ExecScriptFunction extends BrowserFunction {
 		deleteCallBacksFromWindowProperties(successCallBackName, failCallBackName);
 	}
 	
+	@SuppressWarnings("nls")
 	private void processCallBackFunction(String callBackName) {
 		getBrowser().execute("(window['" + callBackName + "']())()");
 	}
 	
+	@SuppressWarnings("nls")
 	private void deleteCallBacksFromWindowProperties(String successCallBackName, String failCallBackName) {
 		getBrowser().execute("(function(){"
 								+ "delete window['" + successCallBackName + "'];"

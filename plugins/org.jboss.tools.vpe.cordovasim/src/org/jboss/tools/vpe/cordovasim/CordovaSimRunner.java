@@ -58,6 +58,7 @@ public class CordovaSimRunner {
 	 * @param args
 	 * @throws Exception
 	 */
+	@SuppressWarnings("nls")
 	public static void main(String[] args) throws Exception {
 		int port = 0;
 		Server server = null;
@@ -80,10 +81,9 @@ public class CordovaSimRunner {
 			final Shell shell = new Shell(display);
 			setShellAttributes(shell);
 			shell.setLayout(new FillLayout());
-			
-			final Browser browser = new Browser(shell, SWT.WEBKIT);
-			final String homeUrl = "http://localhost:" + port + "/" + CordovaSimArgs.getStartPage(); //$NON-NLS-1$ //$NON-NLS-2$
-			browser.setUrl(homeUrl + "?enableripple=true"); //$NON-NLS-1$
+			final Browser rippleToolSuiteBrowser = new Browser(shell, SWT.WEBKIT);
+			final String homeUrl = "http://localhost:" + port + "/" + CordovaSimArgs.getStartPage(); 
+			rippleToolSuiteBrowser.setUrl(homeUrl + "?enableripple=true");
 			
 			shell.addListener(SWT.Close, new Listener() {
 				@Override
@@ -107,17 +107,17 @@ public class CordovaSimRunner {
 				sp.setCordovaBrowserLocation(shell.getLocation());
 			}
 			
-			browser.addOpenWindowListener(new OpenWindowListener() {
+			rippleToolSuiteBrowser.addOpenWindowListener(new OpenWindowListener() {
 				private Browser oldBrowser;
 
 				@Override
 				public void open(WindowEvent event) {
 					if (InAppBrowserLoader.isInAppBrowserEvent(event) && (browserSim != null)) {
-						InAppBrowserLoader.processInAppBrowser(browser, browserSim, event);
+						InAppBrowserLoader.processInAppBrowser(rippleToolSuiteBrowser, browserSim, event);
 					} else {
 						if (browserSim == null || browserSim.getBrowser().isDisposed()
 							|| browserSim.getBrowser().getShell().isDisposed()) {
-						createBrowserSim(sp, browser, homeUrl);
+							createBrowserSim(sp, rippleToolSuiteBrowser, homeUrl);
 						} else if (oldBrowser == browserSim.getBrowser()) {
 							browserSim.reinitSkin();
 							browserSim.getBrowser().addLocationListener(new RippleInjector());
@@ -177,22 +177,23 @@ public class CordovaSimRunner {
 		display.dispose();
 	}
 
-	private static void createBrowserSim(final SpecificPreferences sp, final Browser browser, final String homeUrl) {
-		Shell parentShell = browser.getShell();
+	private static void createBrowserSim(final SpecificPreferences sp, final Browser rippleToolSuiteBrowser, final String homeUrl) {
+		Shell parentShell = rippleToolSuiteBrowser.getShell();
 		if (parentShell != null) {
 			browserSim = new CustomBrowserSim(homeUrl, parentShell);
+			browserSim.setRippleToolBarBrowser(rippleToolSuiteBrowser);
 			browserSim.open(sp, null);
 			browserSim.addSkinChangeListener(new SkinChangeListener() {
 				@Override
 				public void skinChanged(SkinChangeEvent event) {
-					browser.refresh();
+					rippleToolSuiteBrowser.refresh();
 				}
 			});
 			browserSim.addExitListener(new ExitListener() {
 				
 				@Override
 				public void exit() {
-					browser.getShell().dispose();
+					rippleToolSuiteBrowser.getShell().dispose();
 				}
 			});
 			browserSim.getBrowser().addLocationListener(new RippleInjector());
