@@ -133,8 +133,6 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 	private AndroidDevice getEmulator() throws CoreException{
 		AndroidSDKManager sdk = new AndroidSDKManager();
 		List<AndroidDevice> devices = sdk.listDevices();
-		if(devices == null ) 
-			return null;
 		for (AndroidDevice androidDevice : devices) {
 			if ( androidDevice.isEmulator() && androidDevice.getState() == AndroidDevice.STATE_DEVICE )
 				return androidDevice;
