@@ -34,7 +34,6 @@ public class TextDetectingStreamListener implements IStreamListener {
 	
 	@Override
 	public void streamAppended(String text, IStreamMonitor monitor) {
-		
 		if(text.contains(theText)){
 			detected = true;
 		}
