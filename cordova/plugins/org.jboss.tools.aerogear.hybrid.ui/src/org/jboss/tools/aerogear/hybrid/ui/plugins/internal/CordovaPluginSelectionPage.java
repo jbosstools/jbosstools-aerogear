@@ -29,7 +29,6 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -184,6 +183,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		setupFromInitialSelection();
 		restoreWidgetValues();
 		populatePluginInfos();
+		updateInstalledPluginsFilter();
 	}
 
 	private void createProjectGroup(Composite container) {
