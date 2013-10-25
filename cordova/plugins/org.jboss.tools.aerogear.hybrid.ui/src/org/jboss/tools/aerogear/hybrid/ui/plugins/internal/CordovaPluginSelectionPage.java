@@ -150,7 +150,13 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		
 		gitUrlTxt = new Text(grpRepositoryUrl, SWT.BORDER);
 		gitUrlTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+		gitUrlTxt.addListener(SWT.Modify, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				setPageComplete(validatePage());
+			}
+		});
 		
 		directoryTab = new TabItem(tabFolder, SWT.NONE);
 		directoryTab.setText("Directory");
