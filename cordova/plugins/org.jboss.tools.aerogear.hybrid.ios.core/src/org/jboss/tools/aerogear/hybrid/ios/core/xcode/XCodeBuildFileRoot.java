@@ -35,7 +35,7 @@ import com.dd.plist.NSDictionary;
  * </tr>
  * <tr>
  *    <td>objectVersion</td>
- *    <td>NSNumberic</td>
+ *    <td>NSNumeric</td>
  *    <td>XCode compatibility version</td>
  * </tr>
  * <tr>
