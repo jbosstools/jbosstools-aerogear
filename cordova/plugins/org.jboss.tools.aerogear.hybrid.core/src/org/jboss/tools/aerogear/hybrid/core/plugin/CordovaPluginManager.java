@@ -330,7 +330,7 @@ public class CordovaPluginManager {
 		
 		CopyFileAction copy = new CopyFileAction(directory, destination);
 		actions.add(copy);
-		actions.addAll(collectAllConfigXMLActionsForSupporredPlatforms(doc));
+		actions.addAll(collectAllConfigXMLActionsForSupportedPlatforms(doc));
 		return actions;
 	}
 	private void updatePluginList() throws CoreException {
@@ -426,7 +426,7 @@ public class CordovaPluginManager {
 		return actions;
 	}
 
-	private List<IPluginInstallationAction> collectAllConfigXMLActionsForSupporredPlatforms(Document doc){
+	private List<IPluginInstallationAction> collectAllConfigXMLActionsForSupportedPlatforms(Document doc){
 		List<ProjectGenerator> generators = HybridCore.getPlatformProjectGenerators();
 		ArrayList<IPluginInstallationAction> list = new ArrayList<IPluginInstallationAction>();
 		List<Node> nodes = new ArrayList<Node>();
