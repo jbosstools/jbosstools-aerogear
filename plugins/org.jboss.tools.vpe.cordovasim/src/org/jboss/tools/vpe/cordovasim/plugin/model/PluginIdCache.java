@@ -24,9 +24,11 @@ public class PluginIdCache {
 	}
 
 	public static void update(List<Plugin> plugins) {
-		FILE_TO_ID_CACHE.clear();
-		for (Plugin plugin : plugins) {
-			FILE_TO_ID_CACHE.put(plugin.getFile(), plugin.getId());
+		if (plugins != null && !plugins.isEmpty()) {
+			FILE_TO_ID_CACHE.clear();
+			for (Plugin plugin : plugins) {
+				FILE_TO_ID_CACHE.put(plugin.getFile(), plugin.getId());
+			}
 		}
 	}
 

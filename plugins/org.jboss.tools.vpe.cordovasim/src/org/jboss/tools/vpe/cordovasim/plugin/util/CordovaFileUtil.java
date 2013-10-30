@@ -41,17 +41,20 @@ public class CordovaFileUtil {
 	 * Returns {@link List} of plugin.xml files from the "plugins" directory of the hybrid project
 	 */
 	public static List<File> getPluginXmlFiles(File pluginsDir) {
-		List<File> pluginXmlFiles = new ArrayList<File>();
-		File[] pluginDirs = pluginsDir.listFiles();
-		for (File pluginDir : pluginDirs) {
-			if (pluginDir.isDirectory()) {
-				File pluginXmlFile = new File(pluginDir, PLUGIN_XML);
-				if (pluginDir.exists()) {
-					pluginXmlFiles.add(pluginXmlFile);
+		if (pluginsDir != null && pluginsDir.exists()) {
+			List<File> pluginXmlFiles = new ArrayList<File>();
+			File[] pluginDirs = pluginsDir.listFiles();
+			for (File pluginDir : pluginDirs) {
+				if (pluginDir.isDirectory()) {
+					File pluginXmlFile = new File(pluginDir, PLUGIN_XML);
+					if (pluginDir.exists()) {
+						pluginXmlFiles.add(pluginXmlFile);
+					}
 				}
 			}
+			return pluginXmlFiles;
 		}
-		return pluginXmlFiles;
+		return null;
 	}
 	
 	
@@ -62,53 +65,60 @@ public class CordovaFileUtil {
 	 */
 	@SuppressWarnings("nls")
 	public static String generateCordovaPluginsJsContent(List<Plugin> plugins) {
-		String pluginContent = "";
-		Iterator<Plugin> pluginIterator = plugins.iterator();
-		while (pluginIterator.hasNext()) {
-			Plugin plugin = pluginIterator.next();
-			pluginContent += "\n\t{\n";
-			pluginContent += "\t\t" + FILE + "\"" + plugin.getFile() + "\",\n";
-			pluginContent += "\t\t" + ID + "\"" + plugin.getId() + "\",\n";
-			Iterator<String> mapperIterator = null;
-			if (plugin.getClobbers().size() > 0) {
-				pluginContent += "\t\t" + CLOBBERS;
-				mapperIterator = plugin.getClobbers().iterator();
-			} else if (plugin.getMerges().size() > 0) {
-				pluginContent += "\t\t" + MERGES;
-				mapperIterator = plugin.getMerges().iterator();
-			}
-			while (mapperIterator.hasNext()) {
-				String clobber = mapperIterator.next();
-				pluginContent += "\t\t\t\"" + clobber + "\"";
-				if (mapperIterator.hasNext()) {
-					pluginContent += ",\n";
+		if (plugins != null && !plugins.isEmpty()) {
+			String pluginContent = "";
+			Iterator<Plugin> pluginIterator = plugins.iterator();
+			while (pluginIterator.hasNext()) {
+				Plugin plugin = pluginIterator.next();
+				pluginContent += "\n\t{\n";
+				pluginContent += "\t\t" + FILE + "\"" + plugin.getFile() + "\",\n";
+				pluginContent += "\t\t" + ID + "\"" + plugin.getId() + "\",\n";
+				Iterator<String> mapperIterator = null;
+				if (plugin.getClobbers().size() > 0) {
+					pluginContent += "\t\t" + CLOBBERS;
+					mapperIterator = plugin.getClobbers().iterator();
+				} else if (plugin.getMerges().size() > 0) {
+					pluginContent += "\t\t" + MERGES;
+					mapperIterator = plugin.getMerges().iterator();
+				}
+				while (mapperIterator.hasNext()) {
+					String clobber = mapperIterator.next();
+					pluginContent += "\t\t\t\"" + clobber + "\"";
+					if (mapperIterator.hasNext()) {
+						pluginContent += ",\n";
+					} else {
+						pluginContent += "\n\t\t]";
+					}
+				}
+				if (pluginIterator.hasNext()) {
+					pluginContent += "\n\t},";
 				} else {
-					pluginContent += "\n\t\t]";
+					pluginContent += "\n\t}\n";
 				}
 			}
-			if (pluginIterator.hasNext()) {
-				pluginContent += "\n\t},";
-			} else {
-				pluginContent += "\n\t}\n";
-			}
+			return CORDOVA_PLUGINS_JS_BEGINNING + pluginContent + CORDOVA_PLUGINS_JS_END;
 		}
-		return CORDOVA_PLUGINS_JS_BEGINNING + pluginContent + CORDOVA_PLUGINS_JS_END;
+		return null;
 	}
 	
-
+	public static String getDefaultCordovaPluginJsContent() {
+		return CORDOVA_PLUGINS_JS_BEGINNING + "module.exports = []" + CORDOVA_PLUGINS_JS_END; //$NON-NLS-1$
+	}
+	
 	/** 
 	 * Wraps the plugin's  .js file content in a function 
 	 * (adds "cordova.define( pluginId, function(require, exports, module) {...} ) 
 	 */
 	public static String generatePluginContent(File file, String pluginId) throws FileNotFoundException {
 		String content = null;
-		if (file.exists()) {
+		if (file != null && file.exists()) {
 			String fileContent = new Scanner(file).useDelimiter("\\A").next(); //$NON-NLS-1$
 			content = CORDOVA_DEFINE + '"' + pluginId + '"' + ", " + FUNCTION_BEGINNING + fileContent + FUNCTION_END; //$NON-NLS-1$
 		}
 		return content;
 	}
 	
+
 	public static File getPluginDir(String resourceBase) {
 		File parentDir = getParentDir(resourceBase);
 		if (parentDir != null) {
