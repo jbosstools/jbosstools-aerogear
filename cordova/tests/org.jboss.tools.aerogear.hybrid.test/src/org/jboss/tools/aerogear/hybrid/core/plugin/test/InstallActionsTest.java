@@ -154,7 +154,7 @@ public class InstallActionsTest {
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node current = childNodes.item(i);
 			for (int j = 0; j < importedNodes.length; j++) {
-				assertFalse("Found a node that is not suppposed to be here", current.isEqualNode(importedNodes[j]));
+				assertFalse("Found a node that is not supposed to be here", current.isEqualNode(importedNodes[j]));
 			}
 		}
 	}
