@@ -103,7 +103,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 				// project calls will be recognized as failed.
 				FileUtils.cleanDirectory(getDestination());
 			} catch (IOException e) {
-				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Error cleaning android working direcrtory", e));
+				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Error cleaning android working directory", e));
 			}
 		}
 		
