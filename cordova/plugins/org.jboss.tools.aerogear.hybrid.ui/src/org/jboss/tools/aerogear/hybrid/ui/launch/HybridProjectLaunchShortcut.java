@@ -96,7 +96,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	
 	
 	/**
-	 * Creates a new lauch configuration for the given project if one does not exists.
+	 * Creates a new launch configuration for the given project if one does not exists.
 	 * 
 	 * @param project
 	 * @return
