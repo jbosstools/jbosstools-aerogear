@@ -23,7 +23,7 @@ public class ServletUtil {
 	public static final String IF_NONE_MATCH = "If-None-Match"; //$NON-NLS-1$
 
 	public static String generateEtag(File file) {
-		if (file.exists()) {
+		if (file != null && file.exists()) {
 			return String.valueOf(file.lastModified());
 		}
 		return null;

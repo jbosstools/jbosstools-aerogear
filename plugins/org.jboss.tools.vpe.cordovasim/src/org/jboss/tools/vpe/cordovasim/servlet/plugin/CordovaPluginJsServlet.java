@@ -19,11 +19,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.tools.vpe.cordovasim.CordovaSimLogger;
 import org.jboss.tools.vpe.cordovasim.plugin.exception.PluginJsException;
-import org.jboss.tools.vpe.cordovasim.plugin.model.Plugin;
 import org.jboss.tools.vpe.cordovasim.plugin.model.PluginIdCache;
-import org.jboss.tools.vpe.cordovasim.plugin.util.CordovaFileUtil;
+import org.jboss.tools.vpe.cordovasim.plugin.model.Plugin;
 import org.jboss.tools.vpe.cordovasim.plugin.util.CordovaPluginXmlUtil;
+import org.jboss.tools.vpe.cordovasim.plugin.util.CordovaFileUtil;
 import org.jboss.tools.vpe.cordovasim.servlet.util.ServletUtil;
 
 /**
@@ -45,7 +46,7 @@ public class CordovaPluginJsServlet extends HttpServlet {
 
 		resp.setHeader(ServletUtil.CACHE_CONTROL, ServletUtil.NO_CACHE);
 		
-		if ((ifNoneMatchValue != null) && (eTag.equals(ifNoneMatchValue))) {
+		if (ifNoneMatchValue != null && ifNoneMatchValue.equals(eTag)) {
 			resp.setHeader(ServletUtil.ETAG, eTag);
 			resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 		} else {
@@ -56,11 +57,16 @@ public class CordovaPluginJsServlet extends HttpServlet {
 				PluginIdCache.update(plugins); // Cache with mapping plugin's file to id is needed in PluginServlet
 				String content = CordovaFileUtil.generateCordovaPluginsJsContent(plugins);
 				
+				if (content == null) {
+					content = CordovaFileUtil.getDefaultCordovaPluginJsContent();
+				}
+				
 				resp.setStatus(HttpServletResponse.SC_OK);
 				resp.setContentType(ServletUtil.APPLICATION_JAVASCRIPT_CONTENT_TYPE);
 				resp.setHeader(ServletUtil.ETAG, eTag);
 				resp.getWriter().write(content);
-			} catch (PluginJsException e) { // TODO log the exception
+			} catch (PluginJsException e) {
+				CordovaSimLogger.logError(e.getMessage(), e);
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 		}

@@ -130,10 +130,12 @@ public class ServerCreator {
 				String pathInfo = request.getPathInfo(); 
 				String cordovaVersion = CordovaFileUtil.getCordovaVersion(resourceBase);
 				
-				if (cordovaVersion.equals("3.1.0")) { 
+				if (cordovaVersion.startsWith("3.")) { 
 					if (pathInfo.equals("/cordova.js")) { 
 						return "/ripple/cordova/cordova-3.1.0.js"; 
- 					} 
+ 					} else if (pathInfo.equals("/cordova_plugins.json")) { // XXX need to delete this after multiple version support migration
+						return "/ripple/cordova/cordova_plugins.json";
+					}
 					return null;
 				} else { // Will be implemented in the context of multiple version support issue
 					if (pathInfo.equals("/cordova.js")) { // JBIDE-14319 

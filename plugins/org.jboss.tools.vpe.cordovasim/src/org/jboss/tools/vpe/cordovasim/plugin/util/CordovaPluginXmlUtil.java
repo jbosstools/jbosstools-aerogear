@@ -50,44 +50,50 @@ public class CordovaPluginXmlUtil {
 	 * Returns a {@link List} of all plugins for the specific platform from the {@link Document} of the plugin.xml 
 	 */
 	public static List<Plugin> getPluginsFromDocument(Document document, String platformName) {
-		List<Plugin> plugins = new ArrayList<Plugin>();
-		String pluginXmlId = getPluginXmlId(document); // plugin.xml id, not plugin id
+		if (document != null && platformName != null) {
+			List<Plugin> plugins = new ArrayList<Plugin>();
+			String pluginXmlId = getPluginXmlId(document); // plugin.xml id, not plugin id
 
-		List<Element> suitableJsModules = getJsModulesForSpecificPlatform(document, platformName);
-		Iterator<Element> iterator = suitableJsModules.iterator();
+			List<Element> suitableJsModules = getJsModulesForSpecificPlatform(document, platformName);
+			Iterator<Element> iterator = suitableJsModules.iterator();
 
-		while (iterator.hasNext()) {
-			Element jsModuleElement = (Element) iterator.next();
-			Plugin plugin = createPlugin(jsModuleElement, pluginXmlId);
-			if (plugin != null) {
-				plugins.add(plugin);
+			while (iterator.hasNext()) {
+				Element jsModuleElement = (Element) iterator.next();
+				Plugin plugin = createPlugin(jsModuleElement, pluginXmlId);
+				if (plugin != null) {
+					plugins.add(plugin);
+				}
 			}
+			return plugins;
 		}
-		return plugins;
+		return null;
 	}
 
 	/** 
 	 *  Returns a {@link List} of all plugins for the specific platfom from the {@link List} of plugin.xml files
 	 */
-	public static List<Plugin> getPluginsfromFiles(List<File> pluginXmlFiles, String platformName)
-			throws PluginJsException {
-		List<Plugin> allPlugins = new ArrayList<Plugin>();
-		for (File file : pluginXmlFiles) {
-			try {
-				DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-				Document doc = dBuilder.parse(file);
-				doc.getDocumentElement().normalize();
-				List<Plugin> pluginsFromDocument = CordovaPluginXmlUtil.getPluginsFromDocument(doc, platformName);
-				allPlugins.addAll(pluginsFromDocument);
-			} catch (ParserConfigurationException e) {
-				throw new PluginJsException(e);
-			} catch (IOException e) {
-				throw new PluginJsException(e);
-			} catch (SAXException e) {
-				throw new PluginJsException(e);
+	public static List<Plugin> getPluginsfromFiles(List<File> pluginXmlFiles,
+			String platformName) throws PluginJsException {
+		if (pluginXmlFiles != null && !pluginXmlFiles.isEmpty() && platformName != null) {
+			List<Plugin> allPlugins = new ArrayList<Plugin>();
+			for (File file : pluginXmlFiles) {
+				try {
+					DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					Document doc = dBuilder.parse(file);
+					doc.getDocumentElement().normalize();
+					List<Plugin> pluginsFromDocument = CordovaPluginXmlUtil.getPluginsFromDocument(doc, platformName);
+					allPlugins.addAll(pluginsFromDocument);
+				} catch (ParserConfigurationException e) {
+					throw new PluginJsException(e);
+				} catch (IOException e) {
+					throw new PluginJsException(e);
+				} catch (SAXException e) {
+					throw new PluginJsException(e);
+				}
 			}
+			return allPlugins;
 		}
-		return allPlugins;
+		return null;
 	}
 
 	@SuppressWarnings("nls")
