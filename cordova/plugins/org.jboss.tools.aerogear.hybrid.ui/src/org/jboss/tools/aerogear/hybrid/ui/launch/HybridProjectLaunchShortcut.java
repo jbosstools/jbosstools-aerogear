@@ -151,7 +151,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	protected abstract boolean validateBuildToolsReady() throws CoreException;
 	
 	/**
-	 * Return the launchConfiguratonType ID. Which will be used to 
+	 * Return the launchConfigurationType ID. Which will be used to 
 	 * create a launch configuration.
 	 * @return launchConfig id
 	 */
