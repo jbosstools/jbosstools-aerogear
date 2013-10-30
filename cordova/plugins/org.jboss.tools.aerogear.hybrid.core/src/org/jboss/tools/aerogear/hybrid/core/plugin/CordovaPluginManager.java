@@ -468,11 +468,11 @@ public class CordovaPluginManager {
 		actionsList.addAll(getAssetActionsForPlatform(node, factory));
 		actionsList.addAll(getConfigFileActionsForPlatform(node, factory));
 		actionsList.addAll(getLibFileActionsForPlatform(node, factory)) ;
-		actionsList.addAll(getFrameworkActionsForPlatfrom(node, factory ));
+		actionsList.addAll(getFrameworkActionsForPlatform(node, factory ));
 		return actionsList;
 	}
 
-	private List<IPluginInstallationAction> getFrameworkActionsForPlatfrom(Node node,
+	private List<IPluginInstallationAction> getFrameworkActionsForPlatform(Node node,
 			AbstractPluginInstallationActionsFactory factory) {
 		ArrayList<IPluginInstallationAction> list = new ArrayList<IPluginInstallationAction>();
 		NodeList frameworks = getFrameworks(node);

@@ -81,7 +81,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 			StatusManager manager = StatusManager.getManager();
 			if (e.getCause() instanceof IOException) {
 				Status status = new Status(IStatus.ERROR, HybridUI.PLUGIN_ID,
-						"Unable to complete the build for target plarform",
+						"Unable to complete the build for target platform",
 						e.getCause());
 				StatusAdapter adapter = new StatusAdapter(status);
 				adapter.setProperty(IStatusAdapterConstants.TITLE_PROPERTY,
