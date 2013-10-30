@@ -38,7 +38,7 @@ public class NativeProjectBuilderContentProvider implements
 		try{
 			builders = (List<NativeProjectBuilder>) newInput;
 		}catch(ClassCastException e){
-			Assert.isTrue(false, "new input is correct type this conent provider works only with List<NativeProjectBuilder>");
+			Assert.isTrue(false, "new input is correct type this content provider works only with List<NativeProjectBuilder>");
 		}
 	}
 
