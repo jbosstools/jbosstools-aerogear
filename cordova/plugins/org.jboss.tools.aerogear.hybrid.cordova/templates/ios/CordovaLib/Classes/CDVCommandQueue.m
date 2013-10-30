@@ -56,7 +56,7 @@
     _lastCommandQueueFlushRequestId = 0;
 }
 
-- (void)enqueCommandBatch:(NSString*)batchJSON
+- (void)enqueueCommandBatch:(NSString*)batchJSON
 {
     if ([batchJSON length] > 0) {
         [_queue addObject:batchJSON];
@@ -81,7 +81,7 @@
     NSString* queuedCommandsJSON = [_viewController.webView stringByEvaluatingJavaScriptFromString:
         @"cordova.require('cordova/exec').nativeFetchMessages()"];
 
-    [self enqueCommandBatch:queuedCommandsJSON];
+    [self enqueueCommandBatch:queuedCommandsJSON];
     if ([queuedCommandsJSON length] > 0) {
         CDV_EXEC_LOG(@"Exec: Retrieved new exec messages by request.");
     }
