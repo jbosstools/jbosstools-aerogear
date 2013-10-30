@@ -32,7 +32,7 @@ import org.junit.Test;
 @SuppressWarnings("restriction")
 public class PluginInstallationTests {
 	
-	private static File pluginsDirectroy;
+	private static File pluginsDirectory;
 	private TestProject project;
 	private final static String PLUGIN_DIR_CHILDBROWSER = "ChildBrowser";
 	private final static String PLUGIN_ID_CHILDBROWSER = "com.phonegap.plugins.childbrowser";
@@ -43,8 +43,8 @@ public class PluginInstallationTests {
 	public static void setUpPlugins() throws IOException{
 		URL pluginsDir = Activator.getDefault().getBundle().getEntry("/plugins");
 		File tempDir =TestUtils.getTempDirectory();
-		pluginsDirectroy = new File(tempDir, "plugins");
-		FileUtils.directoryCopy(pluginsDir, FileUtils.toURL(pluginsDirectroy));
+		pluginsDirectory = new File(tempDir, "plugins");
+		FileUtils.directoryCopy(pluginsDir, FileUtils.toURL(pluginsDirectory));
 		
 	}
 	
@@ -70,10 +70,10 @@ public class PluginInstallationTests {
 	@Test
 	public void installPluginTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER), new FileOverwriteCallback() {
+		pm.installPlugin(new File(pluginsDirectory,PLUGIN_DIR_CHILDBROWSER), new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		},
@@ -97,10 +97,10 @@ public class PluginInstallationTests {
 	@Test
 	public void installVariablePluginTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_VARIABLE), new FileOverwriteCallback() {
+		pm.installPlugin(new File(pluginsDirectory,PLUGIN_DIR_VARIABLE), new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		},new NullProgressMonitor());
@@ -122,11 +122,11 @@ public class PluginInstallationTests {
 	@Test
 	public void gitInstallPluginTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		File repo = new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER);
+		File repo = new File(pluginsDirectory,PLUGIN_DIR_CHILDBROWSER);
 		pm.installPlugin(repo.toURI(), "test_tag", null,new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		}, new NullProgressMonitor());
@@ -150,10 +150,10 @@ public class PluginInstallationTests {
 	@Test
 	public void listPluginsTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER),new FileOverwriteCallback() {
+		pm.installPlugin(new File(pluginsDirectory,PLUGIN_DIR_CHILDBROWSER),new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		}, new NullProgressMonitor());
@@ -171,10 +171,10 @@ public class PluginInstallationTests {
 	@Test
 	public void pluginNotInstalledTest() throws CoreException{
 		CordovaPluginManager pm = getCordovaPluginManager();
-		pm.installPlugin(new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER),new FileOverwriteCallback() {
+		pm.installPlugin(new File(pluginsDirectory,PLUGIN_DIR_CHILDBROWSER),new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		}, new NullProgressMonitor());

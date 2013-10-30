@@ -89,20 +89,20 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 			this.fileOverwriteCallback = overwrite;
 		}
 		
-		public PluginInstallOperation(File directory, CordovaPluginManager pm, FileOverwriteCallback overwite ){
-			this(pm,overwite);
+		public PluginInstallOperation(File directory, CordovaPluginManager pm, FileOverwriteCallback overwrite ){
+			this(pm,overwrite);
 			this.dir = directory;
 			opType = PLUGIN_SOURCE_DIRECTORY;
 		}
 		
-		public PluginInstallOperation(URI gitRepo, CordovaPluginManager pm, FileOverwriteCallback overwite){
-			this(pm, overwite);
+		public PluginInstallOperation(URI gitRepo, CordovaPluginManager pm, FileOverwriteCallback overwrite){
+			this(pm, overwrite);
 			this.gitRepo = gitRepo;
 			opType = PLUGIN_SOURCE_GIT;
 		}
 		
-		public PluginInstallOperation(List<CordovaRegistryPluginVersion> plugins, CordovaPluginManager pm, FileOverwriteCallback overwite ){
-			this(pm,overwite);
+		public PluginInstallOperation(List<CordovaRegistryPluginVersion> plugins, CordovaPluginManager pm, FileOverwriteCallback overwrite ){
+			this(pm,overwrite);
 			this.plugins = plugins;
 			opType = PLUGIN_SOURCE_REGISTRY;
 		}
@@ -223,7 +223,7 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 	}
 
 	@Override
-	public boolean isOverwiteAllowed(String[] files) {
+	public boolean isOverwriteAllowed(String[] files) {
 		final OverwriteDialog dialog = new OverwriteDialog(this.getShell(), files);
 		getShell().getDisplay().syncExec(new Runnable() {
 			

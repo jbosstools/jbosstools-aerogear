@@ -7,7 +7,7 @@ JBoss Aerogear Tools contains tools for cross-platform mobile development.
 Currently the work is concentrated on providing [Apache Cordova](http://cordova.apache.org) tools for
 hybrid mobile application development. Cordova tools provide Eclipse based tools for easing 
 the development of Apache Cordova based hybrid mobile applications by hiding the complexities 
-of multi-platform development and Cordova framewok.
+of multi-platform development and Cordova framework.
 
 
 ## Install

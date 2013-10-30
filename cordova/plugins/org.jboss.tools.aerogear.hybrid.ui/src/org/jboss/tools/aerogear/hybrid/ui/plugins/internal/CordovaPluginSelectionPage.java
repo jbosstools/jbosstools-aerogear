@@ -361,7 +361,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		boolean valid = false;
 		switch (getPluginSourceType()) {
 		case PLUGIN_SOURCE_DIRECTORY:
-			valid = validateDirectroyTab();
+			valid = validateDirectoryTab();
 			break;
 		case PLUGIN_SOURCE_GIT:	
 			valid = validateGitTab(); 
@@ -419,7 +419,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		return true;
 	}
 	
-	private boolean validateDirectroyTab(){
+	private boolean validateDirectoryTab(){
 		String directory = destinationDirectoryGroup.getValue();
 		if(directory == null || directory.isEmpty() ){
 			setMessage("Select the directory for the Cordova plug-in",ERROR);

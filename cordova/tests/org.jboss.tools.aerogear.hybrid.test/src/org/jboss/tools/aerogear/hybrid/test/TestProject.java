@@ -27,7 +27,7 @@ public class TestProject {
 		PlatformConstants.DIR_WWW };
 	
 	public static final String PROJECT_NAME = "HybridToolsTest";
-	public static final String APPLICATION_NAME = "Test applciation";
+	public static final String APPLICATION_NAME = "Test application";
 	public static final String APPLICATION_ID = "hybrid.tools.test";
 	
 	@SuppressWarnings("restriction")

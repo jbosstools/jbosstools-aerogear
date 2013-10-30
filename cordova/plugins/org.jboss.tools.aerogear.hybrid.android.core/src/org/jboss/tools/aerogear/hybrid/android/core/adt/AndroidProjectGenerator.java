@@ -103,7 +103,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 				// project calls will be recognized as failed.
 				FileUtils.cleanDirectory(getDestination());
 			} catch (IOException e) {
-				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Error cleaning android working direcrtory", e));
+				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Error cleaning android working directory", e));
 			}
 		}
 		
@@ -112,9 +112,9 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		try{
 			File libsDir = new File(getDestination(),DIR_LIBS);
 			//Move cordova library to libs
-			URL sourcs = getTemplateFile("/templates/android/cordova.jar");
+			URL sources = getTemplateFile("/templates/android/cordova.jar");
 			URL dests = toURL(new File(libsDir, FILE_JAR_CORDOVA ));
- 			fileCopy(sourcs, dests);
+ 			fileCopy(sources, dests);
  			
 			directoryCopy(getTemplateFile("/templates/android/project/res/"),
 					toURL(new File(getDestination(), DIR_RES )));

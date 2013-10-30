@@ -81,7 +81,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 			StatusManager manager = StatusManager.getManager();
 			if (e.getCause() instanceof IOException) {
 				Status status = new Status(IStatus.ERROR, HybridUI.PLUGIN_ID,
-						"Unable to complete the build for target plarform",
+						"Unable to complete the build for target platform",
 						e.getCause());
 				StatusAdapter adapter = new StatusAdapter(status);
 				adapter.setProperty(IStatusAdapterConstants.TITLE_PROPERTY,
@@ -96,7 +96,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	
 	
 	/**
-	 * Creates a new lauch configuration for the given project if one does not exists.
+	 * Creates a new launch configuration for the given project if one does not exists.
 	 * 
 	 * @param project
 	 * @return
@@ -151,7 +151,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	protected abstract boolean validateBuildToolsReady() throws CoreException;
 	
 	/**
-	 * Return the launchConfiguratonType ID. Which will be used to 
+	 * Return the launchConfigurationType ID. Which will be used to 
 	 * create a launch configuration.
 	 * @return launchConfig id
 	 */

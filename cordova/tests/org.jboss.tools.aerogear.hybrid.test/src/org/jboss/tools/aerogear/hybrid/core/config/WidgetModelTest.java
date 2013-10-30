@@ -68,7 +68,7 @@ public class WidgetModelTest {
 	
 	
 	
-	private String getAtrributeValue(Node node, String attributeName){
+	private String getAttributeValue(Node node, String attributeName){
 		NamedNodeMap attribs = node.getAttributes();
 		Node attribNode = attribs.getNamedItem(attributeName);
 		assertNotNull(attribNode);
@@ -109,9 +109,9 @@ public class WidgetModelTest {
 		Document doc = getConfigXMLDocument();
 		Node widgetNode = getNamedSingleNode(doc, "widget");
 		
-		assertEquals(widget.getId(), getAtrributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_ID));
-		assertEquals(widget.getVersion(), getAtrributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_VERSION));
-		assertEquals(widget.getViewmodes(), getAtrributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_VIEWMODES));
+		assertEquals(widget.getId(), getAttributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_ID));
+		assertEquals(widget.getVersion(), getAttributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_VERSION));
+		assertEquals(widget.getViewmodes(), getAttributeValue(widgetNode, WidgetModelConstants.WIDGET_ATTR_VIEWMODES));
 		
 	}
 
@@ -147,7 +147,7 @@ public class WidgetModelTest {
 		Document doc = getConfigXMLDocument();
 		Node nameNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_NAME);
 		assertEquals(widget.getName(), nameNode.getTextContent());
-		assertEquals(widget.getShortname(), getAtrributeValue(nameNode, WidgetModelConstants.NAME_ATTR_SHORT));
+		assertEquals(widget.getShortname(), getAttributeValue(nameNode, WidgetModelConstants.NAME_ATTR_SHORT));
 
 		Node descNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_DESCRIPTION);
 		assertEquals(widget.getDescription(), descNode.getTextContent());
@@ -179,8 +179,8 @@ public class WidgetModelTest {
 		Document doc = getConfigXMLDocument();
 		Node authorNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_AUTHOR);
 		assertEquals(author.getName(), authorNode.getTextContent());
-		assertEquals(author.getHref(), getAtrributeValue(authorNode, WidgetModelConstants.AUTHOR_ATTR_HREF));
-		assertEquals(author.getEmail(), getAtrributeValue(authorNode, WidgetModelConstants.AUTHOR_ATTR_EMAIL));
+		assertEquals(author.getHref(), getAttributeValue(authorNode, WidgetModelConstants.AUTHOR_ATTR_HREF));
+		assertEquals(author.getEmail(), getAttributeValue(authorNode, WidgetModelConstants.AUTHOR_ATTR_EMAIL));
 		
 	}
 	
@@ -207,9 +207,9 @@ public class WidgetModelTest {
 		
 		Document doc = getConfigXMLDocument();
 		Node contentNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_CONTENT);
-		assertEquals(content.getSrc(), getAtrributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_SRC));
-		assertEquals(content.getType(),getAtrributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_TYPE));
-		assertEquals(content.getEncoding(), getAtrributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_ENCODING));
+		assertEquals(content.getSrc(), getAttributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_SRC));
+		assertEquals(content.getType(),getAttributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_TYPE));
+		assertEquals(content.getEncoding(), getAttributeValue(contentNode, WidgetModelConstants.CONTENT_ATTR_ENCODING));
 	}
 	
 	@Test 
@@ -231,7 +231,7 @@ public class WidgetModelTest {
 		NodeList list = doc.getDocumentElement().getElementsByTagName("feature");
 		for (int i = 0; i < list.getLength(); i++) {
 			Node curr = list.item(i);
-			String nameAtt = getAtrributeValue(curr, WidgetModelConstants.FEATURE_ATTR_NAME);
+			String nameAtt = getAttributeValue(curr, WidgetModelConstants.FEATURE_ATTR_NAME);
 			if(name.equals(nameAtt)){
 				return;
 			}
@@ -260,7 +260,7 @@ public class WidgetModelTest {
 		Document doc = getConfigXMLDocument();
 		Node licenseNode = getNamedSingleNode(doc, WidgetModelConstants.WIDGET_TAG_LICENSE);
 		assertEquals(license.getText(), licenseNode.getTextContent());
-		assertEquals(license.getHref(), getAtrributeValue(licenseNode, WidgetModelConstants.LICENSE_ATTR_HREF));
+		assertEquals(license.getHref(), getAttributeValue(licenseNode, WidgetModelConstants.LICENSE_ATTR_HREF));
 	}
 	
 	@Test

@@ -11,5 +11,5 @@
 package org.jboss.tools.aerogear.hybrid.core.plugin;
 
 public interface FileOverwriteCallback {
-	public boolean isOverwiteAllowed(String[] files);
+	public boolean isOverwriteAllowed(String[] files);
 }
