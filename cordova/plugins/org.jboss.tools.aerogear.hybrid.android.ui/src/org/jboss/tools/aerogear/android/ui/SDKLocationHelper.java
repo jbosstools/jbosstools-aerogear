@@ -37,7 +37,7 @@ public class SDKLocationHelper {
 		}
 		
 		PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(activeShell, 
-				"org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage", 
+				"org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMobilePreferencePage", 
 				null, null);
 		dialog.open();
 		return defineSDKLocationIfNecessary();

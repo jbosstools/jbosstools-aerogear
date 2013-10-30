@@ -33,7 +33,7 @@ import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
  * be accessed directly via the preference store.
  */
 
-public class HybridMoblePreferencePage
+public class HybridMobilePreferencePage
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
 
@@ -73,7 +73,7 @@ public class HybridMoblePreferencePage
 			super.setValidateStrategy(VALIDATE_ON_KEY_STROKE);
 		}
 	}
-	public HybridMoblePreferencePage() {
+	public HybridMobilePreferencePage() {
 		super(GRID);
 		setPreferenceStore(HybridUI.getDefault().getPreferenceStore());
 		setDescription("Settings for Hybrid Mobile Application development");
