@@ -68,7 +68,7 @@ public class NativeProjectBuilder extends ExtensionPointProxy{
 	public boolean isEnabled(IEvaluationContext context) throws CoreException{
 		if(expression == null ) return true;
 		if(context == null ){
-			throw new IllegalArgumentException("Must have an evalutation context");
+			throw new IllegalArgumentException("Must have an evaluation context");
 		}
 		return (this.expression.evaluate(context) == EvaluationResult.TRUE);
 	}
