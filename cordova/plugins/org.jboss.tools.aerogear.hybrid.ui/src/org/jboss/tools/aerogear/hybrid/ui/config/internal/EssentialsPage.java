@@ -226,7 +226,7 @@ public class EssentialsPage extends FormPage {
 		txtUrl.setText("");
 		txtUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		m_bindingContext = initDataBindings();
-		bindAuthor(m_bindingContext); // binding seperately is necessary to be able to work with WindowBuilder
+		bindAuthor(m_bindingContext); // binding separately is necessary to be able to work with WindowBuilder
 		bindContent(m_bindingContext);
 		
 	}
