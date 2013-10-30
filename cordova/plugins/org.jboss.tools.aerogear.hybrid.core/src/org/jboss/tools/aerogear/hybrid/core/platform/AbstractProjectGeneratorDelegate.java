@@ -122,7 +122,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 		pluginManager.completePluginInstallationsForPlatform(getDestination(), getTargetShortName(),new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		},monitor);

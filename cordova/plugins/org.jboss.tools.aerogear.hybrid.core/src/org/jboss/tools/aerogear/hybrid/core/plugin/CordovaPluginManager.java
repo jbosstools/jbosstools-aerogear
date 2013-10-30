@@ -190,7 +190,7 @@ public class CordovaPluginManager {
 		
 		FileOverwriteCallback cb = new FileOverwriteCallback() {
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		};

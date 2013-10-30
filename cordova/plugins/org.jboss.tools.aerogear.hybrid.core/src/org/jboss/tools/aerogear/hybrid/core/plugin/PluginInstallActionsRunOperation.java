@@ -49,7 +49,7 @@ public class PluginInstallActionsRunOperation implements IWorkspaceRunnable {
 					list.addAll(Arrays.asList(files));
 				}
 			}
-			if(!list.isEmpty() && overwrite.isOverwiteAllowed(list.toArray(new String[list.size()])) == false ){
+			if(!list.isEmpty() && overwrite.isOverwriteAllowed(list.toArray(new String[list.size()])) == false ){
 				HybridCore.log(IStatus.INFO, "File overwrite not allowed cancelled Cordova plugin installation", null);
 				return;
 			}

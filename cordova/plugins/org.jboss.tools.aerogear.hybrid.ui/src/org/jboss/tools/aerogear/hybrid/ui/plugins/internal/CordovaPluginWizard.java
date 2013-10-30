@@ -223,7 +223,7 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 	}
 
 	@Override
-	public boolean isOverwiteAllowed(String[] files) {
+	public boolean isOverwriteAllowed(String[] files) {
 		final OverwriteDialog dialog = new OverwriteDialog(this.getShell(), files);
 		getShell().getDisplay().syncExec(new Runnable() {
 			

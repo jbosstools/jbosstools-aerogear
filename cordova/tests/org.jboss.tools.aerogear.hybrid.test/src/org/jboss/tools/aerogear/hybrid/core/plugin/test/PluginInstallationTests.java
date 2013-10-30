@@ -73,7 +73,7 @@ public class PluginInstallationTests {
 		pm.installPlugin(new File(pluginsDirectory,PLUGIN_DIR_CHILDBROWSER), new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		},
@@ -100,7 +100,7 @@ public class PluginInstallationTests {
 		pm.installPlugin(new File(pluginsDirectory,PLUGIN_DIR_VARIABLE), new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		},new NullProgressMonitor());
@@ -126,7 +126,7 @@ public class PluginInstallationTests {
 		pm.installPlugin(repo.toURI(), "test_tag", null,new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		}, new NullProgressMonitor());
@@ -153,7 +153,7 @@ public class PluginInstallationTests {
 		pm.installPlugin(new File(pluginsDirectory,PLUGIN_DIR_CHILDBROWSER),new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		}, new NullProgressMonitor());
@@ -174,7 +174,7 @@ public class PluginInstallationTests {
 		pm.installPlugin(new File(pluginsDirectory,PLUGIN_DIR_CHILDBROWSER),new FileOverwriteCallback() {
 			
 			@Override
-			public boolean isOverwiteAllowed(String[] files) {
+			public boolean isOverwriteAllowed(String[] files) {
 				return true;
 			}
 		}, new NullProgressMonitor());
