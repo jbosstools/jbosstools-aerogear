@@ -112,9 +112,9 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		try{
 			File libsDir = new File(getDestination(),DIR_LIBS);
 			//Move cordova library to libs
-			URL sourcs = getTemplateFile("/templates/android/cordova.jar");
+			URL sources = getTemplateFile("/templates/android/cordova.jar");
 			URL dests = toURL(new File(libsDir, FILE_JAR_CORDOVA ));
- 			fileCopy(sourcs, dests);
+ 			fileCopy(sources, dests);
  			
 			directoryCopy(getTemplateFile("/templates/android/project/res/"),
 					toURL(new File(getDestination(), DIR_RES )));
