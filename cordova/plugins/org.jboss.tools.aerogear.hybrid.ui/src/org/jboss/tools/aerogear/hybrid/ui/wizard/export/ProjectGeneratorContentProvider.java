@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.export;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -51,18 +52,19 @@ public class ProjectGeneratorContentProvider implements IStructuredContentProvid
 		if(generators == null ){
 			generators = HybridCore.getPlatformProjectGenerators();
 		}
+		ArrayList<ProjectGenerator> elements = new ArrayList<ProjectGenerator>();
 		IEvaluationService service = (IEvaluationService)PlatformUI.getWorkbench().getService(IEvaluationService.class);
 		for (ProjectGenerator generator : generators) {
 			try {
-				if(!generator.isEnabled(service.getCurrentState())){
-					this.generators.remove(generator);
+				if(generator.isEnabled(service.getCurrentState())){
+					elements.add(generator);
 				}
 				
 			} catch (CoreException e) {
 				HybridUI.log(IStatus.ERROR, "Error filtering objects", e);
 			}
 		}
-		return generators.toArray();
+		return elements.toArray();
 	}
 
 	@Override

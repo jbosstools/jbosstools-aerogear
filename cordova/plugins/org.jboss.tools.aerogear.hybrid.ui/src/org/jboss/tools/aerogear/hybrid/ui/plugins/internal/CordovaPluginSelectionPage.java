@@ -29,7 +29,6 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -150,7 +149,13 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		
 		gitUrlTxt = new Text(grpRepositoryUrl, SWT.BORDER);
 		gitUrlTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+		gitUrlTxt.addListener(SWT.Modify, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				setPageComplete(validatePage());
+			}
+		});
 		
 		directoryTab = new TabItem(tabFolder, SWT.NONE);
 		directoryTab.setText("Directory");
@@ -178,6 +183,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		setupFromInitialSelection();
 		restoreWidgetValues();
 		populatePluginInfos();
+		updateInstalledPluginsFilter();
 	}
 
 	private void createProjectGroup(Composite container) {

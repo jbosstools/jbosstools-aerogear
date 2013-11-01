@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.export;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -21,7 +22,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.services.IEvaluationService;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
-import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class NativeProjectBuilderContentProvider implements
@@ -47,11 +47,12 @@ public class NativeProjectBuilderContentProvider implements
 		if(builders == null ){
 			builders = HybridCore.getNativeProjectBuilders();
 		}
+		ArrayList<NativeProjectBuilder> elements = new ArrayList<NativeProjectBuilder>();
 		IEvaluationService service = (IEvaluationService)PlatformUI.getWorkbench().getService(IEvaluationService.class);
 		for (NativeProjectBuilder builder : builders) {
 			try {
-				if(!builder.isEnabled(service.getCurrentState())){
-					this.builders.remove(builder);
+				if(builder.isEnabled(service.getCurrentState())){
+					elements.add(builder);
 				}
 				
 			} catch (CoreException e) {
@@ -60,7 +61,7 @@ public class NativeProjectBuilderContentProvider implements
 		}
 	
 		
-		return builders.toArray();
+		return elements.toArray();
 	}
 
 }

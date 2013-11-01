@@ -47,7 +47,7 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		sdk.installApk(new File(artifactsDir,name+"-debug.apk" ), device.getSerialNumber());
 		
 		sdk.startApp(packageName+"/."+name, device.getSerialNumber());
-		String logcatFilter = configuration.getAttribute(AndroidLaunchConstants.ATTR_LOGCAT_FILTER, "");
+		String logcatFilter = configuration.getAttribute(AndroidLaunchConstants.ATTR_LOGCAT_FILTER, AndroidLaunchConstants.VAL_DEFAULT_LOGCAT_FILTER);
 		sdk.logcat(logcatFilter,null,null, device.getSerialNumber());
 		
 	}
