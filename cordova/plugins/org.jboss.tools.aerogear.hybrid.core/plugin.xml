@@ -41,4 +41,11 @@
             id="org.jboss.tools.aerogear.hybrid.core.CordovaContainerInitializer">
       </JsGlobalScopeContainerInitializer>
    </extension>
+   <extension
+         id="org.jboss.tools.aerogear.hybrid.core.CordovaInferenceProvider"
+         point="org.eclipse.wst.jsdt.core.inferrenceSupport">
+      <inferenceProvider
+            class="org.jboss.tools.aerogear.hybrid.core.internal.libraries.CordovaInferrenceProvider">
+      </inferenceProvider>
+   </extension>
 </plugin>

@@ -216,7 +216,7 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 
 	@Override
 	public String getInferenceID() {
-		return DefaultInferrenceProvider.ID;
+		return CordovaInferrenceProvider.ID;
 	}
 
 	@Override
