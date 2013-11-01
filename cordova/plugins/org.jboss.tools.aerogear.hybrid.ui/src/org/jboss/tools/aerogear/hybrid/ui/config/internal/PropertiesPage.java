@@ -12,6 +12,7 @@ package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,6 +22,8 @@ import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -59,7 +62,10 @@ import org.jboss.tools.aerogear.hybrid.core.config.Feature;
 import org.jboss.tools.aerogear.hybrid.core.config.Preference;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.LaunchCordovaPluginWizardAction;
+import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.PluginUninstallAction;
 
 public class PropertiesPage extends FormPage {
 	
@@ -161,6 +167,40 @@ public class PropertiesPage extends FormPage {
 		});
 
 		Button btnFeatureRemove = managedForm.getToolkit().createButton(featureBtnsComposite, "Remove", SWT.NONE);
+		btnFeatureRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection = (IStructuredSelection) featuresTableViewer
+						.getSelection();
+				if (selection.isEmpty())
+					return;
+				Feature feature = (Feature) selection.getFirstElement();
+				IResource resource = (IResource) getEditorInput().getAdapter(IResource.class);
+				HybridProject prj = HybridProject.getHybridProject(resource.getProject());
+				boolean pluginFoundAndRemoved = false;
+				try {
+					List<CordovaPlugin> plugins = prj.getPluginManager().getInstalledPlugins();
+					for (CordovaPlugin cordovaPlugin : plugins) {
+						// This is definitely error prone. As the name for a
+						// plugin is not guaranteed to be unique. Unfortunately feature tag does not have a
+						// reference to plugin id.
+						if (cordovaPlugin.getName().equals(feature.getName())) {
+							PluginUninstallAction action = new PluginUninstallAction(
+									cordovaPlugin);
+							action.run();
+							pluginFoundAndRemoved = true;
+							break;
+						}
+					}
+				} catch (CoreException ex) {
+					HybridUI.log(IStatus.ERROR, "Error removing the installed plugin", ex);
+				}
+				if(!pluginFoundAndRemoved){
+					getWidget().removeFeature(feature);
+					featureParamsTableViewer.setInput(null);
+				}
+			}
+		});
 		
 		
 		// Params section 
@@ -279,18 +319,7 @@ public class PropertiesPage extends FormPage {
 			}
 		});
 
-		btnFeatureRemove.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection selection = (IStructuredSelection) featuresTableViewer.getSelection();
-				if (selection.isEmpty())
-					return;
-				Feature feature = (Feature) selection.getFirstElement();
-				getWidget().removeFeature(feature);
-				featureParamsTableViewer.setInput(null);
-			}
-		});
-		
+
 		Section sctnPreferences = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
 		TableWrapData twd_sctnPreferences = new TableWrapData(TableWrapData.FILL, TableWrapData.FILL, 1, 1);
 		twd_sctnPreferences.grabHorizontal = true;

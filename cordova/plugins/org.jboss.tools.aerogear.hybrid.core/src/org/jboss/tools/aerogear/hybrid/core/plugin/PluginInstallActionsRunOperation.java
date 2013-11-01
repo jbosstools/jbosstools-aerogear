@@ -90,8 +90,7 @@ public class PluginInstallActionsRunOperation implements IWorkspaceRunnable {
 				}
 			}
 		}
-		project.getFolder("plugins").refreshLocal(IResource.DEPTH_INFINITE, monitor);
-		
+		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 	}
 
 }
