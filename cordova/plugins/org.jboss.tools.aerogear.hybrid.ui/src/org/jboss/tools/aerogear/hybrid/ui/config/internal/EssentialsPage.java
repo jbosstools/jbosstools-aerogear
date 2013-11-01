@@ -208,7 +208,7 @@ public class EssentialsPage extends FormPage {
 		Label lblName_1 = managedForm.getToolkit().createLabel(composite, "Name:", SWT.NONE);
 		lblName_1.setBounds(0, 0, 59, 14);
 		
-		txtAuthorname = managedForm.getToolkit().createText(composite, "New Text", SWT.NONE);
+		txtAuthorname = managedForm.getToolkit().createText(composite, "New Text", SWT.WRAP);
 		txtAuthorname.setText("");
 		txtAuthorname.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
@@ -257,7 +257,9 @@ public class EssentialsPage extends FormPage {
 		//
 		IObservableValue observeTextTxtAuthornameObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtAuthorname);
 		IObservableValue authornameGetWidgetObserveValue = BeanProperties.value("name").observeDetail(value);
-		bindingContext.bindValue(observeTextTxtAuthornameObserveWidget, authornameGetWidgetObserveValue, null, null);
+		UpdateValueStrategy strategy = new UpdateValueStrategy();
+		strategy.setConverter(new StringToDisplayableStringConverter());
+		bindingContext.bindValue(observeTextTxtAuthornameObserveWidget, authornameGetWidgetObserveValue, null,strategy);
 		//
 		IObservableValue observeTextTxtEmailObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtEmail);
 		IObservableValue authoremailGetWidgetObserveValue = BeanProperties.value("email").observeDetail(value);
@@ -266,27 +268,6 @@ public class EssentialsPage extends FormPage {
 		IObservableValue observeTextTxtUrlObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtUrl);
 		IObservableValue authorhrefGetWidgetObserveValue = BeanProperties.value("href").observeDetail(value);
 		bindingContext.bindValue(observeTextTxtUrlObserveWidget, authorhrefGetWidgetObserveValue, null, null);
-	}
-	protected DataBindingContext initDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
-		//
-		IObservableValue observeTextTxtIdtxtObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtIdtxt);
-		IObservableValue idGetWidgetObserveValue = BeanProperties.value("id").observe(getWidget());
-		bindingContext.bindValue(observeTextTxtIdtxtObserveWidget, idGetWidgetObserveValue, null, null);
-		//
-		IObservableValue observeTextTxtNameObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtName);
-		IObservableValue nameGetWidgetObserveValue = BeanProperties.value("name").observe(getWidget());
-		bindingContext.bindValue(observeTextTxtNameObserveWidget, nameGetWidgetObserveValue, null, null);
-		//
-		IObservableValue observeTextTxtDescriptionObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtDescription);
-		IObservableValue descriptionGetWidgetObserveValue = BeanProperties.value("description").observe(getWidget());
-		bindingContext.bindValue(observeTextTxtDescriptionObserveWidget, descriptionGetWidgetObserveValue, null, null);
-		//
-		IObservableValue observeTextTxtVersionObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtVersion);
-		IObservableValue versionGetWidgetObserveValue = BeanProperties.value("version").observe(getWidget());
-		bindingContext.bindValue(observeTextTxtVersionObserveWidget, versionGetWidgetObserveValue, null, null);
-		//
-		return bindingContext;
 	}
 
 	private void bindContent(DataBindingContext bindingContext) {
@@ -325,5 +306,30 @@ public class EssentialsPage extends FormPage {
 				return super.doSet(observableValue, value);
 			}
 		}, null);
+	}
+	protected DataBindingContext initDataBindings() {
+		DataBindingContext bindingContext = new DataBindingContext();
+		//
+		IObservableValue observeTextTxtIdtxtObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtIdtxt);
+		IObservableValue idGetWidgetObserveValue = BeanProperties.value("id").observe(getWidget());
+		bindingContext.bindValue(observeTextTxtIdtxtObserveWidget, idGetWidgetObserveValue, null, null);
+		//
+		IObservableValue observeTextTxtNameObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtName);
+		IObservableValue nameGetWidgetObserveValue = BeanProperties.value("name").observe(getWidget());
+		UpdateValueStrategy strategy_3 = new UpdateValueStrategy();
+		strategy_3.setConverter(new StringToDisplayableStringConverter());
+		bindingContext.bindValue(observeTextTxtNameObserveWidget, nameGetWidgetObserveValue,null, strategy_3);
+		//
+		IObservableValue observeTextTxtDescriptionObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtDescription);
+		IObservableValue descriptionGetWidgetObserveValue = BeanProperties.value("description").observe(getWidget());
+		UpdateValueStrategy strategy_2 = new UpdateValueStrategy();
+		strategy_2.setConverter(new StringToDisplayableStringConverter());
+		bindingContext.bindValue(observeTextTxtDescriptionObserveWidget, descriptionGetWidgetObserveValue, null, strategy_2);
+		//
+		IObservableValue observeTextTxtVersionObserveWidget = WidgetProperties.text(SWT.Modify).observe(txtVersion);
+		IObservableValue versionGetWidgetObserveValue = BeanProperties.value("version").observe(getWidget());
+		bindingContext.bindValue(observeTextTxtVersionObserveWidget, versionGetWidgetObserveValue, null, null);
+		//
+		return bindingContext;
 	}
 }

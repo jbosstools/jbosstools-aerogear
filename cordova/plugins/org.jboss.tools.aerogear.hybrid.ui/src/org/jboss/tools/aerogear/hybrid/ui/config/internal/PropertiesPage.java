@@ -23,6 +23,8 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -40,6 +42,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.IManagedForm;
@@ -103,26 +106,32 @@ public class PropertiesPage extends FormPage {
 			managedForm.getForm().getBody().setLayout(tableWrapLayout);
 		}
 		
-		Section sctnFeatures = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
-		TableWrapData twd_sctnFeatures = new TableWrapData(TableWrapData.LEFT, TableWrapData.TOP, 1, 2);
+		PixelConverter converter = new PixelConverter(form);
+		
+		int topRowTableHeightHint = converter.convertHeightInCharsToPixels(10);//about 10 rows of data 
+		int secondRowTableHeightHint =  converter.convertHeightInCharsToPixels(5);//about 10 rows of data 
+		
+		
+		Section sctnFeatures = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR | Section.DESCRIPTION);
+		TableWrapData twd_sctnFeatures = new TableWrapData(TableWrapData.FILL, TableWrapData.FILL, 1, 1);
 		twd_sctnFeatures.grabVertical = true;
-		twd_sctnFeatures.valign = TableWrapData.FILL;
-		twd_sctnFeatures.align = TableWrapData.FILL;
 		sctnFeatures.setLayoutData(twd_sctnFeatures);
 		managedForm.getToolkit().paintBordersFor(sctnFeatures);
 		sctnFeatures.setText("Features");
+		sctnFeatures.setDescription("Define plug-ins to be used in this application");
 		
 		Composite featuresComposite = managedForm.getToolkit().createComposite(sctnFeatures, SWT.NONE);
 		managedForm.getToolkit().paintBordersFor(featuresComposite);
 		sctnFeatures.setClient(featuresComposite);
-		featuresComposite.setLayout(new GridLayout(5, false));
+		featuresComposite.setLayout(new GridLayout(2, false));
 		
 		featuresTableViewer = new TableViewer(featuresComposite, SWT.BORDER | SWT.FULL_SELECTION);
 		featuresTable = featuresTableViewer.getTable();
 		featuresTable.setLinesVisible(false);
 		featuresTable.setHeaderVisible(false);
 		GridData featureTableLayoutData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		featureTableLayoutData.heightHint= featuresTable.getItemHeight() *10;
+		
+		featureTableLayoutData.heightHint= topRowTableHeightHint;
 		featuresTable.setLayoutData(featureTableLayoutData);
 		managedForm.getToolkit().paintBordersFor(featuresTable);
 
@@ -152,8 +161,26 @@ public class PropertiesPage extends FormPage {
 		});
 
 		Button btnFeatureRemove = managedForm.getToolkit().createButton(featureBtnsComposite, "Remove", SWT.NONE);
+		
+		
+		// Params section 
+		
+		Section sctnParams = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR| Section.DESCRIPTION);
+		TableWrapData twd_sctnParams = new TableWrapData(TableWrapData.FILL, TableWrapData.FILL, 1, 1);
+		twd_sctnParams.grabVertical = true;
+		sctnParams.setLayoutData(twd_sctnParams);
+		managedForm.getToolkit().paintBordersFor(sctnParams);
+		sctnParams.setText("Params");
+		sctnParams.setDescription("Specify parameters for the selected plug-in");
+		
+		Composite paramsComposite = managedForm.getToolkit().createComposite(sctnParams, SWT.NONE);
+		managedForm.getToolkit().paintBordersFor(paramsComposite);
+		sctnParams.setClient(paramsComposite);
+		paramsComposite.setLayout(new GridLayout(2, false));
 
-		featureParamsTableViewer = new TableViewer(featuresComposite, SWT.BORDER | SWT.FULL_SELECTION);
+		
+
+		featureParamsTableViewer = new TableViewer(paramsComposite, SWT.BORDER | SWT.FULL_SELECTION);
 		featuresTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			@Override
@@ -177,6 +204,7 @@ public class PropertiesPage extends FormPage {
 		featureParamsTableViewer.setContentProvider(new IStructuredContentProvider() {
 			private	Map<String, String> items;
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				this.items =(Map)newInput;
@@ -193,7 +221,7 @@ public class PropertiesPage extends FormPage {
 		paramsTable = featureParamsTableViewer.getTable();
 		paramsTable.setLinesVisible(true);
 		paramsTable.setHeaderVisible(true);
-		paramsTable.setLayoutData(featureTableLayoutData);
+		GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, topRowTableHeightHint).applyTo(paramsTable);;
 		managedForm.getToolkit().paintBordersFor(paramsTable);
 
 		TableViewerColumn tableViewerColumn = new TableViewerColumn(featureParamsTableViewer, SWT.NONE);
@@ -220,7 +248,7 @@ public class PropertiesPage extends FormPage {
 			}
 		});
 
-		Composite featureParamBtnsComposite = new Composite(featuresComposite, SWT.NONE);
+		Composite featureParamBtnsComposite = new Composite(paramsComposite, SWT.NONE);
 		managedForm.getToolkit().adapt(featureParamBtnsComposite);
 		managedForm.getToolkit().paintBordersFor(featureParamBtnsComposite);
 		featureParamBtnsComposite.setLayout(new FillLayout(SWT.VERTICAL));
@@ -239,6 +267,7 @@ public class PropertiesPage extends FormPage {
 		});
 
 		Button btnRemove = managedForm.getToolkit().createButton(featureParamBtnsComposite, "Remove", SWT.NONE);
+		new Label(featuresComposite, SWT.NONE);
 		btnRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -263,11 +292,9 @@ public class PropertiesPage extends FormPage {
 		});
 		
 		Section sctnPreferences = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
-		TableWrapData twd_sctnPreferences = new TableWrapData(TableWrapData.LEFT, TableWrapData.TOP, 1, 1);
+		TableWrapData twd_sctnPreferences = new TableWrapData(TableWrapData.FILL, TableWrapData.FILL, 1, 1);
 		twd_sctnPreferences.grabHorizontal = true;
 		twd_sctnPreferences.grabVertical = true;
-		twd_sctnPreferences.align = TableWrapData.FILL;
-		twd_sctnPreferences.valign = TableWrapData.FILL;
 		sctnPreferences.setLayoutData(twd_sctnPreferences);
 		managedForm.getToolkit().paintBordersFor(sctnPreferences);
 		sctnPreferences.setText("Preferences");
@@ -281,8 +308,8 @@ public class PropertiesPage extends FormPage {
 		preferencesTable = preferencesViewer.getTable();
 		preferencesTable.setLinesVisible(true);
 		preferencesTable.setHeaderVisible(true);
-		preferencesTable.setLayoutData(featureTableLayoutData);
 		managedForm.getToolkit().paintBordersFor(preferencesTable);
+		GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, secondRowTableHeightHint).applyTo(preferencesTable);
 		
 		TableViewerColumn tableViewerColumnName = new TableViewerColumn(preferencesViewer, SWT.NONE);
 		TableColumn tblclmnName = tableViewerColumnName.getColumn();
@@ -344,8 +371,8 @@ public class PropertiesPage extends FormPage {
 		accessTable = accessViewer.getTable();
 		accessTable.setLinesVisible(true);
 		accessTable.setHeaderVisible(true);
-		accessTable.setLayoutData(featureTableLayoutData);
 		managedForm.getToolkit().paintBordersFor(accessTable);
+		GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, secondRowTableHeightHint).applyTo(accessTable);
 		
 		TableViewerColumn tableViewerColumnOrigin = new TableViewerColumn(accessViewer, SWT.NONE);
 		TableColumn tblclmnOrigin = tableViewerColumnOrigin.getColumn();

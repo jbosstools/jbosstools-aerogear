@@ -12,6 +12,7 @@ package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -28,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.aerogear.hybrid.core.config.Access;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class NewAccessDialog extends Dialog {
 	private Text txtOrigin;
@@ -48,8 +50,7 @@ public class NewAccessDialog extends Dialog {
 			this.widget = widgetModel.getWidgetForEdit();
 			this.model = widgetModel;
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			HybridUI.log(IStatus.WARNING, "Error retrieving Widget while on the NewAccessDialog", e);
 		}
 	}
 
@@ -59,6 +60,7 @@ public class NewAccessDialog extends Dialog {
 	 */
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		getShell().setText("New Access");
 		Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout gl_container = new GridLayout(2, false);
 		gl_container.marginTop = 10;

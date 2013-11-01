@@ -47,7 +47,7 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		sdk.installApk(new File(artifactsDir,name+"-debug.apk" ), device.getSerialNumber());
 		
 		sdk.startApp(packageName+"/."+name, device.getSerialNumber());
-		String logcatFilter = configuration.getAttribute(AndroidLaunchConstants.ATTR_LOGCAT_FILTER, "");
+		String logcatFilter = configuration.getAttribute(AndroidLaunchConstants.ATTR_LOGCAT_FILTER, AndroidLaunchConstants.VAL_DEFAULT_LOGCAT_FILTER);
 		sdk.logcat(logcatFilter,null,null, device.getSerialNumber());
 		
 	}
@@ -133,8 +133,6 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 	private AndroidDevice getEmulator() throws CoreException{
 		AndroidSDKManager sdk = new AndroidSDKManager();
 		List<AndroidDevice> devices = sdk.listDevices();
-		if(devices == null ) 
-			return null;
 		for (AndroidDevice androidDevice : devices) {
 			if ( androidDevice.isEmulator() && androidDevice.getState() == AndroidDevice.STATE_DEVICE )
 				return androidDevice;

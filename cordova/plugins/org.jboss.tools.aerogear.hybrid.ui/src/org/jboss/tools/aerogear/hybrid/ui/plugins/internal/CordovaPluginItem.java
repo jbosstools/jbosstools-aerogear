@@ -15,9 +15,15 @@ import java.util.List;
 import org.eclipse.equinox.internal.p2.ui.discovery.util.ControlListItem;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -27,14 +33,13 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugi
 
 @SuppressWarnings("restriction")
 public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
-	private static final String LABEL_LATEST_VERSION = "latest";
 	private final CordovaPluginWizardResources resources;
 	private Label description;
 	private Label nameLabel;
 	private Label licenseLbl;
-	private Combo versionCombo;
 	private final CordovaPluginViewer viewer;
-	private static CordovaRegistryPluginVersion currentSelectedVersion;//static because multiple UI elements are created 
+	private CordovaRegistryPluginVersion currentSelectedVersion;
+	private ComboViewer versionComboViewer;
 
 	public CordovaPluginItem(Composite parent, int style, CordovaRegistryPlugin element, CordovaPluginWizardResources resources, CordovaPluginViewer viewer ) {
 		super(parent, style, element);
@@ -45,10 +50,8 @@ public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 
 	@Override
 	protected void refresh() {
-		// TODO Auto-generated method stub
-
 	}
-	
+
 	private void createContent(){
 		GridLayout layout = new GridLayout(3, false);
 		layout.marginLeft = 7;
@@ -60,31 +63,44 @@ public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.BEGINNING).span(1, 2).applyTo(versionContainer);
 		GridLayoutFactory.fillDefaults().spacing(1, 1).numColumns(2).applyTo(versionContainer);
 		
-		versionCombo = new Combo(versionContainer, SWT.READ_ONLY);
-		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(versionCombo);
-		versionCombo.add(LABEL_LATEST_VERSION);
-		versionCombo.select(0);
-		modifyVersionSelection(null);
-		List<CordovaRegistryPluginVersion> versions = getData().getVersions();
-		for ( CordovaRegistryPluginVersion cordovaPluginVersion : versions) {
-			versionCombo.add(cordovaPluginVersion.getVersionNumber());
-		}
-
-		versionCombo.addSelectionListener(new SelectionListener() {
+		Combo versionCombo = new Combo(versionContainer, SWT.READ_ONLY);
+		versionComboViewer = new ComboViewer(versionCombo);
+		versionComboViewer.setContentProvider(new IStructuredContentProvider() {
 			
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				modifyVersionSelection(versionCombo.getText());
-				
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
+			@Override
+			public void dispose() {
+			}
+			@Override
+			public Object[] getElements(Object inputElement) {
+				List<CordovaRegistryPluginVersion> versions = getData().getVersions();
+				return versions.toArray();
+			}
+		});
+		versionComboViewer.setLabelProvider(new LabelProvider(){
+			@Override
+			public String getText(Object element) {
+				CordovaRegistryPluginVersion ver = (CordovaRegistryPluginVersion)element;
+				return ver.getVersionNumber();
+			}
+		});
+		versionComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+				CordovaRegistryPluginVersion selectedVersion = (CordovaRegistryPluginVersion) selection.getFirstElement();
+				modifyVersionSelection(selectedVersion);
 				
 			}
 		});
+		versionComboViewer.setInput(getData().getVersions());
+		versionComboViewer.setSelection(new StructuredSelection(getLatestCordovaRegistryPluginVersion()));
 		
+		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(versionCombo);
+		modifyVersionSelection(null);
 		
 		nameLabel = new Label(this, SWT.NONE);
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.BEGINNING, SWT.CENTER).applyTo(nameLabel);
@@ -101,38 +117,37 @@ public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 		licenseLbl.setFont(resources.getSubTextFont());
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(licenseLbl);
 		updateValues();
-
-
-		
 	}
 
-	private void modifyVersionSelection(String selectedVersion) {
+	private void modifyVersionSelection(CordovaRegistryPluginVersion selectedVersion) {
+		if(selectedVersion == null ){
+			selectedVersion = getLatestCordovaRegistryPluginVersion();
+		}
+		if(currentSelectedVersion != null){//remove the old version
+			this.viewer.modifySelection(currentSelectedVersion, true);
+		}
+		currentSelectedVersion = selectedVersion;
+		this.viewer.modifySelection(currentSelectedVersion, false);//now add the new one
+	}
+	
+	private CordovaRegistryPluginVersion getLatestCordovaRegistryPluginVersion(){
+		String latest = getData().getLatestVersion();
 		List<CordovaRegistryPluginVersion> versions = getData().getVersions();
-		if(selectedVersion == null || LABEL_LATEST_VERSION.equals(selectedVersion))
-			selectedVersion = getData().getLatestVersion();
 		for ( CordovaRegistryPluginVersion cordovaPluginVersion : versions) {
-			if(selectedVersion.equals(cordovaPluginVersion.getVersionNumber())){
-				if(currentSelectedVersion != null)//remove the old version
-					this.viewer.modifySelection(currentSelectedVersion, true);
-				currentSelectedVersion = cordovaPluginVersion;
-				this.viewer.modifySelection(currentSelectedVersion, false);//now add the new one
+			if(cordovaPluginVersion.getVersionNumber().equals(latest)){
+				return cordovaPluginVersion;
 			}
 		}
+		return null;
 	}
 
 	private void updateValues() {
-		String version = versionCombo.getText();
-		if(version.equals(LABEL_LATEST_VERSION)){
-			version = getData().getLatestVersion();
-		}
-		List<CordovaRegistryPluginVersion> versions = getData().getVersions();
-		for ( CordovaRegistryPluginVersion cordovaPluginVersion : versions) {
-			if(cordovaPluginVersion.getVersionNumber().equals(version)){
-				setDescriptionText(cordovaPluginVersion.getDescription());
-				licenseLbl.setText("License:"+cordovaPluginVersion.getLicense());
-			}
-		}
-		
+		IStructuredSelection sel = (IStructuredSelection) versionComboViewer.getSelection();
+		if(sel.isEmpty())
+			return;
+		CordovaRegistryPluginVersion ver = (CordovaRegistryPluginVersion) sel.getFirstElement();
+		setDescriptionText(ver.getDescription());
+		licenseLbl.setText("License:"+ver.getLicense());
 	}
 
 	private void setDescriptionText(String descriptionText) {

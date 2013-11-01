@@ -64,7 +64,6 @@ public class ExternalProcessUtility {
 		HybridCore.trace("Sync Execute command line: "+commandLine);
 		String[] cmd = DebugPlugin.parseArguments(commandLine);
 		Process process =DebugPlugin.exec(cmd, workingDirectory, envp);
-		HybridCore.trace("Created process for "+ commandLine );
 		
 		Launch launch = new Launch(launchConfiguration, "run", null);
 		IProcess prcs = DebugPlugin.newProcess(launch, process, "Cordova Plugin:  "+ cmd[0]);
