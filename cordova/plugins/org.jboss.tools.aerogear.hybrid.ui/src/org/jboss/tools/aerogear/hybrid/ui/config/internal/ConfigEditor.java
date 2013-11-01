@@ -11,9 +11,12 @@
 package org.jboss.tools.aerogear.hybrid.ui.config.internal;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
@@ -26,6 +29,28 @@ public class ConfigEditor extends FormEditor {
 	private SourceEditor sourceEditor;
 	private Widget widget;
 	private WidgetModel model;
+	
+	@Override
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+		super.init(site, input);
+		setTitle(input);
+	}
+
+	private void setTitle(IEditorInput input) {
+		String title = null;
+		Widget w = getWidget();
+		if(w != null ){
+			title = getWidget().getName();
+		}
+		if(title == null || title.isEmpty() ){
+			IResource res = (IResource)input.getAdapter(IResource.class);
+			if(res != null ){
+				title = res.getProject().getName();
+			}
+		}
+		setPartName(title);
+	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
