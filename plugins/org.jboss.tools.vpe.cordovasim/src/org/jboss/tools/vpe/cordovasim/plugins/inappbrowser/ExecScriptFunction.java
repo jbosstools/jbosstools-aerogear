@@ -13,7 +13,6 @@ package org.jboss.tools.vpe.cordovasim.plugins.inappbrowser;
 
 import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.browser.IBrowserFunction;
-import org.eclipse.swt.browser.BrowserFunction;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
