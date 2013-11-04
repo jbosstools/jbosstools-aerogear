@@ -84,6 +84,11 @@ public class CustomBrowserSim extends BrowserSim {
 			}
 		};
 	}
+		
+	@Override
+	protected boolean isAddressBarVisibleByDefault() {
+		return false;
+	}
 
 	public IBrowser getInAppBrowser() {
 		return inAppBrowser;
