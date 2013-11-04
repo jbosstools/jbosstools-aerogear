@@ -17,6 +17,9 @@ import java.util.List;
 import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.BrowserSimLogger;
 
+/**
+ * @author Yahor Radtsevich (yradtsevich)
+ */
 public class CordovaSimArgs {
 	private static final int DEFAULT_PORT = 0;// any free port
 	
