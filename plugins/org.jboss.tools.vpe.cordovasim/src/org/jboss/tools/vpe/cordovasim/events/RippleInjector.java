@@ -14,6 +14,10 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationAdapter;
 import org.eclipse.swt.browser.LocationEvent;
 
+/**
+ * @author Yahor Radtsevich (yradtsevich)
+ * @author Ilya Buziuk (ibuziuk)
+ */
 public class RippleInjector extends LocationAdapter {
 	@SuppressWarnings("nls")
 	@Override

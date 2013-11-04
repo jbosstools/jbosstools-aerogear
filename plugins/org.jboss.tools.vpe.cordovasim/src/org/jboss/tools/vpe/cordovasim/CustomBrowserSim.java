@@ -9,11 +9,13 @@
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationAdapter;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.widgets.Shell;
 import org.jboss.tools.vpe.browsersim.browser.BrowserSimBrowser;
+import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.model.preferences.CommonPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferencesStorage;
@@ -28,6 +30,8 @@ import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPrefer
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CustomBrowserSim extends BrowserSim {
+	private BrowserSimBrowser inAppBrowser;
+	private Browser rippleToolSuiteBrowser;
 
 	public CustomBrowserSim(String homeUrl, Shell parentShell) {
 		super(homeUrl, parentShell);
@@ -53,6 +57,25 @@ public class CustomBrowserSim extends BrowserSim {
 	}
 	
 	@Override
+	@SuppressWarnings("nls")
+	protected void setSelectedDevice(Boolean refreshRequired) {
+		String currentOs = PlatformUtil.getOs();
+		if (inAppBrowser != null && refreshRequired == null 
+				&& (PlatformUtil.OS_LINUX.equals(currentOs) || PlatformUtil.OS_MACOSX.equals(currentOs))) {
+			inAppBrowser.dispose(); // disposing inAppBrowser for Linux and Mac OS. Unfortunately this solution doesn't work on Windows
+			this.inAppBrowser = null;
+			rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()");
+		}
+		
+		super.setSelectedDevice(refreshRequired);
+		
+		if (inAppBrowser != null && refreshRequired == null && PlatformUtil.OS_WIN32.equals(currentOs)) { 
+			rippleToolSuiteBrowser.refresh(); // have to make a full refresh to prevent native error on Windows
+			this.inAppBrowser = null;
+		} 
+	}
+	
+	@Override
 	protected LocationListener createNavButtonsListener() {
 		return new LocationAdapter() {
 			public void changed(LocationEvent event) {
@@ -61,5 +84,21 @@ public class CustomBrowserSim extends BrowserSim {
 				}
 			}
 		};
+	}
+
+	public BrowserSimBrowser getInAppBrowser() {
+		return inAppBrowser;
+	}
+
+	public void setInAppBrowser(BrowserSimBrowser inAppBrowser) {
+		this.inAppBrowser = inAppBrowser;
+	}
+
+	public Browser getRippleToolBarBrowser() {
+		return rippleToolSuiteBrowser;
+	}
+
+	public void setRippleToolBarBrowser(Browser rippleToolBarBrowser) {
+		this.rippleToolSuiteBrowser = rippleToolBarBrowser;
 	}
 }
