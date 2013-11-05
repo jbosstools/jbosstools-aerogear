@@ -69,6 +69,8 @@ import org.xml.sax.SAXException;
 
 public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 
+	private static final int REQUIRED_MIN_API_LEVEL = 17;
+
 	public AndroidProjectGenerator(){
 		super();
 	}
@@ -92,11 +94,8 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		String packageName = widgetModel.getId();
 		String name = hybridProject.getBuildArtifactAppName();
 
-		List<AndroidSDK> targets = sdkManager.listTargets();
-		if(targets == null || targets.isEmpty() ){
-			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "No Android targets were found, Please create a target"));
-		}
 		
+		AndroidSDK target = selectTarget(sdkManager);
 		if(getDestination().exists()){
 			try {//Clean the android directory to avoid and "Error:" message 
 				 // from the command line tools for using update. Otherwise all create
@@ -107,7 +106,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 			}
 		}
 		
-		sdkManager.createProject(targets.get(0), name, getDestination(),name, packageName );
+		sdkManager.createProject(target, name, getDestination(),name, packageName );
 		
 		try{
 			File libsDir = new File(getDestination(),DIR_LIBS);
@@ -134,7 +133,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 			values.put("__ID__", packageName);
 			values.put("__PACKAGE__", packageName);// yeap, cordova also uses two different names
 			values.put("__ACTIVITY__", name);
-			values.put("__APILEVEL__", Integer.toString(targets.get(0).getApiLevel()));
+			values.put("__APILEVEL__", Integer.toString(target.getApiLevel()));
 			
 			templatedFileCopy(getTemplateFile("/templates/android/project/Activity.java"), 
 					toURL(new File(getDestination(), File.separator+DIR_SRC+ File.separator+ 
@@ -150,6 +149,25 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		}
 	}
 	
+	private AndroidSDK selectTarget(AndroidSDKManager sdkManager) throws CoreException {
+		List<AndroidSDK> targets = sdkManager.listTargets();
+		if(targets == null || targets.isEmpty() ){
+			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "No Android targets were found, Please create a target"));
+		}
+		AndroidSDK target = null;
+		for (AndroidSDK androidSDK : targets) {
+			if(androidSDK.getApiLevel() >= REQUIRED_MIN_API_LEVEL &&
+					(target == null || androidSDK.getApiLevel() > target.getApiLevel())){
+				target = androidSDK;
+			}
+		}
+		if( target == null ){
+			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, 
+					"Please install Android target" + REQUIRED_MIN_API_LEVEL+" Run `android` from your command-line to install/update any missing SDKs or tools."));
+		}
+		return target;
+	}
+
 	private void updateAppName( String appName ) throws CoreException{
 	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	    dbf.setNamespaceAware(true);
