@@ -1,13 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributor:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
 import java.io.File;
 
-import org.eclipse.swt.browser.Browser;
+import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.ui.menu.FileMenuCreator;
 
 public class CordovaSimFileMenuCreator extends FileMenuCreator {
 	@Override
-	protected void viewServerSource(Browser browser) {
+	protected void viewServerSource(IBrowser browser) {
 		String url = browser.getUrl();
 		String port = Integer.toString(CordovaSimArgs.getPort());
 		int index = url.indexOf(port) + port.length();

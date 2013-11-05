@@ -9,7 +9,7 @@
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
-import org.eclipse.swt.browser.Browser;
+import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.ui.BrowserSimControlHandler;
 
@@ -18,7 +18,7 @@ import org.jboss.tools.vpe.browsersim.ui.BrowserSimControlHandler;
  */
 public class CordovaSimControlHandler extends BrowserSimControlHandler {
 
-	public CordovaSimControlHandler(Browser browser, String homeUrl, SpecificPreferences specificPreferences) {
+	public CordovaSimControlHandler(IBrowser browser, String homeUrl, SpecificPreferences specificPreferences) {
 		super(browser, homeUrl, specificPreferences);
 	}
 
