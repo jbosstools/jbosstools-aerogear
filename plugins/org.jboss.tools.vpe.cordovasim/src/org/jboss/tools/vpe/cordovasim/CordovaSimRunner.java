@@ -18,9 +18,6 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.OpenWindowListener;
-import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Image;
@@ -30,7 +27,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.jboss.tools.vpe.browsersim.browser.ExtendedOpenWindowListener;
+import org.jboss.tools.vpe.browsersim.browser.ExtendedWindowEvent;
+import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
+import org.jboss.tools.vpe.browsersim.browser.WebKitBrowserFactory;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.ui.CocoaUIEnhancer;
 import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
@@ -81,7 +82,7 @@ public class CordovaSimRunner {
 			final Shell shell = new Shell(display);
 			setShellAttributes(shell);
 			shell.setLayout(new FillLayout());
-			final Browser rippleToolSuiteBrowser = new Browser(shell, SWT.WEBKIT);
+			final IBrowser rippleToolSuiteBrowser = new WebKitBrowserFactory().createBrowser(shell, SWT.WEBKIT);
 			final String homeUrl = "http://localhost:" + port + "/" + CordovaSimArgs.getStartPage(); 
 			rippleToolSuiteBrowser.setUrl(homeUrl + "?enableripple=true");
 			
@@ -107,11 +108,11 @@ public class CordovaSimRunner {
 				sp.setCordovaBrowserLocation(shell.getLocation());
 			}
 			
-			rippleToolSuiteBrowser.addOpenWindowListener(new OpenWindowListener() {
-				private Browser oldBrowser;
+			rippleToolSuiteBrowser.addOpenWindowListener(new ExtendedOpenWindowListener() {
+				private IBrowser oldBrowser;
 
 				@Override
-				public void open(WindowEvent event) {
+				public void open(ExtendedWindowEvent event) {
 					if (InAppBrowserLoader.isInAppBrowserEvent(event) && (browserSim != null)) {
 						InAppBrowserLoader.processInAppBrowser(rippleToolSuiteBrowser, browserSim, event);
 					} else {
@@ -177,7 +178,7 @@ public class CordovaSimRunner {
 		display.dispose();
 	}
 
-	private static void createBrowserSim(final SpecificPreferences sp, final Browser rippleToolSuiteBrowser, final String homeUrl) {
+	private static void createBrowserSim(final SpecificPreferences sp, final IBrowser rippleToolSuiteBrowser, final String homeUrl) {
 		Shell parentShell = rippleToolSuiteBrowser.getShell();
 		if (parentShell != null) {
 			browserSim = new CustomBrowserSim(homeUrl, parentShell);

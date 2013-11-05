@@ -9,12 +9,11 @@
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationAdapter;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.widgets.Shell;
-import org.jboss.tools.vpe.browsersim.browser.BrowserSimBrowser;
+import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.model.preferences.CommonPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
@@ -30,15 +29,15 @@ import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPrefer
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CustomBrowserSim extends BrowserSim {
-	private BrowserSimBrowser inAppBrowser;
-	private Browser rippleToolSuiteBrowser;
+	private IBrowser inAppBrowser;
+	private IBrowser rippleToolSuiteBrowser;
 
 	public CustomBrowserSim(String homeUrl, Shell parentShell) {
 		super(homeUrl, parentShell);
 	}
 	
 	@Override
-	protected ControlHandler createControlHandler(BrowserSimBrowser browser, String homeUrl, SpecificPreferences specificPreferences) {
+	protected ControlHandler createControlHandler(IBrowser browser, String homeUrl, SpecificPreferences specificPreferences) {
 		return new CordovaSimControlHandler(browser, homeUrl, specificPreferences);
 	}
 	
@@ -86,19 +85,19 @@ public class CustomBrowserSim extends BrowserSim {
 		};
 	}
 
-	public BrowserSimBrowser getInAppBrowser() {
+	public IBrowser getInAppBrowser() {
 		return inAppBrowser;
 	}
 
-	public void setInAppBrowser(BrowserSimBrowser inAppBrowser) {
+	public void setInAppBrowser(IBrowser inAppBrowser) {
 		this.inAppBrowser = inAppBrowser;
 	}
 
-	public Browser getRippleToolBarBrowser() {
+	public IBrowser getRippleToolBarBrowser() {
 		return rippleToolSuiteBrowser;
 	}
 
-	public void setRippleToolBarBrowser(Browser rippleToolBarBrowser) {
+	public void setRippleToolBarBrowser(IBrowser rippleToolBarBrowser) {
 		this.rippleToolSuiteBrowser = rippleToolBarBrowser;
 	}
 }

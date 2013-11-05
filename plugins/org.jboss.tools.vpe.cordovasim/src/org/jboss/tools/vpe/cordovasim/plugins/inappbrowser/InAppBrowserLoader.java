@@ -11,15 +11,14 @@
 package org.jboss.tools.vpe.cordovasim.plugins.inappbrowser;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
-import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
-import org.jboss.tools.vpe.browsersim.browser.BrowserSimBrowser;
+import org.jboss.tools.vpe.browsersim.browser.ExtendedCloseWindowListener;
+import org.jboss.tools.vpe.browsersim.browser.ExtendedWindowEvent;
+import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.browser.WebKitBrowserFactory;
 import org.jboss.tools.vpe.browsersim.model.Device;
 import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
@@ -31,30 +30,30 @@ import org.jboss.tools.vpe.cordovasim.CustomBrowserSim;
 public class InAppBrowserLoader {
 
 	@SuppressWarnings("nls")
-	public static boolean isInAppBrowserEvent(WindowEvent openWindowEvent) {
-		Browser parentBrowser = (Browser) openWindowEvent.widget;
+	public static boolean isInAppBrowserEvent(ExtendedWindowEvent openWindowEvent) {
+		IBrowser parentBrowser = (IBrowser) openWindowEvent.widget;
 		return Boolean.TRUE.equals(parentBrowser.evaluate("return !!window.needToOpenInAppBrowser"));
 	}
 	
 	@SuppressWarnings("nls")
-	public static void processInAppBrowser(final Browser rippleToolSuiteBrowser, final CustomBrowserSim browserSim, WindowEvent openWindowEvent) {
+	public static void processInAppBrowser(final IBrowser rippleToolSuiteBrowser, final CustomBrowserSim browserSim,
+			ExtendedWindowEvent openWindowEvent) {
 		rippleToolSuiteBrowser.execute("window.needToOpenInAppBrowser = false"); 
 		
-		final Browser browserSimBrowser = browserSim.getBrowser();
+		final IBrowser browserSimBrowser = browserSim.getBrowser();
 		final Composite browserSimParentComposite = browserSimBrowser.getParent();
 		Device device = browserSim.getCurrentDevice();
 		
-		final BrowserSimBrowser inAppBrowser = createInAppBrowser(browserSimParentComposite, browserSimBrowser, device); 
+		final IBrowser inAppBrowser = createInAppBrowser(browserSimParentComposite, browserSimBrowser, device); 
 		browserSim.setInAppBrowser(inAppBrowser);
 		
-		browserSimBrowser.setParent(inAppBrowser); // hiding browserSim's browser by changing it's parent   
+		browserSimBrowser.setParent((Composite)inAppBrowser); // hiding browserSim's browser by changing it's parent   
 		openWindowEvent.browser = inAppBrowser;  
 		browserSimParentComposite.layout();
 	
-		inAppBrowser.addCloseWindowListener(new CloseWindowListener() {			
-			
+		inAppBrowser.addCloseWindowListener(new ExtendedCloseWindowListener() {
 			@Override
-			public void close(WindowEvent event) {
+			public void close(ExtendedWindowEvent event) {
 				browserSim.setInAppBrowser(null);
 				browserSimBrowser.setParent(browserSimParentComposite);
 				inAppBrowser.dispose();
@@ -88,7 +87,7 @@ public class InAppBrowserLoader {
 			@Override
 			public void changed(LocationEvent event) {
 				if (event.top) {
-					Browser browser = (Browser) event.widget;
+					IBrowser browser = (IBrowser) event.widget;
 					BrowserSimUtil.setCustomScrollbarStyles(browser);
 					rippleToolSuiteBrowser.execute("ripple('event').trigger('browser-stop');"); //  fire 'loadstop' event
 				}
@@ -99,16 +98,16 @@ public class InAppBrowserLoader {
 		new ExecScriptFunction(browserSimBrowser, inAppBrowser, "csInAppExecScript");
 	}
 
-	private static BrowserSimBrowser createInAppBrowser(Composite browserSimParentComposite, Browser browserSimBrowser,
+	private static IBrowser createInAppBrowser(Composite browserSimParentComposite, IBrowser browserSimBrowser,
 			Device device) {
-		BrowserSimBrowser inAppBrowser = new WebKitBrowserFactory().createBrowser(browserSimParentComposite, SWT.NONE);
-		inAppBrowser.setDefaultUserAgent(device.getUserAgent());
+		IBrowser inAppBrowser = new WebKitBrowserFactory().createBrowser(browserSimParentComposite, SWT.NONE);
+		inAppBrowser.setUserAgent(device.getUserAgent());
 		inAppBrowser.setLayoutData(browserSimBrowser.getLayoutData());
 		return inAppBrowser;
 	}
 
 	@SuppressWarnings("nls")
-	private static boolean isChildBrowserPluginPlugged(Browser browser) {
+	private static boolean isChildBrowserPluginPlugged(IBrowser browser) {
 		return (Boolean) browser.evaluate("return !! ripple('emulatorBridge').window().ChildBrowser");
 	}
 

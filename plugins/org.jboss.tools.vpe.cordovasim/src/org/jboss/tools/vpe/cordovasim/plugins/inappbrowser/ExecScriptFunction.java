@@ -11,17 +11,19 @@
 package org.jboss.tools.vpe.cordovasim.plugins.inappbrowser;
 
 
-import org.eclipse.swt.browser.Browser;
+import org.jboss.tools.vpe.browsersim.browser.IBrowser;
+import org.jboss.tools.vpe.browsersim.browser.IBrowserFunction;
 import org.eclipse.swt.browser.BrowserFunction;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class ExecScriptFunction extends BrowserFunction {
-	private Browser inAppBrowser;
+public class ExecScriptFunction implements IBrowserFunction {
+	private IBrowser browser;
+	private IBrowser inAppBrowser;
 
-	public ExecScriptFunction(Browser BrowserSimBrowser, Browser inAppBrowser, String name) {
-		super(BrowserSimBrowser, name);
+	public ExecScriptFunction(IBrowser browser, IBrowser inAppBrowser, String name) {
+		this.browser = browser;
 		this.inAppBrowser = inAppBrowser;
 	}
 
@@ -76,15 +78,14 @@ public class ExecScriptFunction extends BrowserFunction {
 	
 	@SuppressWarnings("nls")
 	private void processCallBackFunction(String callBackName) {
-		getBrowser().execute("(window['" + callBackName + "']())()");
+		browser.execute("(window['" + callBackName + "']())()");
 	}
 	
 	@SuppressWarnings("nls")
 	private void deleteCallBacksFromWindowProperties(String successCallBackName, String failCallBackName) {
-		getBrowser().execute("(function(){"
+		browser.execute("(function(){"
 								+ "delete window['" + successCallBackName + "'];"
 								+ "delete window['" + failCallBackName + "'];"
 							 +"})()");
 	}
-	
 }
