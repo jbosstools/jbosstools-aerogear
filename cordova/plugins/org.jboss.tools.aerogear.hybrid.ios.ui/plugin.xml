@@ -47,5 +47,12 @@
             projectGenerator="org.jboss.tools.aerogear.hybrid.ios.core.projectGenerator">
       </platformImage>
    </extension>
-
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            icon="$nl$/icons/elcl16/ios_icon.png"
+            configTypeID="org.jboss.tools.aerogear.hybrid.ios.core.IOSSimulatorLaunchConfigType"
+            id="org.jboss.tools.aerogear.hybrid.ios.ui.IOSSimulatorLaunchConfigTypeImage">
+      </launchConfigurationTypeImage>
+   </extension>
 </plugin>
