@@ -79,7 +79,7 @@ public class CordovaPluginViewer extends FilteredViewer {
 	void modifySelection ( CordovaRegistryPluginVersion element, boolean remove){
 		if (remove) {
 			selectedItems.remove(element);
-		}else{
+		}else if( !selectedItems.contains(element) ){
 			selectedItems.add(element);
 		}
 		selectionProvider.setSelection(new StructuredSelection(selectedItems));
