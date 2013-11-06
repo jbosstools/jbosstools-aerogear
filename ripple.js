@@ -39600,6 +39600,8 @@ ripple.define('platform/cordova/2.0.0/bridge/app', function (ripple, exports, mo
  * under the License.
  *
  */
+var emulatorBridge = ripple('emulatorBridge');
+
 module.exports = {
     show: function (success) {
         return success && success();
@@ -39614,6 +39616,10 @@ module.exports = {
       } else {
           delete window.bsBackbuttonPressed;
       }
+    },
+
+    backHistory: function() {
+       emulatorBridge.window().history.back();
     }
 };
 
