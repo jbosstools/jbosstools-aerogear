@@ -15,6 +15,7 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.widgets.Shell;
 import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
+import org.jboss.tools.vpe.browsersim.browser.javafx.JavaFXBrowser;
 import org.jboss.tools.vpe.browsersim.model.preferences.CommonPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferencesStorage;
@@ -57,21 +58,30 @@ public class CustomBrowserSim extends BrowserSim {
 	
 	@Override
 	@SuppressWarnings("nls")
-	protected void setSelectedDevice(Boolean refreshRequired) {
-		String currentOs = PlatformUtil.getOs();
-		
-		// JBIDE-16060 this solution works for mac os and linux (both ubuntu and fedora)
-		if (!PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && refreshRequired == null) {
-			rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()"); 
+	protected void setSelectedDevice(final Boolean refreshRequired) {
+		boolean needToChangeEngine = (skin.getBrowser() instanceof JavaFXBrowser && !getSpecificPreferences().isJavaFx())
+								  || (!(skin.getBrowser() instanceof JavaFXBrowser) && getSpecificPreferences().isJavaFx());
+		if (needToChangeEngine) {
+			final Shell shell = rippleToolSuiteBrowser.getShell();
+			CordovaSimArgs.setRestartRequired(true);
+			shell.close();
+			shell.dispose();
+		} else {
+			String currentOs = PlatformUtil.getOs();
+			
+			// JBIDE-16060 this solution works for mac os and linux (both ubuntu and fedora)
+			if (!PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && refreshRequired == null) {
+				rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()"); 
+			}
+			
+			super.setSelectedDevice(refreshRequired);
+			
+			// workaround for windows - preventing permanent crashes after skin changing 
+			if (PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && refreshRequired == null) {
+				this.inAppBrowser = null;
+				rippleToolSuiteBrowser.refresh();
+			}
 		}
-		
-		super.setSelectedDevice(refreshRequired);
-		
-		// workaround for windows - preventing permanent crashes after skin changing 
-		if (PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && refreshRequired == null) {
-			this.inAppBrowser = null;
-			rippleToolSuiteBrowser.refresh();
-		}		
 	}
 	
 	@Override

@@ -21,15 +21,15 @@ public class CordovaSimSpecificPreferences extends SpecificPreferences{
 	private Point cordovaBrowserLocation;
 	
 	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload, int liveReloadPort, boolean enableTouchEvents,
-			int orientationAngle, Point location, Point cordovaBrowserLocation, Point cordovaBrowserSize) {
-		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents, orientationAngle, location);
+			int orientationAngle, Point location, Point cordovaBrowserLocation, Point cordovaBrowserSize, boolean isJavaFx) {
+		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents, orientationAngle, location, isJavaFx);
 		this.cordovaBrowserLocation = cordovaBrowserLocation;
 		this.cordovaBrowserSize = cordovaBrowserSize;
 	}
 
 	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload, int liveReloadPort, boolean enableTouchEvents,
-			int orientationAngle, Point location) {
-		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents, orientationAngle, location);
+			int orientationAngle, Point location, boolean isJavaFx) {
+		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents, orientationAngle, location, isJavaFx);
 	}
 
 	public Point getCordovaBrowserLocation() {

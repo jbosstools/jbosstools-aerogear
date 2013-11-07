@@ -25,3 +25,4 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: JBoss by Red Hat
 Export-Package: org.jboss.tools.vpe.cordovasim.eclipse.launch
+Import-Package: org.eclipse.jdt.launching

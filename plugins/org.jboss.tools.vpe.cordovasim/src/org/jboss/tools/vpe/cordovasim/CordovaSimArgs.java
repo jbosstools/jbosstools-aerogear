@@ -26,6 +26,7 @@ public class CordovaSimArgs {
 	private static String rootFolder;
 	private static String startPage;
 	private static int port;
+	private static boolean restartRequired;
 
 	public static void parseArgs(String[] args) {
 		List<String> params = new ArrayList<String>(Arrays.asList(args));
@@ -34,6 +35,7 @@ public class CordovaSimArgs {
 			params.remove(BrowserSimArgs.NOT_STANDALONE);
 		}
 		
+		restartRequired = false;
 		int portParameterIndex = params.indexOf("-port"); //$NON-NLS-1$
 		if (portParameterIndex >= 0) {
 			params.remove(portParameterIndex);
@@ -74,5 +76,13 @@ public class CordovaSimArgs {
 	
 	public static void setPort(int port) {
 		CordovaSimArgs.port = port;
+	}
+
+	public static boolean isRestartRequired() {
+		return restartRequired;
+	}
+
+	public static void setRestartRequired(boolean restartRequired) {
+		CordovaSimArgs.restartRequired = restartRequired;
 	}
 }
