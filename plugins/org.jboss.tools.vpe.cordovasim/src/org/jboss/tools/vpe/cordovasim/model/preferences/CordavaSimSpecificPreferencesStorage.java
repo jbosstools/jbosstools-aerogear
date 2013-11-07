@@ -68,6 +68,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 		boolean enableTouchEvents = false;
 		Point cordovaBrowserLocation = null;
 		Point cordovaBrowserSize = null;
+		boolean isJavaFx = false;
 
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -110,6 +111,11 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 					orientationAngle = Integer.parseInt(node.getTextContent());
 				}
 				
+				node = document.getElementsByTagName(PREFERENCES_IS_JAVAFX).item(0);
+				if (!PreferencesUtil.isNullOrEmpty(node)) {
+					isJavaFx = Boolean.parseBoolean(node.getTextContent());
+				}
+				
 				node = document.getElementsByTagName(PREFERENCES_LOCATION).item(0);
 				if (!PreferencesUtil.isNullOrEmpty(node) && node.getNodeType() == Node.ELEMENT_NODE) {
 					Element location = (Element) node;
@@ -149,7 +155,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 				}
 				
 				return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents,
-						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize);
+						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize, isJavaFx);
 			}
 		} catch (SAXException e) {
 			CordovaSimLogger.logError(e.getMessage(), e);
@@ -176,7 +182,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 
 	@Override
 	protected SpecificPreferences createBlankPreferences() {
-		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, false, 0, null, null, null);
+		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, false, 0, null, null, null, false);
 	}
 
 	@Override
@@ -223,6 +229,10 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			Element enableTouchEvents = doc.createElement(PREFERENCES_TOUCH_EVENTS);
 			enableTouchEvents.setTextContent(String.valueOf(sp.isEnableTouchEvents()));
 			rootElement.appendChild(enableTouchEvents);
+			
+			Element isJavaFx = doc.createElement(PREFERENCES_IS_JAVAFX);
+			isJavaFx.setTextContent(String.valueOf(sp.isJavaFx()));
+			rootElement.appendChild(isJavaFx);
 			
 			Element cordova = doc.createElement(PREFERENCES_CORDOVA);
 			

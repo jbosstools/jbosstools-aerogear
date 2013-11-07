@@ -28,7 +28,7 @@ public class CordovaSimMenuCreator extends BrowserSimMenuCreator {
 	
 	@Override
 	protected void addToolsItems(Menu contextMenu, BrowserSimSkin skin, CommonPreferences commonPreferences, SpecificPreferences specificPreferences, String homeUrl) {
-		ToolsMenuCreator.addDebugItem(contextMenu, skin, commonPreferences.getWeinreScriptUrl(), commonPreferences.getWeinreClientUrl());
+		ToolsMenuCreator.addDebugItem(contextMenu, skin, commonPreferences.getWeinreScriptUrl(), commonPreferences.getWeinreClientUrl(), specificPreferences.isJavaFx());
 		ToolsMenuCreator.addScreenshotMenuItem(contextMenu, skin, commonPreferences);
 		ToolsMenuCreator.addLiveReloadItem(contextMenu, specificPreferences);
 		ToolsMenuCreator.addTouchEventsItem(contextMenu, specificPreferences);
