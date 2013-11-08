@@ -7,7 +7,7 @@
             class="org.jboss.tools.aerogear.hybrid.ios.ui.IOSLaunchShortcut"
             icon="icons/elcl16/ios_icon.png"
             id="org.jboss.tools.aerogear.hybrid.ios.ui.launch"
-            label="Run on iOS Emulator"
+            label="Run on iOS Simulator"
             modes="run">
          <contextualLaunch>
 			<enablement>

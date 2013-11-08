@@ -42,7 +42,7 @@ public class IOSLaunchShortcut extends HybridProjectLaunchShortcut{
 
 	@Override
 	protected String getLaunchConfigurationNamePrefix(IProject project) {
-		return project.getName() + " (iOS Emulator)";
+		return project.getName() + " (iOS Simulator)";
 	}
 
 }
