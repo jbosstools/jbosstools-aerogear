@@ -73,7 +73,7 @@ public class ConfigEditor extends FormEditor {
 		try {
 			addPage(new EssentialsPage(this));
 			addPage(new PropertiesPage(this));
-			addPage(new IconsPage(this));
+//			addPage(new IconsPage(this)); disabled until JBIDE-15746 is resolved.
 			int sourcePageIndex = addPage(sourceEditor, getEditorInput());
 			
 			setPageText(sourcePageIndex, "config.xml");
