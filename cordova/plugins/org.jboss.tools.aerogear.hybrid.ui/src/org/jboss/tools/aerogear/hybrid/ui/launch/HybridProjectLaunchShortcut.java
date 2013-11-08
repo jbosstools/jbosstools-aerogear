@@ -63,14 +63,9 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 
 	private void launch(IProject project) {
 		try {
-			
-			if(!validateBuildToolsReady()){
+			if( !validateBuildToolsReady() ||
+					!shouldProceedWithLaunch(HybridProject.getHybridProject(project)))
 				return;
-			}
-			if (!shouldProceedWithLaunch(HybridProject
-					.getHybridProject(project)))
-				return;
-			
 			ILaunchConfiguration launchConfig = findOrCreateLaunchConfiguration(project);
 			ILaunchConfigurationWorkingCopy wc = launchConfig.getWorkingCopy();
 			updateLaunchConfiguration(wc);
@@ -96,7 +91,7 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 	
 	
 	/**
-	 * Creates a new lauch configuration for the given project if one does not exists.
+	 * Creates a new launch configuration for the given project if one does not exists.
 	 * 
 	 * @param project
 	 * @return
@@ -107,15 +102,12 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 		ILaunchConfigurationType configType = getLaunchConfigurationType();
 		ILaunchConfiguration[] confs = lm.getLaunchConfigurations(configType);
 		for (ILaunchConfiguration configuration : confs) {
-			String projName = configuration.getAttribute(HybridProjectLaunchConfigConstants.ATTR_BUILD_SCOPE, (String)null);
-			if(project.getName().equals(projName)){//TODO: Handle the case for a project has more than one 
-				                                   // launch config associated with it. Present a dialog to select?
+			if(isCorrectLaunchConfiguration(project, configuration)){
 				return configuration;
 			}
 		}
 		return createLaunchConfiguration(project);
 	}
-
 	
 	private ILaunchConfiguration createLaunchConfiguration(IProject project) throws CoreException{
 		ILaunchConfigurationWorkingCopy wc = getLaunchConfigurationType().newInstance(null,
@@ -135,6 +127,14 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 		Assert.isNotNull(launchTypeID);
 		ILaunchConfigurationType configType = lm.getLaunchConfigurationType(launchTypeID);
 		return configType;
+	}
+	
+	protected boolean isCorrectLaunchConfiguration(IProject project, ILaunchConfiguration config) throws CoreException{
+		String projName = config.getAttribute(HybridProjectLaunchConfigConstants.ATTR_BUILD_SCOPE, (String)null);
+		if(project.getName().equals(projName)){
+			return true;
+		}
+		return false;
 	}
 	
 	/**

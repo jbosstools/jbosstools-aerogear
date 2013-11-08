@@ -30,10 +30,12 @@ public interface AndroidLaunchConstants {
 	 * Attribute for filter passed to the logcat during launch
 	 */
 	public static final String ATTR_LOGCAT_FILTER =  AndroidCore.PLUGIN_ID + ".ATTR_LOGCAT_FILTER";
-	
+	/**
+	 * Attribute to determine launching on a real device
+	 */
+	public static final String ATTR_IS_DEVICE_LAUNCH = AndroidCore.PLUGIN_ID + ".ATTR_IS_DEVICE_LAUNCH";
 	/**
 	 * The default value for the logcat filter
 	 */
 	public static final String VAL_DEFAULT_LOGCAT_FILTER = "Cordova:V DroidGap:V CordovaLog:V CordovaPlugin:V CordovaChromeClient:V CordovaWebView:V *:S";
-
 }

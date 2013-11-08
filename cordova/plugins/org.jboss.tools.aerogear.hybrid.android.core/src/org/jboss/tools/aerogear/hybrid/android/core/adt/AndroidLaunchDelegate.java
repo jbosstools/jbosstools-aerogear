@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -83,11 +84,12 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// Start ADB Server
 		AndroidSDKManager sdk = new AndroidSDKManager();
+		sdk.killADBServer();
 		sdk.startADBServer();
 		
-		String  serial = configuration.getAttribute(AndroidLaunchConstants.ATTR_DEVICE_SERIAL, (String)null);
-		// There is a serial run a specific device
-		if (serial != null ){
+		if(configuration.getAttribute(AndroidLaunchConstants.ATTR_IS_DEVICE_LAUNCH, false)){
+			String  serial = configuration.getAttribute(AndroidLaunchConstants.ATTR_DEVICE_SERIAL, (String)null);
+			Assert.isNotNull(serial);
 			List<AndroidDevice> devices = sdk.listDevices();
 			for (AndroidDevice androidDevice : devices) {
 				if(serial.equals(androidDevice.getSerialNumber()))
@@ -102,11 +104,11 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 				return true;
 			}else{
 				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Device with serial number "+ 
-			serial +" is not available"));
+			serial +" is no longer available"));
 			}
 		}
 		
-		//No serial fall back and run emulator
+		//Run emulator
 		AndroidDevice emulator = getEmulator();
 		// Do we have any emulators to run on?
 		if ( emulator == null ){
@@ -126,6 +128,11 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			sdk.waitForEmulator();
 		}
 		this.device = getEmulator();
+		if(this.device == null ){// This is non-sense so is adb
+			sdk.killADBServer();
+			sdk.startADBServer();
+			this.device = getEmulator();
+		}
 		monitor.done();
 		return true;
 	}

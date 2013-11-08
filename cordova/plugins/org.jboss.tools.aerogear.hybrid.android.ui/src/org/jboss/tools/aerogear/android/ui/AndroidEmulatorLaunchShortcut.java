@@ -16,6 +16,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidLaunchConstants;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDK;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDKManager;
@@ -39,6 +41,21 @@ public class AndroidEmulatorLaunchShortcut extends HybridProjectLaunchShortcut {
 	@Override
 	protected String getLaunchConfigurationTypeID() {
 		return AndroidLaunchConstants.ID_LAUNCH_CONFIG_TYPE;
+	}
+	
+	@Override
+	protected void updateLaunchConfiguration(ILaunchConfigurationWorkingCopy wc) {
+		wc.setAttribute(AndroidLaunchConstants.ATTR_IS_DEVICE_LAUNCH, false);
+		super.updateLaunchConfiguration(wc);
+	}
+	
+	@Override
+	protected boolean isCorrectLaunchConfiguration(IProject project,
+			ILaunchConfiguration config) throws CoreException {
+		if(config.getAttribute(AndroidLaunchConstants.ATTR_IS_DEVICE_LAUNCH, false)){
+			return false;
+		}
+		return super.isCorrectLaunchConfiguration(project, config);
 	}
 
 	@Override

@@ -305,7 +305,6 @@ public class AndroidSDKManager {
 	}
 	
 	public List<AndroidDevice> listDevices() throws CoreException{
-		initADBServer();
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		DeviceListParser parser = new DeviceListParser();
 		processUtility.execSync(getADBCommand()+" devices", null, parser, parser, 
@@ -322,7 +321,6 @@ public class AndroidSDKManager {
 	
 	public void installApk(File apkFile, String serialNumber) throws CoreException{
 		Assert.isNotNull(serialNumber);
-		initADBServer();
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		StringBuilder command = new StringBuilder(getADBCommand());
 		command.append(" -s ").append(serialNumber);
@@ -354,7 +352,6 @@ public class AndroidSDKManager {
 	}
 	
 	public void startApp(String component, String serialNumber) throws CoreException{
-		initADBServer();
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		StringBuilder command = new StringBuilder(getADBCommand());
 		command.append(" -s ").append(serialNumber);
@@ -366,7 +363,6 @@ public class AndroidSDKManager {
 	}
 	
 	public void logcat(String filter, IStreamListener outListener, IStreamListener errorListener, String serialNumber) throws CoreException{
-		initADBServer();
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		StringBuilder command = new StringBuilder(getADBCommand());
 		command.append(" -s ").append(serialNumber);
@@ -407,8 +403,4 @@ public class AndroidSDKManager {
 		return OS.toLowerCase().indexOf("win")>-1;
 	}
 	
-	private void initADBServer() throws CoreException {
-		this.killADBServer();
-		this.startADBServer();
-	}
 }
