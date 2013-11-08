@@ -34,7 +34,7 @@ public class PluginUninstallAction extends Action{
 	
 	private CordovaPlugin plugin;
 	public PluginUninstallAction() {
-		super("Remove Cordova Plugin");
+		super("Remove Cordova Plug-in");
 	}
 	
 	public PluginUninstallAction(CordovaPlugin cordovaPlugin) {
