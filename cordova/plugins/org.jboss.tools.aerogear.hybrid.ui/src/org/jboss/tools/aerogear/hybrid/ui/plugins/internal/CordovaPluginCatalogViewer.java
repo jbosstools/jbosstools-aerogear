@@ -110,6 +110,9 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 				(CordovaRegistryPluginInfo) element,resources, this);
 	}
 	
+	public void applyFilter(String filterText){
+		this.setFilterText(filterText);
+	}
 	
 
 }
