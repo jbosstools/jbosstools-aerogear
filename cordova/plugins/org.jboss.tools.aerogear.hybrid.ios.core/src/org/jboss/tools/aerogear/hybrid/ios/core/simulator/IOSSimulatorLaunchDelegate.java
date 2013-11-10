@@ -22,13 +22,17 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants;
+import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeBuild;
+import org.osgi.framework.Version;
 /**
  * {@link ILaunchDelegate} for running the iOS simulator. This delegate is unusual 
  * because besides running the emulator it also generates and builds the cordova project.
@@ -90,6 +94,22 @@ public class IOSSimulatorLaunchDelegate implements
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
+		
+		XCodeBuild xcode = new XCodeBuild();
+		String version = xcode.version();
+		try{
+			Version minVersion = new Version(XCodeBuild.MIN_REQUIRED_VERSION);
+			Version v = Version.parseVersion(version);
+			if(v.compareTo(minVersion)<0){
+				throw new CoreException(new Status(IStatus.ERROR, IOSCore.PLUGIN_ID,
+						"Hybrid mobile projects can only be run with XCode version "+ XCodeBuild.MIN_REQUIRED_VERSION +" or greater"));
+			}
+		}catch (IllegalArgumentException e) {
+			//We could not parse the version
+			//still let the build continue 
+			return true;
+		}
+
 		monitor.done();
 		return true;
 	}
