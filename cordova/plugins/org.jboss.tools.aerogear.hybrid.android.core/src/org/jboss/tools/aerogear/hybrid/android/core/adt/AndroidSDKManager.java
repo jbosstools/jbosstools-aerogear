@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -120,7 +121,7 @@ public class AndroidSDKManager {
 			}
 			catch (IOException e) {
 				AndroidCore.log(IStatus.ERROR, "Error parsing the AVD list", e);
-				return null;
+				return Collections.emptyList();
 			}
 			finally{
 				try{
@@ -248,7 +249,7 @@ public class AndroidSDKManager {
 	
 	
 	public void createProject(AndroidSDK target, String projectName, 
-			File path, String activity, String packageName) throws CoreException{
+			File path, String activity, String packageName, IProgressMonitor monitor) throws CoreException{
 		IStatus status = HybridProjectConventions.validateProjectName(projectName);
 		if(!status.isOK())
 			throw new CoreException(status);
@@ -272,8 +273,8 @@ public class AndroidSDKManager {
 		command.append(" --package ").append(packageName);
 
 		CreateProjectResultParser parser = new CreateProjectResultParser();
-		processUtility.execSync(command.toString(), null, parser, parser, new NullProgressMonitor(), null, null);
-		if( parser.getErrorString() != null ){
+		processUtility.execSync(command.toString(), null, parser, parser, monitor, null, null);
+		if( !monitor.isCanceled() && parser.getErrorString() != null ){
 			throw new CoreException(new Status(IStatus.ERROR,AndroidCore.PLUGIN_ID,"Error creating the Android project: "+ parser.getErrorString()));
 		}
 	}
@@ -319,7 +320,7 @@ public class AndroidSDKManager {
 
 
 	
-	public void installApk(File apkFile, String serialNumber) throws CoreException{
+	public void installApk(File apkFile, String serialNumber, IProgressMonitor monitor) throws CoreException{
 		Assert.isNotNull(serialNumber);
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		StringBuilder command = new StringBuilder(getADBCommand());
@@ -328,8 +329,8 @@ public class AndroidSDKManager {
 		command.append(" -r ");
 		command.append("\"").append(apkFile.getPath()).append("\"");
 		TextDetectingStreamListener listener = new TextDetectingStreamListener("Success");
-		processUtility.execSync(command.toString(), null,listener, listener, new NullProgressMonitor(), null, null);
-		if (!listener.isTextDetected()){
+		processUtility.execSync(command.toString(), null,listener, listener, monitor, null, null);
+		if (!monitor.isCanceled() && !listener.isTextDetected()){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "APK installation did not succeed"));
 		}
 	}
@@ -351,14 +352,14 @@ public class AndroidSDKManager {
 		}
 	}
 	
-	public void startApp(String component, String serialNumber) throws CoreException{
+	public void startApp(String component, String serialNumber, IProgressMonitor monitor) throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		StringBuilder command = new StringBuilder(getADBCommand());
 		command.append(" -s ").append(serialNumber);
 		command.append(" shell am start");
 		command.append(" -n ");
 		command.append(component);
-		processUtility.execSync(command.toString(), null, null, null,new NullProgressMonitor(), null, null);
+		processUtility.execSync(command.toString(), null, null, null, monitor, null, null);
 		
 	}
 	

@@ -53,6 +53,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
@@ -106,7 +107,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 			}
 		}
 		
-		sdkManager.createProject(target, name, getDestination(),name, packageName );
+		sdkManager.createProject(target, name, getDestination(),name, packageName, new NullProgressMonitor());
 		
 		try{
 			File libsDir = new File(getDestination(),DIR_LIBS);

@@ -15,6 +15,7 @@ import java.io.File;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.IStreamListener;
@@ -62,6 +63,9 @@ public class ExternalProcessUtility {
 			IStreamListener errorStreamListener, IProgressMonitor monitor, String[] envp, ILaunchConfiguration launchConfiguration) throws CoreException{
 		
 		HybridCore.trace("Sync Execute command line: "+commandLine);
+		if(monitor == null ){
+			monitor = new NullProgressMonitor();
+		}
 		String[] cmd = DebugPlugin.parseArguments(commandLine);
 		Process process =DebugPlugin.exec(cmd, workingDirectory, envp);
 		
