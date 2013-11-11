@@ -95,7 +95,7 @@ public class InAppBrowserLoader {
 			
 		});
 				
-		new ExecScriptFunction(browserSimBrowser, inAppBrowser, "csInAppExecScript");
+		browserSimBrowser.registerBrowserFunction("csInAppExecScript", new ExecScriptFunction(browserSimBrowser, inAppBrowser));
 	}
 
 	private static IBrowser createInAppBrowser(Composite browserSimParentComposite, IBrowser browserSimBrowser,
