@@ -22,7 +22,7 @@ public class ExecScriptFunction implements IBrowserFunction {
 	private IBrowser browser;
 	private IBrowser inAppBrowser;
 
-	public ExecScriptFunction(IBrowser browser, IBrowser inAppBrowser, String name) {
+	public ExecScriptFunction(IBrowser browser, IBrowser inAppBrowser) {
 		this.browser = browser;
 		this.inAppBrowser = inAppBrowser;
 	}
