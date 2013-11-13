@@ -22,22 +22,21 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
-import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
@@ -179,13 +178,15 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 		try {
 			getContainer().run(true, true, op);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (e.getTargetException() != null) {
+				ErrorDialog.openError(getShell(), "Plug-in installation problem", null, 
+						new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Errors occured during plug-in installation", e.getTargetException() ));
+				return false;
+			}
+			return false;
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		}
-		
 		savePageSettings();
 		return true;
 	}
