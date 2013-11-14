@@ -89,6 +89,11 @@ public class CustomBrowserSim extends BrowserSim {
 	protected boolean isAddressBarVisibleByDefault() {
 		return false;
 	}
+	
+	@Override
+	protected boolean isUrlResettingNeededAfterSkinChange() {
+		return false; // JBIDE-14636 - need to prevent prompts after skin changing
+	}
 
 	public IBrowser getInAppBrowser() {
 		return inAppBrowser;
