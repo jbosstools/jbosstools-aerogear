@@ -321,6 +321,9 @@ public class CordovaPluginManager {
 			String subdir = getAttributeValue(dependencyNode, "subdir");
 			URI uri = null;
 			if(url != null && !url.isEmpty()){
+				if(!url.endsWith(".git")){
+					url= url+".git";
+				}
 				uri = URI.create(url);
 			}
 			DependencyInstallAction action = new DependencyInstallAction(dependencyId, uri, commit, subdir, this.project, overwrite);
