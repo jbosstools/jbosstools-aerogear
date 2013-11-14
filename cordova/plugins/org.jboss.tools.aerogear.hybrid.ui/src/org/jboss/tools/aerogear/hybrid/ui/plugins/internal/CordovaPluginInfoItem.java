@@ -117,6 +117,16 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 				GridDataFactory.fillDefaults().grab(false, false)
 						.applyTo(hyperlink);
 				hyperlink.setText("<a >" + string + " </a>");
+				hyperlink.setData(string);
+				hyperlink.addListener(SWT.Selection, new Listener() {
+					
+					@Override
+					public void handleEvent(Event event) {
+						Link link = (Link)event.widget;
+						String keyword = (String) link.getData();
+						viewer.applyFilter(keyword);
+					}
+				});
 			}
 		}
 		

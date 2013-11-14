@@ -15,9 +15,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
@@ -25,6 +29,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -40,11 +46,14 @@ import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
 public class CordovaPluginRegistryManager {
 	
+	private static final String REGISTRY_CLIENT_ID = "jbosstools";
 	public static final String DEFAULT_REGISTRY_URL = "http://registry.cordova.io/";
 	private long updated;
 	private List<CordovaRegistryPluginInfo> plugins;
@@ -116,18 +125,49 @@ public class CordovaPluginRegistryManager {
 		    	lock.wait();
 			}
 		} catch (FileCreateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			HybridCore.log(IStatus.ERROR, "Cordova plugin fetch error", e);
 		} catch (IncomingFileTransferException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			HybridCore.log(IStatus.ERROR, "Cordova plugin fetch error", e);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			HybridCore.log(IStatus.ERROR, "Cordova plugin fetch error", e);
 		}
+		updateDownlodCounter(plugin.getName());
 		return new File(newCacheDir, "package");
 	}
 	
+	private void updateDownlodCounter(String pluginId) {
+		if(!registry.contains("registry.cordova.io"))//ping only cordova registry
+			return;
+		
+		HttpClient client = new DefaultHttpClient();
+		String url = registry.endsWith("/") ? registry+"downloads" : registry+"/downloads";
+		HttpPost post = new HttpPost(url);
+		Date now =new Date();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM.dd");
+		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+		
+		JsonObject obj = new JsonObject();
+		obj.addProperty("day", df.format(now));
+		obj.addProperty("pkg", pluginId);
+		obj.addProperty("client", REGISTRY_CLIENT_ID );
+		Gson gson = new Gson();
+		String json = gson.toJson(obj);
+		StringEntity entity;
+		try {
+			entity = new StringEntity(json);
+			entity.setContentType("application/json");
+			post.setEntity(entity);
+			HttpResponse response = client.execute(post);
+			if (response.getStatusLine().getStatusCode() != 201) {
+				HybridCore.log(IStatus.INFO, "Unable to ping Cordova registry download counter", null);
+			}
+		} catch (UnsupportedEncodingException e) {
+			HybridCore.log(IStatus.INFO, "Unable to ping Cordova registry download counter", e);
+		} catch (IOException e) {
+			HybridCore.log(IStatus.INFO, "Unable to ping Cordova registry download counter", e);
+		}
+	}
+
 	private File getFromCache( CordovaRegistryPluginVersion plugin ){
 		File cachedPluginDir = calculateCacheDir(plugin);
 		File packageDir = new File(cachedPluginDir,"package");

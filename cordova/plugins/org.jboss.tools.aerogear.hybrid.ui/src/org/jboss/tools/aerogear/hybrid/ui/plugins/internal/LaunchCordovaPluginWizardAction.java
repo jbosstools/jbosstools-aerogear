@@ -29,7 +29,7 @@ public class LaunchCordovaPluginWizardAction extends Action {
 	private HybridProject project;
 	
 	public LaunchCordovaPluginWizardAction() {
-		super("Install Cordova Plugin");
+		super("Install Cordova Plug-in");
 	}
 	
 	/**

@@ -7,7 +7,7 @@
             delegate="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidLaunchDelegate"
             id="org.jboss.tools.aerogear.hybrid.android.core.AndroidLaunchConfigurationType"
             modes="run"
-            name="Android">
+            name="Android Emulator">
       </launchConfigurationType>
    </extension>
    <extension

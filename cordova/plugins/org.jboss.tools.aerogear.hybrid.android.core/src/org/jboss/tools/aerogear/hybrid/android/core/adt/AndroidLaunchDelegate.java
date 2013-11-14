@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -36,6 +37,10 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		if(device == null ){
+			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, 
+					"Failed to connect with the device or emulator. We will attempt to reconnect, please try running your application again."));
+		}
 		AndroidSDKManager sdk = new AndroidSDKManager();
 	
 		HybridProject project = HybridProject.getHybridProject(getProject(configuration));
@@ -43,10 +48,10 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 		Widget widget = model.getWidgetForRead();
 		String packageName = widget.getId();
 		String name = project.getBuildArtifactAppName();
-
-		sdk.installApk(new File(artifactsDir,name+"-debug.apk" ), device.getSerialNumber());
 		
-		sdk.startApp(packageName+"/."+name, device.getSerialNumber());
+		sdk.installApk(new File(artifactsDir,name+"-debug.apk" ), device.getSerialNumber(),monitor);
+		
+		sdk.startApp(packageName+"/."+name, device.getSerialNumber(),monitor);
 		String logcatFilter = configuration.getAttribute(AndroidLaunchConstants.ATTR_LOGCAT_FILTER, AndroidLaunchConstants.VAL_DEFAULT_LOGCAT_FILTER);
 		sdk.logcat(logcatFilter,null,null, device.getSerialNumber());
 		
@@ -83,15 +88,22 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// Start ADB Server
 		AndroidSDKManager sdk = new AndroidSDKManager();
+		sdk.killADBServer();
 		sdk.startADBServer();
 		
-		String  serial = configuration.getAttribute(AndroidLaunchConstants.ATTR_DEVICE_SERIAL, (String)null);
-		// There is a serial run a specific device
-		if (serial != null ){
+		if(configuration.getAttribute(AndroidLaunchConstants.ATTR_IS_DEVICE_LAUNCH, false)){
+			String  serial = configuration.getAttribute(AndroidLaunchConstants.ATTR_DEVICE_SERIAL, (String)null);
+			Assert.isNotNull(serial);
 			List<AndroidDevice> devices = sdk.listDevices();
 			for (AndroidDevice androidDevice : devices) {
+				if( !androidDevice.isEmulator()){ // We want a device (not emulator)
+					this.device = androidDevice;
+				}
+				//Prefer the device with given serial if available.
+				//This is probably important if there are multiple devices that are 
+				//connected.
 				if(serial.equals(androidDevice.getSerialNumber()))
-				{
+				{                                                 
 					this.device = androidDevice;
 					break;
 				}
@@ -101,12 +113,11 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 				monitor.done();
 				return true;
 			}else{
-				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Device with serial number "+ 
-			serial +" is not available"));
+				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Could not establish connection with the device. Please try again."));
 			}
 		}
 		
-		//No serial fall back and run emulator
+		//Run emulator
 		AndroidDevice emulator = getEmulator();
 		// Do we have any emulators to run on?
 		if ( emulator == null ){
@@ -120,12 +131,20 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			if(avdName == null || !avds.contains(avdName)){
 				avdName = avds.get(0);
 			}
+			if(monitor.isCanceled()){
+				return false;
+			}
 			//start the emulator.
 			sdk.startEmulator(avdName);
 			// wait for it to come online 
 			sdk.waitForEmulator();
 		}
 		this.device = getEmulator();
+		if(this.device == null ){// This is non-sense so is adb
+			sdk.killADBServer();
+			sdk.startADBServer();
+			this.device = getEmulator();
+		}
 		monitor.done();
 		return true;
 	}

@@ -36,6 +36,8 @@ import org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchCons
  *
  */
 public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
+	public static final String MIN_REQUIRED_VERSION = "4.6";
+	
 	private ILaunchConfiguration launchConfiguration;
 	
 	private class SDKListParser implements IStreamListener{
