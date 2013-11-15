@@ -122,6 +122,10 @@ public class CordovaPluginXMLHelper {
 		return getNodes(node, "./:config-file");
 	}	
 	
+	public static NodeList getPreferencesNodes(Node node) {
+		return getNodes(node, "./:preference");
+	}	
+	
 	public static NodeList getLibFileNodes(Node node) {
 		return getNodes(node, "./:lib-file");
 	}
