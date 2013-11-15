@@ -190,7 +190,7 @@ public class PropertiesPage extends FormPage {
 						// This is definitely error prone. As the name for a
 						// plugin is not guaranteed to be unique. Unfortunately feature tag does not have a
 						// reference to plugin id.
-						if (cordovaPlugin.getName().equals(feature.getName())) {
+						if (cordovaPlugin.getName() != null && cordovaPlugin.getName().equals(feature.getName())) {
 							PluginUninstallAction action = new PluginUninstallAction(
 									cordovaPlugin);
 							action.run();
