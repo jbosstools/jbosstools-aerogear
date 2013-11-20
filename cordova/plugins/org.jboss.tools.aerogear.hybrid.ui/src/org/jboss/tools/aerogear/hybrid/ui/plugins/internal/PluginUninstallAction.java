@@ -55,10 +55,17 @@ public class PluginUninstallAction extends Action{
 				return;
 			}
 		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("Uninstall ");
+		sb.append(plugin.getId());
+		if(plugin.getName() != null && !plugin.getName().isEmpty()){
+			sb.append(" (").append(plugin.getName()).append(")");
+		}
+		sb.append(" plug-in?");
 		
 		if(!MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
 				"Uninstall Cordova Plugin",
-				"Uninstall "+this.plugin.getName() +" ("+plugin.getId()+") plug-in?")){
+				sb.toString())){
 			return;
 		}
 		
