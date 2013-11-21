@@ -59,19 +59,19 @@ public class CustomBrowserSim extends BrowserSim {
 	@SuppressWarnings("nls")
 	protected void setSelectedDevice(Boolean refreshRequired) {
 		String currentOs = PlatformUtil.getOs();
-		if (inAppBrowser != null && refreshRequired == null 
-				&& (PlatformUtil.OS_LINUX.equals(currentOs) || PlatformUtil.OS_MACOSX.equals(currentOs))) {
-			inAppBrowser.dispose(); // disposing inAppBrowser for Linux and Mac OS. Unfortunately this solution doesn't work on Windows
-			this.inAppBrowser = null;
-			rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()");
+		
+		// JBIDE-16060 this solution works for mac os and linux (both ubuntu and fedora)
+		if (!PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && refreshRequired == null) {
+			rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()"); 
 		}
 		
 		super.setSelectedDevice(refreshRequired);
 		
-		if (inAppBrowser != null && refreshRequired == null && PlatformUtil.OS_WIN32.equals(currentOs)) { 
-			rippleToolSuiteBrowser.refresh(); // have to make a full refresh to prevent native error on Windows
+		// workaround for windows - preventing permanent crashes after skin changing 
+		if (PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && refreshRequired == null) {
 			this.inAppBrowser = null;
-		} 
+			rippleToolSuiteBrowser.refresh();
+		}		
 	}
 	
 	@Override
