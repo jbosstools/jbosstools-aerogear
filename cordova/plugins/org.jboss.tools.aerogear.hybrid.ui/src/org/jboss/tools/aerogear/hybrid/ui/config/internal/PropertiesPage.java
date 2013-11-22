@@ -235,6 +235,7 @@ public class PropertiesPage extends FormPage {
 				if( !(event.getSelection() instanceof IStructuredSelection)) return;
 				IStructuredSelection sel = (IStructuredSelection)event.getSelection();
 				if(sel.isEmpty()) {
+					featureParamsTableViewer.setInput(null);
 					return;
 				}
 				Feature feature = (Feature)sel.getFirstElement();
@@ -261,6 +262,9 @@ public class PropertiesPage extends FormPage {
 			}
 			@Override
 			public Object[] getElements(Object inputElement) {
+				if(items == null ){
+					return new Object[0];
+				}
 				return items.entrySet().toArray();
 			}
 		});
