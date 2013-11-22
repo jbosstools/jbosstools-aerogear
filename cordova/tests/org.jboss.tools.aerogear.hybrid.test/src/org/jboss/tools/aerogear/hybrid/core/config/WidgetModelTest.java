@@ -2,11 +2,14 @@ package org.jboss.tools.aerogear.hybrid.core.config;
 
 import static org.junit.Assert.*;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -287,6 +290,38 @@ public class WidgetModelTest {
 		assertEquals("rev.id",widget.getId());
 		assertEquals("rev.ver", widget.getVersion());
 		
+		
+	}
+	
+	@Test
+	public void testPropertyChangeEventOnFeatureParams() throws CoreException{
+		WidgetModel model = WidgetModel.getModel(project.hybridProject());
+		Widget widget = model.getWidgetForEdit();
+		
+		final String paramName1 = "param1";
+		final String value1 = "value1";
+		final String paramName2 = "param2";
+		final String value2 = "value2";
+		
+
+		Feature feature = model.createFeature(widget);
+		feature.setName("testFeature");
+		feature.addParam(paramName1, value1);
+		model.save();
+		
+		feature.addPropertyChangeListener(new PropertyChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void propertyChange(PropertyChangeEvent prop) {
+				assertEquals("param", prop.getPropertyName());
+				assertTrue(prop.getNewValue() instanceof Map<?, ?>);
+				Map<String,String > params = (Map<String, String>) prop.getNewValue();
+				assertEquals(value1, params.get(paramName1));
+				assertEquals(value2, params.get(paramName2));
+			}
+		});
+		
+		feature.addParam(paramName2, value2);
 		
 	}
 	
