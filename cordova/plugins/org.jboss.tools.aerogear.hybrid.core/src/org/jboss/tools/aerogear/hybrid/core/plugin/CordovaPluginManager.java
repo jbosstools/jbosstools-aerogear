@@ -18,6 +18,7 @@ import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getFrameworks;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getLibFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getPlatformNode;
+import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getPreferencesNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getResourceFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.getSourceFileNodes;
 import static org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginXMLHelper.stringifyNode;
@@ -334,6 +335,7 @@ public class CordovaPluginManager {
 		CopyFileAction copy = new CopyFileAction(directory, destination);
 		actions.add(copy);
 		actions.addAll(collectAllConfigXMLActionsForSupporredPlatforms(doc));
+		actions.addAll(collectVariablePreferencesForSupportedPlatforms(doc));
 		return actions;
 	}
 	private void updatePluginList() throws CoreException {
@@ -462,6 +464,34 @@ public class CordovaPluginManager {
 		return list;
 	}
 	
+	private List<IPluginInstallationAction> collectVariablePreferencesForSupportedPlatforms(Document doc){
+		List<ProjectGenerator> generators = HybridCore.getPlatformProjectGenerators();
+		ArrayList<IPluginInstallationAction> list = new ArrayList<IPluginInstallationAction>();
+		List<Node> nodes = new ArrayList<Node>();
+		nodes.add(doc.getDocumentElement());
+		for (ProjectGenerator projectGenerator : generators) {
+			Node platformNode = getPlatformNode(doc, projectGenerator.getPlatformId());
+			if(platformNode != null)
+				nodes.add(platformNode);
+		}
+		for(Node node: nodes){
+			
+			NodeList preferences = getPreferencesNodes(node);
+			for( int i = 0; i < preferences.getLength(); i++){
+				Node current = preferences.item(i);
+				String name = getAttributeValue(current, "name");
+				IPluginInstallationAction action  = new ConfigXMLUpdateAction(this.project, "/widget", 
+						" <config-file target=\"res/xml/config.xml\" parent=\"/widget\">"
+						+ "<preference name=\""+name+"\" value=\"PLEASE_DEFINE\"/>"
+								+ "</config-file>");
+				list.add(action);
+			}
+		}
+		return list;
+
+	}
+	
+	
 	private List<IPluginInstallationAction> collectActionsForPlatform(Node node, AbstractPluginInstallationActionsFactory factory) throws CoreException{
 
 		ArrayList<IPluginInstallationAction> actionsList = new ArrayList<IPluginInstallationAction>(); 
@@ -525,7 +555,7 @@ public class CordovaPluginManager {
 		}
 		return list;
 	}
-
+	
 	private List<IPluginInstallationAction> getHeaderFileActionsForPlatform(Node node,
 			AbstractPluginInstallationActionsFactory factory) {
 		ArrayList<IPluginInstallationAction> list = new ArrayList<IPluginInstallationAction>();

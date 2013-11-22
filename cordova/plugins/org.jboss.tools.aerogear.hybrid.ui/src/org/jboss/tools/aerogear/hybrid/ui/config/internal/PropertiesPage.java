@@ -190,7 +190,7 @@ public class PropertiesPage extends FormPage {
 						// This is definitely error prone. As the name for a
 						// plugin is not guaranteed to be unique. Unfortunately feature tag does not have a
 						// reference to plugin id.
-						if (cordovaPlugin.getName().equals(feature.getName())) {
+						if (cordovaPlugin.getName() != null && cordovaPlugin.getName().equals(feature.getName())) {
 							PluginUninstallAction action = new PluginUninstallAction(
 									cordovaPlugin);
 							action.run();
@@ -235,6 +235,7 @@ public class PropertiesPage extends FormPage {
 				if( !(event.getSelection() instanceof IStructuredSelection)) return;
 				IStructuredSelection sel = (IStructuredSelection)event.getSelection();
 				if(sel.isEmpty()) {
+					featureParamsTableViewer.setInput(null);
 					return;
 				}
 				Feature feature = (Feature)sel.getFirstElement();
@@ -261,6 +262,9 @@ public class PropertiesPage extends FormPage {
 			}
 			@Override
 			public Object[] getElements(Object inputElement) {
+				if(items == null ){
+					return new Object[0];
+				}
 				return items.entrySet().toArray();
 			}
 		});

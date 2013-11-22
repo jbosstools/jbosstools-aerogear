@@ -35,13 +35,7 @@ public class ConfigXMLUpdateAction extends XMLConfigFileAction {
 
 	@Override
 	public void install() throws CoreException{
-		Document doc = XMLUtil.loadXML(xml);
-		Element element = doc.getDocumentElement();
-		NodeList featureNodes = element.getElementsByTagName("feature");
-		Element featureNode = null;
-		if(featureNodes.getLength() == 1){
-			featureNode = (Element) featureNodes.item(0);
-		}
+		Element featureNode = getInjectedFeatureNode();
 		if(featureNode == null ){// let parent handle it
 			super.install();
 		}else{
@@ -71,6 +65,17 @@ public class ConfigXMLUpdateAction extends XMLConfigFileAction {
 		}
 	}
 
+	private Element getInjectedFeatureNode() throws CoreException {
+		Document doc = XMLUtil.loadXML(xml);
+		Element element = doc.getDocumentElement();
+		NodeList featureNodes = element.getElementsByTagName("feature");
+		Element featureNode = null;
+		if(featureNodes.getLength() == 1){
+			featureNode = (Element) featureNodes.item(0);
+		}
+		return featureNode;
+	}
+
 	private Feature getExistingFeature(Element element, Widget widget) {
 		String featureName = element.getAttribute("name");
 		List<Feature> features = widget.getFeatures();
@@ -85,8 +90,19 @@ public class ConfigXMLUpdateAction extends XMLConfigFileAction {
 
 	@Override
 	public void unInstall() throws CoreException {
-		super.unInstall();
-
+		Element featureNode = getInjectedFeatureNode();
+		if(featureNode == null ){// let parent handle it
+			super.install();
+		}else{
+			WidgetModel widgetModel = WidgetModel.getModel(project);
+			Widget widget = widgetModel.getWidgetForEdit();
+			
+			Feature feature = getExistingFeature(featureNode, widget);
+			if(feature != null ){
+				widget.removeFeature(feature);
+			}
+			widgetModel.save();
+		}
 	}
 
 }
