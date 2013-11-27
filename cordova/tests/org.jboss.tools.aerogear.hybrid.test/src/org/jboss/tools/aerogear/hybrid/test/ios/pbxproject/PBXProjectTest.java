@@ -1,6 +1,10 @@
 package org.jboss.tools.aerogear.hybrid.test.ios.pbxproject;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +70,12 @@ public class PBXProjectTest {
 		NSString sourceTree = (NSString)fileRef.get("sourceTree");
 		assertEquals(DEFAULT_GROUP, sourceTree.getContent());
 		
+		assertTrue("No entry found on the Plugins group",isFileEntryFoundOnPluginsGroup(file, objects));
+		
+	}
+
+	private boolean isFileEntryFoundOnPluginsGroup(PBXFile file,
+			NSDictionary objects) throws PBXProjectException {
 		NSDictionary group = getGroupByName(objects, "Plugins");
 		NSArray children = (NSArray) group.objectForKey("children");
 		boolean groupFound = false;
@@ -77,26 +87,46 @@ public class PBXProjectTest {
 				break;
 			}
 		}
-		assertTrue("No entry found on the Plugins group",groupFound);
-		
+		return groupFound;
 	}
 	
 	@Test
 	public void testAddSourceFile() throws Exception{
 		PBXProject project = new PBXProject(pbxFile);
-		String testPath = "my/files/abcd.h";
+		String testPath = "my/files/abcd.m";
 		PBXFile file = new PBXFile(testPath);
 		project.addSourceFile(file);
 		
 
 		NSDictionary dict = (NSDictionary)ASCIIPropertyListParser.parse(project.getContent().getBytes());
 		NSDictionary objects = (NSDictionary)dict.objectForKey("objects");
+		
+		//Added the PBXBuildFile object correctly?
 		NSDictionary buildFile = (NSDictionary)objects.objectForKey(file.getUuid());
 		assertNotNull(buildFile);
 		NSString isa = (NSString) buildFile.get("isa");
 		assertEquals("PBXBuildFile",isa.getContent());
 		NSString fileRef = (NSString) buildFile.get("fileRef");
 		assertEquals(file.getFileRef(), fileRef.getContent());
+		
+		//Added the PBXFileReference object correctly?
+		NSDictionary fileRefObj = (NSDictionary)objects.objectForKey(file.getFileRef());
+		assertNotNull(fileRefObj);
+		isa = (NSString)fileRefObj.get("isa");
+		assertEquals("PBXFileReference", isa.getContent());
+		NSString encoding = (NSString) fileRefObj.get("fileEncoding");
+		assertEquals("4", encoding.getContent());
+	    NSString lastKnownType = (NSString) fileRefObj.get("lastKnownFileType");
+	    assertEquals("sourcecode.c.objc",lastKnownType.getContent());
+	    NSString name = (NSString) fileRefObj.get("name");
+	    assertEquals("abcd.m",name.getContent());
+	    NSString path = (NSString) fileRefObj.get("path");
+	    assertEquals(testPath, path.getContent());
+	    NSString sourceTree = (NSString) fileRefObj.get("sourceTree");
+	    assertEquals(DEFAULT_GROUP, sourceTree.getContent());
+	    
+	    //Added the PBXGroup entry correctly?
+		assertTrue("No entry found on the Plugins group",isFileEntryFoundOnPluginsGroup(file, objects));
 		
 		NSDictionary phase = getPhase(objects, "PBXSourcesBuildPhase");
 		NSArray files = (NSArray) phase.get("files");
@@ -107,52 +137,152 @@ public class PBXProjectTest {
 	@Test
 	public void testAddFramework() throws Exception{
 		PBXProject project = new PBXProject(pbxFile);
-		String testPath = "my/files/abcd.h";
+		String testPath = "libsqlite3.dylib";
 		PBXFile file = new PBXFile(testPath);
 		project.addFramework(file);
 		
 		
 		NSDictionary dict = (NSDictionary)ASCIIPropertyListParser.parse(project.getContent().getBytes());
 		NSDictionary objects = (NSDictionary)dict.objectForKey("objects");
+		
+		//Added the PBXFileReference object correctly?
 		NSDictionary fileRef = (NSDictionary) objects.objectForKey(file.getFileRef());
 		assertNotNull(fileRef);
 		NSString isa = (NSString)fileRef.get("isa");
 		assertEquals("PBXFileReference",isa.getContent());
 		NSString path = (NSString)fileRef.get("path");
-		assertEquals(testPath, path.getContent());
+		assertEquals("usr/lib/libsqlite3.dylib", path.getContent());
 		NSString lastType = (NSString)fileRef.get("lastKnownFileType");
-		assertEquals(HEADER_FILE, lastType.getContent());
-		NSString encoding = (NSString)fileRef.get("fileEncoding");
-		assertEquals("4", encoding.getContent());
+		assertEquals("\"compiled.mach-o.dylib\"", lastType.getContent());
 		NSString sourceTree = (NSString)fileRef.get("sourceTree");
-		assertEquals(DEFAULT_GROUP, sourceTree.getContent());
+		assertEquals("SDKROOT", sourceTree.getContent());
 		
+		//Added the PBXBuildFile object correctly?
+		NSDictionary buildFile = (NSDictionary)objects.objectForKey(file.getUuid());
+		assertNotNull(buildFile);
+		isa = (NSString) buildFile.get("isa");
+		assertEquals("PBXBuildFile",isa.getContent());
+		NSString fRef = (NSString) buildFile.get("fileRef");
+		assertEquals(file.getFileRef(), fRef.getContent());
+		assertFalse(buildFile.containsKey("settings"));
+
+		
+		//Added to the Frameworks PBXGroup
 		NSDictionary group = getGroupByName(objects, "Frameworks");
 		NSArray children = (NSArray) group.objectForKey("children");
 		assertTrue(children.containsObject(new NSString(file.getFileRef())));
+
 		
+		//Added to the PBXFrameworksBuildPhase correctly?
 		NSDictionary phase = getPhase(objects, "PBXFrameworksBuildPhase");
 		NSArray files = (NSArray) phase.get("files");
 		assertTrue(files.containsObject(new NSString(file.getUuid())));
 	}
 	
 	@Test
+	public void testAddFrameworkWithWeak() throws Exception{
+		PBXProject project = new PBXProject(pbxFile);
+		String testPath = "libsqlite3.dylib";
+		PBXFile file = new PBXFile(testPath);
+		file.setWeak(true);
+		project.addFramework(file);
+	
+		NSDictionary dict = (NSDictionary)ASCIIPropertyListParser.parse(project.getContent().getBytes());
+		NSDictionary objects = (NSDictionary)dict.objectForKey("objects");
+		
+		NSDictionary buildFile = (NSDictionary)objects.objectForKey(file.getUuid());
+		assertNotNull(buildFile);
+		NSString isa = (NSString) buildFile.get("isa");
+		assertEquals("PBXBuildFile",isa.getContent());
+		NSString fRef = (NSString) buildFile.get("fileRef");
+		assertEquals(file.getFileRef(), fRef.getContent());
+		NSDictionary settings = (NSDictionary) buildFile.get("settings");
+		NSArray attributes = (NSArray) settings.get("ATTRIBUTES");
+		assertTrue(attributes.containsObject(NSObject.wrap("Weak")));
+	}
+	
+	@Test
 	public void testAddResource() throws Exception{
 		PBXProject project = new PBXProject(pbxFile);
-		String testPath = "my/files/abcd.h";
+		String testPath = "assets.bundle";
 		PBXFile file = new PBXFile(testPath);
 		project.addResourceFile(file);
 		
 		NSDictionary dict = (NSDictionary)ASCIIPropertyListParser.parse(project.getContent().getBytes());
 		NSDictionary objects = (NSDictionary)dict.objectForKey("objects");
 		
+		//Added the PBXBuildFile object correctly?
+		NSDictionary buildFile = (NSDictionary)objects.objectForKey(file.getUuid());
+		assertNotNull(buildFile);
+		NSString isa = (NSString) buildFile.get("isa");
+		assertEquals("PBXBuildFile",isa.getContent());
+		NSString fRef = (NSString) buildFile.get("fileRef");
+		assertEquals(file.getFileRef(), fRef.getContent());
+	
+		//Added the PBXFileReference object correctly?
+		NSDictionary fileRef = (NSDictionary) objects.objectForKey(file.getFileRef());
+		assertNotNull(fileRef);
+		isa = (NSString)fileRef.get("isa");
+		assertEquals("PBXFileReference",isa.getContent());
+		NSString path = (NSString)fileRef.get("path");
+		assertEquals("assets.bundle", path.getContent());
+		NSString lastType = (NSString)fileRef.get("lastKnownFileType");
+		assertEquals("\"wrapper.plug-in\"", lastType.getContent());
+		NSString sourceTree = (NSString)fileRef.get("sourceTree");
+		assertEquals(DEFAULT_GROUP, sourceTree.getContent());
+		NSString name = (NSString) fileRef.get("name");
+		assertEquals("assets.bundle", name.getContent());
+		assertFalse(fileRef.containsKey("fileEncoding"));
+		
+		//Added to the Resources PBXGroup group?
 		NSDictionary group = getGroupByName(objects, "Resources");
 		NSArray children = (NSArray) group.objectForKey("children");
 		assertTrue(children.containsObject(new NSString(file.getFileRef())));
 		
+		//Added to the PBXSourcesBuildPhase
 		NSDictionary phase = getPhase(objects, "PBXResourcesBuildPhase");
 		NSArray files = (NSArray) phase.get("files");
 		assertTrue(files.containsObject(new NSString(file.getUuid())));
+	}
+	
+	@Test
+	public void testAddResourceWithPlugin() throws Exception{
+		PBXProject project = new PBXProject(pbxFile);
+		String testPath = "assets.bundle";
+		PBXFile file = new PBXFile(testPath);
+		file.setPlugin(true);
+		project.addResourceFile(file);
+		
+		NSDictionary dict = (NSDictionary)ASCIIPropertyListParser.parse(project.getContent().getBytes());
+		NSDictionary objects = (NSDictionary)dict.objectForKey("objects");
+		
+		//Added the PBXFileReference object correctly?
+		NSDictionary fileRef = (NSDictionary) objects.objectForKey(file.getFileRef());
+		assertNotNull(fileRef);
+		NSString isa = (NSString)fileRef.get("isa");
+		assertEquals("PBXFileReference",isa.getContent());
+		NSString path = (NSString)fileRef.get("path");
+		assertEquals("assets.bundle", path.getContent());
+		NSString lastType = (NSString)fileRef.get("lastKnownFileType");
+		assertEquals("\"wrapper.plug-in\"", lastType.getContent());
+		NSString sourceTree = (NSString)fileRef.get("sourceTree");
+		assertEquals(DEFAULT_GROUP, sourceTree.getContent());
+		NSString name = (NSString) fileRef.get("name");
+		assertEquals("assets.bundle", name.getContent());
+		assertFalse(fileRef.containsKey("fileEncoding"));
+
+
+		//Added to the Plugins PBXGroup group?
+		NSDictionary group = getGroupByName(objects, "Plugins");
+		NSArray children = (NSArray) group.objectForKey("children");
+		assertTrue(children.containsObject(new NSString(file.getFileRef())));
+		
+		//Added to the PBXSourcesBuildPhase
+		NSDictionary phase = getPhase(objects, "PBXResourcesBuildPhase");
+		NSArray files = (NSArray) phase.get("files");
+		assertTrue(files.containsObject(new NSString(file.getUuid())));
+
+
 	}
 	
 	@Test
@@ -174,9 +304,44 @@ public class PBXProjectTest {
 			if(isa != null && isa.getContent().equals("XCBuildConfiguration")){
 				NSDictionary buildSettings = (NSDictionary) obj.objectForKey("buildSettings");
 				assertTrue(buildSettings.containsKey("LIBRARY_SEARCH_PATHS"));
+				NSArray searchPaths = (NSArray) buildSettings.get("LIBRARY_SEARCH_PATHS"); 
+				assertEquals("$(SRCROOT)/Test_Application/my/files", ((NSString)searchPaths.objectAtIndex(1)).getContent());
 			}
 		}
 
+	}
+	
+	@Test
+	public void testAddHeader() throws Exception{
+		PBXProject project = new PBXProject(pbxFile);
+		String testPath = "file.h";
+		PBXFile file = new PBXFile(testPath);
+		project.addHeaderFile(file);
+		
+		NSDictionary dict = (NSDictionary)ASCIIPropertyListParser.parse(project.getContent().getBytes());
+		NSDictionary objects = (NSDictionary)dict.objectForKey("objects");
+		
+		//Added the PBXFileReference object correctly?
+		NSDictionary fileRef = (NSDictionary) objects.objectForKey(file.getFileRef());
+		assertNotNull(fileRef);
+		NSString isa = (NSString)fileRef.get("isa");
+		assertEquals("PBXFileReference",isa.getContent());
+		NSString path = (NSString)fileRef.get("path");
+		assertEquals(testPath, path.getContent());
+		NSString lastType = (NSString)fileRef.get("lastKnownFileType");
+		assertEquals("sourcecode.c.h", lastType.getContent());
+		NSString sourceTree = (NSString)fileRef.get("sourceTree");
+		assertEquals(DEFAULT_GROUP, sourceTree.getContent());
+		NSString name = (NSString) fileRef.get("name");
+		assertEquals("file.h", name.getContent());
+		NSString encoding = (NSString) fileRef.get("fileEncoding");
+		assertEquals("4", encoding.getContent());
+
+		//Added to the Plugins PBXGroup group?
+		NSDictionary group = getGroupByName(objects, "Plugins");
+		NSArray children = (NSArray) group.objectForKey("children");
+		assertTrue(children.containsObject(new NSString(file.getFileRef())));
+		
 	}
 	
 	private static NSDictionary getGroupByName(NSDictionary objects, String name) throws PBXProjectException{
