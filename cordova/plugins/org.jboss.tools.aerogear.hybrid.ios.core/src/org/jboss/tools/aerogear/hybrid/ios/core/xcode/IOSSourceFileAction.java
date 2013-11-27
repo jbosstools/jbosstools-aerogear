@@ -14,7 +14,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CopyFileAction;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
@@ -41,17 +43,20 @@ public class IOSSourceFileAction extends CopyFileAction {
 	@Override
 	public void install() throws CoreException {
 		PBXProject project = new PBXProject(pbxFile);
-		PBXFile file = new PBXFile(path);
-		file.setFramework(isFramework);
-		if(compilerFlags != null && !compilerFlags.isEmpty()){
-			file.setCompilerFlags(compilerFlags);
-		}
 		
 		try {
-			project.addSourceFile(file);
+			project.addSourceFile(getPBXFile());
 			if(isFramework){
-				 project.addFramework(file);
-	             project.addToLibrarySearchPaths(file);
+				 project.addFramework(getPBXFile());
+				 //Library search paths are project relative 
+				 //we remove the first segment which is the project
+				 //folder itself.
+				 PBXFile searchPath = getPBXFile();
+				 String rawPath = searchPath.getPath();
+				 IPath path = new Path(rawPath);
+				 path = path.removeFirstSegments(1);
+				 searchPath.setPath(path.toString());
+	             project.addToLibrarySearchPaths(searchPath);
 			}
 			project.persist();
 		} catch (PBXProjectException e) {
@@ -62,6 +67,16 @@ public class IOSSourceFileAction extends CopyFileAction {
 		}
 		//let it do the copy
 		super.install();
+	}
+
+
+	private PBXFile getPBXFile() {
+		PBXFile file = new PBXFile(path);
+		file.setFramework(isFramework);
+		if(compilerFlags != null && !compilerFlags.isEmpty()){
+			file.setCompilerFlags(compilerFlags);
+		}
+		return file;
 	}
 	
 	

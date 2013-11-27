@@ -29,6 +29,7 @@ import com.dd.plist.NSString;
 import com.dd.plist.PropertyListParser;
 
 public class PBXProject {
+	private static final String KEY_LIBRARY_SEARCH_PATHS = "LIBRARY_SEARCH_PATHS";
 	private final File file;
 	private NSDictionary root;
 	
@@ -73,8 +74,6 @@ public class PBXProject {
 		if (file.isPlugin()) {
 			this.addPluginFile(file);
 		}
-		addToPbxBuildFileSection(file); // PBXBuildFile
-		addToBuildPhase("PBXResourcesBuildPhase",file); // PBXResourcesBuildPhase
 		if (!file.isPlugin()) {
 			NSDictionary resGroup = getGroupByName("Resources");
 			if(resGroup.containsKey("path")){
@@ -84,13 +83,21 @@ public class PBXProject {
 					file.setPath(path.substring(index+"Resources/".length()));
 				}
 			}
+		}
+		addToPbxBuildFileSection(file); // PBXBuildFile
+		addToBuildPhase("PBXResourcesBuildPhase",file); // PBXResourcesBuildPhase
+		if(!file.isPlugin()){
 			addToPbxFileReferenceSection(file); // PBXFileReference
 			addToPbxGroup("Resources",file); // PBXGroup
 		}
 	}
-	
-
-
+	/**
+	 * Adds the pbxfile to library search paths. The path of the 
+	 * pbxfile must be project relative. 
+	 * 
+	 * @param pbxfile
+	 * @throws PBXProjectException
+	 */
 	public void addToLibrarySearchPaths(PBXFile pbxfile) throws PBXProjectException {
 		HashMap<String, NSObject> hashmap =  getObjects().getHashMap();	
 		Collection<NSObject> values = hashmap.values();
@@ -99,20 +106,22 @@ public class PBXProject {
 			NSString isa = (NSString) obj.objectForKey("isa");
 			if(isa != null && isa.getContent().equals("XCBuildConfiguration")){
 				NSDictionary buildSettings = (NSDictionary) obj.objectForKey("buildSettings");
-				if( !buildSettings.containsKey("LIBRARY_SEARCH_PATHS")){
-					NSArray arr = new NSArray(NSObject.wrap("\"$(inherited)\""));
-					buildSettings.put("LIBRARY_SEARCH_PATHS", arr);
-				}else{
-					NSArray arr = (NSArray) buildSettings.objectForKey("LIBRARY_SEARCH_PATHS");
-					NSObject[] current = arr.getArray();
+				NSArray arr  = null;
+				if( buildSettings.containsKey(KEY_LIBRARY_SEARCH_PATHS)){
+					arr = (NSArray) buildSettings.objectForKey(KEY_LIBRARY_SEARCH_PATHS);
+				}
+				if(arr == null){//new search path entry
+					arr = new NSArray(NSObject.wrap("$(inherited)"), searchPathForFile(pbxfile));
+				}else{//modify existing one
+					Object[] current = arr.getArray();
 					NSObject[] newArray = new NSObject[current.length + 1];
 					System.arraycopy(current, 0, newArray, 0, current.length);
 					newArray[newArray.length -1 ] = searchPathForFile(pbxfile);
 				}
+			buildSettings.put(KEY_LIBRARY_SEARCH_PATHS, arr);
 			}
 		}
 	}
-	
 	
 	private NSString searchPathForFile(PBXFile pbxfile) throws PBXProjectException {
 		String filepath = FilenameUtils.getFullPathNoEndSeparator(pbxfile.getPath());
@@ -125,10 +134,10 @@ public class PBXProject {
 		
 		if(pbxfile.isPlugin() && group.containsKey("path")){
 			NSString groupPath = (NSString)group.objectForKey("path");
-			return NSObject.wrap("\"$(SRCROOT)/" + groupPath.getContent().replace('"', ' ').trim() + "\"");
+			return NSObject.wrap("$(SRCROOT)/" + groupPath.getContent().replace('"', ' ').trim());
 	    }
 		else{
-			return NSObject.wrap("\"$(SRCROOT)/" + getProductName() + filepath +"\"");
+			return NSObject.wrap("$(SRCROOT)/"+ getProductName() + filepath );
 		}
 	}
 
@@ -140,7 +149,7 @@ public class PBXProject {
 			NSString isa = (NSString) obj.objectForKey("isa");
 			if(isa != null && isa.getContent().equals("XCBuildConfiguration")){
 				NSDictionary buildSettings = (NSDictionary) obj.objectForKey("buildSettings");
-				if( !buildSettings.containsKey("PRODUCT_NAME")){
+				if( buildSettings.containsKey("PRODUCT_NAME")){
 					NSString name = (NSString) buildSettings.get("PRODUCT_NAME");
 					return name.getContent().replace('"', ' ').trim();
 				}
