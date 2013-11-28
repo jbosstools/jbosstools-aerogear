@@ -50,6 +50,8 @@ public class InAppBrowserLoader {
 		browserSimBrowser.setParent((Composite)inAppBrowser); // hiding browserSim's browser by changing it's parent   
 		openWindowEvent.browser = inAppBrowser;  
 		browserSimParentComposite.layout();
+		
+		BrowserSimUtil.setCustomScrollbarStylesForWindows(inAppBrowser);
 	
 		inAppBrowser.addCloseWindowListener(new ExtendedCloseWindowListener() {
 			@Override
@@ -84,8 +86,6 @@ public class InAppBrowserLoader {
 			@Override
 			public void changed(LocationEvent event) {
 				if (event.top) {
-					IBrowser browser = (IBrowser) event.widget;
-					BrowserSimUtil.setCustomScrollbarStyles(browser);
 					rippleToolSuiteBrowser.execute("ripple('event').trigger('browser-stop');"); //  fire 'loadstop' event
 				}
 			}
