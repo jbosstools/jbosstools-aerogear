@@ -10,7 +10,10 @@
     <!-- android -->
     <platform name="android">
         <config-file target="config.xml" parent="/widget">
-    		<preference name="API_KEY" />
+            <feature name="variablePlugin">
+              <param name="android-package" value="com.variable.Plugin"/>
+            </feature> 
         </config-file>
     </platform>
+ 	<preference name="API_KEY" />
 </plugin>
