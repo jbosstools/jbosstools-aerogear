@@ -212,7 +212,7 @@ public class PBXFile {
 		if(file.endsWith(ARCHIVE_EXTENSION)){
 			return ARCHIVE;
 		}
-		return null;
+		return "unknown";
 	}
 
 }
