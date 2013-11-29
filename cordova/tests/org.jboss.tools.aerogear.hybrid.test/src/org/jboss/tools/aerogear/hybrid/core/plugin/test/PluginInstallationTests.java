@@ -1,14 +1,16 @@
 package org.jboss.tools.aerogear.hybrid.core.plugin.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -119,26 +121,26 @@ public class PluginInstallationTests {
 		fail("Replaced key is not found");
 	}
 	
-	@Test
-	public void gitInstallPluginTest() throws CoreException{
-		CordovaPluginManager pm = getCordovaPluginManager();
-		File repo = new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER);
-		pm.installPlugin(repo.toURI(), "test_tag", null,new FileOverwriteCallback() {
-			
-			@Override
-			public boolean isOverwiteAllowed(String[] files) {
-				return true;
-			}
-		}, new NullProgressMonitor());
-		IProject prj = project.getProject();
-		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_CHILDBROWSER);
-		assertNotNull(plgFolder);
-		assertTrue(plgFolder.exists());
-		IFile file = plgFolder.getFile("test.file");
-		assertTrue(file.exists());
-		IFile anotherFile = plgFolder.getFile("anothertest.file");
-		assertFalse(anotherFile.exists());
-		}
+//	@Test
+//	public void gitInstallPluginTest() throws CoreException{
+//		CordovaPluginManager pm = getCordovaPluginManager();
+//		File repo = new File(pluginsDirectroy,PLUGIN_DIR_CHILDBROWSER);
+//		pm.installPlugin(repo.toURI(), "test_tag", null,new FileOverwriteCallback() {
+//			
+//			@Override
+//			public boolean isOverwiteAllowed(String[] files) {
+//				return true;
+//			}
+//		}, new NullProgressMonitor());
+//		IProject prj = project.getProject();
+//		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_CHILDBROWSER);
+//		assertNotNull(plgFolder);
+//		assertTrue(plgFolder.exists());
+//		IFile file = plgFolder.getFile("test.file");
+//		assertTrue(file.exists());
+//		IFile anotherFile = plgFolder.getFile("anothertest.file");
+//		assertFalse(anotherFile.exists());
+//		}
 
 	@Test
 	public void listNoPluginsTest() throws CoreException{
