@@ -84,16 +84,6 @@ public class PluginInstallationTests {
 		IFolder plgFolder = prj.getFolder("/plugins/"+PLUGIN_ID_CHILDBROWSER);
 		assertNotNull(plgFolder);
 		assertTrue(plgFolder.exists());
-		WidgetModel model = WidgetModel.getModel(project.hybridProject());
-		Widget widget = model.getWidgetForRead();
-		List<Access> aces = widget.getAccesses();
-		int found =0;
-		for (Access access : aces) {
-			if("build.phonegap.com".equals(access.getOrigin()) ||
-					"s3.amazonaws.com".equals(access.getOrigin()))
-				found++;
-		}
-		assertEquals(2, found);
 	}
 	
 	@Test

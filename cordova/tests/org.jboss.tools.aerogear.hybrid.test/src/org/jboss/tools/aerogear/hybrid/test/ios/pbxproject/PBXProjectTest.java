@@ -292,8 +292,6 @@ public class PBXProjectTest {
 		PBXFile file = new PBXFile(testPath);
 		project.addToLibrarySearchPaths(file);
 		
-		System.out.print(project.getContent());
-
 		NSDictionary dict = (NSDictionary)ASCIIPropertyListParser.parse(project.getContent().getBytes());
 		NSDictionary objects = (NSDictionary)dict.objectForKey("objects");
 		HashMap<String, NSObject> hashmap =  objects.getHashMap();	
