@@ -38,7 +38,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -372,10 +371,15 @@ public class CordovaPluginManager {
 
 	private File getPluginHomeDirectory(CordovaPlugin plugin) throws CoreException{
 		IProject prj = this.project.getProject();
-		IPath path = prj.getLocation().append(PlatformConstants.DIR_PLUGINS).append(plugin.getId());
-		File f = path.toFile();
-		if(f.exists())
-			return f;
+		IFolder plugins = prj.getFolder(PlatformConstants.DIR_PLUGINS);
+		if(plugins.exists()){
+			IFolder pluginHome = plugins.getFolder(plugin.getId());
+			if(pluginHome.exists() && pluginHome.getLocation() != null ){
+				File f = pluginHome.getLocation().toFile();
+				if(f.exists())
+					return f;
+			}
+		}
 		throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Plugin folder does not exist"));
 	}
 	
