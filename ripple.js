@@ -33221,6 +33221,7 @@ function _initializeUI() {
                     })
                     .end()
                     .addClass("ui-box-open");
+                    node.find(".collapse-img").children(":first").attr("class", "ui-icon ui-icon-minus"); // show "-" image on the panel
                 }
             }
         }
@@ -33263,20 +33264,26 @@ function _initializeUI() {
             uiBoxToggleEngaged = true;
 
             var jNode = jQuery(this).parentsUntil(".ui-box"),
-                    pNode = jNode.parent(),
-                    isOpen = pNode.hasClass("ui-box-open");
+                pNode = jNode.parent(),
+                isOpen = pNode.hasClass("ui-box-open"),
+                collapseImg = jQuery(this).find(".collapse-img").children(":first");
 
             if (!isOpen) {
-                pNode.addClass("ui-box-open");
-            }
+                pNode.addClass("ui-box-open");  
+            } 
 
             jQuery(this).parent().next().toggle("blind", {}, 300, function () {
                 if (isOpen) {
                     pNode.removeClass("ui-box-open");
+                    collapseImg.attr('class', 'ui-icon ui-icon-plus'); // show "+" image on the panel
+                } else {
+                    collapseImg.attr('class', 'ui-icon ui-icon-minus'); // show "-" image on the panel
                 }
                 event.trigger("ApplicationState", [pNode]);
                 uiBoxToggleEngaged = false;
             });
+
+
         }
     });
 }

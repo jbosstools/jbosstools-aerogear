@@ -317,7 +317,15 @@ section.left { left: 0; }
     Panel UI */
 
 .collapse-handle {
-    padding: 5px 9px;
+    padding: 5px 7px;
+}
+
+.collapse-img {
+    float: left; 
+}
+
+.collapse-text {
+    margin-left: 25px;
 }
 
 .drag-handle:hover {
