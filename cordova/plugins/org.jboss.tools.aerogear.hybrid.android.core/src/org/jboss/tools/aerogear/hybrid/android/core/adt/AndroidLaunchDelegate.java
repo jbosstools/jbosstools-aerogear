@@ -87,11 +87,14 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// Start ADB Server
+		boolean runOnDevice = configuration.getAttribute(AndroidLaunchConstants.ATTR_IS_DEVICE_LAUNCH, false);
 		AndroidSDKManager sdk = new AndroidSDKManager();
-		sdk.killADBServer();
+		if(!runOnDevice){
+			sdk.killADBServer();
+		}
 		sdk.startADBServer();
 		
-		if(configuration.getAttribute(AndroidLaunchConstants.ATTR_IS_DEVICE_LAUNCH, false)){
+		if(runOnDevice){
 			String  serial = configuration.getAttribute(AndroidLaunchConstants.ATTR_DEVICE_SERIAL, (String)null);
 			Assert.isNotNull(serial);
 			List<AndroidDevice> devices = sdk.listDevices();
