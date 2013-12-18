@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test
 Bundle-SymbolicName: org.jboss.tools.aerogear.hybrid.test
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.jboss.tools.aerogear.hybrid.test.Activator
 Bundle-Vendor: JBoss by Red Hat
 Require-Bundle: org.eclipse.ui,
