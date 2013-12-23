@@ -155,6 +155,18 @@ section, header, footer, aside, nav { display: block; }
     display: none;
 }
 
+/* --- START Adding custom image to all "select" tag ---*/
+#platform-events-select, #version-select, #platform-select, 
+#settings-xhr-proxy, #theme-select, #device-settings-NetworkStatus.connectionType, 
+#device-settings-globalization.locale, #device-settings-globalization.firstDayOfWeek {
+  -webkit-appearance: button;
+  -webkit-user-select: none;
+  background-image: url(images/arrow-down.png);
+  background-position: 98% 50%;
+  background-repeat: no-repeat;
+  white-space: nowrap;
+}
+/* --- END Adding custom image to all "select" tag ---*/
 
 /* ------------------------------>
     Middle/Device Wrapper Section */
