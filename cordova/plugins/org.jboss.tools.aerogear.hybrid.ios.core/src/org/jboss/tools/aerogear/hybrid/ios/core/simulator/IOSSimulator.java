@@ -10,8 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.core.simulator;
 
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.directoryCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.toURL;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +20,8 @@ import java.net.URL;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
-import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.ExternalProcessUtility;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
 /**

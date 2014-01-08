@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.PlatformObject;
-import org.jboss.tools.aerogear.hybrid.core.CordovaEngine;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 
 public class CordovaPlugin extends PlatformObject{
 
@@ -27,7 +27,7 @@ public class CordovaPlugin extends PlatformObject{
 	private String license;
 	private String author;
 	private String keywords;
-	private List<CordovaEngine> supportedEngines;
+	private List<HybridMobileEngine> supportedEngines;
 	private String info;
 	private List<PluginJavaScriptModule> modules;
 	private IFolder folder;
@@ -88,9 +88,9 @@ public class CordovaPlugin extends PlatformObject{
 		this.keywords = keywords;
 	}
 
-	public void addSupportedEngine(CordovaEngine engine) {
+	public void addSupportedEngine(HybridMobileEngine engine) {
 		if (supportedEngines == null) {
-			supportedEngines = new ArrayList<CordovaEngine>();
+			supportedEngines = new ArrayList<HybridMobileEngine>();
 		}
 		supportedEngines.add(engine);
 	}

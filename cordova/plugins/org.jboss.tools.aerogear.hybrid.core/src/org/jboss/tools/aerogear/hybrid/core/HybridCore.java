@@ -199,6 +199,4 @@ final public class HybridCore implements BundleActivator, DebugOptionsListener {
 		return ExtensionPointProxy.getNativeExtensionPointProxy(NativeProjectBuilder.EXTENSION_POINT_ID, NativeProjectBuilder.class);
 	}
 	
-
-	
 }

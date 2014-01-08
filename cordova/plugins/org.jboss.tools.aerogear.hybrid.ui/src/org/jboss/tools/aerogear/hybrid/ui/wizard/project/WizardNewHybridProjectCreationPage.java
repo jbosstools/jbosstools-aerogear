@@ -32,6 +32,8 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
 	
 	public WizardNewHybridProjectCreationPage(String pageName) {
 		super(pageName);
+		setTitle("Create Hybrid Mobile Application Project");
+		setDescription("Create a hybrid mobile application using Apache Cordova for cross-platform mobile development");
 		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, IMAGE_WIZBAN));
 	}
 
@@ -67,13 +69,13 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
         	}
         });
         txtID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        
+   
 
         setPageComplete(validatePage());
         setErrorMessage(null);
         setMessage(null);
         Dialog.applyDialogFont(getControl());
-
-		
 	}
 	
 	@Override
@@ -83,13 +85,12 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
 			return superValidate;             // in order to avoid NPEs for the half initialized UI we do a partial
 		}                                     // until all UI components are in place.
 		
-
 		IStatus status1 = HybridProjectConventions.validateApplicationName(txtName.getText());
 		IStatus status2 = HybridProjectConventions.validateProjectID(txtID.getText());
 		IStatus status = null;
 		
 		//Interested on ERROR and WARNINGS with 
-		//ERRORs getting prio over WARNINGs
+		//ERRORs getting priority over WARNINGs
 		if(status1.matches(IStatus.ERROR)){
 			status = status1;
 		}

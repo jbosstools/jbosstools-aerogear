@@ -8,39 +8,35 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.util;
+package org.jboss.tools.aerogear.hybrid.core.internal.util;
 
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 /**
- * A utility {@link IStreamListener} implementation that detects if 
- * given text is encountered on the stream.
+ * Helper listener which generates traces of the streams 
  * 
  * @author Gorkem Ercan
  *
  */
-public class TextDetectingStreamListener implements IStreamListener {
+public class TracingStreamListener implements IStreamListener {
+	
+	private IStreamListener delegate;
 
-	private boolean detected;
-	private String theText;
-	/**
-	 * Constructor that sets the text to be detected
-	 * 
-	 * @param text
-	 */
-	public TextDetectingStreamListener(String text ){
-		this.theText = text;
+	public TracingStreamListener(){
+		this(null);
 	}
 	
+	public TracingStreamListener(IStreamListener delegate){
+		this.delegate = delegate;
+	}
+
 	@Override
 	public void streamAppended(String text, IStreamMonitor monitor) {
-		if(text.contains(theText)){
-			detected = true;
+		HybridCore.trace(text);
+		if(delegate != null){
+			delegate.streamAppended(text, monitor);
 		}
-	}
-	
-	public boolean isTextDetected(){
-		return detected;
 	}
 
 }

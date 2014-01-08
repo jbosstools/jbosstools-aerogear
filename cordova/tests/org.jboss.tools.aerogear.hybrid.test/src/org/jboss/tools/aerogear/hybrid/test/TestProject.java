@@ -16,6 +16,7 @@ import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.jboss.tools.aerogear.hybrid.ui.wizard.project.HybridProjectCreator;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -34,7 +35,8 @@ public class TestProject {
 	public TestProject(){
 		HybridProjectCreator projectCreator = new HybridProjectCreator();
 		try {
-			projectCreator.createProject(PROJECT_NAME, null, APPLICATION_NAME, APPLICATION_ID, new NullProgressMonitor());
+			CordovaEngineProvider engineProvider = new CordovaEngineProvider();
+			projectCreator.createProject(PROJECT_NAME, null, APPLICATION_NAME, APPLICATION_ID, engineProvider.createEngine("3.1.0"),new NullProgressMonitor());
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}

@@ -10,11 +10,12 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.platform;
 
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.directoryCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.toURL;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -25,6 +26,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.osgi.framework.Bundle;
@@ -82,7 +85,20 @@ public abstract class AbstractProjectGeneratorDelegate {
 				throw new CoreException(new Status(IStatus.ERROR,HybridCore.PLUGIN_ID, "Can not create the destination directory for project generation at "+generationRoot.toString() ));
 			}
 			monitor.beginTask("Generate Native Project for "+this.getProjectName(), 50);
-			generateNativeFiles();
+			HybridProject hybridProject = HybridProject.getHybridProject(getProject());
+			HybridMobileEngine engine = hybridProject.getActiveEngine();
+			List<String> platforms= engine.getPlatforms();
+			if(!platforms.contains(getTargetShortName())){
+				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, 
+						"Active Hybrid Mobile Engine does not support " + getTargetShortName() + " please add platform to the engine")); 
+			}
+			
+			HybridMobileTemplateResolver resolver = engine.getPlatformTemplateResolver(getTargetShortName());
+			if(resolver == null ){
+				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Hybrid Mobile Engine does not support " + getTargetShortName() + " or can not be created"));
+			}
+			resolver.initialize(hybridProject);
+			generateNativeFiles(resolver);
 			monitor.worked(10);
 			IFolder folder = getProject().getFolder("/"+PlatformConstants.DIR_WWW);
 			if ( !folder.exists() ){
@@ -100,7 +116,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 				directoryCopy(folder.getLocationURI().toURL() , toURL(targetWWW));
 			}
 			monitor.worked(10);
-			replaceCordovaPlatformFiles();
+			replaceCordovaPlatformFiles(resolver);
 			completeCordovaPluginInstallations(monitor);
 		}
 		catch (IOException e) {
@@ -133,9 +149,11 @@ public abstract class AbstractProjectGeneratorDelegate {
 	 * Platform implementations should generate native project files 
 	 * and the Cordova Library. This method is called before moving the 
 	 * web artifacts in www directory.
+	 * 
+	 * @param resolver to be used to retrieve engine files.
 	 * @throws IOException
 	 */
-	protected abstract void generateNativeFiles() throws CoreException;
+	protected abstract void generateNativeFiles(HybridMobileTemplateResolver resolver) throws CoreException;
 	
 	/**
 	 * Returns the short name to be used for defining the target platform 
@@ -152,9 +170,10 @@ public abstract class AbstractProjectGeneratorDelegate {
 	 * on the generated project to give platform implementation a chance to replace 
 	 * platform specific Apache Cordova artifacts such as the cordova.js
 	 *  
+	 * @param resolver to be used to retrieve engine files.
 	 * @throws IOException
 	 */
-	protected abstract void replaceCordovaPlatformFiles() throws IOException; 
+	protected abstract void replaceCordovaPlatformFiles(HybridMobileTemplateResolver resolver) throws IOException; 
 	
 	/**
 	 * Returns the platform specific location of the www directory. 

@@ -34,9 +34,9 @@ import javax.xml.xpath.XPathFactory;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.jboss.tools.aerogear.hybrid.core.CordovaEngine;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.util.XMLUtil;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -221,7 +221,7 @@ public class CordovaPluginXMLHelper {
 		for (int i = 0; i < engineNodes.getLength(); i++) {
 			Node engineNode = engineNodes.item(i);
 
-			CordovaEngine engine = new CordovaEngine();
+			HybridMobileEngine engine = new HybridMobileEngine();
 			engine.setName(getAttributeValue(engineNode, PLGN_PROPERTY_NAME));
 			engine.setVersion(getAttributeValue(engineNode, PLGN_PROPERTY_VERSION));
 			plugin.addSupportedEngine(engine);

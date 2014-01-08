@@ -1,7 +1,7 @@
 package org.jboss.tools.aerogear.hybrid.core.test;
 
 import static org.junit.Assert.*;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.*;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.*;
 
 import java.io.BufferedReader;
 import java.io.File;

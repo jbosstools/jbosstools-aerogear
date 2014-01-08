@@ -31,12 +31,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	
 	private IWizardPage pageOne;
+	private EngineConfigurationPage pageTwo;
 
 	public NewHybridProjectWizard() {
 		setWindowTitle("Hybrid Mobile (Cordova) Application Project");
@@ -56,6 +58,7 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 					InterruptedException {
 				HybridProjectCreator creator = new HybridProjectCreator();
 				WizardNewHybridProjectCreationPage page = (WizardNewHybridProjectCreationPage)pageOne;
+				EngineConfigurationPage enginePage = (EngineConfigurationPage)pageTwo;
 				try {
 					URI location = null;
 					if( !page.useDefaults() ){
@@ -63,7 +66,8 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 					}
 					String appName = page.getApplicationName();
 					String appID = page.getApplicationID();
-					creator.createProject(page.getProjectName(), location ,appName, appID, monitor);
+					HybridMobileEngine engine = enginePage.getSelectedEngine();
+					creator.createProject(page.getProjectName(), location ,appName, appID, engine, monitor);
 					openAndSelectConfigFile();
 					
 					} catch (CoreException e) {
@@ -105,9 +109,9 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	public void addPages() {
 		super.addPages();
 		pageOne = new WizardNewHybridProjectCreationPage(getWindowTitle());
-		pageOne.setTitle("Create Hybrid Mobile Application Project");
-		pageOne.setDescription("Create a hybrid mobile application using Apache Cordova for cross-platform mobile development");
 		addPage( pageOne );
+		pageTwo = new EngineConfigurationPage("Configure Engine");
+		addPage( pageTwo);
 	}
 
 }

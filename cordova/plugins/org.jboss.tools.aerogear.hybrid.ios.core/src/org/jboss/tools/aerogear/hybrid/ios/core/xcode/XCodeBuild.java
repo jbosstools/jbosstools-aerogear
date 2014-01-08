@@ -24,9 +24,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.ExternalProcessUtility;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.TextDetectingStreamListener;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractNativeBinaryBuildDelegate;
-import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
-import org.jboss.tools.aerogear.hybrid.core.util.TextDetectingStreamListener;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants;
 

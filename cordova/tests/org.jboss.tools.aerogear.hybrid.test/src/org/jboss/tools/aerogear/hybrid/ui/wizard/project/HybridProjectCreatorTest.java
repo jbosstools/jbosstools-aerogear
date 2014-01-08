@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -34,6 +35,7 @@ public class HybridProjectCreatorTest {
 	private static final String PROJECT_NAME = "TestProject";
 	private static final String APP_NAME = "Test App";
 	private static final String APP_ID = "Test.id";
+	private static final String CORDOVA_ENGINE_VER = "3.1.0";
 
 
 	private IProject getTheProject() {
@@ -45,7 +47,8 @@ public class HybridProjectCreatorTest {
 	@BeforeClass
 	public static void createTestProject() throws CoreException{
 		HybridProjectCreator creator = new HybridProjectCreator();
-		creator.createProject(PROJECT_NAME, null, APP_NAME, APP_ID, new NullProgressMonitor());
+		CordovaEngineProvider engineProvider = new CordovaEngineProvider();
+		creator.createProject(PROJECT_NAME, null, APP_NAME, APP_ID, engineProvider.createEngine(CORDOVA_ENGINE_VER),new NullProgressMonitor());
 	}
 
 	@Test
@@ -83,6 +86,12 @@ public class HybridProjectCreatorTest {
 		JsonObject object = el.getAsJsonObject();
 		assertEquals(APP_ID, object.get("id").getAsString());
 		assertEquals(APP_NAME, object.get("name").getAsString());
+		JsonElement engineEl = object.get("engine");
+		assertNotNull(engineEl);
+		assertTrue(engineEl.isJsonObject());
+		JsonObject engineObj = engineEl.getAsJsonObject();
+		assertEquals(CORDOVA_ENGINE_VER, engineObj.get("ver").getAsString());
+		assertEquals(CordovaEngineProvider.CORDOVA_ENGINE_ID, engineObj.get("id").getAsString());
 	}
 	
 	@Test

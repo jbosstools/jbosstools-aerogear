@@ -11,14 +11,28 @@
 package org.jboss.tools.aerogear.hybrid.core;
 
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngineManager;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Handle for the mobile hybrid project types 
@@ -30,6 +44,7 @@ public class HybridProject implements IAdaptable {
 
 	private IProject kernelProject;
 	private CordovaPluginManager pluginManager;
+	private HybridMobileEngineManager engineManager;
 	
 	private HybridProject(IProject project) {
 		this.kernelProject = project;
@@ -125,6 +140,33 @@ public class HybridProject implements IAdaptable {
 		return name;
 	}
 	
+	private HybridMobileEngineManager getHybridMobileEngineManager(){
+		if (this.engineManager == null ){
+			engineManager = new HybridMobileEngineManager(this);
+		}
+		return engineManager;
+	}
+	
+	/**
+	 * Returns the currently used {@link HybridMobileEngine} for this project.
+	 * If an engine can not be determined a default engine is returned.
+	 * @return
+	 */
+	public HybridMobileEngine getActiveEngine(){
+		return getHybridMobileEngineManager().getActiveEngine();
+	}
+	
+	/**
+	 * Updates the active engine for the project.
+	 * @param engine
+	 * @throws CoreException
+	 */
+	public void updateActiveEngine(HybridMobileEngine engine) throws CoreException{
+		Assert.isLegal(engine != null, "Engine can not be null" );
+		getHybridMobileEngineManager().updateEngine(engine);
+	}
+	
+
 	@Override
 	public boolean equals(Object obj) {
 		if(this.kernelProject == null )

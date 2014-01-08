@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
-import static org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants.*;
+import static org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants.DIR_DOT_CORDOVA;
+import static org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants.DIR_MERGES;
+import static org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants.DIR_PLUGINS;
+import static org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants.DIR_WWW;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -47,14 +46,13 @@ import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.internal.libraries.CordovaLibraryJsContainerInitializer;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.ConfigJSon;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
-import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.osgi.framework.Bundle;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 public class HybridProjectCreator {
 	
@@ -69,7 +67,7 @@ public class HybridProjectCreator {
 	 * @param monitor
 	 * @throws CoreException
 	 */
-	public void createProject( String projectName, URI location, String appName, String appID, IProgressMonitor monitor ) throws CoreException {
+	public void createProject( String projectName, URI location, String appName, String appID, HybridMobileEngine engine, IProgressMonitor monitor ) throws CoreException {
 		Assert.isNotNull(projectName, "Project name is null, can not create a project without a name");
 		if(monitor == null )
 			monitor = new NullProgressMonitor();
@@ -81,7 +79,7 @@ public class HybridProjectCreator {
 		
 		addCommonPaths(project, new SubProgressMonitor(monitor, 5));
 		addPlatformPaths(project, new SubProgressMonitor( monitor, 5));
-		addCommonFiles(project, appName, appID,new SubProgressMonitor(monitor, 5));
+		addConfigJSon(project, appName, appID, engine, new SubProgressMonitor(monitor, 5));
 		addTemplateFiles(project, new SubProgressMonitor(monitor, 5));
 		setUpJavaScriptProject(monitor, project);
 		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
@@ -135,30 +133,12 @@ public class HybridProjectCreator {
 	}
 
 
-	private void addCommonFiles(IProject project, String applicationName, String applicationID, IProgressMonitor monitor) throws CoreException{
-		IFolder folder = project.getFolder(DIR_DOT_CORDOVA);
-		if(folder != null && folder.exists()){
-			JsonObject obj = new JsonObject();
-			obj.addProperty("id", applicationID);
-			obj.addProperty("name", applicationName);
-			Gson gson = new Gson();
-			String json = gson.toJson(obj);
-			IFile file = folder.getFile("config.json");
-			InputStream stream = null;
-			try {
-				stream = new ByteArrayInputStream(json.getBytes("utf-8"));
-				file.create(stream,true,monitor);
-			} catch (UnsupportedEncodingException e) {
-				HybridUI.log(IStatus.ERROR, "Error while persisting config.json", e);
-			}
-			finally{
-				if(stream !=null){
-						try { stream.close();
-						} catch (IOException e) {/*unhandled*/ }
-				}
-				monitor.done();
-			}
-		}
+	private void addConfigJSon(IProject project, String applicationName, String applicationID, HybridMobileEngine engine, IProgressMonitor monitor) throws CoreException{
+		ConfigJSon configJson = new ConfigJSon();
+		configJson.setId(applicationID);
+		configJson.setName(applicationName);
+		configJson.setEngineInfo(engine);
+		configJson.persist(project);
 	}
 
 

@@ -21,18 +21,25 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.tools.aerogear.hybrid.cordova;bundle-version="2.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.jboss.tools.aerogear.hybrid.core,
+Export-Package: com.github.zafarkhaja.semver;x-friends:="org.jboss.tools.aerogear.hybrid.ui",
+ com.github.zafarkhaja.semver.expr;x-friends:="org.jboss.tools.aerogear.hybrid.ui",
+ com.github.zafarkhaja.semver.util;x-friends:="org.jboss.tools.aerogear.hybrid.ui",
+ org.jboss.tools.aerogear.hybrid.core,
  org.jboss.tools.aerogear.hybrid.core.config;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
+ org.jboss.tools.aerogear.hybrid.core.engine,
  org.jboss.tools.aerogear.hybrid.core.extensions,
  org.jboss.tools.aerogear.hybrid.core.internal.libraries;x-friends:="org.jboss.tools.aerogear.hybrid.ui",
+ org.jboss.tools.aerogear.hybrid.core.internal.util;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
  org.jboss.tools.aerogear.hybrid.core.natures;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
  org.jboss.tools.aerogear.hybrid.core.platform;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core",
  org.jboss.tools.aerogear.hybrid.core.plugin,
  org.jboss.tools.aerogear.hybrid.core.plugin.actions,
  org.jboss.tools.aerogear.hybrid.core.plugin.registry,
- org.jboss.tools.aerogear.hybrid.core.util;x-friends:="org.jboss.tools.aerogear.hybrid.ios.core,org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.android.core"
+ org.jboss.tools.aerogear.hybrid.engine.internal.cordova;x-friends:="org.jboss.tools.aerogear.hybrid.ui"
 Bundle-Localization: plugin
 Import-Package: org.apache.http;version="4.1.4",
  org.apache.http.entity;version="4.1.4",
  org.eclipse.ecf.core.identity;version="3.2.0",
  org.eclipse.ui.services
+Bundle-ClassPath: lib/java-semver-0.8.0-20131230.170230-3.jar,
+ .

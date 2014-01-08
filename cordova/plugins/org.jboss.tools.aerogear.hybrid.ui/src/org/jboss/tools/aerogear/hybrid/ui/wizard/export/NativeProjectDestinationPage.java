@@ -23,6 +23,8 @@ import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator.ProjectGeneratorContentProvider;
+import org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator.ProjectGeneratorLabelProvider;
 
 public class NativeProjectDestinationPage extends BaseExportWizardDestinationPage implements IOverwriteQuery{
 	

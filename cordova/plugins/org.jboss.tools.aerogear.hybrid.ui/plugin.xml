@@ -143,4 +143,17 @@
         </adapter>
      </factory>
   </extension>
+  <extension
+        point="org.eclipse.ui.propertyPages">
+     <page
+           class="org.jboss.tools.aerogear.hybrid.ui.internal.properties.EnginePropertyPage"
+           id="org.jboss.tools.aerogear.hybrid.ui.internal.properties.enginePropertyPage"
+           name="Hybrid Mobile Engine" >
+        <enabledWhen>
+          <adapt type="org.eclipse.core.resources.IProject">
+                  <test property="org.eclipse.core.resources.projectNature" value="org.jboss.tools.aerogear.hybrid.core.HybridAppNature"/>
+             </adapt>    
+        </enabledWhen>
+     </page>
+  </extension>
 </plugin>

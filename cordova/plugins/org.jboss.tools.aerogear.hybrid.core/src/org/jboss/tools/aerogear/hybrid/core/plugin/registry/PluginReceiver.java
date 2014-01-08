@@ -9,8 +9,8 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
-import org.jboss.tools.aerogear.hybrid.core.util.FileUtils;
-import org.jboss.tools.aerogear.hybrid.core.util.TarException;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.TarException;
 
 /*******************************************************************************
  * Copyright (c) 2013 Red Hat, Inc.

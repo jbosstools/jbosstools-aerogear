@@ -10,28 +10,27 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.core.xcode;
 
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.fileCopy;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.templatedFileCopy;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.directoryCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.fileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.templatedFileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.toURL;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
-import org.osgi.framework.Bundle;
 
 import com.dd.plist.ASCIIPropertyListParser;
 import com.dd.plist.NSDictionary;
@@ -50,7 +49,7 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 	
 	@Override
-	protected void generateNativeFiles() throws CoreException{
+	protected void generateNativeFiles(HybridMobileTemplateResolver resolver) throws CoreException{
 		
 		try{
 			HybridProject hybridProject = HybridProject.getHybridProject(getProject());
@@ -59,55 +58,91 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			}
 
 			File destinationDir = getDestination();
+			Path destinationPath = new Path(destinationDir.toString());
 			
 			String name = hybridProject.getBuildArtifactAppName();
+			IPath prjPath = destinationPath.append(name);
 			
-			File prjdir = new File(destinationDir, name);
+			File prjdir = prjPath.toFile();
 			if( !prjdir.exists() ){//create the project directory
 				prjdir.mkdirs();
 			}
-			directoryCopy(getTemplateFile("/templates/ios/project/__TESTING__"), toURL(prjdir)  );		
-			File cordovaScriptDir = new File(destinationDir,"cordova");
-			directoryCopy(getTemplateFile("/templates/ios/scripts/cordova"), toURL(cordovaScriptDir));
-			File wwwwCopyScript = new File(cordovaScriptDir, "lib/copy-www-build-step.sh");
+			
+			// /${project_name}
+			directoryCopy(resolver.getTemplateFile(prjPath.makeRelativeTo(destinationPath)), toURL(prjdir));		
+			
+			// cordova
+			IPath cordovaScriptPath = destinationPath.append("cordova");
+			directoryCopy(resolver.getTemplateFile(cordovaScriptPath.makeRelativeTo(destinationPath)), 
+					toURL(cordovaScriptPath.toFile()));
+			
+			File wwwwCopyScript = cordovaScriptPath.append("lib").append("copy-www-build-step.sh").toFile();
 			if(wwwwCopyScript.exists()){
 				wwwwCopyScript.setExecutable(true);
 			}
-			directoryCopy(getTemplateFile("/templates/ios/project/__TESTING__.xcodeproj"), toURL(new File(destinationDir, name+".xcodeproj")));	
+			
+			
 			
 			HashMap<String, String > values = new HashMap<String, String>();
 			values.put("__TESTING__", name);
 			values.put("--ID--", hybridProject.getAppName());
 			
-			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/__TESTING__-Info.plist"), 
-					toURL(new File(prjdir, name+"-Info.plist")), 
+			// /${project_name}/${project_name}-Info.plist
+			IPath templatePath = prjPath.append(name+"-Info.plist");
+			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)), 
+					toURL(templatePath.toFile()), 
 					values);
-			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/__TESTING__-Prefix.pch"),
-					toURL(new File(prjdir, name+"-Prefix.pch")),
-					values);
-			
-			
-			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__.xcodeproj/project.pbxproj"),
-					toURL(new File(destinationDir, name+".xcodeproj/project.pbxproj")), 
-					values);
-			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/Classes/AppDelegate.h"),
-					toURL(new File(prjdir, "/Classes/AppDelegate.h")),
-					values);
-			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/Classes/AppDelegate.m"),
-					toURL(new File(prjdir, "/Classes/AppDelegate.m")),
-					values);
-			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/Classes/MainViewController.h"),
-					toURL(new File(prjdir, "/Classes/MainViewController.h")),
-					values);			
-			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/Classes/MainViewController.m"),
-					toURL(new File(prjdir, "/Classes/MainViewController.m")),
-					values);
-			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/main.m"),
-					toURL(new File(prjdir, "/main.m")),
+			// /${project_name}/${project_name}-Prefix.pch
+			templatePath = prjPath.append(name+"-Prefix.pch");
+			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+					toURL(templatePath.toFile()),
 					values);
 			
-			generateCordovaLib();
-			updateCordovaSubProjectPath(new File(destinationDir, name+".xcodeproj/project.pbxproj"), "CordovaLib/CordovaLib.xcodeproj", "<group>");
+			// /${project_name}.xcodeproj/project.pbxproj
+			IPath xcodeprojDirPath = destinationPath.append(name+".xcodeproj");
+			File xcodeDir = xcodeprojDirPath.toFile();//create the xcodeproj folder first
+			if(!xcodeDir.exists()){
+				xcodeDir.mkdir();
+			}
+			IPath xcodeprojectFilePath = xcodeprojDirPath.append("project.pbxproj");
+			File xcodeprojectFile = xcodeprojectFilePath.toFile();
+			templatedFileCopy(resolver.getTemplateFile(xcodeprojectFilePath.makeRelativeTo(destinationPath)),
+					toURL(xcodeprojectFile), 
+					values);
+			
+			// /${project_name}/Classes/AppDelegate.h
+			IPath classesPath = prjPath.append("Classes");
+			templatePath = classesPath.append("AppDelegate.h");
+			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+					toURL(templatePath.toFile()),
+					values);
+			// /${project_name}/Classes/AppDelegate.m
+			templatePath = classesPath.append("AppDelegate.m");
+			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+					toURL(templatePath.toFile()),
+					values);
+			// /${project_name}/Classes/MainViewController.h
+			templatePath = classesPath.append("MainViewController.h");
+			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+					toURL(templatePath.toFile()),
+					values);
+
+			// /${project_name}/Classes/MainViewController.h
+			templatePath = classesPath.append("MainViewController.m");
+			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+					toURL(templatePath.toFile()),
+					values);
+			// /${project_name}/main.m
+			templatePath = prjPath.append("main.m");
+			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+					toURL(templatePath.toFile()),
+					values);
+			
+			//CordovaLib	
+			IPath cordovaLibDirectory = getCordovaLibPath();
+			directoryCopy(resolver.getTemplateFile(cordovaLibDirectory.makeRelativeTo(destinationPath)), toURL(cordovaLibDirectory.toFile()));
+
+			updateCordovaSubProjectPath(xcodeprojectFile, "CordovaLib/CordovaLib.xcodeproj", "<group>");
 		
 			//iOS config.xml needs to be copied outside www to be used
 			File configxml = getProject().getFile(PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG).getLocation().toFile();
@@ -147,34 +182,24 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			throw new CoreException(new Status(IStatus.ERROR, IOSCore.PLUGIN_ID, "Error updatign CordovaLib subproject", e));
 		}
 	}
-
-	private File generateCordovaLib() throws IOException{
-		File cordovaLibDirectory = new File(getDestination(),"CordovaLib");
-		if ( !cordovaLibDirectory.exists() ){
-			directoryCopy(getTemplateFile("/templates/ios/CordovaLib"), toURL(new File(getDestination(),"CordovaLib")));
-		}
-		return cordovaLibDirectory;
-	}
 	
+	private IPath getCordovaLibPath(){
+		return new Path(getDestination().toString()).append("CordovaLib");
+	}
+
 	@Override
-	protected void replaceCordovaPlatformFiles() throws IOException{
-		File cordovaLib = generateCordovaLib();
-		File cordova = new File(cordovaLib,"cordova.ios.js");
+	protected void replaceCordovaPlatformFiles(HybridMobileTemplateResolver resolver) throws IOException{
+		IPath cordovaLibPath = getCordovaLibPath();
+		File cordova = cordovaLibPath.append("cordova.ios.js").toFile();
 		if(!cordova.exists()){//later versions no longer have cordova.ios.js in the distro
-			cordova = new File(cordovaLib,"cordova.js");
+			cordova = cordovaLibPath.append(PlatformConstants.FILE_JS_CORDOVA).toFile();
 		}
-		fileCopy(toURL(cordova), toURL(new File(getPlatformWWWDirectory(), "cordova.js")));
-		
+		fileCopy(toURL(cordova), toURL(new File(getPlatformWWWDirectory(), PlatformConstants.FILE_JS_CORDOVA)));
 	}
 
 	@Override
 	protected File getPlatformWWWDirectory() {
 		return XCodeProjectUtils.getPlatformWWWDirectory(getDestination());
-	}
-	
-	private URL getTemplateFile(String path){
-		Bundle bundle = CordovaLibrarySupport.getContext().getBundle();
-		return bundle.getEntry(path);
 	}
 
 }

@@ -28,8 +28,8 @@ import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectConventions;
-import org.jboss.tools.aerogear.hybrid.core.util.ExternalProcessUtility;
-import org.jboss.tools.aerogear.hybrid.core.util.TextDetectingStreamListener;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.ExternalProcessUtility;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.TextDetectingStreamListener;
 
 /**
  * Wrapper around the Android CommandLine tools.

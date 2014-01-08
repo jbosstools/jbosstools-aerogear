@@ -17,16 +17,14 @@ import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_VALUES;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.DIR_XML;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.FILE_JAR_CORDOVA;
-import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.FILE_XML_ANDROIDMANIFEST;
 import static org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants.FILE_XML_STRINGS;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.directoryCopy;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.fileCopy;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.templatedFileCopy;
-import static org.jboss.tools.aerogear.hybrid.core.util.FileUtils.toURL;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.directoryCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.fileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.templatedFileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.toURL;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,20 +48,20 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
-import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
-import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -81,7 +79,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 
 	@Override
-	protected void generateNativeFiles() throws CoreException {
+	protected void generateNativeFiles(HybridMobileTemplateResolver resolver) throws CoreException {
 		
 		AndroidSDKManager sdkManager = new AndroidSDKManager();
 		
@@ -97,6 +95,8 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 
 		
 		AndroidSDK target = selectTarget(sdkManager);
+		File destinationDir = getDestination();
+		IPath destinationPath = new Path(destinationDir.toString());
 		if(getDestination().exists()){
 			try {//Clean the android directory to avoid and "Error:" message 
 				 // from the command line tools for using update. Otherwise all create
@@ -109,23 +109,26 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		
 		sdkManager.createProject(target, name, getDestination(),name, packageName, new NullProgressMonitor());
 		
+		
 		try{
-			File libsDir = new File(getDestination(),DIR_LIBS);
-			//Move cordova library to libs
-			URL sourcs = getTemplateFile("/templates/android/cordova.jar");
-			URL dests = toURL(new File(libsDir, FILE_JAR_CORDOVA ));
- 			fileCopy(sourcs, dests);
+			IPath cordovaJarPath = destinationPath.append(DIR_LIBS).append(FILE_JAR_CORDOVA);
+			//Move cordova library to /libs/cordova.jar
+ 			fileCopy(resolver.getTemplateFile(cordovaJarPath.makeRelativeTo(destinationPath)), toURL(cordovaJarPath.toFile()));
  			
-			directoryCopy(getTemplateFile("/templates/android/project/res/"),
-					toURL(new File(getDestination(), DIR_RES )));
+ 			
+ 			// //res
+ 			IPath resPath = destinationPath.append(DIR_RES);
+			directoryCopy(resolver.getTemplateFile(resPath.makeRelativeTo(destinationPath)),
+					toURL(resPath.toFile()));
 			
 			IFile configFile = getProject().getFile(PlatformConstants.DIR_WWW+ "/" + PlatformConstants.FILE_XML_CONFIG);
-			File xmldir = new File(getDestination(), DIR_RES + File.separator + DIR_XML +File.separator);
+			IPath xmlPath = resPath.append(DIR_XML);
+			File xmldir = xmlPath.toFile();
 			if( !xmldir.exists() ){//only config.xml uses xml 
 				xmldir.mkdirs();   //directory make sure it is created
 			}
 			fileCopy(toURL(configFile.getLocation().toFile()), 
-					toURL(new File(xmldir, PlatformConstants.FILE_XML_CONFIG)));
+					toURL(xmlPath.append(PlatformConstants.FILE_XML_CONFIG).toFile()));
 			
 			updateAppName(hybridProject.getAppName());
 			
@@ -136,13 +139,16 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 			values.put("__ACTIVITY__", name);
 			values.put("__APILEVEL__", Integer.toString(target.getApiLevel()));
 			
-			templatedFileCopy(getTemplateFile("/templates/android/project/Activity.java"), 
-					toURL(new File(getDestination(), File.separator+DIR_SRC+ File.separator+ 
-							packageName.replace('.', File.separatorChar)+File.separator+name+".java")),
+			// /AndroidManifest.xml
+			IPath andrManifestPath = destinationPath.append("AndroidManifest.xml");
+			templatedFileCopy(resolver.getTemplateFile(andrManifestPath.makeRelativeTo(destinationPath)), 
+					toURL(andrManifestPath.toFile()),
 					values);
-			templatedFileCopy(getTemplateFile("/templates/android/project/AndroidManifest.xml"), 
-					toURL(new File(getDestination(), FILE_XML_ANDROIDMANIFEST)), values);
-			
+			// /src/${package_dirs}/Activity.java
+			IPath activityPath = destinationPath.append(DIR_SRC).append(packageName.replace('.', '/')).append(name+".java");
+			templatedFileCopy(resolver.getTemplateFile(activityPath.makeRelativeTo(destinationPath)), 
+					toURL(activityPath.toFile()),
+					values);
 			}
 		catch(IOException e)
 		{
@@ -176,7 +182,8 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 
 	    try{
 	    	db = dbf.newDocumentBuilder();
-	    	File strings = new File(getDestination(),DIR_RES+File.separator+DIR_VALUES+File.separator+ FILE_XML_STRINGS);
+	    	IPath stringsPath = new Path(getDestination().toString()).append(DIR_RES).append(DIR_VALUES).append(FILE_XML_STRINGS);
+	    	File strings = stringsPath.toFile();
 	    	Document configDocument = db.parse( strings); 
 	    	XPath xpath = XPathFactory.newInstance().newXPath();
 	    	
@@ -219,17 +226,13 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 
 	@Override
-	protected void replaceCordovaPlatformFiles() throws IOException {
-		fileCopy(getTemplateFile("/templates/android/cordova.android.js"), 
-				toURL(new File(getPlatformWWWDirectory(), PlatformConstants.FILE_JS_CORDOVA )));
+	protected void replaceCordovaPlatformFiles(HybridMobileTemplateResolver resolver) throws IOException {
+		IPath cordovaJSPath = new Path(getPlatformWWWDirectory().toString()).append(PlatformConstants.FILE_JS_CORDOVA);
+		fileCopy(resolver.getTemplateFile(cordovaJSPath.makeRelativeTo(new Path(getDestination().toString()))), 
+				toURL(cordovaJSPath.toFile()));
 	}
 
-	private URL getTemplateFile(String path){
-		Bundle bundle = CordovaLibrarySupport.getContext().getBundle();
-		URL url = bundle.getEntry(path);
-		Assert.isNotNull(url, "No template file resolved for path "+path);
-		return url;
-	}
+
 	
 	@Override
 	protected File getPlatformWWWDirectory() {

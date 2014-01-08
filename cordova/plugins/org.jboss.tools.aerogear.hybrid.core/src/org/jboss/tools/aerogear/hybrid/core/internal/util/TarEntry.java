@@ -1,4 +1,4 @@
-package org.jboss.tools.aerogear.hybrid.core.util;
+package org.jboss.tools.aerogear.hybrid.core.internal.util;
 
 /**
  * Copied from org.eclipse.ui.internal.wizards.datatransfer.TarEntry.

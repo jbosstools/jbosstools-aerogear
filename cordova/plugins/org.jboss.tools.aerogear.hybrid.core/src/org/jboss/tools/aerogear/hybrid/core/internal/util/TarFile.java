@@ -1,4 +1,4 @@
-package org.jboss.tools.aerogear.hybrid.core.util;
+package org.jboss.tools.aerogear.hybrid.core.internal.util;
 
 import java.io.*;
 import java.util.Enumeration;

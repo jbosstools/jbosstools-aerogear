@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013,2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,12 +8,11 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.ui.wizard.export;
+package org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -36,15 +35,8 @@ public class ProjectGeneratorContentProvider implements IStructuredContentProvid
 	private List<ProjectGenerator> generators;
 
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		try {
-			generators = (List<ProjectGenerator>) newInput;
-		} catch (ClassCastException e) {
-			// Warn that something is wrong
-			Assert.isTrue( false, "input is not of correct type this content provider can only work with List<ProjectGenerator> type inputs");
-		}
 	}
 
 	@Override
