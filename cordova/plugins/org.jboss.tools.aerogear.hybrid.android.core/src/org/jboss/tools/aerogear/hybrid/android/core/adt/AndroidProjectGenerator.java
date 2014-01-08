@@ -170,7 +170,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		}
 		if( target == null ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, 
-					"Please install Android target" + REQUIRED_MIN_API_LEVEL+" Run `android` from your command-line to install/update any missing SDKs or tools."));
+					"Please install Android API " +REQUIRED_MIN_API_LEVEL +" or later. Use the Android SDK Manager to install or upgrade any missing SDKs to tools."));
 		}
 		return target;
 	}
