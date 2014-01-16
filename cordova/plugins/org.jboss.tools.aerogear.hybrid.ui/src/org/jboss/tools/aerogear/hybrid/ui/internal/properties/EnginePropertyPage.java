@@ -10,8 +10,11 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.internal.properties;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -26,6 +29,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPlugin;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.engine.AvailableCordovaEnginesSection;
 
 public class EnginePropertyPage extends PropertyPage {
@@ -71,7 +76,21 @@ public class EnginePropertyPage extends PropertyPage {
 			setErrorMessage("No engines have been selected");
 			return false;
 		}
-		
+		IStructuredSelection sel = (IStructuredSelection) engineSection.getSelection();
+		HybridMobileEngine engine = (HybridMobileEngine) sel.getFirstElement();
+		try {
+			List<CordovaPlugin> installedPlugins = getProject().getPluginManager().getInstalledPlugins();
+			for (CordovaPlugin cordovaPlugin : installedPlugins) {
+				IStatus status = cordovaPlugin.isEngineCompatible(engine);
+				if( !status.isOK())
+				{
+					setMessage(status.getMessage(), status.getSeverity());
+					return true;
+				}
+			}
+		} catch (CoreException e) {
+			HybridUI.log(IStatus.WARNING, "Error while checking engine and plug-in compatability ",  e);
+		}
 		setMessage(null);
 		setErrorMessage(null);
 		return true;

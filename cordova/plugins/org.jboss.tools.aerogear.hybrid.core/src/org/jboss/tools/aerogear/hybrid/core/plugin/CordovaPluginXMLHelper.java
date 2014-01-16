@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013,2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -35,7 +35,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -52,6 +51,8 @@ public class CordovaPluginXMLHelper {
 	public static final String DESCRIPTION = "description";
 	public static final String PLGN_PROPERTY_AUTHOR = "author";
 	public static final String PLGN_PROPERTY_VERSION = "version";
+	public static final String PLGN_PROPERTY_PLATFORM = "platform";
+	
 	public static final String PLGN_PROPERTY_ID = "id";
 
 	private static class PluginXMLNamespaceContext implements NamespaceContext{
@@ -75,6 +76,7 @@ public class CordovaPluginXMLHelper {
 			return document.lookupPrefix(namespaceURI);
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
 		public Iterator getPrefixes(String arg0) {
 			return null;
@@ -221,10 +223,10 @@ public class CordovaPluginXMLHelper {
 		for (int i = 0; i < engineNodes.getLength(); i++) {
 			Node engineNode = engineNodes.item(i);
 
-			HybridMobileEngine engine = new HybridMobileEngine();
-			engine.setName(getAttributeValue(engineNode, PLGN_PROPERTY_NAME));
-			engine.setVersion(getAttributeValue(engineNode, PLGN_PROPERTY_VERSION));
-			plugin.addSupportedEngine(engine);
+			String name = getAttributeValue(engineNode, PLGN_PROPERTY_NAME);
+			String version = getAttributeValue(engineNode, PLGN_PROPERTY_VERSION);
+			String platform = getAttributeValue(engineNode, PLGN_PROPERTY_PLATFORM);
+			plugin.addSupportedEngine(name, version, platform);
 		}
 		return plugin;
 	}
