@@ -36,16 +36,22 @@ import org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchCons
  *
  */
 public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
-	public static final String MIN_REQUIRED_VERSION = "4.6";
+	public static final String MIN_REQUIRED_VERSION = "4.6.0";
 	
 	private ILaunchConfiguration launchConfiguration;
 	
 	private class SDKListParser implements IStreamListener{
-		ArrayList<XCodeSDK> sdkList=new ArrayList<XCodeSDK>(5);
+		private StringBuffer buffer = new StringBuffer();
 		@Override
 		public void streamAppended(String text, IStreamMonitor monitor) {
+			buffer.append(text);
 			
-			if(text.indexOf("-sdk")>0){
+		}
+		
+		ArrayList<XCodeSDK> getSDKList(){
+			ArrayList<XCodeSDK> sdkList=new ArrayList<XCodeSDK>(5);
+			if(buffer.indexOf("-sdk")>0){
+				String text = buffer.toString();
 				text = text.replaceAll("[ a-zA-Z1-9.1-9]*:", "");
 				text = text.replaceAll("-sdk [a-z]*[0-9]*.[0-9]*", "");
 				String[] sdks = text.split("\n");
@@ -56,17 +62,23 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 					}
 				}
 			}
+			return sdkList;
 		}
 	}
 	
 	private class XCodeVersionParser implements IStreamListener{
-		String version;
+		private StringBuffer buffer = new StringBuffer();
+		
 		@Override
 		public void streamAppended(String text, IStreamMonitor monitor) {
-			if(text.toLowerCase().startsWith("xcode")){
-				version = text.substring("XCode".length()+1, text.indexOf('\n'));
-			}
+			buffer.append(text);
 		}
+		
+		public String getVersion(){
+			return buffer.substring("XCode".length()+1, buffer.indexOf("\n"));
+		}
+		
+		
 	}
 	
 	/**
@@ -84,7 +96,7 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 		SDKListParser parser = new SDKListParser();
 		processUtility.execSync("xcodebuild -showsdks ", 
 				null, parser, parser, new NullProgressMonitor(), null, null);
-		return parser.sdkList;
+		return parser.getSDKList();
 	}
 	
 	public String version() throws CoreException{
@@ -92,7 +104,7 @@ public class XCodeBuild extends AbstractNativeBinaryBuildDelegate{
 		XCodeVersionParser parser = new XCodeVersionParser();
 		processUtility.execSync("xcodebuild -version", 
 				null, parser, parser, new NullProgressMonitor(), null, null);
-		return parser.version;
+		return parser.getVersion();
 	}
 
 	@Override

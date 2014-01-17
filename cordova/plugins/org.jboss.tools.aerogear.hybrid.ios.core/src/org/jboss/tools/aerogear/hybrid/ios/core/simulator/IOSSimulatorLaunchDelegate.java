@@ -29,10 +29,14 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
+import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.jboss.tools.aerogear.hybrid.ios.core.xcode.XCodeBuild;
-import org.osgi.framework.Version;
+
+import com.github.zafarkhaja.semver.Version;
+import com.github.zafarkhaja.semver.util.UnexpectedElementException;
 /**
  * {@link ILaunchDelegate} for running the iOS simulator. This delegate is unusual 
  * because besides running the emulator it also generates and builds the cordova project.
@@ -42,6 +46,7 @@ import org.osgi.framework.Version;
  */
 public class IOSSimulatorLaunchDelegate implements
 		ILaunchConfigurationDelegate2 {
+	private static Version MIN_VERSION = Version.valueOf(XCodeBuild.MIN_REQUIRED_VERSION);
 
 	private File buildArtifact;
 	@Override
@@ -98,19 +103,19 @@ public class IOSSimulatorLaunchDelegate implements
 		XCodeBuild xcode = new XCodeBuild();
 		String version = xcode.version();
 		try{
-			Version minVersion = new Version(XCodeBuild.MIN_REQUIRED_VERSION);
-			Version v = Version.parseVersion(version);
-			if(v.compareTo(minVersion)<0){
+			Version v = Version.valueOf(version);
+			if(v.lessThan(MIN_VERSION)){
 				throw new CoreException(new Status(IStatus.ERROR, IOSCore.PLUGIN_ID,
-						"Hybrid mobile projects can only be run with XCode version "+ XCodeBuild.MIN_REQUIRED_VERSION +" or greater"));
+						NLS.bind("Hybrid mobile projects can only be run with XCode version {0} or greater", XCodeBuild.MIN_REQUIRED_VERSION )));
 			}
-		}catch (IllegalArgumentException e) {
+		}catch (UnexpectedElementException e) {
 			//We could not parse the version
 			//still let the build continue 
+			HybridCore.log(IStatus.WARNING, "Error parsing the xcode version. Version String is "+ version, e);
 			return true;
 		}
 
-		monitor.done();
+ 		monitor.done();
 		return true;
 	}
 	
