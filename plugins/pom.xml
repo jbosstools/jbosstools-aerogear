@@ -27,6 +27,7 @@
 		<module>org.jboss.tools.vpe.browsersim.browser</module>
 		<module>org.jboss.tools.vpe.browsersim.javafx.mock</module>
 		<module>org.jboss.tools.vpe.browsersim</module>
+		<module>org.jboss.tools.vpe.browsersim.debugger</module>
 		<module>org.jboss.tools.vpe.cordovasim.ripple</module>
 		<module>org.jboss.tools.vpe.cordovasim</module>
 		<module>org.jboss.tools.vpe.cordovasim.eclipse</module>
