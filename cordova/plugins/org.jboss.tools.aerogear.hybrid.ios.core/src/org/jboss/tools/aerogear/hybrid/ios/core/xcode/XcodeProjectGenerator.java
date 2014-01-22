@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.core.xcode;
 
+import static org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver.VAR_APP_NAME;
 import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.directoryCopy;
 import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.fileCopy;
 import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.templatedFileCopy;
@@ -69,7 +70,7 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			}
 			
 			// /${project_name}
-			directoryCopy(resolver.getTemplateFile(prjPath.makeRelativeTo(destinationPath)), toURL(prjdir));		
+			directoryCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME)),toURL(prjdir));		
 			
 			// cordova
 			IPath cordovaScriptPath = destinationPath.append("cordova");
@@ -89,12 +90,12 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			
 			// /${project_name}/${project_name}-Info.plist
 			IPath templatePath = prjPath.append(name+"-Info.plist");
-			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)), 
+			templatedFileCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME+"/"+VAR_APP_NAME+"-Info.plist")),
 					toURL(templatePath.toFile()), 
 					values);
 			// /${project_name}/${project_name}-Prefix.pch
 			templatePath = prjPath.append(name+"-Prefix.pch");
-			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+			templatedFileCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME+"/"+VAR_APP_NAME+"-Prefix.pch")),
 					toURL(templatePath.toFile()),
 					values);
 			
@@ -106,41 +107,41 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			}
 			IPath xcodeprojectFilePath = xcodeprojDirPath.append("project.pbxproj");
 			File xcodeprojectFile = xcodeprojectFilePath.toFile();
-			templatedFileCopy(resolver.getTemplateFile(xcodeprojectFilePath.makeRelativeTo(destinationPath)),
+			templatedFileCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME+".xcodeproj/project.pbxproj")),
 					toURL(xcodeprojectFile), 
 					values);
 			
 			// /${project_name}/Classes/AppDelegate.h
 			IPath classesPath = prjPath.append("Classes");
 			templatePath = classesPath.append("AppDelegate.h");
-			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+			templatedFileCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME+"/Classes/AppDelegate.h")),
 					toURL(templatePath.toFile()),
 					values);
 			// /${project_name}/Classes/AppDelegate.m
 			templatePath = classesPath.append("AppDelegate.m");
-			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+			templatedFileCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME+"/Classes/AppDelegate.m")),
 					toURL(templatePath.toFile()),
 					values);
 			// /${project_name}/Classes/MainViewController.h
 			templatePath = classesPath.append("MainViewController.h");
-			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+			templatedFileCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME+"/Classes/MainViewController.h")),
 					toURL(templatePath.toFile()),
 					values);
 
 			// /${project_name}/Classes/MainViewController.h
 			templatePath = classesPath.append("MainViewController.m");
-			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+			templatedFileCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME+"/Classes/MainViewController.m")),
 					toURL(templatePath.toFile()),
 					values);
 			// /${project_name}/main.m
 			templatePath = prjPath.append("main.m");
-			templatedFileCopy(resolver.getTemplateFile(templatePath.makeRelativeTo(destinationPath)),
+			templatedFileCopy(resolver.getTemplateFile(new Path(VAR_APP_NAME+"/main.m")),
 					toURL(templatePath.toFile()),
 					values);
 			
 			//CordovaLib	
 			IPath cordovaLibDirectory = getCordovaLibPath();
-			directoryCopy(resolver.getTemplateFile(cordovaLibDirectory.makeRelativeTo(destinationPath)), toURL(cordovaLibDirectory.toFile()));
+			directoryCopy(resolver.getTemplateFile(new Path("CordovaLib")), toURL(cordovaLibDirectory.toFile()));
 
 			updateCordovaSubProjectPath(xcodeprojectFile, "CordovaLib/CordovaLib.xcodeproj", "<group>");
 		

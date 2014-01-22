@@ -13,16 +13,15 @@ package org.jboss.tools.aerogear.hybrid.engine.internal.cordova;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.HybridProject;
-import org.jboss.tools.aerogear.hybrid.core.config.Widget;
-import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
 
@@ -34,6 +33,7 @@ public class AndroidTemplateResolver extends
 	public AndroidTemplateResolver(IPath libraryRoot) {
 		super(libraryRoot);
 		this.library = libraryRoot;
+		initFiles();
 	}
 
 	public static final String DIR_LIBS = "libs";
@@ -44,32 +44,14 @@ public class AndroidTemplateResolver extends
 	public static final String FILE_XML_ANDROIDMANIFEST = "AndroidManifest.xml";
 
 	HashMap<IPath, URL> files = new HashMap<IPath, URL>();
-
 	
-	@Override
-	public void initialize(HybridProject project) {
-		if(!files.isEmpty())
-			files.clear();
-		initFiles(project);
-	}
-	
-	private void initFiles(HybridProject project) {
-		String name = project.getBuildArtifactAppName();
-		String packageName;
-		try {
-			Widget widgetModel = WidgetModel.getModel(project).getWidgetForRead();
-			packageName = widgetModel.getId();
-		} catch (CoreException e) {
-			//Something is terribly wrong abort
-			return;
-		}
+	private void initFiles() {
 		IPath distroRoot = getSelectedDistroRoot();
 		IPath templatePrjRoot = distroRoot.append("bin/templates/project");
-		files.put(new Path(DIR_LIBS +"/" + FILE_JAR_CORDOVA), getEngineFile(distroRoot.append("framwework/cordova.jar")));
-		
+		files.put(new Path(DIR_LIBS +"/" + FILE_JAR_CORDOVA), getEngineFile(distroRoot.append("framwework/cordova.jar")));	
 		files.put(new Path(DIR_RES),getEngineFile(templatePrjRoot.append(DIR_RES)));
 		files.put(new Path(FILE_XML_ANDROIDMANIFEST), getEngineFile(templatePrjRoot.append(FILE_XML_ANDROIDMANIFEST)));
-		files.put(new Path(DIR_SRC).append(packageName.replace('.', '/')).append(name+".java"), 
+		files.put(new Path(DIR_SRC).append(VAR_PACKAGE_NAME.replace('.', '/')).append(VAR_APP_NAME+".java"), 
 				getEngineFile(templatePrjRoot.append("Activity.java")));
 		files.put(new Path("assets/www/cordova.js"), getEngineFile(distroRoot.append("framework/assets/www/cordova.js")));
 		
@@ -92,6 +74,23 @@ public class AndroidTemplateResolver extends
 	
 	private IPath getSelectedDistroRoot(){
 		return library;
+	}
+
+	@Override
+	public IStatus isLibraryConsistent() {
+		Iterator<IPath> paths = files.keySet().iterator();
+		while (paths.hasNext()) {
+			IPath key = paths.next();
+			URL url = files.get(key);
+			if(url != null  ){
+				File file = new File(url.getFile());
+				if( file.exists()){
+					continue;
+				}
+			}
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, NLS.bind("Library for Android platform is not compatible with this tool. File for path {0} is missing.",key.toString()));
+		}
+		return Status.OK_STATUS;
 	}
 
 

@@ -145,7 +145,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 					toURL(andrManifestPath.toFile()),
 					values);
 			// /src/${package_dirs}/Activity.java
-			IPath activityPath = destinationPath.append(DIR_SRC).append(packageName.replace('.', '/')).append(name+".java");
+			IPath activityPath = destinationPath.append(DIR_SRC).append(HybridMobileTemplateResolver.VAR_PACKAGE_NAME).append(HybridMobileTemplateResolver.VAR_APP_NAME+".java");
 			templatedFileCopy(resolver.getTemplateFile(activityPath.makeRelativeTo(destinationPath)), 
 					toURL(activityPath.toFile()),
 					values);

@@ -16,7 +16,11 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.AndroidTemplateResolver;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.IosTemplateResolver;
@@ -71,6 +75,21 @@ public class HybridMobileEngine{
 	
 	public List<String> getPlatforms(){
 		return Collections.unmodifiableList(platforms);
+	}
+	
+	/**
+	 * Checks if the underlying library compatible and 
+	 * support the platforms of this engine.
+	 * 
+	 * @return status of the library
+	 */
+	public IStatus isLibraryConsistent(){
+		List<String> pls = getPlatforms();
+		MultiStatus status = new MultiStatus(HybridCore.PLUGIN_ID, 0, "The library can not support this application",null);
+		for (String thePlatform : pls) {
+			status.add(getPlatformTemplateResolver(thePlatform).isLibraryConsistent());
+		}
+		return status;
 	}
 	
 	@Override

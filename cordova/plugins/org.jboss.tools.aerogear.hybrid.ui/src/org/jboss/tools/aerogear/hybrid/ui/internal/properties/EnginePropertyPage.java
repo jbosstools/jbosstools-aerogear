@@ -78,6 +78,11 @@ public class EnginePropertyPage extends PropertyPage {
 		}
 		IStructuredSelection sel = (IStructuredSelection) engineSection.getSelection();
 		HybridMobileEngine engine = (HybridMobileEngine) sel.getFirstElement();
+		IStatus consistentStatus = engine.isLibraryConsistent();
+		if(!consistentStatus.isOK()){
+			setMessage(consistentStatus.getMessage(),consistentStatus.getSeverity());
+			return consistentStatus.getSeverity() != IStatus.ERROR;
+		}
 		try {
 			List<CordovaPlugin> installedPlugins = getProject().getPluginManager().getInstalledPlugins();
 			for (CordovaPlugin cordovaPlugin : installedPlugins) {
@@ -85,7 +90,7 @@ public class EnginePropertyPage extends PropertyPage {
 				if( !status.isOK())
 				{
 					setMessage(status.getMessage(), status.getSeverity());
-					return true;
+					return status.getSeverity() != IStatus.ERROR;
 				}
 			}
 		} catch (CoreException e) {
