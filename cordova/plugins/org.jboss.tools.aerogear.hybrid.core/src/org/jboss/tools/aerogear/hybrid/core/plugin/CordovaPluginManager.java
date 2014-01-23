@@ -48,7 +48,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
-import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.XMLUtil;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPluginInstallationActionsFactory;
 import org.jboss.tools.aerogear.hybrid.core.platform.IPluginInstallationAction;
@@ -68,7 +68,7 @@ import com.google.gson.JsonPrimitive;
 
 
 /**
- * Manages the Cordova plugins for a project. 
+ * Manages the Cordova plug-ins for a project. 
  * 
  * @author Gorkem Ercan
  *
@@ -83,9 +83,9 @@ public class CordovaPluginManager {
 	}
 	
 	/**
-	 * Installs a Cordova plugin to {@link HybridProject} from directory.
-	 * A plugins installation is a two step process. This method triggers the 
-	 * first step where Cordova Plugins is installed to HybridProject. 
+	 * Installs a Cordova plug-in to {@link HybridProject} from directory.
+	 * A plug-ins installation is a two step process. This method triggers the 
+	 * first step where Cordova Plug-ins is installed to HybridProject. 
 	 * 
 	 * @see #completePluginInstallationsForPlatform(File, String)
 	 * @param directory
@@ -93,7 +93,7 @@ public class CordovaPluginManager {
 	 * @param monitor
 	 * @throws CoreException <ul>
 	 *<li>if plugin.xml is missing</li>
-	 *<li>if plugins directory is missing on the project</li>
+	 *<li>if plug-ins directory is missing on the project</li>
 	 *<li>if an error occurs during installation</li>
 	 *</ul>
 	 */
@@ -124,10 +124,10 @@ public class CordovaPluginManager {
 	}
 
 	/**
-	 * Installs a Cordova plugin from a git repository. 
+	 * Installs a Cordova plug-in from a git repository. 
 	 * This method delegates to {@link #installPlugin(File)} after cloning the
 	 * repository to a temporary location to complete the installation of the 
-	 * plugin. 
+	 * plug-in. 
 	 * <br/>
 	 * If commit is not null the cloned repository will be checked out to 
 	 * commit. 
@@ -171,7 +171,7 @@ public class CordovaPluginManager {
 		}
 	}
 	/**
-	 * Removes the plugin with given id
+	 * Removes the plug-in with given id
 	 * @param id
 	 * @param overwrite
 	 * @param monitor
@@ -203,7 +203,7 @@ public class CordovaPluginManager {
 	}
 	
 	/**
-	 * Completes the installation of all the installed plugins in this HybridProject 
+	 * Completes the installation of all the installed plug-ins in this HybridProject 
 	 * to the given platform project location. 
 	 * This installation involves modifying of necessary files and 
 	 * copying/generation of the others.
@@ -217,9 +217,9 @@ public class CordovaPluginManager {
 	 */
 	public void completePluginInstallationsForPlatform(File platformProjectLocation, String platform, FileOverwriteCallback overwrite, IProgressMonitor monitor) throws CoreException{
 		List<CordovaPlugin> plugins  = getInstalledPlugins();
-		ProjectGenerator generator = HybridCore.getPlatformProjectGenerator(platform);
+		PlatformSupport platformSupport = HybridCore.getPlatformSupport(platform);
 		for (CordovaPlugin cordovaPlugin : plugins) {
- 			completePluginInstallationToPlatform(cordovaPlugin, generator, platformProjectLocation, overwrite, monitor);
+ 			completePluginInstallationToPlatform(cordovaPlugin, platformSupport, platformProjectLocation, overwrite, monitor);
 		}
 	}
 	
@@ -235,10 +235,10 @@ public class CordovaPluginManager {
 	}
 	
 	/**
-	 * Checks if the given plugin with pluginId is installed for the project.
+	 * Checks if the given plug-in with pluginId is installed for the project.
 	 * 
 	 * @param pluginId
-	 * @return true if the plugin is installed
+	 * @return true if the plug-in is installed
 	 */
 	public boolean isPluginInstalled(String pluginId){
 		if(pluginId == null ) return false;
@@ -396,10 +396,10 @@ public class CordovaPluginManager {
 	 * 	
 	 */
 	private void completePluginInstallationToPlatform(CordovaPlugin plugin, 
-			ProjectGenerator generator, 
+			PlatformSupport platform, 
 			File platformProject, FileOverwriteCallback overwrite,
 			IProgressMonitor monitor) throws CoreException{
-		if(generator == null ) return;
+		if(platform == null ) return;
 			
 		File pluginHome = getPluginHomeDirectory(plugin);
 		File pluginFile = new File(pluginHome, PlatformConstants.FILE_XML_PLUGIN);
@@ -407,16 +407,16 @@ public class CordovaPluginManager {
 		//TODO: check  supported engines
 		ArrayList<IPluginInstallationAction> allActions = new ArrayList<IPluginInstallationAction>();
 		
-		Node node = getPlatformNode(doc, generator.getPlatformId());
+		Node node = getPlatformNode(doc, platform.getPlatformId());
 		if( node != null ){
-			AbstractPluginInstallationActionsFactory actionFactory = generator.getPluginInstallationActionsFactory(this.project.getProject(), 
+			AbstractPluginInstallationActionsFactory actionFactory = platform.getPluginInstallationActionsFactory(this.project.getProject(), 
 					pluginHome, platformProject);
 			allActions.addAll(getAssetActionsForPlatform(doc.getDocumentElement(),actionFactory ));// add common assets
 			allActions.addAll(getConfigFileActionsForPlatform(doc.getDocumentElement(), actionFactory)); // common config changes
-			allActions.addAll(getJSModuleActionsForPlatform(plugin, generator.getPlatformId(), actionFactory)); // add all js-module actions
+			allActions.addAll(getJSModuleActionsForPlatform(plugin, platform.getPlatformId(), actionFactory)); // add all js-module actions
 			//We do not need to create this file 
 			//with every plugin. TODO: find a better place
-			allActions.add(actionFactory.getCreatePluginJSAction(this.getCordovaPluginJSContent(generator.getPlatformId())));
+			allActions.add(actionFactory.getCreatePluginJSAction(this.getCordovaPluginJSContent(platform.getPlatformId())));
 			allActions.addAll(collectActionsForPlatform(node, actionFactory));
 		}
 		runActions(allActions,false,overwrite,monitor);
@@ -436,12 +436,12 @@ public class CordovaPluginManager {
 	}
 
 	private List<IPluginInstallationAction> collectAllConfigXMLActionsForSupporredPlatforms(Document doc){
-		List<ProjectGenerator> generators = HybridCore.getPlatformProjectGenerators();
+		List<PlatformSupport> platforms = HybridCore.getPlatformSupports();
 		ArrayList<IPluginInstallationAction> list = new ArrayList<IPluginInstallationAction>();
 		List<Node> nodes = new ArrayList<Node>();
 		nodes.add(doc.getDocumentElement());
-		for (ProjectGenerator projectGenerator : generators) {
-			Node platformNode = getPlatformNode(doc, projectGenerator.getPlatformId());
+		for (PlatformSupport platform : platforms) {
+			Node platformNode = getPlatformNode(doc, platform.getPlatformId());
 			if(platformNode != null)
 				nodes.add(platformNode);
 		}
@@ -469,12 +469,12 @@ public class CordovaPluginManager {
 	}
 	
 	private List<IPluginInstallationAction> collectVariablePreferencesForSupportedPlatforms(Document doc){
-		List<ProjectGenerator> generators = HybridCore.getPlatformProjectGenerators();
+		List<PlatformSupport> platforms = HybridCore.getPlatformSupports();
 		ArrayList<IPluginInstallationAction> list = new ArrayList<IPluginInstallationAction>();
 		List<Node> nodes = new ArrayList<Node>();
 		nodes.add(doc.getDocumentElement());
-		for (ProjectGenerator projectGenerator : generators) {
-			Node platformNode = getPlatformNode(doc, projectGenerator.getPlatformId());
+		for (PlatformSupport platform : platforms) {
+			Node platformNode = getPlatformNode(doc, platform.getPlatformId());
 			if(platformNode != null)
 				nodes.add(platformNode);
 		}

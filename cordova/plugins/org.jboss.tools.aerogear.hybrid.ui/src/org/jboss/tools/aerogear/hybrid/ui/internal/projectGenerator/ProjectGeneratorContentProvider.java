@@ -20,19 +20,19 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.services.IEvaluationService;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 /**
- * IStructuredContentProvider implementation for the {@link ProjectGenerator} extension point. 
+ * IStructuredContentProvider implementation for the {@link PlatformSupport} extension point. 
  * If a List of ProjectGenerators are passed to a ContentViewer this ProjectGenerator will use the 
- * input otherwise it will query the  {@link ProjectGenerator#EXTENSION_POINT_ID} for a list.
+ * input otherwise it will query the  {@link PlatformSupport#EXTENSION_POINT_ID} for a list.
  * 
  * @author Gorkem Ercan
  *
  */
 public class ProjectGeneratorContentProvider implements IStructuredContentProvider {
 
-	private List<ProjectGenerator> generators;
+	private List<PlatformSupport> platforms;
 
 
 	@Override
@@ -41,12 +41,12 @@ public class ProjectGeneratorContentProvider implements IStructuredContentProvid
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		if(generators == null ){
-			generators = HybridCore.getPlatformProjectGenerators();
+		if(platforms == null ){
+			platforms = HybridCore.getPlatformSupports();
 		}
-		ArrayList<ProjectGenerator> elements = new ArrayList<ProjectGenerator>();
+		ArrayList<PlatformSupport> elements = new ArrayList<PlatformSupport>();
 		IEvaluationService service = (IEvaluationService)PlatformUI.getWorkbench().getService(IEvaluationService.class);
-		for (ProjectGenerator generator : generators) {
+		for (PlatformSupport generator : platforms) {
 			try {
 				if(generator.isEnabled(service.getCurrentState())){
 					elements.add(generator);

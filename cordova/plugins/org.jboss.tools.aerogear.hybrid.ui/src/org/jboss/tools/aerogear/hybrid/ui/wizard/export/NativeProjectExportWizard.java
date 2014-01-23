@@ -27,7 +27,7 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
-import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
@@ -53,20 +53,20 @@ public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public boolean performFinish() {
-		List<ProjectGenerator>generators = pageOne.getSelectedPlatforms();
+		List<PlatformSupport>platforms = pageOne.getSelectedPlatforms();
 		
 		List<HybridProject> projects = pageOne.getSelectedProjects();
 		ArrayList<AbstractProjectGeneratorDelegate> delegates = new ArrayList<AbstractProjectGeneratorDelegate>();
 		
 		//Collect delegates
 		for (HybridProject project : projects) {
-			for (ProjectGenerator generator: generators) {
+			for (PlatformSupport platform: platforms) {
 				try{
-					AbstractProjectGeneratorDelegate dlg = generator.createDelegate(project.getProject(), new File(pageOne.getDestinationDirectory(),project.getProject().getName()));
+					AbstractProjectGeneratorDelegate dlg = platform.createDelegate(project.getProject(), new File(pageOne.getDestinationDirectory(),project.getProject().getName()));
 					delegates.add(dlg);
 					
 				}catch(CoreException e){
-					HybridCore.log(IStatus.ERROR, "Error creating project generator delegate for " +generator.getPlatform(), e);
+					HybridCore.log(IStatus.ERROR, "Error creating project generator delegate for " +platform.getPlatform(), e);
 				}
 			}
 		}

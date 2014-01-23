@@ -15,16 +15,14 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.AndroidTemplateResolver;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
-import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.IosTemplateResolver;
-
 
 public class HybridMobileEngine{
 	
@@ -52,19 +50,22 @@ public class HybridMobileEngine{
 		this.id = id;
 	}
 	
-	public HybridMobileTemplateResolver getPlatformTemplateResolver(String platformId){
+	public HybridMobileLibraryResolver getPlatformLibraryResolver(String platformId){
         Assert.isNotNull(platformId);
-		if(platformId.equals("ios")){
-			IPath libraryRoot = new Path(CordovaEngineProvider.getLibFolder().toString());
-			libraryRoot = libraryRoot.append("ios").append(getId()).append(getVersion());
-			return new IosTemplateResolver(libraryRoot, getVersion());
+        PlatformSupport platform = HybridCore.getPlatformSupport(platformId);
+        if(platform == null ) return null;
+        
+        HybridMobileLibraryResolver resolver;
+		try {
+			resolver = platform.getLibraryResolver();
+		} catch (CoreException e) {
+			HybridCore.log(IStatus.ERROR,"Library resolver creation error ", e);
+			return null;
 		}
-		if(platformId.equals("android")){
-			IPath libraryRoot = new Path(CordovaEngineProvider.getLibFolder().toString());
-			libraryRoot = libraryRoot.append("android").append(getId()).append(getVersion());
-			return new AndroidTemplateResolver(libraryRoot);
-		}
-		return null;
+		IPath libraryRoot = new Path(CordovaEngineProvider.getLibFolder().toString());
+		libraryRoot = libraryRoot.append(platformId).append(getId()).append(getVersion());
+        resolver.init(libraryRoot, getVersion());
+        return resolver;
 	}
 	
 	public void addPlatform(String platform) {
@@ -87,7 +88,7 @@ public class HybridMobileEngine{
 		List<String> pls = getPlatforms();
 		MultiStatus status = new MultiStatus(HybridCore.PLUGIN_ID, 0, "The library can not support this application",null);
 		for (String thePlatform : pls) {
-			status.add(getPlatformTemplateResolver(thePlatform).isLibraryConsistent());
+			status.add(getPlatformLibraryResolver(thePlatform).isLibraryConsistent());
 		}
 		return status;
 	}

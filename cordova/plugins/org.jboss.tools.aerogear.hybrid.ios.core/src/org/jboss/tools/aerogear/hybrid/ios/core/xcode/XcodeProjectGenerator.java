@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.core.xcode;
 
-import static org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver.VAR_APP_NAME;
+import static org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver.VAR_APP_NAME;
 import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.directoryCopy;
 import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.fileCopy;
 import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.templatedFileCopy;
@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
-import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
@@ -50,7 +50,7 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 	
 	@Override
-	protected void generateNativeFiles(HybridMobileTemplateResolver resolver) throws CoreException{
+	protected void generateNativeFiles(HybridMobileLibraryResolver resolver) throws CoreException{
 		
 		try{
 			HybridProject hybridProject = HybridProject.getHybridProject(getProject());
@@ -189,7 +189,7 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 
 	@Override
-	protected void replaceCordovaPlatformFiles(HybridMobileTemplateResolver resolver) throws IOException{
+	protected void replaceCordovaPlatformFiles(HybridMobileLibraryResolver resolver) throws IOException{
 		IPath cordovaLibPath = getCordovaLibPath();
 		File cordova = cordovaLibPath.append("cordova.ios.js").toFile();
 		if(!cordova.exists()){//later versions no longer have cordova.ios.js in the distro

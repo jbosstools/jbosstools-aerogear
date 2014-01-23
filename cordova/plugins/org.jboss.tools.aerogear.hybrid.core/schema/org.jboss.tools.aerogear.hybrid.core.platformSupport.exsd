@@ -20,7 +20,7 @@
       </annotation>
       <complexType>
          <sequence>
-            <element ref="generator"/>
+            <element ref="platform"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -49,12 +49,12 @@
       </complexType>
    </element>
 
-   <element name="generator">
+   <element name="platform">
       <complexType>
          <sequence minOccurs="0" maxOccurs="1">
             <element ref="enablement"/>
          </sequence>
-         <attribute name="delegate" type="string" use="required">
+         <attribute name="projectGenerator" type="string" use="required">
             <annotation>
                <documentation>
                   
@@ -93,6 +93,16 @@
                <documentation>
                   
                </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="libraryResolver" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver:"/>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>

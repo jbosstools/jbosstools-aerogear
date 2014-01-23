@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.engine.internal.cordova;
+package org.jboss.tools.aerogear.hybrid.android.core.adt;
 
 import java.io.File;
 import java.net.URL;
@@ -22,19 +22,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
 
-public class AndroidTemplateResolver extends
-		HybridMobileTemplateResolver {
-	
-	private IPath library;
-	
-	public AndroidTemplateResolver(IPath libraryRoot) {
-		super(libraryRoot);
-		this.library = libraryRoot;
-		initFiles();
-	}
+public class AndroidLibraryResolver extends
+		HybridMobileLibraryResolver {
 
 	public static final String DIR_LIBS = "libs";
 	public static final String DIR_RES = "res";
@@ -46,38 +38,28 @@ public class AndroidTemplateResolver extends
 	HashMap<IPath, URL> files = new HashMap<IPath, URL>();
 	
 	private void initFiles() {
-		IPath distroRoot = getSelectedDistroRoot();
-		IPath templatePrjRoot = distroRoot.append("bin/templates/project");
-		files.put(new Path(DIR_LIBS +"/" + FILE_JAR_CORDOVA), getEngineFile(distroRoot.append("framwework/cordova.jar")));	
+		Assert.isNotNull(libraryRoot, "Library resolver is not initialized. Call init before accessing any other functions.");
+		IPath templatePrjRoot = libraryRoot.append("bin/templates/project");
+		files.put(new Path(DIR_LIBS +"/" + FILE_JAR_CORDOVA), getEngineFile(libraryRoot.append("framwework/cordova.jar")));	
 		files.put(new Path(DIR_RES),getEngineFile(templatePrjRoot.append(DIR_RES)));
 		files.put(new Path(FILE_XML_ANDROIDMANIFEST), getEngineFile(templatePrjRoot.append(FILE_XML_ANDROIDMANIFEST)));
 		files.put(new Path(DIR_SRC).append(VAR_PACKAGE_NAME.replace('.', '/')).append(VAR_APP_NAME+".java"), 
 				getEngineFile(templatePrjRoot.append("Activity.java")));
-		files.put(new Path("assets/www/cordova.js"), getEngineFile(distroRoot.append("framework/assets/www/cordova.js")));
+		files.put(new Path("assets/www/cordova.js"), getEngineFile(libraryRoot.append("framework/assets/www/cordova.js")));
 		
 	}
 
 	@Override
 	public URL getTemplateFile(IPath destination) {
+		if(files.isEmpty()) initFiles();
 		Assert.isNotNull(destination);
 		Assert.isTrue(!destination.isAbsolute());
 		return files.get(destination);
 	}
-	
-	private URL getEngineFile(IPath path){
-		File file = path.toFile();
-		if(!file.exists()){
-			HybridCore.log(IStatus.ERROR, "missing Android engine file " + file.toString(), null );
-		}
-		return FileUtils.toURL(file);
-	}
-	
-	private IPath getSelectedDistroRoot(){
-		return library;
-	}
 
 	@Override
 	public IStatus isLibraryConsistent() {
+		if(files.isEmpty()) initFiles();
 		Iterator<IPath> paths = files.keySet().iterator();
 		while (paths.hasNext()) {
 			IPath key = paths.next();
@@ -92,6 +74,13 @@ public class AndroidTemplateResolver extends
 		}
 		return Status.OK_STATUS;
 	}
-
+	
+	private URL getEngineFile(IPath path){
+		File file = path.toFile();
+		if(!file.exists()){
+			HybridCore.log(IStatus.ERROR, "missing Android engine file " + file.toString(), null );
+		}
+		return FileUtils.toURL(file);
+	}
 
 }

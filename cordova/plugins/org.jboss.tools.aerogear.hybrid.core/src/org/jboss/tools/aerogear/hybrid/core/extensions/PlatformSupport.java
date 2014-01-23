@@ -25,22 +25,24 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPluginInstallationActionsFactory;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.osgi.framework.Bundle;
 
 /**
- * Proxy object for the org.jboss.tools.aerogear.hybrid.core.projectGenerator extension point. 
+ * Proxy object for the org.jboss.tools.aerogear.hybrid.core.platformSupport extension point. 
  * 
  * @author Gorkem Ercan
  *
  */
-public class ProjectGenerator extends ExtensionPointProxy {
+public class PlatformSupport extends ExtensionPointProxy {
 	public final static String ASSEMBLY_ROOT = "/proj_gen/";
 	
-	public static final String EXTENSION_POINT_ID = "org.jboss.tools.aerogear.hybrid.core.projectGenerator";
+	public static final String EXTENSION_POINT_ID = "org.jboss.tools.aerogear.hybrid.core.platformSupport";
 	public static final String ATTR_PLATFORM = "platform";
 	public static final String ATTR_DELEGATE = "delegate";
+	public static final String ATTR_LIBRARY_RESOLVER = "libraryResolver";
 	public static final String ATTR_PLUGIN_INSTALL_ACTION_FACTORY = "pluginInstallActionFactory";
 	public static final String ATTR_ID="id";
 	private static final String ATTR_PLATFORM_ID = "platformID";
@@ -50,11 +52,11 @@ public class ProjectGenerator extends ExtensionPointProxy {
 	private String platformId;
 
 
-	ProjectGenerator(IConfigurationElement configurationElement ){
+	PlatformSupport(IConfigurationElement configurationElement ){
 		super(configurationElement);
 		this.id = configurationElement.getAttribute(ATTR_ID);
-		this.platform = configurationElement.getAttribute(ProjectGenerator.ATTR_PLATFORM);
-		this.platformId=configurationElement.getAttribute(ProjectGenerator.ATTR_PLATFORM_ID);
+		this.platform = configurationElement.getAttribute(PlatformSupport.ATTR_PLATFORM);
+		this.platformId=configurationElement.getAttribute(PlatformSupport.ATTR_PLATFORM_ID);
 		configureEnablement(configurationElement.getChildren(ExpressionTagNames.ENABLEMENT));
 	}
 
@@ -133,6 +135,22 @@ public class ProjectGenerator extends ExtensionPointProxy {
 						AbstractPluginInstallationActionsFactory factory= (AbstractPluginInstallationActionsFactory) configs[j].createExecutableExtension(ATTR_PLUGIN_INSTALL_ACTION_FACTORY);
 						factory.init(pluginHome, project, targetDirectory);
 						return factory;
+					}
+				}
+			}
+		}
+		throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID,"Contributing platform has changed"));
+	}
+	
+	public HybridMobileLibraryResolver getLibraryResolver() throws CoreException{
+		IExtension[] extensions = getContributorExtensions();
+		for (int i = 0; i < extensions.length; i++) {
+			if(extensions[i].getExtensionPointUniqueIdentifier().equals(EXTENSION_POINT_ID)){
+				IConfigurationElement[] configs = extensions[i].getConfigurationElements();
+				for (int j = 0; j < configs.length; j++) {
+					if(configs[j].getAttribute(ATTR_PLATFORM_ID).equals(getPlatformId())){
+						HybridMobileLibraryResolver resolver = (HybridMobileLibraryResolver) configs[j].createExecutableExtension(ATTR_LIBRARY_RESOLVER);
+						return resolver;
 					}
 				}
 			}

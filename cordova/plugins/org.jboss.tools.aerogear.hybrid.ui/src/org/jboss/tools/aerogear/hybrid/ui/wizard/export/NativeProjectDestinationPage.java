@@ -21,7 +21,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator.ProjectGeneratorContentProvider;
 import org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator.ProjectGeneratorLabelProvider;
@@ -38,7 +38,7 @@ public class NativeProjectDestinationPage extends BaseExportWizardDestinationPag
 	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
-		this.getPlatformsGroup().getTableViewer().setInput(HybridCore.getPlatformProjectGenerators());
+		this.getPlatformsGroup().getTableViewer().setInput(HybridCore.getPlatformSupports());
 	}
 	@Override
 	public String queryOverwrite(String pathString) {
@@ -64,11 +64,11 @@ public class NativeProjectDestinationPage extends BaseExportWizardDestinationPag
                 .getReturnCode()];
 	}
 	
-	public List<ProjectGenerator> getSelectedPlatforms(){
+	public List<PlatformSupport> getSelectedPlatforms(){
 		Object[] checked = getPlatformsGroup().getTableViewer().getCheckedElements();
-		ArrayList<ProjectGenerator> list = new ArrayList<ProjectGenerator>(checked.length);
+		ArrayList<PlatformSupport> list = new ArrayList<PlatformSupport>(checked.length);
 		for (int i = 0; i < checked.length; i++) {
-			list.add((ProjectGenerator)checked[i]);
+			list.add((PlatformSupport)checked[i]);
 		}
 		return list;
 	}

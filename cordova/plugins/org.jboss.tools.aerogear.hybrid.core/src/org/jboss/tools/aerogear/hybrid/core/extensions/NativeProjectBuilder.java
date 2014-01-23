@@ -41,7 +41,7 @@ public class NativeProjectBuilder extends ExtensionPointProxy{
 	NativeProjectBuilder(IConfigurationElement element) {
 		super(element);
 		this.id = element.getAttribute(ATTR_ID);
-		this.platform = element.getAttribute(ProjectGenerator.ATTR_PLATFORM);
+		this.platform = element.getAttribute(PlatformSupport.ATTR_PLATFORM);
 		configureEnablement(element.getChildren(ExpressionTagNames.ENABLEMENT));
 
 	}

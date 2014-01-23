@@ -11,14 +11,16 @@
       </launchConfigurationType>
    </extension>
    <extension
-         point="org.jboss.tools.aerogear.hybrid.core.projectGenerator">
-      <generator
-            delegate="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidProjectGenerator"
-            id="org.jboss.tools.aerogear.hybrid.android.core.projectGenerator"
+         point="org.jboss.tools.aerogear.hybrid.core.platformSupport">
+      <platform
+            projectGenerator="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidProjectGenerator"
+            id="org.jboss.tools.aerogear.hybrid.android.core.platformSupport"
             platform="Android"
             platformID="android"
-            pluginInstallActionFactory="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidPluginInstallationActionsFactory">
-      </generator>
+            pluginInstallActionFactory="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidPluginInstallationActionsFactory"
+            libraryResolver="org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidLibraryResolver">
+            
+      </platform>
    </extension>
    <extension
          point="org.jboss.tools.aerogear.hybrid.core.projectBuilder">

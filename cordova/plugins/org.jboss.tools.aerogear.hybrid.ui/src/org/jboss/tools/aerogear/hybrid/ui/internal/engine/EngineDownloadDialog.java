@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
-import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator.ProjectGeneratorContentProvider;
 import org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator.ProjectGeneratorLabelProvider;
@@ -80,7 +80,7 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
-			ProjectGenerator gen = (ProjectGenerator) element;
+			PlatformSupport gen = (PlatformSupport) element;
 			
 			return engineProvider.isSupportedPlatform(gen.getPlatformId()) 
 					&& !isInstalled((String)parentElement, gen.getPlatformId());
@@ -248,7 +248,7 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 		Object[] checked = platformList.getCheckedElements();
 		final String[] platforms = new String[checked.length];
 		for (int i = 0; i < checked.length; i++) {
-			ProjectGenerator gen = (ProjectGenerator) checked[i];
+			PlatformSupport gen = (PlatformSupport) checked[i];
 			platforms[i] = gen.getPlatformId();
 		}
 		final String version = getVersion();

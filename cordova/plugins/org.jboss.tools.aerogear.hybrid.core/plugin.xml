@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.jboss.tools.aerogear.hybrid.core.projectGenerator" name="Native Platform Project Generators" schema="schema/org.jboss.tools.aerogear.hybrid.core.projectGenerator.exsd"/>
+   <extension-point id="org.jboss.tools.aerogear.hybrid.core.platformSupport" name="Native Platform Support" schema="schema/org.jboss.tools.aerogear.hybrid.core.platformSupport.exsd"/>
    <extension-point id="org.jboss.tools.aerogear.hybrid.core.projectBuilder" name="Native Binary Builder" schema="schema/org.jboss.tools.aerogear.hybrid.core.projectBuilder.exsd"/>
    <extension
          id="org.jboss.tools.aerogear.hybrid.core.HybridAppNature"

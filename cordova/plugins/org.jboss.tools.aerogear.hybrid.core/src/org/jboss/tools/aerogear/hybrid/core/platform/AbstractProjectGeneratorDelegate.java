@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
-import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.osgi.framework.Bundle;
@@ -93,7 +93,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 						"Active Hybrid Mobile Engine does not support " + getTargetShortName() + " please add platform to the engine")); 
 			}
 			
-			HybridMobileTemplateResolver resolver = engine.getPlatformTemplateResolver(getTargetShortName());
+			HybridMobileLibraryResolver resolver = engine.getPlatformLibraryResolver(getTargetShortName());
 			if(resolver == null ){
 				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Hybrid Mobile Engine does not support " + getTargetShortName() + " or can not be created"));
 			}
@@ -152,7 +152,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 	 * @param resolver to be used to retrieve engine files.
 	 * @throws IOException
 	 */
-	protected abstract void generateNativeFiles(HybridMobileTemplateResolver resolver) throws CoreException;
+	protected abstract void generateNativeFiles(HybridMobileLibraryResolver resolver) throws CoreException;
 	
 	/**
 	 * Returns the short name to be used for defining the target platform 
@@ -172,7 +172,7 @@ public abstract class AbstractProjectGeneratorDelegate {
 	 * @param resolver to be used to retrieve engine files.
 	 * @throws IOException
 	 */
-	protected abstract void replaceCordovaPlatformFiles(HybridMobileTemplateResolver resolver) throws IOException; 
+	protected abstract void replaceCordovaPlatformFiles(HybridMobileLibraryResolver resolver) throws IOException; 
 	
 	/**
 	 * Returns the platform specific location of the www directory. 

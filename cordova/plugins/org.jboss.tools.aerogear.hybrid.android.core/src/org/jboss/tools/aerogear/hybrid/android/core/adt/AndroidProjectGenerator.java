@@ -59,7 +59,7 @@ import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
-import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.w3c.dom.Document;
@@ -79,7 +79,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 
 	@Override
-	protected void generateNativeFiles(HybridMobileTemplateResolver resolver) throws CoreException {
+	protected void generateNativeFiles(HybridMobileLibraryResolver resolver) throws CoreException {
 		
 		AndroidSDKManager sdkManager = new AndroidSDKManager();
 		
@@ -145,7 +145,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 					toURL(andrManifestPath.toFile()),
 					values);
 			// /src/${package_dirs}/Activity.java
-			IPath activityPath = destinationPath.append(DIR_SRC).append(HybridMobileTemplateResolver.VAR_PACKAGE_NAME).append(HybridMobileTemplateResolver.VAR_APP_NAME+".java");
+			IPath activityPath = destinationPath.append(DIR_SRC).append(HybridMobileLibraryResolver.VAR_PACKAGE_NAME).append(HybridMobileLibraryResolver.VAR_APP_NAME+".java");
 			templatedFileCopy(resolver.getTemplateFile(activityPath.makeRelativeTo(destinationPath)), 
 					toURL(activityPath.toFile()),
 					values);
@@ -226,7 +226,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 	}
 
 	@Override
-	protected void replaceCordovaPlatformFiles(HybridMobileTemplateResolver resolver) throws IOException {
+	protected void replaceCordovaPlatformFiles(HybridMobileLibraryResolver resolver) throws IOException {
 		IPath cordovaJSPath = new Path(getPlatformWWWDirectory().toString()).append(PlatformConstants.FILE_JS_CORDOVA);
 		fileCopy(resolver.getTemplateFile(cordovaJSPath.makeRelativeTo(new Path(getDestination().toString()))), 
 				toURL(cordovaJSPath.toFile()));

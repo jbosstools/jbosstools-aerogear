@@ -5,16 +5,21 @@ import java.net.URL;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 
-public abstract class HybridMobileTemplateResolver {
+public abstract class HybridMobileLibraryResolver {
 	
 	public static final String VAR_PACKAGE_NAME = "$package";
 	public static final String VAR_APP_NAME = "$appname";
+	protected IPath libraryRoot;
+	protected String version;
 	
-	
-	public HybridMobileTemplateResolver(IPath libraryRoot) {
-		
+	/**
+	 * 
+	 * @param engine
+	 */
+	public void init(IPath libraryRoot, String version){
+		this.libraryRoot = libraryRoot;
+		this.version = version;
 	}
-	
 	
 	/**
 	 * Returns the URL of the file requested from engine. Destination 

@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.engine.internal.cordova;
+package org.jboss.tools.aerogear.hybrid.ios.core.xcode;
 
 import java.io.File;
 import java.net.URL;
@@ -22,31 +22,20 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileTemplateResolver;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
 
-public class IosTemplateResolver extends HybridMobileTemplateResolver {
+public class IosLibraryResolver extends HybridMobileLibraryResolver {
 	
-	private IPath library;
-	private String version;
-	
-	public IosTemplateResolver(IPath libraryRoot, String version) {
-		super(libraryRoot);
-		this.library= libraryRoot;
-		this.version = version;
-		initFiles();
-	}
-
-	HashMap<IPath, URL> files = new HashMap<IPath, URL>();
+	private HashMap<IPath, URL> files = new HashMap<IPath, URL>();
 	
 	private void initFiles() {
-		IPath distroRoot = getSelectedDistroRoot();
-		IPath templatePrjRoot = distroRoot.append("bin/templates/project");
+		IPath templatePrjRoot = libraryRoot.append("bin/templates/project");
 		if("3.0.0".equals(version)){
-			files.put(new Path("cordova"), getEngineFile(distroRoot.append("bin/templates/project/cordova/")));
+			files.put(new Path("cordova"), getEngineFile(libraryRoot.append("bin/templates/project/cordova/")));
 		}
 		else{
-			files.put(new Path("cordova"), getEngineFile(distroRoot.append("bin/templates/scripts/cordova/")));
+			files.put(new Path("cordova"), getEngineFile(libraryRoot.append("bin/templates/scripts/cordova/")));
 		}
 		files.put(new Path(VAR_APP_NAME), getEngineFile(templatePrjRoot.append("__TESTING__")));
 		files.put(new Path(VAR_APP_NAME+"/"+VAR_APP_NAME+"-Info.plist"), getEngineFile(templatePrjRoot.append("__TESTING__/__TESTING__-Info.plist")));
@@ -58,31 +47,20 @@ public class IosTemplateResolver extends HybridMobileTemplateResolver {
 		files.put(new Path(VAR_APP_NAME+"/Classes/MainViewController.m"), getEngineFile(templatePrjRoot.append("__TESTING__/Classes/MainViewController.m")));
 		files.put(new Path(VAR_APP_NAME+"/main.m"), getEngineFile(templatePrjRoot.append("__TESTING__/main.m")));
 		
-		files.put(new Path("CordovaLib"), getEngineFile(distroRoot.append("CordovaLib")));
+		files.put(new Path("CordovaLib"), getEngineFile(libraryRoot.append("CordovaLib")));
 	}
 
 	@Override
 	public URL getTemplateFile(IPath destination) {
+		if(files.isEmpty()) initFiles();
 		Assert.isNotNull(destination);
 		Assert.isTrue(!destination.isAbsolute());
 		return files.get(destination);
 	}
 	
-	
-	private URL getEngineFile(IPath path){
-		File file = path.toFile();
-		if(!file.exists()){
-			HybridCore.log(IStatus.ERROR, "missing iOS engine file " + file.toString(), null );
-		}
-		return FileUtils.toURL(file);
-	}
-	
-	private IPath getSelectedDistroRoot(){
-		return library;
-	}
-
 	@Override
 	public IStatus isLibraryConsistent() {
+		if(files.isEmpty()) initFiles();
 		Iterator<IPath> paths = files.keySet().iterator();
 		while (paths.hasNext()) {
 			IPath key = paths.next();
@@ -98,4 +76,11 @@ public class IosTemplateResolver extends HybridMobileTemplateResolver {
 		return Status.OK_STATUS;
 	}
  
+	private URL getEngineFile(IPath path){
+		File file = path.toFile();
+		if(!file.exists()){
+			HybridCore.log(IStatus.ERROR, "missing iOS engine file " + file.toString(), null );
+		}
+		return FileUtils.toURL(file);
+	}
 }

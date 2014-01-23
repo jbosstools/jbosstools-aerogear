@@ -27,7 +27,7 @@ import org.eclipse.osgi.service.debug.DebugTrace;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ExtensionPointProxy;
 import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
-import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -163,25 +163,25 @@ final public class HybridCore implements BundleActivator, DebugOptionsListener {
 	}
 
 	/**
-	 * Get the {@link ProjectGenerator} objects defined by the extensions. 
-	 * Returns all the defined ProjectGenerators, it is up to the clients 
-	 * to filter enabled/disabled ProjectGenerators @see {@link ProjectGenerator#isEnabled(org.eclipse.core.expressions.IEvaluationContext)}.
+	 * Get the {@link PlatformSupport} objects defined by the extensions. 
+	 * Returns all the defined PlatformSupports, it is up to the clients 
+	 * to filter enabled/disabled PlatformSupports @see {@link PlatformSupport#isEnabled(org.eclipse.core.expressions.IEvaluationContext)}.
 	 * 	
 	 * @return list of project generators if any
 	 */
-	public static List<ProjectGenerator> getPlatformProjectGenerators(){
-		return ExtensionPointProxy.getNativeExtensionPointProxy(ProjectGenerator.EXTENSION_POINT_ID, ProjectGenerator.class);
+	public static List<PlatformSupport> getPlatformSupports(){
+		return ExtensionPointProxy.getNativeExtensionPointProxy(PlatformSupport.EXTENSION_POINT_ID, PlatformSupport.class);
 	}
 	
 	/**
-	 * Returns the {@link ProjectGenerator} for the given platformID or null if none is present.
+	 * Returns the {@link PlatformSupport} for the given platformID or null if none is present.
 	 * 
 	 * @param platformID
-	 * @return ProjectGenerator or null if no generator for the platformID is present
+	 * @return PlatformSupport or null if no generator for the platformID is present
 	 */
-	public static ProjectGenerator getPlatformProjectGenerator(String platformID){
-		List<ProjectGenerator> generators = getPlatformProjectGenerators();
-		for (ProjectGenerator projectGenerator : generators) {
+	public static PlatformSupport getPlatformSupport(String platformID){
+		List<PlatformSupport> generators = getPlatformSupports();
+		for (PlatformSupport projectGenerator : generators) {
 			if(projectGenerator.getPlatformId().equals(platformID)){
 				return projectGenerator;
 			}

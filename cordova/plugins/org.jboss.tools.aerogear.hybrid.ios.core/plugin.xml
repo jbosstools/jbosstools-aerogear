@@ -11,20 +11,21 @@
       </launchConfigurationType>
    </extension>
    <extension
-         point="org.jboss.tools.aerogear.hybrid.core.projectGenerator">
-      <generator
-            delegate="org.jboss.tools.aerogear.hybrid.ios.core.xcode.XcodeProjectGenerator"
-            id="org.jboss.tools.aerogear.hybrid.ios.core.projectGenerator"
+         point="org.jboss.tools.aerogear.hybrid.core.platformSupport">
+      <platform
+            projectGenerator="org.jboss.tools.aerogear.hybrid.ios.core.xcode.XcodeProjectGenerator"
+            id="org.jboss.tools.aerogear.hybrid.ios.core.platformSupport"
             platform="iOS (XCode)"
             platformID="ios"
-            pluginInstallActionFactory="org.jboss.tools.aerogear.hybrid.ios.core.xcode.IOSPluginInstallationActionsFactory">
+            pluginInstallActionFactory="org.jboss.tools.aerogear.hybrid.ios.core.xcode.IOSPluginInstallationActionsFactory"
+            libraryResolver="org.jboss.tools.aerogear.hybrid.ios.core.xcode.IosLibraryResolver">
          <enablement>
             <systemTest
                   property="os.name"
                   value="Mac OS X">
             </systemTest>
          </enablement>
-      </generator>
+      </platform>
    </extension>
    <extension
          point="org.jboss.tools.aerogear.hybrid.core.projectBuilder">

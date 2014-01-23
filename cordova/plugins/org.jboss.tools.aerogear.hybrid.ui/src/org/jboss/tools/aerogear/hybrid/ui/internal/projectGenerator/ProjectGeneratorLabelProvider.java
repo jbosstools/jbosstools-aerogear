@@ -16,29 +16,29 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.jboss.tools.aerogear.hybrid.core.extensions.ProjectGenerator;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.ui.PlatformImage;
 
 public class ProjectGeneratorLabelProvider extends BaseLabelProvider implements ILabelProvider{
 	private HashMap<String, Image> imageCache = new HashMap<String, Image>();
 	@Override
 	public Image getImage(Object element) {
-		ProjectGenerator generator = (ProjectGenerator)element;
-		Image img = imageCache.get(generator.getID());
+		PlatformSupport platform = (PlatformSupport)element;
+		Image img = imageCache.get(platform.getID());
 		if(img != null ){
 			return img;
 		}
-		ImageDescriptor imgDesc =PlatformImage.getIconFor(PlatformImage.ATTR_PROJECT_GENERATOR, generator.getID());
+		ImageDescriptor imgDesc =PlatformImage.getIconFor(PlatformImage.ATTR_PROJECT_GENERATOR, platform.getID());
 		if(imgDesc != null){
 			img= imgDesc.createImage();
-			imageCache.put(generator.getID(), img);
+			imageCache.put(platform.getID(), img);
 		}
 		return img;
 	}
 
 	@Override
 	public String getText(Object element) {
-		ProjectGenerator generator = (ProjectGenerator)element;
+		PlatformSupport generator = (PlatformSupport)element;
 		return generator.getPlatform();
 	}
 
