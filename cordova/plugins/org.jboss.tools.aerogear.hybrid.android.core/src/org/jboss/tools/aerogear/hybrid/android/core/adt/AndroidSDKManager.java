@@ -279,6 +279,31 @@ public class AndroidSDKManager {
 		}
 	}
 	
+	public void updateProject(AndroidSDK sdk, String projectName, boolean isLibrary,File path, IProgressMonitor monitor)throws CoreException{
+		StringBuilder command = new StringBuilder(getAndroidCommand());
+		command.append(" update");
+		if(isLibrary){
+			command.append(" lib-project");
+		}else{
+			command.append(" project");
+		}
+		command.append( " --target ").append(sdk.getId());
+		if(projectName != null ){
+			IStatus status = HybridProjectConventions.validateProjectName(projectName);
+			if(!status.isOK()){
+				throw new CoreException(status);
+			}
+			command.append(" --name ").append('"').append(projectName).append('"');
+		}
+		command.append(" --path ").append('"').append(path.getPath()).append('"');
+		ExternalProcessUtility processUtility = new ExternalProcessUtility();
+		CreateProjectResultParser parser = new CreateProjectResultParser();
+		processUtility.execSync(command.toString(), null, parser, parser, monitor, null, null);
+		if( !monitor.isCanceled() && parser.getErrorString() != null ){
+			throw new CoreException(new Status(IStatus.ERROR,AndroidCore.PLUGIN_ID,"Error creating the Android project: "+ parser.getErrorString()));
+		}
+	}
+	
 	public void startADBServer() throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		processUtility.execSync(getADBCommand()+" start-server",null, null, null, new NullProgressMonitor(), null, null);

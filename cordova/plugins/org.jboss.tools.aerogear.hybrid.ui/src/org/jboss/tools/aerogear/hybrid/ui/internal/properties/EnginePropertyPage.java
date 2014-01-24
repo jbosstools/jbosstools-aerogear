@@ -80,8 +80,17 @@ public class EnginePropertyPage extends PropertyPage {
 		HybridMobileEngine engine = (HybridMobileEngine) sel.getFirstElement();
 		IStatus consistentStatus = engine.isLibraryConsistent();
 		if(!consistentStatus.isOK()){
-			setMessage(consistentStatus.getMessage(),consistentStatus.getSeverity());
-			return consistentStatus.getSeverity() != IStatus.ERROR;
+			IStatus[] statusArray = consistentStatus.getChildren();
+			int severity = consistentStatus.getSeverity();
+			String message = consistentStatus.getMessage();
+			//Replace the message with child status message
+			for (int i = 0; i < statusArray.length; i++) {
+				if(statusArray[i].getSeverity() == severity){
+					message = statusArray[i].getMessage();
+				}
+			}
+			setMessage(message, severity);
+			return severity != IStatus.ERROR;
 		}
 		try {
 			List<CordovaPlugin> installedPlugins = getProject().getPluginManager().getInstalledPlugins();

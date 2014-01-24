@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -40,7 +42,8 @@ public class AndroidLibraryResolver extends
 	private void initFiles() {
 		Assert.isNotNull(libraryRoot, "Library resolver is not initialized. Call init before accessing any other functions.");
 		IPath templatePrjRoot = libraryRoot.append("bin/templates/project");
-		files.put(new Path(DIR_LIBS +"/" + FILE_JAR_CORDOVA), getEngineFile(libraryRoot.append("framwework/cordova.jar")));	
+		IPath cordovaJar = libraryRoot.append("framework").append(NLS.bind("cordova-{0}.jar",version));
+		files.put(new Path(DIR_LIBS +"/" + FILE_JAR_CORDOVA), getEngineFile(cordovaJar));	
 		files.put(new Path(DIR_RES),getEngineFile(templatePrjRoot.append(DIR_RES)));
 		files.put(new Path(FILE_XML_ANDROIDMANIFEST), getEngineFile(templatePrjRoot.append(FILE_XML_ANDROIDMANIFEST)));
 		files.put(new Path(DIR_SRC).append(VAR_PACKAGE_NAME.replace('.', '/')).append(VAR_APP_NAME+".java"), 
@@ -48,6 +51,7 @@ public class AndroidLibraryResolver extends
 		files.put(new Path("assets/www/cordova.js"), getEngineFile(libraryRoot.append("framework/assets/www/cordova.js")));
 		
 	}
+
 
 	@Override
 	public URL getTemplateFile(IPath destination) {
@@ -59,6 +63,9 @@ public class AndroidLibraryResolver extends
 
 	@Override
 	public IStatus isLibraryConsistent() {
+		if(needsPreCompilation()){
+			return new Status(IStatus.WARNING, HybridCore.PLUGIN_ID, "Library for Android needs to be precompiled");
+		}
 		if(files.isEmpty()) initFiles();
 		Iterator<IPath> paths = files.keySet().iterator();
 		while (paths.hasNext()) {
@@ -75,6 +82,22 @@ public class AndroidLibraryResolver extends
 		return Status.OK_STATUS;
 	}
 	
+	public void preCompile(IProgressMonitor monitor) throws CoreException{
+		AndroidSDK sdk = AndroidProjectUtils.selectBestValidTarget();
+		AndroidSDKManager sdkManager = new AndroidSDKManager();
+		File projectDir = libraryRoot.append("framework").toFile();
+		sdkManager.updateProject(sdk, null, true, projectDir,monitor);
+		BuildDelegate buildDelegate = new BuildDelegate();
+		if(monitor.isCanceled())
+			return;
+		buildDelegate.buildLibraryProject(projectDir, monitor);
+	}
+	
+	public boolean needsPreCompilation(){
+		IPath cordovaJar = libraryRoot.append("framework").append(NLS.bind("cordova-{0}.jar",version));
+		return !cordovaJar.toFile().exists();
+	}
+
 	private URL getEngineFile(IPath path){
 		File file = path.toFile();
 		if(!file.exists()){

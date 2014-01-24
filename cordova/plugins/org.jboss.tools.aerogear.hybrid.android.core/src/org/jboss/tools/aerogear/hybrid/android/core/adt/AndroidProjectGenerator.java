@@ -26,7 +26,6 @@ import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.toURL
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -68,7 +67,6 @@ import org.xml.sax.SAXException;
 
 public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 
-	private static final int REQUIRED_MIN_API_LEVEL = 17;
 
 	public AndroidProjectGenerator(){
 		super();
@@ -94,7 +92,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		String name = hybridProject.getBuildArtifactAppName();
 
 		
-		AndroidSDK target = selectTarget(sdkManager);
+		AndroidSDK target = AndroidProjectUtils.selectBestValidTarget();
 		File destinationDir = getDestination();
 		IPath destinationPath = new Path(destinationDir.toString());
 		if(getDestination().exists()){
@@ -145,9 +143,10 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 					toURL(andrManifestPath.toFile()),
 					values);
 			// /src/${package_dirs}/Activity.java
-			IPath activityPath = destinationPath.append(DIR_SRC).append(HybridMobileLibraryResolver.VAR_PACKAGE_NAME).append(HybridMobileLibraryResolver.VAR_APP_NAME+".java");
-			templatedFileCopy(resolver.getTemplateFile(activityPath.makeRelativeTo(destinationPath)), 
-					toURL(activityPath.toFile()),
+			IPath activityPath = new Path(DIR_SRC).append(HybridMobileLibraryResolver.VAR_PACKAGE_NAME).append(HybridMobileLibraryResolver.VAR_APP_NAME+".java");
+			IPath resolvedActivityPath = destinationPath.append(DIR_SRC).append(packageName.replace('.', '/')).append(name+".java");
+			templatedFileCopy(resolver.getTemplateFile(activityPath), 
+					toURL(resolvedActivityPath.toFile()),
 					values);
 			}
 		catch(IOException e)
@@ -156,25 +155,6 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		}
 	}
 	
-	private AndroidSDK selectTarget(AndroidSDKManager sdkManager) throws CoreException {
-		List<AndroidSDK> targets = sdkManager.listTargets();
-		if(targets == null || targets.isEmpty() ){
-			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "No Android targets were found, Please create a target"));
-		}
-		AndroidSDK target = null;
-		for (AndroidSDK androidSDK : targets) {
-			if(androidSDK.getApiLevel() >= REQUIRED_MIN_API_LEVEL &&
-					(target == null || androidSDK.getApiLevel() > target.getApiLevel())){
-				target = androidSDK;
-			}
-		}
-		if( target == null ){
-			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, 
-					"Please install Android API " +REQUIRED_MIN_API_LEVEL +" or later. Use the Android SDK Manager to install or upgrade any missing SDKs to tools."));
-		}
-		return target;
-	}
-
 	private void updateAppName( String appName ) throws CoreException{
 	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	    dbf.setNamespaceAware(true);

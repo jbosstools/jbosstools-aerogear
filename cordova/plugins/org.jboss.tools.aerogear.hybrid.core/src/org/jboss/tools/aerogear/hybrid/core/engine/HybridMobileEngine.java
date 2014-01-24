@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
@@ -91,6 +92,22 @@ public class HybridMobileEngine{
 			status.add(getPlatformLibraryResolver(thePlatform).isLibraryConsistent());
 		}
 		return status;
+	}
+	
+	/**
+	 * Pre-compiles the libraries used by this engine.
+	 * @param monitor
+	 * @throws CoreException
+	 */
+	public void preCompile(IProgressMonitor monitor) throws CoreException{
+		List<String> pls = getPlatforms();
+		for (String thePlatform : pls) {
+			HybridMobileLibraryResolver resolver = getPlatformLibraryResolver(thePlatform);
+			if(resolver.needsPreCompilation())
+			{
+				resolver.preCompile(monitor);
+			}
+		}
 	}
 	
 	@Override

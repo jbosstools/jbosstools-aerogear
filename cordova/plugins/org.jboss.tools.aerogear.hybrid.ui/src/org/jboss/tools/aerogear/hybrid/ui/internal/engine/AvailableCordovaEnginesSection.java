@@ -13,7 +13,12 @@ package org.jboss.tools.aerogear.hybrid.ui.internal.engine;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -245,8 +250,25 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 
 	private void updateAvailableEngines() {
 		CordovaEngineProvider provider = new CordovaEngineProvider();
-		List<HybridMobileEngine> engines = provider.getAvailableEngines();
+		final List<HybridMobileEngine> engines = provider.getAvailableEngines();
+		Job preCompileJob = new Job("Hybrid Mobile Engine Library pre-compilation") {
+			
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				for (HybridMobileEngine hybridMobileEngine : engines) {
+					try{
+						hybridMobileEngine.preCompile(monitor);
+					}
+					catch(CoreException e ){
+						return e.getStatus();
+					}
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		preCompileJob.schedule();
 		engineList.setInput(engines);
+		
 	}
 
 	@Override

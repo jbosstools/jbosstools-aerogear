@@ -2,7 +2,9 @@ package org.jboss.tools.aerogear.hybrid.core.engine;
 
 import java.net.URL;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
 public abstract class HybridMobileLibraryResolver {
@@ -38,5 +40,18 @@ public abstract class HybridMobileLibraryResolver {
 	 * @return
 	 */
 	public abstract IStatus isLibraryConsistent();
+	
+	/**
+	 * Pre-compiles the library so that it is ready to be used.
+	 * @param monitor
+	 * @throws CoreException
+	 */
+	public abstract void preCompile(IProgressMonitor monitor) throws CoreException;
+	
+	/**
+	 * Returns true if this library needs to be precompiled before it can be used. 
+	 * @return
+	 */
+	public abstract boolean needsPreCompilation();
 	
 }

@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -82,5 +84,15 @@ public class IosLibraryResolver extends HybridMobileLibraryResolver {
 			HybridCore.log(IStatus.ERROR, "missing iOS engine file " + file.toString(), null );
 		}
 		return FileUtils.toURL(file);
+	}
+
+	@Override
+	public void preCompile(IProgressMonitor monitor) throws CoreException {
+		
+	}
+
+	@Override
+	public boolean needsPreCompilation() {
+		return false;
 	}
 }

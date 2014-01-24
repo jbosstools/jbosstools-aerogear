@@ -55,6 +55,14 @@ public class BuildDelegate extends AbstractNativeBinaryBuildDelegate {
 	}
 	
 	public void buildProject(File projectLocation,IProgressMonitor monitor) throws CoreException{
+		doBuildProject(projectLocation, false, monitor);
+	}
+	
+	public void buildLibraryProject(File projectLocation,IProgressMonitor monitor) throws CoreException{
+		doBuildProject(projectLocation, true, monitor);
+	}
+	
+	private void doBuildProject(File projectLocation, boolean isLibrary, IProgressMonitor monitor) throws CoreException{
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType antLaunchConfigType = launchManager.getLaunchConfigurationType(IAntLaunchConstants.ID_ANT_LAUNCH_CONFIGURATION_TYPE);
 		if(antLaunchConfigType == null ){
@@ -67,9 +75,14 @@ public class BuildDelegate extends AbstractNativeBinaryBuildDelegate {
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "build.xml does not exist in "+ projectLocation.getPath()));
 		}
 		wc.setAttribute(IExternalToolConstants.ATTR_LOCATION, buildFile.getPath());
-		String target = "debug";
-		if(isRelease()){
-			target = "release";
+		String target = null;
+		if(isLibrary){
+			target = "jar";
+		}else{
+			target = "debug";
+			if(isRelease()){
+				target = "release";
+			}
 		}
 		wc.setAttribute(IAntLaunchConstants.ATTR_ANT_TARGETS, target);
 		wc.setAttribute(IAntLaunchConstants.ATTR_DEFAULT_VM_INSTALL, true);
@@ -84,16 +97,21 @@ public class BuildDelegate extends AbstractNativeBinaryBuildDelegate {
         launchConfig.launch(ILaunchManager.RUN_MODE, monitor, true, true);
         
         binaryDirectory = new File(projectLocation, AndroidConstants.DIR_BIN);
-        HybridProject hybridProject = HybridProject.getHybridProject(getProject());
-        if(isRelease()){
-        	setBuildArtifact(new File(binaryDirectory,hybridProject.getBuildArtifactAppName()+"-release-unsigned.apk" ));
+        if(isLibrary){
+        	//no checks for libs
         }else{
-        	setBuildArtifact(new File(binaryDirectory,hybridProject.getBuildArtifactAppName()+"-debug.apk" ));
-        }
-        if(!getBuildArtifact().exists()){
-        	throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Build failed... Build artifact does not exist"));
+        	HybridProject hybridProject = HybridProject.getHybridProject(getProject());
+        	if(isRelease()){
+        		setBuildArtifact(new File(binaryDirectory,hybridProject.getBuildArtifactAppName()+"-release-unsigned.apk" ));
+        	}else{
+        		setBuildArtifact(new File(binaryDirectory,hybridProject.getBuildArtifactAppName()+"-debug.apk" ));
+        	}
+        	if(!getBuildArtifact().exists()){
+        		throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Build failed... Build artifact does not exist"));
+        	}
         }
 	}
+	
 
 	/**
 	 * Returns the directory where build artifacts are stored. 
