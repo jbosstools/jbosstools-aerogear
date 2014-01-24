@@ -97,6 +97,13 @@ public abstract class AbstractProjectGeneratorDelegate {
 			if(resolver == null ){
 				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Hybrid Mobile Engine does not support " + getTargetShortName() + " or can not be created"));
 			}
+			if(resolver.needsPreCompilation()){
+				resolver.preCompile(monitor);
+			}
+			IStatus libStatus = resolver.isLibraryConsistent();
+			if(!libStatus.isOK()){
+				throw new CoreException(libStatus);
+			}
 			generateNativeFiles(resolver);
 			monitor.worked(10);
 			IFolder folder = getProject().getFolder("/"+PlatformConstants.DIR_WWW);
