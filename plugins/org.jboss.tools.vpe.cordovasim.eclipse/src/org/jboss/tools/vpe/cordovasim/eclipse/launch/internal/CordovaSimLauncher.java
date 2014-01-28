@@ -41,6 +41,7 @@ public class CordovaSimLauncher {
 		BUNDLES.addAll(Arrays.asList(
 			"org.jboss.tools.vpe.cordovasim", //$NON-NLS-1$
 			"org.jboss.tools.vpe.cordovasim.ripple", //$NON-NLS-1$
+			"org.jboss.tools.vpe.browsersim.debugger", //$NON-NLS-1$
 			"org.eclipse.jetty.continuation", //$NON-NLS-1$
 			"org.eclipse.jetty.continuation", //$NON-NLS-1$
 			"org.eclipse.jetty.http", //$NON-NLS-1$
