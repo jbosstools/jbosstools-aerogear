@@ -41,7 +41,7 @@ public class PlatformSupport extends ExtensionPointProxy {
 	
 	public static final String EXTENSION_POINT_ID = "org.jboss.tools.aerogear.hybrid.core.platformSupport";
 	public static final String ATTR_PLATFORM = "platform";
-	public static final String ATTR_DELEGATE = "delegate";
+	public static final String ATTR_PROJECT_GENERATOR = "projectGenerator";
 	public static final String ATTR_LIBRARY_RESOLVER = "libraryResolver";
 	public static final String ATTR_PLUGIN_INSTALL_ACTION_FACTORY = "pluginInstallActionFactory";
 	public static final String ATTR_ID="id";
@@ -89,7 +89,7 @@ public class PlatformSupport extends ExtensionPointProxy {
 				IConfigurationElement[] configs = extensions[i].getConfigurationElements();
 				for (int j = 0; j < configs.length; j++) {
 					if(configs[j].getAttribute(ATTR_PLATFORM_ID).equals(getPlatformId())){
-						AbstractProjectGeneratorDelegate delegate = (AbstractProjectGeneratorDelegate) configs[j].createExecutableExtension(ATTR_DELEGATE);
+						AbstractProjectGeneratorDelegate delegate = (AbstractProjectGeneratorDelegate) configs[j].createExecutableExtension(ATTR_PROJECT_GENERATOR);
 						delegate.init(project, generationFolder, platformId);
 						return delegate;
 					}
