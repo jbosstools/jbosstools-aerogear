@@ -29,6 +29,7 @@ import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractNativeBinaryBuildDelegate;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 
 public class NativeBinaryExportWizard extends Wizard implements IExportWizard {
 
@@ -69,9 +70,13 @@ public class NativeBinaryExportWizard extends Wizard implements IExportWizard {
 			getContainer().run(true, true, op);
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() != null) {
-				ErrorDialog.openError(getShell(), "Error exporting mobile application",null, 
-						new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while exporting mobile application", e.getTargetException() ));
-				return false;
+				if(e.getTargetException() instanceof CoreException ){
+					StatusManager.handle((CoreException) e.getTargetException());
+				}else{
+					ErrorDialog.openError(getShell(), "Error exporting mobile application",null, 
+							new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while exporting mobile application", e.getTargetException() ));
+					return false;
+				}
 			}
 			return false;
 		} catch (InterruptedException e) {

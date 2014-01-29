@@ -26,6 +26,7 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.HybridMobileStatus;
 
 public class AndroidLibraryResolver extends
 		HybridMobileLibraryResolver {
@@ -86,6 +87,9 @@ public class AndroidLibraryResolver extends
 		AndroidSDK sdk = AndroidProjectUtils.selectBestValidTarget();
 		AndroidSDKManager sdkManager = new AndroidSDKManager();
 		File projectDir = libraryRoot.append("framework").toFile();
+		if(!projectDir.isDirectory()){
+			throw new CoreException(HybridMobileStatus.newMissingEngineStatus(null, "Library for the Active Hybrid Mobile Engine for Android is incomplete. No framework directory is present."));
+		}
 		sdkManager.updateProject(sdk, null, true, projectDir,monitor);
 		BuildDelegate buildDelegate = new BuildDelegate();
 		if(monitor.isCanceled())

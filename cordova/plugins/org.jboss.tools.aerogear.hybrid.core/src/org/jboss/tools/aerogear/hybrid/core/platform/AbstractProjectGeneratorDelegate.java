@@ -24,10 +24,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.osgi.framework.Bundle;
@@ -78,31 +80,38 @@ public abstract class AbstractProjectGeneratorDelegate {
 	 */
 	public File generateNow(IProgressMonitor monitor) throws CoreException{
 		if(project == null || generationRoot == null )
-			throw new IllegalStateException("Project generator delegate is not initializes properly");
+			throw new IllegalStateException("Project generator delegate is not initialized properly");
 		long start = System.currentTimeMillis();
 		try {
 			if(!generationRoot.exists() && !generationRoot.mkdirs() ){
-				throw new CoreException(new Status(IStatus.ERROR,HybridCore.PLUGIN_ID, "Can not create the destination directory for project generation at "+generationRoot.toString() ));
+				throw new CoreException(new Status(IStatus.ERROR,HybridCore.PLUGIN_ID, 
+						NLS.bind("Can not create the destination directory for project generation at {0}",generationRoot.toString()) ));
 			}
-			monitor.beginTask("Generate Native Project for "+this.getProjectName(), 50);
+			monitor.beginTask(NLS.bind("Generate Native Project for {0}",this.getProjectName()), 50);
 			HybridProject hybridProject = HybridProject.getHybridProject(getProject());
 			HybridMobileEngine engine = hybridProject.getActiveEngine();
+			if(engine == null){
+				throw new CoreException(HybridMobileStatus.newMissingEngineStatus(project, 
+					"Active Hybrid Mobile Engine is missing. Please install the missing engine or use a different engine."));
+			}
 			List<String> platforms= engine.getPlatforms();
 			if(!platforms.contains(getTargetShortName())){
-				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, 
-						"Active Hybrid Mobile Engine does not support " + getTargetShortName() + " please add platform to the engine")); 
+				throw new CoreException(HybridMobileStatus.newMissingEngineStatus(getProject(),
+						NLS.bind("Active Hybrid Mobile Engine for {0} project does not have {1} support installed.",new Object[]{getProject().getName(), getTargetShortName()}) ));
 			}
 			
 			HybridMobileLibraryResolver resolver = engine.getPlatformLibraryResolver(getTargetShortName());
 			if(resolver == null ){
-				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Hybrid Mobile Engine does not support " + getTargetShortName() + " or can not be created"));
+				throw new CoreException(HybridMobileStatus.newMissingEngineStatus(getProject(),
+						NLS.bind("Active Hybrid Mobile Engine can not support {0}.",getTargetShortName()) ));
 			}
 			if(resolver.needsPreCompilation()){
 				resolver.preCompile(monitor);
 			}
 			IStatus libStatus = resolver.isLibraryConsistent();
 			if(!libStatus.isOK()){
-				throw new CoreException(libStatus);
+				throw new CoreException(HybridMobileStatus.newMissingEngineStatus(project, 
+						"Active Hybrid Mobile Engine is missing or not compatible. Please install or use a different engine."));
 			}
 			generateNativeFiles(resolver);
 			monitor.worked(10);

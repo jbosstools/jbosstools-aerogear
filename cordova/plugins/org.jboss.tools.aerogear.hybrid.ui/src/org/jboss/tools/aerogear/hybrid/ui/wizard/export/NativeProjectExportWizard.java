@@ -30,6 +30,7 @@ import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 
 public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 
@@ -75,9 +76,13 @@ public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 			getContainer().run(true, true, op);
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() != null) {
-				ErrorDialog.openError(getShell(), "Error exporting native projects",null, 
-						new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while exporting native projects", e.getTargetException() ));
-				return false;
+				if(e.getTargetException() instanceof CoreException ){
+					StatusManager.handle((CoreException) e.getTargetException());
+				}else{
+					ErrorDialog.openError(getShell(), "Error exporting native projects",null, 
+							new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error while exporting native projects", e.getTargetException() ));
+					return false;
+				}
 			}
 			return false;
 		} catch (InterruptedException e) {
@@ -85,7 +90,7 @@ public class NativeProjectExportWizard extends Wizard implements IExportWizard {
 		}
 		IStatus status= op.getStatus();
 		if (!status.isOK()) {
-			ErrorDialog.openError(getShell(), "Native Project Export Error", null, status);
+			StatusManager.handle(status);
 			return !(status.matches(IStatus.ERROR));
 		}	
 		savePageSettings();

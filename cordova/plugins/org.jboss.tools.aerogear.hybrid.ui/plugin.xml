@@ -156,4 +156,13 @@
         </enabledWhen>
      </page>
   </extension>
+  <extension
+        point="org.eclipse.debug.core.statusHandlers">
+     <statusHandler
+           class="org.jboss.tools.aerogear.hybrid.ui.internal.status.EngineStatusHandler"
+           code="100"
+           id="org.jboss.tools.aerogear.hybrid.ui.engineStatusHandler"
+           plugin="org.jboss.tools.aerogear.hybrid.core">
+     </statusHandler>
+  </extension>
 </plugin>
