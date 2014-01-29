@@ -35,7 +35,10 @@ import org.jboss.tools.aerogear.hybrid.ui.internal.engine.AvailableCordovaEngine
 
 public class EnginePropertyPage extends PropertyPage {
 	
+	public static final String PAGE_ID = "org.jboss.tools.aerogear.hybrid.ui.internal.properties.enginePropertyPage";
+	
 	private AvailableCordovaEnginesSection engineSection;
+	
 	
 	/**
 	 * @see PreferencePage#createContents(Composite)
@@ -60,6 +63,9 @@ public class EnginePropertyPage extends PropertyPage {
 		HybridMobileEngine activeEngine = hybridProject.getActiveEngine();
 		if(activeEngine != null){
 			engineSection.setSelection(new StructuredSelection(activeEngine));
+		}
+		else{
+			setValid(isValid());
 		}
 		return control;
 	}
