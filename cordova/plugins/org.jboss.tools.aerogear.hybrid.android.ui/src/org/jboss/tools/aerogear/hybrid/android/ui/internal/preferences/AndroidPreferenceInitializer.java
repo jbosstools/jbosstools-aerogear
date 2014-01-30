@@ -8,14 +8,17 @@
  *  Contributors:
  *       Red Hat, Inc. - initial API and implementation
  *******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.ui.internal.preferences;
+package org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 /**
  * Class used to initialize default preference values.
  */
-public class PreferenceInitializer extends AbstractPreferenceInitializer {
+public class AndroidPreferenceInitializer extends AbstractPreferenceInitializer {
 
 	/*
 	 * (non-Javadoc)
@@ -23,6 +26,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
 	 */
 	public void initializeDefaultPreferences() {
+		IPreferenceStore store = HybridUI.getDefault().getPreferenceStore();
+		store.setDefault(AndroidConstants.PREF_ANDROID_SDK_LOCATION,
+				"");
 	}
 
 }

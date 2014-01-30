@@ -15,7 +15,8 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridToolsPreferences;
+import org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences.AndroidPreferencePage;
+import org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences.AndroidPreferences;
 /**
  * Helper class for the Android SDK location. 
  * 
@@ -36,8 +37,7 @@ public class SDKLocationHelper {
 			return false;
 		}
 		
-		PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(activeShell, 
-				"org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage", 
+		PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(activeShell, AndroidPreferencePage.PAGE_ID, 
 				null, null);
 		dialog.open();
 		return defineSDKLocationIfNecessary();
@@ -47,12 +47,12 @@ public class SDKLocationHelper {
 	public static String getSDKLocation()
 	{
 		if(isSDKLocationDefined())
-			return  HybridToolsPreferences.getPrefs().getAndroidSDKLocation();
+			return  AndroidPreferences.getPrefs().getAndroidSDKLocation();
 		return null;
 	}
 
 	public static boolean isSDKLocationDefined() {
-		String sdkLocation = HybridToolsPreferences.getPrefs().getAndroidSDKLocation();
+		String sdkLocation = AndroidPreferences.getPrefs().getAndroidSDKLocation();
 		return (sdkLocation != null && sdkLocation.length()>0);
 	}
 

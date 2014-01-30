@@ -24,5 +24,6 @@ public interface AndroidConstants {
 	public static final String FILE_XML_ANDROIDMANIFEST = "AndroidManifest.xml";
 	public static final String FILE_XML_STRINGS = "strings.xml";
 	public static final String FILE_XML_BUILD ="build.xml";
+	public static final String PREF_ANDROID_SDK_LOCATION = "Android_SDK_Loc";
 
 }

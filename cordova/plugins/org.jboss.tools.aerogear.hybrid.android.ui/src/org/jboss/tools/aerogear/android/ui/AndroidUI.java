@@ -10,7 +10,12 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.android.ui;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences.AndroidPreferences;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -37,6 +42,18 @@ public class AndroidUI extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		//We use the HybridUIs pref store as we do not have many preferences.
+		IPreferenceStore store = HybridUI.getDefault().getPreferenceStore();
+		AndroidPreferences.init(store);
+		store.addPropertyChangeListener(new IPropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				AndroidPreferences.getPrefs().loadValues(event);
+				
+			}
+		});
+		AndroidPreferences.getPrefs().loadValues();
 	}
 
 	/*

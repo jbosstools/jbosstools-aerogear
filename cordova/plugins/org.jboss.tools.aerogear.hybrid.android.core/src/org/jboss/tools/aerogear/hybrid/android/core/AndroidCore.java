@@ -61,7 +61,7 @@ public class AndroidCore implements BundleActivator, DebugOptionsListener {
 	}
 	
 	public static String getSDKLocation(){
-		return Platform.getPreferencesService().getString("org.jboss.tools.aerogear.hybrid.ui", "Android_SDK_Loc", null, null);
+		return Platform.getPreferencesService().getString("org.jboss.tools.aerogear.hybrid.ui", AndroidConstants.PREF_ANDROID_SDK_LOCATION, null, null);
 	}
 	
 	public static void log(int status, String message, Throwable throwable ){

@@ -69,5 +69,14 @@
             id="org.jboss.tools.aerogear.hybrid.android.ui.AndroidLaunchConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage"
+            class="org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences.AndroidPreferencePage"
+            id="org.jboss.tools.aerogear.hybrid.android.ui.AndroidPreferencePages"
+            name="Android">
+      </page>
+   </extension>
  
 </plugin>

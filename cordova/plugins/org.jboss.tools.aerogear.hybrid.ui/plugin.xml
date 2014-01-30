@@ -35,7 +35,7 @@
   <extension
         point="org.eclipse.ui.preferencePages">
      <page
-           class="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage"
+           class="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMobilePreferencePage"
            id="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage"
            name="Hybrid Mobile">
      </page>

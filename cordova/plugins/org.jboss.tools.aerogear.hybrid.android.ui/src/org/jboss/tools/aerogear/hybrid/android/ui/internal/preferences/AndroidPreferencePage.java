@@ -8,7 +8,7 @@
  *  Contributors:
  *       Red Hat, Inc. - initial API and implementation
  *******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.ui.internal.preferences;
+package org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences;
 
 import java.io.File;
 
@@ -17,6 +17,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 /**
@@ -33,9 +34,11 @@ import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
  * be accessed directly via the preference store.
  */
 
-public class HybridMoblePreferencePage
+public class AndroidPreferencePage
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
+	
+	public static final String PAGE_ID = "org.jboss.tools.aerogear.hybrid.android.ui.AndroidPreferencePages";
 
 	private static class AndroidSDKDirectoryFieldEditor extends DirectoryFieldEditor{
 		public AndroidSDKDirectoryFieldEditor(String prefAndroidSdkLocation,
@@ -73,7 +76,7 @@ public class HybridMoblePreferencePage
 			super.setValidateStrategy(VALIDATE_ON_KEY_STROKE);
 		}
 	}
-	public HybridMoblePreferencePage() {
+	public AndroidPreferencePage() {
 		super(GRID);
 		setPreferenceStore(HybridUI.getDefault().getPreferenceStore());
 		setDescription("Settings for Hybrid Mobile Application development");
@@ -86,7 +89,7 @@ public class HybridMoblePreferencePage
 	 * restore itself.
 	 */
 	public void createFieldEditors() {
-		AndroidSDKDirectoryFieldEditor editor = new AndroidSDKDirectoryFieldEditor(HybridToolsPreferences.PREF_ANDROID_SDK_LOCATION, 
+		AndroidSDKDirectoryFieldEditor editor = new AndroidSDKDirectoryFieldEditor(AndroidConstants.PREF_ANDROID_SDK_LOCATION, 
 				"Android SDK Directory:", getFieldEditorParent());
 		addField(editor);
 

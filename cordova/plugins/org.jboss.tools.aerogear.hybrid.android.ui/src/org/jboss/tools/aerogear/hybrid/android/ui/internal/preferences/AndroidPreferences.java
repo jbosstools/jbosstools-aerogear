@@ -8,27 +8,28 @@
  *  Contributors:
  *       Red Hat, Inc. - initial API and implementation
  *******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.ui.internal.preferences;
+package org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 /**
- * Central location for all the preferences
+ * Central location for Android preferences
  * 
  * @author Gorkem Ercan
  *
  */
-public class HybridToolsPreferences {
+public class AndroidPreferences {
 	
-	private static HybridToolsPreferences thePreferences = new HybridToolsPreferences();
+	private static AndroidPreferences thePreferences = new AndroidPreferences();
 	private IPreferenceStore kernelStore;
+	private volatile String androdSDKLocation;
 	
 	public static void init(IPreferenceStore store){
 		thePreferences.kernelStore = store;
 	}
 	
-	public static HybridToolsPreferences getPrefs(){
+	public static AndroidPreferences getPrefs(){
 		return thePreferences;
 	}
 	
@@ -37,6 +38,13 @@ public class HybridToolsPreferences {
 	}
 	
 	public void loadValues(PropertyChangeEvent event) {
-		Assert.isNotNull(kernelStore);
+		if(event == null || event.getProperty().equals(AndroidConstants.PREF_ANDROID_SDK_LOCATION)){
+			androdSDKLocation = kernelStore.getString(AndroidConstants.PREF_ANDROID_SDK_LOCATION);			
+		}
 	}
+	
+	public String getAndroidSDKLocation(){
+		return androdSDKLocation;
+	}
+	
 }
