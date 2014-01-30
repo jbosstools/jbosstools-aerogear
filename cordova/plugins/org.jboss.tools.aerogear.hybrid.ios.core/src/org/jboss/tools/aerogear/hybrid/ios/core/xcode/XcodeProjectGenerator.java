@@ -28,6 +28,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
@@ -63,6 +65,8 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			
 			String name = hybridProject.getBuildArtifactAppName();
 			IPath prjPath = destinationPath.append(name);
+			Widget widgetModel = WidgetModel.getModel(hybridProject).getWidgetForRead();
+			String packageName = widgetModel.getId();
 			
 			File prjdir = prjPath.toFile();
 			if( !prjdir.exists() ){//create the project directory
@@ -82,11 +86,9 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 				wwwwCopyScript.setExecutable(true);
 			}
 			
-			
-			
 			HashMap<String, String > values = new HashMap<String, String>();
 			values.put("__TESTING__", name);
-			values.put("--ID--", hybridProject.getAppName());
+			values.put("--ID--", packageName);
 			
 			// /${project_name}/${project_name}-Info.plist
 			IPath templatePath = prjPath.append(name+"-Info.plist");
