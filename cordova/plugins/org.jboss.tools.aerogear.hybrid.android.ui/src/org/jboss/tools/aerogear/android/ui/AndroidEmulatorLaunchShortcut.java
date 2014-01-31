@@ -30,7 +30,7 @@ public class AndroidEmulatorLaunchShortcut extends HybridProjectLaunchShortcut {
 		if(!SDKLocationHelper.defineSDKLocationIfNecessary())
 			return false;
 		
-		AndroidSDKManager sdkManager = new AndroidSDKManager();
+		AndroidSDKManager sdkManager = AndroidSDKManager.getManager();
 		List<AndroidSDK> targets = sdkManager.listTargets();
 		if(targets == null || targets.isEmpty() ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidUI.PLUGIN_ID, "No targets to build against"));

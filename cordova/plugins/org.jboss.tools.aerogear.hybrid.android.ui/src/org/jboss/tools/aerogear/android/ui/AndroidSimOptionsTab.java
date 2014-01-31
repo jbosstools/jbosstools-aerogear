@@ -119,8 +119,8 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 		logFilterTxt = new Text(grpEmulator, SWT.BORDER);
 		logFilterTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		logFilterTxt.addListener(SWT.Modify, dirtyListener);
-		AndroidSDKManager sdk = new AndroidSDKManager();
 		try {
+			AndroidSDKManager sdk = AndroidSDKManager.getManager();
 			List<String> avds = sdk.listAVDs();
 			for (String string : avds) {
 				AVDCombo.add(string);

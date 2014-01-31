@@ -12,6 +12,7 @@ package org.jboss.tools.aerogear.hybrid.ui.internal.status;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
@@ -25,8 +26,9 @@ public class DefaultStatusHandler extends AbstractStatusHandler {
 
 	@Override
 	public void handle(CoreException e) {
-		StatusManager platformStatusMgr = StatusManager.getManager();
-		platformStatusMgr.handle(e,HybridUI.PLUGIN_ID);
+		IStatus exceptionStatus = e.getStatus();
+		handle(new Status(exceptionStatus.getSeverity(), HybridUI.PLUGIN_ID,
+				e.getLocalizedMessage(), e) );
 	}
 
 }

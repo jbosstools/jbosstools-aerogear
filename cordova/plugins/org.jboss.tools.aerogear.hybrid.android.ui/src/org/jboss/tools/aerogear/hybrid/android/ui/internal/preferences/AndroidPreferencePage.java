@@ -79,7 +79,7 @@ public class AndroidPreferencePage
 	public AndroidPreferencePage() {
 		super(GRID);
 		setPreferenceStore(HybridUI.getDefault().getPreferenceStore());
-		setDescription("Settings for Hybrid Mobile Application development");
+		setDescription("Android settings for Hybrid Mobile Application development");
 	}
 	
 	/**

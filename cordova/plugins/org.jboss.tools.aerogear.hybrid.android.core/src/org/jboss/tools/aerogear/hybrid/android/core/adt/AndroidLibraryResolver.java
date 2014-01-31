@@ -85,7 +85,7 @@ public class AndroidLibraryResolver extends
 	
 	public void preCompile(IProgressMonitor monitor) throws CoreException{
 		AndroidSDK sdk = AndroidProjectUtils.selectBestValidTarget();
-		AndroidSDKManager sdkManager = new AndroidSDKManager();
+		AndroidSDKManager sdkManager = AndroidSDKManager.getManager();
 		File projectDir = libraryRoot.append("framework").toFile();
 		if(!projectDir.isDirectory()){
 			throw new CoreException(HybridMobileStatus.newMissingEngineStatus(null, "Library for the Active Hybrid Mobile Engine for Android is incomplete. No framework directory is present."));

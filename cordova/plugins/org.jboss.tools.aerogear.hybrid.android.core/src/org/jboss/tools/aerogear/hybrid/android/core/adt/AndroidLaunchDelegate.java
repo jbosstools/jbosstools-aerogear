@@ -41,7 +41,7 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, 
 					"Failed to connect with the device or emulator. We will attempt to reconnect, please try running your application again."));
 		}
-		AndroidSDKManager sdk = new AndroidSDKManager();
+		AndroidSDKManager sdk = AndroidSDKManager.getManager();
 	
 		HybridProject project = HybridProject.getHybridProject(getProject(configuration));
 		WidgetModel model = WidgetModel.getModel(project);
@@ -88,7 +88,7 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// Start ADB Server
 		boolean runOnDevice = configuration.getAttribute(AndroidLaunchConstants.ATTR_IS_DEVICE_LAUNCH, false);
-		AndroidSDKManager sdk = new AndroidSDKManager();
+		AndroidSDKManager sdk = AndroidSDKManager.getManager();
 		if(!runOnDevice){
 			sdk.killADBServer();
 		}
@@ -153,7 +153,7 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 	}
 	
 	private AndroidDevice getEmulator() throws CoreException{
-		AndroidSDKManager sdk = new AndroidSDKManager();
+		AndroidSDKManager sdk = AndroidSDKManager.getManager();
 		List<AndroidDevice> devices = sdk.listDevices();
 		for (AndroidDevice androidDevice : devices) {
 			if ( androidDevice.isEmulator() && androidDevice.getState() == AndroidDevice.STATE_DEVICE )

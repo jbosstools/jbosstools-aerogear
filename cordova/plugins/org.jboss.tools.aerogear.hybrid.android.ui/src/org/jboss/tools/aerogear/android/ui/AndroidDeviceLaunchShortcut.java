@@ -25,7 +25,7 @@ public class AndroidDeviceLaunchShortcut extends HybridProjectLaunchShortcut {
 	protected boolean validateBuildToolsReady() throws CoreException {
 		if(!SDKLocationHelper.defineSDKLocationIfNecessary())
 			return false;
-		AndroidSDKManager sdkManager = new AndroidSDKManager();
+		AndroidSDKManager sdkManager = AndroidSDKManager.getManager();
 		List<AndroidSDK> targets = sdkManager.listTargets();
 		if(targets == null || targets.isEmpty() ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidUI.PLUGIN_ID, "No targets to build against"));
@@ -74,7 +74,7 @@ public class AndroidDeviceLaunchShortcut extends HybridProjectLaunchShortcut {
 	private AndroidDevice getDeviceToRun() {
 		if (deviceToRun == null) {
 			try {
-				AndroidSDKManager sdkManager = new AndroidSDKManager();
+				AndroidSDKManager sdkManager = AndroidSDKManager.getManager();
 				List<AndroidDevice> devices = sdkManager.listDevices();
 				for (AndroidDevice androidDevice : devices) {
 					if (!androidDevice.isEmulator()) {

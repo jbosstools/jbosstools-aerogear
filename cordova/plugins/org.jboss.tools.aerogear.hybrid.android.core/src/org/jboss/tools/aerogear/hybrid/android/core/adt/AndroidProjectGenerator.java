@@ -79,7 +79,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 	@Override
 	protected void generateNativeFiles(HybridMobileLibraryResolver resolver) throws CoreException {
 		
-		AndroidSDKManager sdkManager = new AndroidSDKManager();
+		AndroidSDKManager sdkManager = AndroidSDKManager.getManager();
 		
 		HybridProject hybridProject = HybridProject.getHybridProject(getProject());
 		if(hybridProject == null ){

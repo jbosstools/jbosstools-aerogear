@@ -44,7 +44,7 @@ public class AndroidProjectUtils {
  	 * ,</ul>
 	 */
 	public static AndroidSDK selectBestValidTarget() throws CoreException {
-		AndroidSDKManager sdkManager = new AndroidSDKManager();
+		AndroidSDKManager sdkManager = AndroidSDKManager.getManager();
 		List<AndroidSDK> targets = sdkManager.listTargets();
 		if(targets == null || targets.isEmpty() ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "No Android targets were found, Please create a target"));

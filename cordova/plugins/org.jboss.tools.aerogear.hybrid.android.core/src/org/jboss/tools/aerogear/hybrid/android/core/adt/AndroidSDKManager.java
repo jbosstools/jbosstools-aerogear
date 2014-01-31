@@ -20,15 +20,19 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
+import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectConventions;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.ExternalProcessUtility;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.TextDetectingStreamListener;
 
 /**
@@ -235,16 +239,22 @@ public class AndroidSDKManager {
 	
 	
 	
-	public AndroidSDKManager() {
+	private AndroidSDKManager(String tools, String platform) {
+		toolsDir = tools;
+		platformTools = platform;
+	}
+	
+	public static AndroidSDKManager getManager() throws CoreException{
 		String sdkDir = AndroidCore.getSDKLocation();
-		if(sdkDir == null )
-			throw new IllegalStateException("No SDK is defined to work with the Android SDK Manager");
-		
-		if(!sdkDir.endsWith(File.separator)){
-			sdkDir = sdkDir+ File.separator;
+		if(sdkDir == null ){
+			throw new CoreException(new HybridMobileStatus(IStatus.ERROR, AndroidCore.PLUGIN_ID, AndroidConstants.STATUS_CODE_ANDROID_SDK_NOT_DEFINED, 
+					"Android SDK location is not defined", null));
 		}
-		toolsDir = sdkDir+ "tools" + File.separator;
-		platformTools = sdkDir +"platform-tools" + File.separator;
+		Path path = new Path(sdkDir);
+		IPath tools = path.append("tools").addTrailingSeparator();
+		IPath platform = path.append("platform-tools").addTrailingSeparator();
+		AndroidSDKManager sdk = new AndroidSDKManager(tools.toOSString(), platform.toOSString());
+		return sdk;
 	}
 	
 	
