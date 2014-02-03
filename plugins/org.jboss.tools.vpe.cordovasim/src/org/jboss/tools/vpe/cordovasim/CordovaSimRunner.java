@@ -18,6 +18,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Image;
@@ -32,6 +33,7 @@ import org.jboss.tools.vpe.browsersim.browser.ExtendedWindowEvent;
 import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.browser.WebKitBrowserFactory;
+import org.jboss.tools.vpe.browsersim.browser.javafx.JavaFXBrowser;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.ui.CocoaUIEnhancer;
 import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
@@ -60,6 +62,19 @@ public class CordovaSimRunner {
 	
 	private static boolean isJavaFxAvailable;
 
+	static {
+		if (PlatformUtil.OS_LINUX.equals(PlatformUtil.getOs())) {
+			isJavaFxAvailable = false; // JavaFx web engine is not supported on Linux
+		} else {
+			isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
+		}
+
+		Shell tempShell = new Shell();
+		Browser tempSWTBrowser = new Browser(tempShell, SWT.WEBKIT);
+		JavaFXBrowser tempJavaFXBrowser = new JavaFXBrowser(tempShell);
+		tempSWTBrowser.dispose();
+	}
+
 	/**
 	 * @param args
 	 * @throws Exception
@@ -72,15 +87,6 @@ public class CordovaSimRunner {
 		
 		CordovaSimArgs.parseArgs(args);
 
-		if (PlatformUtil.OS_LINUX.equals(PlatformUtil.getOs())) {
-			isJavaFxAvailable = false; // JavaFx web engine is not supported on Linux
-		} else {
-			isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
-		}
-
-		if (isJavaFxAvailable) {
-			BrowserSimUtil.loadEngines();
-		}	
 		run();
 	}
 	
