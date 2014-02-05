@@ -19,13 +19,13 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 
 public class AndroidProjectUtils {
 	
-	private static final int REQUIRED_MIN_API_LEVEL = 17;
-
+	
 	
 	public static File getPlatformWWWDirectory(File projectDirectory) {
 		Assert.isNotNull(projectDirectory);
@@ -51,14 +51,14 @@ public class AndroidProjectUtils {
 		}
 		AndroidSDK target = null;
 		for (AndroidSDK androidSDK : targets) {
-			if(androidSDK.getApiLevel() >= REQUIRED_MIN_API_LEVEL &&
+			if(androidSDK.getApiLevel() >= AndroidConstants.REQUIRED_MIN_API_LEVEL &&
 					(target == null || androidSDK.getApiLevel() > target.getApiLevel())){
 				target = androidSDK;
 			}
 		}
 		if( target == null ){
 			throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, 
-					"Please install Android API " +REQUIRED_MIN_API_LEVEL +" or later. Use the Android SDK Manager to install or upgrade any missing SDKs to tools."));
+					"Please install Android API " +AndroidConstants.REQUIRED_MIN_API_LEVEL +" or later. Use the Android SDK Manager to install or upgrade any missing SDKs to tools."));
 		}
 		return target;
 	}

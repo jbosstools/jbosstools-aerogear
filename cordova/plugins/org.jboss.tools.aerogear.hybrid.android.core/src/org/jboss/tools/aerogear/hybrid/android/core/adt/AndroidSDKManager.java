@@ -101,25 +101,39 @@ public class AndroidSDKManager {
 	
 	private static class AVDListParser implements IStreamListener{
 		private static final String PREFIX_NAME = "Name:";
+		private static final String PREFIX_TARGET = "Target:";
+		private static final String MARKER_LEVEL = "level";
 		private StringBuffer buffer = new StringBuffer();
 		@Override
 		public void streamAppended(String text, IStreamMonitor monitor) {
 			buffer.append(text);
 		}
 		
-		public List<String> getAVDList(){
+		public List<AndroidAVD> getAVDList(){
 			if (buffer == null || buffer.length() < 1)
 				return null;
 
 			StringReader reader = new StringReader(buffer.toString());
 			BufferedReader read = new BufferedReader(reader);
 			String line =null;
-			ArrayList<String> list = new ArrayList<String>();
+			ArrayList<AndroidAVD> list = new ArrayList<AndroidAVD>();
 			try{
+				AndroidAVD currentAVD = null;
 				while ((line = read.readLine()) != null) {
+					
 					int idx = line.indexOf(PREFIX_NAME);
 					if(idx > -1){
-						list.add(line.substring(idx+PREFIX_NAME.length()).trim());
+						currentAVD = new AndroidAVD();
+						currentAVD.setName(line.substring(idx+PREFIX_NAME.length()).trim());
+						continue;
+					}
+					idx = line.indexOf(PREFIX_TARGET);
+					if(idx>-1 && currentAVD != null){
+						int startIndex = line.indexOf(MARKER_LEVEL) + MARKER_LEVEL.length();
+						int endIndex = line.indexOf(')');
+						currentAVD.setApiLevel((Integer.parseInt(line.substring(startIndex, endIndex).trim())));
+						list.add(currentAVD);
+						currentAVD = null;
 					}
 				}
 			}
@@ -172,7 +186,7 @@ public class AndroidSDKManager {
 						sdkList.add(sdk);
 						int vIndex = pair[1].indexOf("or");
 						sdk.setId(pair[1].substring(vIndex + "or".length())
-								.replace("\"", ""));
+								.replace("\"", "").trim());
 					} else if ("Type".equalsIgnoreCase(pair[0])) {
 						Assert.isNotNull(sdk);
 						sdk.setType(pair[1].trim());
@@ -324,7 +338,7 @@ public class AndroidSDKManager {
 		processUtility.execSync(getADBCommand()+" kill-server",null, null, null, new NullProgressMonitor(), null, null);
 	}
 	
-	public List<String> listAVDs() throws CoreException{
+	public List<AndroidAVD> listAVDs() throws CoreException{
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		AVDListParser parser = new AVDListParser();
 		processUtility.execSync(getAndroidCommand()+" list avd", null, parser, parser, 

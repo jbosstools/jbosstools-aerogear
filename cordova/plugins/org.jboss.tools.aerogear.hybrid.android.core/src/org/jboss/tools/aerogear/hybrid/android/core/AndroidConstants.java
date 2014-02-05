@@ -12,6 +12,9 @@ package org.jboss.tools.aerogear.hybrid.android.core;
 
 public interface AndroidConstants {
 	
+	public static final int REQUIRED_MIN_API_LEVEL = 17;
+
+	
 	public static final String DIR_ASSETS = "assets";
 	public static final String DIR_LIBS = "libs";
 	public static final String DIR_RES = "res";
@@ -27,5 +30,7 @@ public interface AndroidConstants {
 	public static final String PREF_ANDROID_SDK_LOCATION = "Android_SDK_Loc";
 	
 	public static final int STATUS_CODE_ANDROID_SDK_NOT_DEFINED= 200;
+	public static final int STATUS_CODE_ANDROID_AVD_NOT_DEFINED= 210;
+	public static final int STATUS_CODE_ANDROID_AVD_MIN_API_LEVEL= 220;
 
 }

@@ -37,6 +37,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
+import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidAVD;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDKManager;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
@@ -47,6 +49,7 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 	private Text logFilterTxt;
 	private Listener dirtyListener;
 	private Combo AVDCombo;
+	private List<AndroidAVD> avds;
 	
 	private class DirtyListener implements Listener{
 		@Override
@@ -106,10 +109,11 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 		lblVirtualDeviceavd.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblVirtualDeviceavd.setText("Virtual Device (AVD):");
 		
-		AVDCombo = new Combo(grpEmulator, SWT.NONE);
+		AVDCombo = new Combo(grpEmulator, SWT.READ_ONLY);
 		AVDCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		AVDCombo.add("", 0);
 		AVDCombo.addListener(SWT.Selection, dirtyListener);
+	
 		
 		
 		Label lblLogFilter = new Label(grpEmulator, SWT.NONE);
@@ -121,9 +125,9 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 		logFilterTxt.addListener(SWT.Modify, dirtyListener);
 		try {
 			AndroidSDKManager sdk = AndroidSDKManager.getManager();
-			List<String> avds = sdk.listAVDs();
-			for (String string : avds) {
-				AVDCombo.add(string);
+			avds = sdk.listAVDs();
+			for (AndroidAVD avd : avds) {
+				AVDCombo.add(avd.getName());
 			}
 		} catch (CoreException e1) {
 			AVDCombo.removeAll();// let it fallback to default
@@ -177,9 +181,10 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(HybridProjectLaunchConfigConstants.ATTR_BUILD_SCOPE, textProject.getText());
 		String avd = AVDCombo.getText();
-		if (avd != null && !avd.isEmpty()){
-			configuration.setAttribute(ATTR_AVD_NAME, avd);
+		if(avd != null && avd.isEmpty()){
+			avd = null;
 		}
+		configuration.setAttribute(ATTR_AVD_NAME, avd);
 		configuration.setAttribute(ATTR_LOGCAT_FILTER, logFilterTxt.getText());
 	}
 
@@ -191,6 +196,18 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 	
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig) {
+		setMessage(null);
+		setErrorMessage(null);
+		String avd = AVDCombo.getText();
+		if(avd != null && !avd.isEmpty()){
+			for (AndroidAVD androidAVD : avds) {
+				if(androidAVD.getName().equals(avd) 
+						&& androidAVD.getApiLevel() < AndroidConstants.REQUIRED_MIN_API_LEVEL){
+					setErrorMessage("Selected AVD does not satisfy the minimum required API level. Please select a different one");
+					return false;
+				}
+			}	
+		}
 		if(SDKLocationHelper.isSDKLocationDefined())
 			return super.isValid(launchConfig);
 		return false;
