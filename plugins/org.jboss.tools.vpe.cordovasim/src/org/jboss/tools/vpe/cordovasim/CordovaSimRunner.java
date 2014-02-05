@@ -62,7 +62,6 @@ public class CordovaSimRunner {
 	private static Display display;
 	
 	private static boolean isJavaFxAvailable;
-	private static boolean debuggerStarted = false;
 
 
 	static { // TODO need to do this better
@@ -110,9 +109,6 @@ public class CordovaSimRunner {
 			if (server != null) {
 				server.stop();
 				server.join();
-			}
-			if (debuggerStarted) {
-				DevToolsDebuggerServer.stopDebugServer();
 			}
 			if (CordovaSimArgs.isRestartRequired()) {
 				run();
@@ -244,12 +240,8 @@ public class CordovaSimRunner {
 					oldBrowser = browserSim.getBrowser();
 					
 					try {
-						if (debuggerStarted) {
-							DevToolsDebuggerServer.stopDebugServer();
-						}
-			            if (browserSim.getBrowser() instanceof JavaFXBrowser) {
+			            if (browserSim.getBrowser() instanceof JavaFXBrowser  && !Server.STARTED.equals(DevToolsDebuggerServer.getServerState())) {
 			                DevToolsDebuggerServer.startDebugServer(((JavaFXBrowser)browserSim.getBrowser()).getDebugger());
-			                debuggerStarted = true;
 			            }					
 			        } catch (Exception e) {
 						CordovaSimLogger.logError(e.getMessage(), e);
