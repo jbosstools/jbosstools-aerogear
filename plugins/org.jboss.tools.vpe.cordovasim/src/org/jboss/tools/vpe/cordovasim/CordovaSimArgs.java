@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +61,14 @@ public class CordovaSimArgs {
 			rootFolder = params.remove(params.size() - 1); // the parameter before the last one
 		} else {
 			rootFolder = "."; //$NON-NLS-1$
+		}
+
+		try {
+			ServerSocket socket = new ServerSocket(0);
+			BrowserSimArgs.debuggerPort = socket.getLocalPort();
+			socket.close();
+		} catch (IOException e) {
+			CordovaSimLogger.logError(e.getMessage(), e);
 		}
 	}
 
