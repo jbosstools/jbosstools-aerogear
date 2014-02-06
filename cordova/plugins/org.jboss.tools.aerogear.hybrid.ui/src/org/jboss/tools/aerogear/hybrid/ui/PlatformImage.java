@@ -23,7 +23,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 public class PlatformImage {
 	
 	private static final String ATTR_ICON = "icon";
-	public static final String ATTR_PROJECT_GENERATOR="projectGenerator";
+	public static final String ATTR_PLATFFORM_SUPPORT="platformSupport";
 	public static final String ATTR_PROJECT_BUILDER="projectBuilder";
 	public static final String EXTENSION_POINT_ID= "org.jboss.tools.aerogear.hybrid.ui.platformImages";
 
@@ -34,7 +34,7 @@ public class PlatformImage {
 	PlatformImage(IConfigurationElement configurationElement) {
 		String iconPath = configurationElement.getAttribute(ATTR_ICON);
 		icon= HybridUI.getImageDescriptor(configurationElement.getContributor().getName(), iconPath);
-		projectGeneratorID = configurationElement.getAttribute(ATTR_PROJECT_GENERATOR);
+		projectGeneratorID = configurationElement.getAttribute(ATTR_PLATFFORM_SUPPORT);
 		projectBuilderID = configurationElement.getAttribute(ATTR_PROJECT_BUILDER);
 		
 	}
@@ -54,7 +54,7 @@ public class PlatformImage {
 	public static ImageDescriptor getIconFor(String attribute, String id ){
 		List<PlatformImage> images = HybridUI.getPlatformImages();
 		for (PlatformImage platformImage : images) {			
-			if(attribute.equals(ATTR_PROJECT_GENERATOR) && id.equals(platformImage.getProjectGeneratorID())){
+			if(attribute.equals(ATTR_PLATFFORM_SUPPORT) && id.equals(platformImage.getProjectGeneratorID())){
 				return platformImage.getIcon();
 			}
 			if(attribute.equals(ATTR_PROJECT_BUILDER) && id.equals(platformImage.getProjectBuilderID())){

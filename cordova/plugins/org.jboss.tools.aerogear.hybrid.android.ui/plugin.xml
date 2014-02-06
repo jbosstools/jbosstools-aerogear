@@ -54,11 +54,11 @@
    </extension>
  <extension
        point="org.jboss.tools.aerogear.hybrid.ui.platformImages">
-    <platformImage
+    <platformImage 
           icon="icons/elcl16/android_icon.png"
           id="org.jboss.tools.aerogear.hybrid.android.ui.platformImage"
           projectBuilder="org.jboss.tools.aerogear.hybrid.android.core.projectBuilder"
-          projectGenerator="org.jboss.tools.aerogear.hybrid.android.core.projectGenerator">
+          platformSupport="org.jboss.tools.aerogear.hybrid.android.core.platformSupport">
     </platformImage>
  </extension>
    <extension

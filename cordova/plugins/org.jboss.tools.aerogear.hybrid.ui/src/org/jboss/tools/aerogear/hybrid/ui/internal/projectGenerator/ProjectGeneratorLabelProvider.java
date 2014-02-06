@@ -28,7 +28,7 @@ public class ProjectGeneratorLabelProvider extends BaseLabelProvider implements 
 		if(img != null ){
 			return img;
 		}
-		ImageDescriptor imgDesc =PlatformImage.getIconFor(PlatformImage.ATTR_PROJECT_GENERATOR, platform.getID());
+		ImageDescriptor imgDesc =PlatformImage.getIconFor(PlatformImage.ATTR_PLATFFORM_SUPPORT, platform.getID());
 		if(imgDesc != null){
 			img= imgDesc.createImage();
 			imageCache.put(platform.getID(), img);

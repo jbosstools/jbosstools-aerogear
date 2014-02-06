@@ -3,7 +3,7 @@
 <schema targetNamespace="org.jboss.tools.aerogear.hybrid.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.jboss.tools.aerogear.hybrid.core" id="org.jboss.tools.aerogear.hybrid.core.projectGenerator" name="Native Platform Project Generator"/>
+         <meta.schema plugin="org.jboss.tools.aerogear.hybrid.core" id="org.jboss.tools.aerogear.hybrid.core.projectGenerator" name="Hybrid Mobile Tools Platform Support"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]

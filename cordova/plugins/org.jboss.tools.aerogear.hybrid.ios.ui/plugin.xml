@@ -44,7 +44,7 @@
             icon="icons/elcl16/ios_icon.png"
             id="org.jboss.tools.aerogear.hybrid.ios.ui.platformImage"
             projectBuilder="org.jboss.tools.aerogear.hybrid.ios.core.nativeBuilder"
-            projectGenerator="org.jboss.tools.aerogear.hybrid.ios.core.projectGenerator">
+            platformSupport="org.jboss.tools.aerogear.hybrid.ios.core.platformSupport">
       </platformImage>
    </extension>
    <extension
