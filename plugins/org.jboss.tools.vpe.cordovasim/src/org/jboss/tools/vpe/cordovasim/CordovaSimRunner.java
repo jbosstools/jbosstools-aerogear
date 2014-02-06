@@ -62,7 +62,12 @@ public class CordovaSimRunner {
 	private static Display display;
 	
 	private static boolean isJavaFxAvailable;
-
+	
+	static {
+		if (PlatformUtil.OS_MACOSX.equals(PlatformUtil.getOs())) {
+			CocoaUIEnhancer.initializeMacOSMenuBar(Messages.CordovaSim_CORDOVA_SIM);
+		}
+	}
 
 	static { // TODO need to do this better
 		if (PlatformUtil.OS_LINUX.equals(PlatformUtil.getOs())) {
@@ -82,9 +87,6 @@ public class CordovaSimRunner {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		if (PlatformUtil.OS_MACOSX.equals(PlatformUtil.getOs())) {
-			CocoaUIEnhancer.initializeMacOSMenuBar(Messages.CordovaSim_CORDOVA_SIM);
-		}
 		display = Display.getDefault();
 		CordovaSimArgs.parseArgs(args);
 		run();
