@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
@@ -115,7 +116,11 @@ public class CordovaSimLauncher {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					MessageDialog.openError(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+					Shell parentShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+					if (parentShell == null) {
+						parentShell = PlatformUI.getWorkbench().getDisplay().getShells()[0]; // Hot fix for gtk3
+					}	
+					MessageDialog.openError(parentShell,
 							Messages.CordovaSimLauncher_CANNOT_RUN_CORDOVASIM, Messages.CordovaSimLauncher_CANNOT_FIND_ROOT_FOLDER);					
 				}
 			});
