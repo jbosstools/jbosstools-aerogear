@@ -88,6 +88,7 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			
 			HashMap<String, String > values = new HashMap<String, String>();
 			values.put("__TESTING__", name);
+			values.put("__PROJECT_NAME__", name); // replaced __TESTING__ after 3.4.0
 			values.put("--ID--", packageName);
 			
 			// /${project_name}/${project_name}-Info.plist

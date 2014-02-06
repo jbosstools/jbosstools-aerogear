@@ -27,27 +27,52 @@ import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
 
+import com.github.zafarkhaja.semver.Version;
+/**
+ * Resolves iOS cordova distros to files used by the tool.
+ * @author gercan
+ *
+ */
 public class IosLibraryResolver extends HybridMobileLibraryResolver {
+	private static final Version VERSION_3_3_0 = Version.valueOf("3.3.0");
+	private static final Version VERSION_3_0_0 = Version.valueOf("3.0.0");
+	private static final String TEMPLATEVAR_PRJ_DIR_3_0 = "__TESTING__";
+	private static final String TEMPLATEVAR_PRJ_DIR_3_4 = "__PROJECT_NAME__";
+	private static final String TEMPLATEVAR_PBXPROJ_3_0 = TEMPLATEVAR_PRJ_DIR_3_0;
+	private static final String TEMPLATEVAR_PBXPROJ_3_4 = "__NON-CLI__";
+	
 	
 	private HashMap<IPath, URL> files = new HashMap<IPath, URL>();
 	
 	private void initFiles() {
 		IPath templatePrjRoot = libraryRoot.append("bin/templates/project");
-		if("3.0.0".equals(version)){
+		Version v = Version.valueOf(version);
+		/* In 3.4 ios template stopped using the __TESTING__ variable 
+		 * on the template. Also started using two versions for .pbxproj files
+		 */
+		String prjDirVar = TEMPLATEVAR_PRJ_DIR_3_0;
+		String pbxProjVar = TEMPLATEVAR_PBXPROJ_3_0;
+		if(v.compareWithBuildsTo(VERSION_3_3_0) >0){
+			prjDirVar = TEMPLATEVAR_PRJ_DIR_3_4;
+			pbxProjVar = TEMPLATEVAR_PBXPROJ_3_4;
+		}
+		
+		
+		if(v.equals(VERSION_3_0_0)){
 			files.put(new Path("cordova"), getEngineFile(libraryRoot.append("bin/templates/project/cordova/")));
 		}
 		else{
 			files.put(new Path("cordova"), getEngineFile(libraryRoot.append("bin/templates/scripts/cordova/")));
 		}
-		files.put(new Path(VAR_APP_NAME), getEngineFile(templatePrjRoot.append("__TESTING__")));
-		files.put(new Path(VAR_APP_NAME+"/"+VAR_APP_NAME+"-Info.plist"), getEngineFile(templatePrjRoot.append("__TESTING__/__TESTING__-Info.plist")));
-		files.put(new Path(VAR_APP_NAME+"/"+VAR_APP_NAME+"-Prefix.pch") , getEngineFile(templatePrjRoot.append("__TESTING__/__TESTING__-Prefix.pch")));
-		files.put(new Path(VAR_APP_NAME+".xcodeproj/project.pbxproj"), getEngineFile(templatePrjRoot.append("__TESTING__.xcodeproj/project.pbxproj")));
-		files.put(new Path(VAR_APP_NAME+"/Classes/AppDelegate.h"), getEngineFile(templatePrjRoot.append("__TESTING__/Classes/AppDelegate.h")));
-		files.put(new Path(VAR_APP_NAME+"/Classes/AppDelegate.m"), getEngineFile(templatePrjRoot.append("__TESTING__/Classes/AppDelegate.m")));
-		files.put(new Path(VAR_APP_NAME+"/Classes/MainViewController.h"), getEngineFile(templatePrjRoot.append("__TESTING__/Classes/MainViewController.h")));
-		files.put(new Path(VAR_APP_NAME+"/Classes/MainViewController.m"), getEngineFile(templatePrjRoot.append("__TESTING__/Classes/MainViewController.m")));
-		files.put(new Path(VAR_APP_NAME+"/main.m"), getEngineFile(templatePrjRoot.append("__TESTING__/main.m")));
+		files.put(new Path(VAR_APP_NAME), getEngineFile(templatePrjRoot.append(prjDirVar)));
+		files.put(new Path(VAR_APP_NAME+"/"+VAR_APP_NAME+"-Info.plist"), getEngineFile(templatePrjRoot.append(NLS.bind("{0}/{0}-Info.plist",prjDirVar))));
+		files.put(new Path(VAR_APP_NAME+"/"+VAR_APP_NAME+"-Prefix.pch") , getEngineFile(templatePrjRoot.append(NLS.bind("{0}/{0}-Prefix.pch",prjDirVar))));
+		files.put(new Path(VAR_APP_NAME+".xcodeproj/project.pbxproj"), getEngineFile(templatePrjRoot.append(NLS.bind("{0}.xcodeproj/project.pbxproj",pbxProjVar))));
+		files.put(new Path(VAR_APP_NAME+"/Classes/AppDelegate.h"), getEngineFile(templatePrjRoot.append(NLS.bind("{0}/Classes/AppDelegate.h", prjDirVar))));
+		files.put(new Path(VAR_APP_NAME+"/Classes/AppDelegate.m"), getEngineFile(templatePrjRoot.append(NLS.bind("{0}/Classes/AppDelegate.m", prjDirVar))));
+		files.put(new Path(VAR_APP_NAME+"/Classes/MainViewController.h"), getEngineFile(templatePrjRoot.append(NLS.bind("{0}/Classes/MainViewController.h", prjDirVar))));
+		files.put(new Path(VAR_APP_NAME+"/Classes/MainViewController.m"), getEngineFile(templatePrjRoot.append(NLS.bind("{0}/Classes/MainViewController.m", prjDirVar))));
+		files.put(new Path(VAR_APP_NAME+"/main.m"), getEngineFile(templatePrjRoot.append(NLS.bind("{0}/main.m",prjDirVar))));
 		
 		files.put(new Path("CordovaLib"), getEngineFile(libraryRoot.append("CordovaLib")));
 	}
