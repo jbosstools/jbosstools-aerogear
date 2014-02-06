@@ -18,7 +18,6 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Image;
@@ -74,12 +73,10 @@ public class CordovaSimRunner {
 			isJavaFxAvailable = false; // JavaFx web engine is not supported on Linux
 		} else {
 			isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
+			if (isJavaFxAvailable) {
+				BrowserSimUtil.loadWebkitLibraries();
+			}
 		}
-
-		Shell tempShell = new Shell(); 
-		Browser tempSWTBrowser = new Browser(tempShell, SWT.WEBKIT);
-		JavaFXBrowser tempJavaFXBrowser = new JavaFXBrowser(tempShell);
-		tempSWTBrowser.dispose();
 	}
 
 	/**
