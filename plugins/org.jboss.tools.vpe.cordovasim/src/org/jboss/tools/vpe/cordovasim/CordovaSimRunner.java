@@ -56,10 +56,7 @@ public class CordovaSimRunner {
 	
 	private static CustomBrowserSim browserSim;
 	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-
-	private static Server server;
-	private static Display display;
-	
+	private static Server server;	
 	private static boolean isJavaFxAvailable;
 	
 	static {
@@ -84,22 +81,21 @@ public class CordovaSimRunner {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		display = Display.getDefault();
 		CordovaSimArgs.parseArgs(args);
-		run();
+		startCordovaSim();
 	}
 	
-	private static void run() throws Exception {
+	private static void startCordovaSim() throws Exception {
+		Display display = Display.getDefault();
 		try {
-			Shell shell = createCordovaSim();
+			Shell shell = createCordovaSim(display);
 			CordovaSimArgs.setRestartRequired(false);
-			
 			while (!shell.isDisposed()) {
 				if (!shell.getDisplay().readAndDispatch())
 					shell.getDisplay().sleep();
 			}
 		} catch (SWTError e) {
-			ExceptionNotifier.showBrowserSimLoadError(new Shell(display), e, Messages.CordovaSim_CORDOVA_SIM);
+			ExceptionNotifier.showBrowserSimLoadError(new Shell(Display.getDefault()), e, Messages.CordovaSim_CORDOVA_SIM);
 		} catch (BindException e) {
 			showPortInUseMessage(CordovaSimArgs.getPort());
 		} catch (Throwable t) {
@@ -110,7 +106,7 @@ public class CordovaSimRunner {
 				server.join();
 			}
 			if (CordovaSimArgs.isRestartRequired()) {
-				run();
+				startCordovaSim();
 			} else if (display != null) {
 				display.dispose();
 			}
@@ -172,7 +168,7 @@ public class CordovaSimRunner {
 		shell.setText(Messages.CordovaSim_CORDOVA_SIM);
 	}
 	
-	private static Shell createCordovaSim() throws Exception {
+	private static Shell createCordovaSim(Display display) throws Exception {
 		File rootFolder = new File(CordovaSimArgs.getRootFolder());		
 
 		server = ServerCreator.createServer(rootFolder.getAbsolutePath(), CordovaSimArgs.getPort());// XXX
@@ -185,10 +181,7 @@ public class CordovaSimRunner {
 		if (!isJavaFxAvailable) {
 			sp.setJavaFx(false);
 		}
-		
-		if (display.isDisposed()) {
-			display = Display.getDefault();
-		}
+
 		final Shell shell = new Shell(display);
 		setShellAttributes(shell);
 		shell.setLayout(new FillLayout());
