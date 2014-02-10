@@ -78,5 +78,14 @@
             name="Android">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.statusHandlers">
+      <statusHandler
+            class="org.jboss.tools.aerogear.hybrid.android.ui.internal.statushandler.AVDStatusHandler"
+            code="210"
+            id="org.jboss.tools.aerogear.hybrid.android.ui.AVDStatusHandler"
+            plugin="org.jboss.tools.aerogear.hybrid.android.core">
+      </statusHandler>
+   </extension>
  
 </plugin>

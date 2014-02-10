@@ -30,9 +30,9 @@ import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectConventions;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.ExternalProcessUtility;
-import org.jboss.tools.aerogear.hybrid.core.internal.util.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.TextDetectingStreamListener;
 
 /**
@@ -430,6 +430,13 @@ public class AndroidSDKManager {
 		command.append(" -cpu-delay 0"); 
 		command.append(" -no-boot-anim");
 		command.append(" -avd ").append(avd);
+		processUtility.execAsync(command.toString(), null, null, null, null);
+	}
+	
+	public void startAVDManager() throws CoreException{
+		ExternalProcessUtility processUtility = new ExternalProcessUtility();
+		StringBuilder command = new StringBuilder(getAndroidCommand());
+		command.append(" avd ");
 		processUtility.execAsync(command.toString(), null, null, null, null);
 	}
 	

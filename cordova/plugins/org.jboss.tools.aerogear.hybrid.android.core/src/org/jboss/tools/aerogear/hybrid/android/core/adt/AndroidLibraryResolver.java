@@ -24,9 +24,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
-import org.jboss.tools.aerogear.hybrid.core.internal.util.HybridMobileStatus;
 
 public class AndroidLibraryResolver extends
 		HybridMobileLibraryResolver {

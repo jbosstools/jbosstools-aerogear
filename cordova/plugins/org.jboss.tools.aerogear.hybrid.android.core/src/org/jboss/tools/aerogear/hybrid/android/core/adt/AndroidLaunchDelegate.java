@@ -26,11 +26,11 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
-import org.jboss.tools.aerogear.hybrid.core.internal.util.HybridMobileStatus;
 
 public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 
@@ -151,7 +151,7 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 	private String selectAVD(ILaunchConfiguration configuration, AndroidSDKManager sdk) throws CoreException{
 		List<AndroidAVD> avds = sdk.listAVDs();
 		if (avds == null || avds.isEmpty()){
-			throw new CoreException(new HybridMobileStatus(IStatus.ERROR, AndroidCore.PLUGIN_ID, AndroidConstants.STATUS_CODE_ANDROID_AVD_NOT_DEFINED, 
+			throw new CoreException(new HybridMobileStatus(IStatus.ERROR, AndroidCore.PLUGIN_ID, AndroidConstants.STATUS_CODE_ANDROID_AVD_ISSUE, 
 					"No Android AVDs are available",null));
 		}
 		String avdName = configuration.getAttribute(AndroidLaunchConstants.ATTR_AVD_NAME, (String)null);
@@ -164,7 +164,7 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			}
 			else if(androidAVD.getName().equals(avdName)){
 					if(androidAVD.getApiLevel() <  AndroidConstants.REQUIRED_MIN_API_LEVEL){
-						throw new CoreException(new HybridMobileStatus(IStatus.ERROR, AndroidCore.PLUGIN_ID, AndroidConstants.STATUS_CODE_ANDROID_AVD_MIN_API_LEVEL, 
+						throw new CoreException(new HybridMobileStatus(IStatus.ERROR, AndroidCore.PLUGIN_ID, AndroidConstants.STATUS_CODE_ANDROID_AVD_ISSUE, 
 								NLS.bind("Selected Android AVD {0} does not satisfy the satisfy the minimum API level({1})",
 									new String[]{avdName, Integer.toString(AndroidConstants.REQUIRED_MIN_API_LEVEL)}),null));
 						
@@ -173,8 +173,8 @@ public class AndroidLaunchDelegate implements ILaunchConfigurationDelegate2 {
 			
 			}
 		if(avdName == null ){
-			throw new CoreException(new HybridMobileStatus(IStatus.ERROR, AndroidCore.PLUGIN_ID, AndroidConstants.STATUS_CODE_ANDROID_AVD_NOT_DEFINED, 
-					NLS.bind("None of the defined Android AVDs satisfy the minimum API level({0})",AndroidConstants.REQUIRED_MIN_API_LEVEL),null));
+			throw new CoreException(new HybridMobileStatus(IStatus.ERROR, AndroidCore.PLUGIN_ID, AndroidConstants.STATUS_CODE_ANDROID_AVD_ISSUE, 
+					NLS.bind("Defined Android AVDs do not satisfy the minimum API level({0})",AndroidConstants.REQUIRED_MIN_API_LEVEL),null));
 		}
 		return avdName; 
 	}

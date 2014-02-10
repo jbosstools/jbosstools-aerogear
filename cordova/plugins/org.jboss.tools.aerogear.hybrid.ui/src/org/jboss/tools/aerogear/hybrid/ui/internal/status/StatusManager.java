@@ -12,7 +12,7 @@ package org.jboss.tools.aerogear.hybrid.ui.internal.status;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.jboss.tools.aerogear.hybrid.core.internal.util.HybridMobileStatus;
+import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 
 public class StatusManager {
 

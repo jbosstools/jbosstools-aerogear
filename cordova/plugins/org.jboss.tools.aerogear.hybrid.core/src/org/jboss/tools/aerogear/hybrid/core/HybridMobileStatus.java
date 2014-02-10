@@ -8,12 +8,11 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.core.internal.util;
+package org.jboss.tools.aerogear.hybrid.core;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 
 public class HybridMobileStatus extends Status {
 	
