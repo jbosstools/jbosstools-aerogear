@@ -28,6 +28,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractProjectGeneratorDelegate;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
@@ -59,7 +61,9 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			}
 
 			File destinationDir = getDestination();
-			
+			Widget widgetModel = WidgetModel.getModel(hybridProject).getWidgetForRead();
+			String packageName = widgetModel.getId();
+
 			String name = hybridProject.getBuildArtifactAppName();
 			
 			File prjdir = new File(destinationDir, name);
@@ -77,7 +81,7 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			
 			HashMap<String, String > values = new HashMap<String, String>();
 			values.put("__TESTING__", name);
-			values.put("--ID--", hybridProject.getAppName());
+			values.put("--ID--", packageName);
 			
 			templatedFileCopy(getTemplateFile("/templates/ios/project/__TESTING__/__TESTING__-Info.plist"), 
 					toURL(new File(prjdir, name+"-Info.plist")), 
