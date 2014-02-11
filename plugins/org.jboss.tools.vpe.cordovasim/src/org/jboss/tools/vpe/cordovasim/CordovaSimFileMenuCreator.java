@@ -12,7 +12,12 @@ package org.jboss.tools.vpe.cordovasim;
 
 import java.io.File;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Shell;
 import org.jboss.tools.vpe.browsersim.browser.IBrowser;
+import org.jboss.tools.vpe.browsersim.model.preferences.CommonPreferences;
+import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
+import org.jboss.tools.vpe.browsersim.ui.PreferencesWrapper;
 import org.jboss.tools.vpe.browsersim.ui.menu.FileMenuCreator;
 
 public class CordovaSimFileMenuCreator extends FileMenuCreator {
@@ -37,5 +42,12 @@ public class CordovaSimFileMenuCreator extends FileMenuCreator {
 		int hashIndex =  url.indexOf('#');
 		hashIndex = hashIndex != -1 ? hashIndex : url.length();
 		return Math.min(questionMarkIndex, hashIndex);
+	}
+	
+	@Override
+	protected PreferencesWrapper openDialog(Shell parentShell, CommonPreferences commonPreferences,
+			SpecificPreferences specificPreferences, String currentUrl) {
+		return new CordovaSimManageDeviceDialog(parentShell, SWT.APPLICATION_MODAL
+				| SWT.SHELL_TRIM, commonPreferences, specificPreferences, currentUrl).open();
 	}
 }

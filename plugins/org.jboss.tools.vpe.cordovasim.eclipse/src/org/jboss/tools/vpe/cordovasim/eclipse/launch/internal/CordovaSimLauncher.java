@@ -24,7 +24,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.jboss.tools.cordavasim.eclipse.callbacks.CordovaSimRestartCallback;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
+import org.jboss.tools.vpe.browsersim.eclipse.callbacks.JsLogCallback;
+import org.jboss.tools.vpe.browsersim.eclipse.callbacks.LogCallback;
+import org.jboss.tools.vpe.browsersim.eclipse.callbacks.OpenFileCallback;
+import org.jboss.tools.vpe.browsersim.eclipse.callbacks.ViewSourceCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
@@ -35,7 +40,13 @@ import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
  */
 public class CordovaSimLauncher {
 	public static final String CORDOVASIM_CLASS_NAME = "org.jboss.tools.vpe.cordovasim.CordovaSimRunner"; //$NON-NLS-1$
-	private static final List<ExternalProcessCallback> CORDOVASIM_CALLBACKS = BrowserSimLauncher.BROWSERSIM_CALLBACKS;
+	private static final List<ExternalProcessCallback> CORDOVASIM_CALLBACKS = Arrays.asList(
+			new ViewSourceCallback(),
+			new OpenFileCallback(),
+			new LogCallback(),
+			new JsLogCallback(),
+			new CordovaSimRestartCallback()
+		);
 	private static final List<String> BUNDLES = new ArrayList<String>(); 
 	static {
 		BUNDLES.addAll(BrowserSimLauncher.BUNDLES);
@@ -62,7 +73,7 @@ public class CordovaSimLauncher {
 	
 	//if you change this parameter, see also @org.jbosstools.browsersim.ui.BrowserSim
 	private static final String NOT_STANDALONE = BrowserSimLauncher.NOT_STANDALONE;	
-
+	
 	public static void launchCordovaSim(String projectString, String rootFolderString, String startPageString,
 			Integer port) {
 		List<String> parameters = new ArrayList<String>();
@@ -100,18 +111,7 @@ public class CordovaSimLauncher {
 				parameters.add(String.valueOf(port));
 			}
 
-			IVMInstall jvm = BrowserSimLauncher.getSelectedVM();
-			
-			String jvmPath = jvm.getInstallLocation().getAbsolutePath();
-			String jrePath = jvm.getInstallLocation().getAbsolutePath() + File.separator + "jre";
-
-			if (PlatformUtil.OS_LINUX.equals(PlatformUtil.getOs()) 
-					|| (!BrowserSimUtil.isJavaFxAvailable(jvmPath) && !BrowserSimUtil.isJavaFxAvailable(jrePath))) {
-				BUNDLES.add("org.jboss.tools.vpe.browsersim.javafx.mock"); //$NON-NLS-1$
-			}
-			
-			ExternalProcessLauncher.launchAsExternalProcess(BUNDLES, RESOURCES_BUNDLES,
-					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM, jvm);
+			launchCordovaSim(parameters);
 		} else {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
@@ -125,5 +125,20 @@ public class CordovaSimLauncher {
 				}
 			});
 		}
+	}
+	
+	public static void launchCordovaSim(List<String> parameters) {
+		IVMInstall jvm = BrowserSimLauncher.getSelectedVM();
+		
+		String jvmPath = jvm.getInstallLocation().getAbsolutePath();
+		String jrePath = jvm.getInstallLocation().getAbsolutePath() + File.separator + "jre"; //$NON-NLS-1$
+
+		if (PlatformUtil.OS_LINUX.equals(PlatformUtil.getOs()) 
+				|| (!BrowserSimUtil.isJavaFxAvailable(jvmPath) && !BrowserSimUtil.isJavaFxAvailable(jrePath))) {
+			BUNDLES.add("org.jboss.tools.vpe.browsersim.javafx.mock"); //$NON-NLS-1$
+		}
+		
+		ExternalProcessLauncher.launchAsExternalProcess(BUNDLES, RESOURCES_BUNDLES,
+				CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM, jvm);
 	}
 }
