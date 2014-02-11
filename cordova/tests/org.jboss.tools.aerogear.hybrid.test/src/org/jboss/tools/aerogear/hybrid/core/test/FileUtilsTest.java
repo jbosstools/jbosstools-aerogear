@@ -1,19 +1,31 @@
+/*******************************************************************************
+ * Copyright (c) 2013, 2014 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ *  Contributors:
+ *       Red Hat, Inc. - initial API and implementation
+ *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.test;
 
-import static org.junit.Assert.*;
-import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.*;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.directoryCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.fileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.templatedFileCopy;
+import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.toURL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
 import java.util.HashMap;
 
 import org.jboss.tools.aerogear.hybrid.test.TestUtils;

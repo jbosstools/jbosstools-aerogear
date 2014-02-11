@@ -1,6 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2013, 2014 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ *  Contributors:
+ *       Red Hat, Inc. - initial API and implementation
+ *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStreamReader;
 
@@ -14,7 +26,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
@@ -23,13 +34,11 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 public class HybridProjectCreatorTest {
 	private static final String PROJECT_NAME = "TestProject";

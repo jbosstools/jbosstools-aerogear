@@ -1,6 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2013, 2014 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ *  Contributors:
+ *       Red Hat, Inc. - initial API and implementation
+ *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.plugin.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +24,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.jboss.tools.aerogear.hybrid.core.config.Access;
 import org.jboss.tools.aerogear.hybrid.core.config.Preference;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
