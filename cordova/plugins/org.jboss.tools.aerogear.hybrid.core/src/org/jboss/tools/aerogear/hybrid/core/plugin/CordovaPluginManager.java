@@ -38,6 +38,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -46,6 +47,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
@@ -120,7 +122,8 @@ public class CordovaPluginManager {
 		
 		List<IPluginInstallationAction> actions = collectInstallActions(
 				directory, doc, id, dir, overwrite);
-		runActions(actions,false,overwrite,monitor);
+		runActions(actions,false,overwrite,monitor); 
+		resetInstalledPlugins();
 	}
 
 	/**
@@ -199,9 +202,13 @@ public class CordovaPluginManager {
 				dir.getLocation().toFile(),             // TODO: replace with values from .fetch.json
 				doc, id, pluginsDir,cb);                           
 		runActions(actions,true,cb, monitor);
-
+		resetInstalledPlugins();
 	}
 	
+	private void resetInstalledPlugins() {
+		installedPlugins.clear();
+	}
+
 	/**
 	 * Completes the installation of all the installed plug-ins in this HybridProject 
 	 * to the given platform project location. 
@@ -224,8 +231,16 @@ public class CordovaPluginManager {
 	}
 	
 	/**
-	 * Return unmodifiable list of currently installed plugins. 
-	 * 
+	 * <p>
+	 * Return unmodifiable list of currently installed plug-ins.
+	 * </p>
+	 * <p>
+	 * This is a cached call so subsequent calls will perform better.
+	 * However, it is cached per {@link CordovaPluginManager} instance
+	 * which is also a single instance per {@link HybridProject} however 
+	 * HybridProject instances are created on demand and the client should 
+	 * handle the optimal caching.
+	 * </p>
 	 * @return list of installedPlugins
 	 * @throws CoreException
 	 */
@@ -242,18 +257,13 @@ public class CordovaPluginManager {
 	 */
 	public boolean isPluginInstalled(String pluginId){
 		if(pluginId == null ) return false;
-		try{
-			List<CordovaPlugin> plugins = getInstalledPlugins();
-			for (CordovaPlugin cordovaPlugin : plugins) {
-				if(cordovaPlugin.getId().equals(pluginId))
-					return true;
-			}
-		}
-		catch(CoreException e){
-			return false;
-		}
-		return false;
+		IFolder plugins = this.project.getProject().getFolder(PlatformConstants.DIR_PLUGINS);
+		IPath pluginIDPath = new Path(pluginId);
+		pluginIDPath.append(PlatformConstants.FILE_XML_PLUGIN);
+		boolean result = plugins.exists(pluginIDPath);
+		return result;
 	}
+	
 	/**
 	 * Constructs the contents for the cordova_plugin.js from the list of 
 	 * installed plugins. 
@@ -337,25 +347,30 @@ public class CordovaPluginManager {
 		actions.addAll(collectVariablePreferencesForSupportedPlatforms(doc));
 		return actions;
 	}
+	
 	private void updatePluginList() throws CoreException {
-		IResourceVisitor visitor = new IResourceVisitor() {
-			
-			@Override
-			public boolean visit(IResource resource) throws CoreException {
-				if(resource.getType() == IResource.FOLDER){
-					IFolder folder = (IFolder) resource.getAdapter(IFolder.class);
-					IFile file = folder.getFile(PlatformConstants.FILE_XML_PLUGIN);
-					if(file.exists()){
-						addInstalledPlugin(file);
+		long start = System.currentTimeMillis();
+		if(installedPlugins == null || installedPlugins.isEmpty()) {
+			HybridCore.trace("Really updating the installed plugin list");
+			IResourceVisitor visitor = new IResourceVisitor() {
+				@Override
+				public boolean visit(IResource resource) throws CoreException {
+					if(resource.getType() == IResource.FOLDER){
+						IFolder folder = (IFolder) resource.getAdapter(IFolder.class);
+						IFile file = folder.getFile(PlatformConstants.FILE_XML_PLUGIN);
+						if(file.exists()){
+							addInstalledPlugin(file);
+						}
 					}
+					return resource.getName().equals(PlatformConstants.DIR_PLUGINS);
 				}
-				return true;
+			};
+			IFolder plugins = this.project.getProject().getFolder(PlatformConstants.DIR_PLUGINS);
+			synchronized (installedPlugins) {
+				plugins.accept(visitor,IResource.DEPTH_ONE,false);
 			}
-		};
-		IFolder plugins = this.project.getProject().getFolder(PlatformConstants.DIR_PLUGINS);
-		synchronized (installedPlugins) {
-			plugins.accept(visitor,IResource.DEPTH_ONE,false);
 		}
+		HybridCore.trace(NLS.bind("Updated plugin list in {0} ms", (System.currentTimeMillis() - start)));
 	}
 	
 	private void addInstalledPlugin(IFile pluginxml) throws CoreException{

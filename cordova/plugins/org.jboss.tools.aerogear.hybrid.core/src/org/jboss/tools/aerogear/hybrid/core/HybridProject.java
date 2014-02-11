@@ -11,11 +11,6 @@
 package org.jboss.tools.aerogear.hybrid.core;
 
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -26,13 +21,7 @@ import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngineManager;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
-import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * Handle for the mobile hybrid project types 
