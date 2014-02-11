@@ -16,3 +16,4 @@ Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui.dialogs,
  org.eclipse.ui.ide
 Bundle-Localization: plugin
+Export-Package: org.jboss.tools.aerogear.android.ui

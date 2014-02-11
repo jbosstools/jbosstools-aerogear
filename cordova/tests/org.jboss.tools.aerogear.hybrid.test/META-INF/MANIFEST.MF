@@ -12,7 +12,9 @@ Require-Bundle: org.eclipse.ui,
  org.jboss.tools.aerogear.hybrid.ui;bundle-version="1.0.0",
  org.jboss.tools.aerogear.hybrid.android.core;bundle-version="1.0.0",
  com.google.gson;bundle-version="[2.1.0,3.0.0)",
- org.jboss.tools.aerogear.hybrid.ios.core
+ org.jboss.tools.aerogear.hybrid.ios.core,
+ org.jboss.tools.aerogear.hybrid.android.ui;bundle-version="1.1.0",
+ org.jboss.tools.aerogear.hybrid.ios.ui;bundle-version="1.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.wst.jsdt.core

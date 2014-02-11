@@ -10,24 +10,24 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.ui;
 
-import org.osgi.framework.BundleActivator;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-public class IOSUI implements BundleActivator {
+public class IOSUI extends AbstractUIPlugin{
 
-	private static BundleContext context;
-	 public static final String PLUGIN_ID = "org.jboss.tools.aerogear.hybrid.ios.ui";
+	public static final String PLUGIN_ID = "org.jboss.tools.aerogear.hybrid.ios.ui";
+	
+	private static IOSUI plugin;
 
-	static BundleContext getContext() {
-		return context;
-	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
-		IOSUI.context = bundleContext;
+		super.start(bundleContext);
+		plugin = this;
+		
 	}
 
 	/*
@@ -35,7 +35,17 @@ public class IOSUI implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
-		IOSUI.context = null;
+		super.stop(bundleContext);
+		plugin = null;
+	}
+	
+	/**
+	 * Returns the shared instance
+	 *
+	 * @return the shared instance
+	 */
+	public static IOSUI getDefault() {
+		return plugin;
 	}
 
 }
