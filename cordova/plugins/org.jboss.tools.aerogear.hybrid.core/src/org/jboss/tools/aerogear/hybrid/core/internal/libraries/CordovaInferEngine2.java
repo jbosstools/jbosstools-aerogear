@@ -829,7 +829,7 @@ public class CordovaInferEngine2 extends ASTVisitor implements IInferEngine {
 			else if (assignment.getLeftHandSide() instanceof SingleNameReference)
 			{
 				if(methodDeclaration.selector == null) {
-					methodDeclaration.potentialName = ((SingleNameReference)assignment.getLeftHandSide()).token;
+					methodDeclaration.inferredMethod.name = ((SingleNameReference)assignment.getLeftHandSide()).token;
 				}
 			}
 		}
