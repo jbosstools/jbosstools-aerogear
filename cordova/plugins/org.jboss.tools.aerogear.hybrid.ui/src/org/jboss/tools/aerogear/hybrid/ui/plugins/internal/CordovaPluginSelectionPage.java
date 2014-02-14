@@ -81,7 +81,6 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	private Group grpRepositoryUrl;
 	private Text gitUrlTxt;
 	private final CordovaPluginRegistryManager client = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
-	private InstalledPluginFilter installedPluginsFilter;
 	
 
 	protected CordovaPluginSelectionPage(){
@@ -122,7 +121,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		
 		registryTab = new TabItem(tabFolder, SWT.NONE);
 		registryTab.setText("Registry");
-		catalogViewer = new CordovaPluginCatalogViewer();
+		catalogViewer = new CordovaPluginCatalogViewer(CordovaPluginCatalogViewer.FILTER_INSTALLED);
 		catalogViewer.createControl(tabFolder);
 		catalogViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			
@@ -185,7 +184,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		setupFromInitialSelection();
 		restoreWidgetValues();
 		populatePluginInfos();
-		updateInstalledPluginsFilter();
+		updateProjectOnViewer();
 	}
 
 	private void createProjectGroup(Composite container) {
@@ -207,7 +206,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 				boolean isValidProject = isValidProject(textProject.getText());
 				setPageComplete(validatePage());
 				if(isValidProject && getPluginSourceType() == PLUGIN_SOURCE_REGISTRY){
-					updateInstalledPluginsFilter();
+					updateProjectOnViewer();
 				}
 			}
 		});
@@ -390,24 +389,15 @@ public class CordovaPluginSelectionPage extends WizardPage {
 		}
 		return true;
 	}
-	@SuppressWarnings("restriction")
-	private void updateInstalledPluginsFilter() {
+	
+	private void updateProjectOnViewer() {
 		HybridProject project = null;
 		if(fixedProject != null ){
 			project = fixedProject;
 		}else{
 			project = HybridProject.getHybridProject(textProject.getText());
 		}
-		
-		if(installedPluginsFilter == null ){
-			installedPluginsFilter = new InstalledPluginFilter();
-			installedPluginsFilter.setProject(project);
-			catalogViewer.getViewer().addFilter(installedPluginsFilter);
-		}else{
-			catalogViewer.getViewer().removeFilter(installedPluginsFilter);
-			installedPluginsFilter.setProject(project);
-			catalogViewer.getViewer().addFilter(installedPluginsFilter);
-		}
+		catalogViewer.setProject(project);
 	}
 
 	private boolean validateGitTab(){

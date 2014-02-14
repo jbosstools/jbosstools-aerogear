@@ -32,8 +32,7 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugi
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 
 @SuppressWarnings("restriction")
-public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
-	private final CordovaPluginWizardResources resources;
+public class CordovaPluginItem extends BaseCordovaPluginItem<CordovaRegistryPlugin> {
 	private Label description;
 	private Label nameLabel;
 	private Label licenseLbl;
@@ -42,9 +41,8 @@ public class CordovaPluginItem extends ControlListItem<CordovaRegistryPlugin> {
 	private ComboViewer versionComboViewer;
 
 	public CordovaPluginItem(Composite parent, int style, CordovaRegistryPlugin element, CordovaPluginWizardResources resources, CordovaPluginViewer viewer ) {
-		super(parent, style, element);
+		super(parent, element, resources);
 		this.viewer = viewer;
-		this.resources = resources;
 		createContent();
 	}
 

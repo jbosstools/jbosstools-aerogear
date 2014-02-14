@@ -11,10 +11,12 @@
 package org.jboss.tools.aerogear.hybrid.ui.plugins.internal;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.equinox.internal.p2.ui.discovery.util.ControlListItem;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -24,19 +26,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginInfo;
-import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 @SuppressWarnings("restriction")
-public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPluginInfo>{
+public class CordovaPluginInfoItem extends BaseCordovaPluginItem<CordovaRegistryPluginInfo>{
 
-	private final CordovaPluginWizardResources resources;
 	private final CordovaPluginCatalogViewer viewer;
 	private Button checkbox;
+	private boolean installed;
 
-	public CordovaPluginInfoItem(Composite parent, int style, CordovaRegistryPluginInfo element, CordovaPluginWizardResources resources, CordovaPluginCatalogViewer viewer) {
-		super(parent, style, element);
-		this.resources = resources;
+	public CordovaPluginInfoItem(Composite parent, CordovaRegistryPluginInfo element, CordovaPluginWizardResources resources, CordovaPluginCatalogViewer viewer, boolean installed) {
+		super(parent,element,resources);
 		this.viewer = viewer;
+		this.installed = installed;
 		createContent();
 	}
 
@@ -51,8 +52,10 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 		GridLayout layout = new GridLayout(3, false);
 		layout.marginLeft = 7;
 		layout.marginTop = 2;
-		layout.marginBottom = 2;
+//		layout.marginBottom = 2;
 		setLayout(layout);
+		
+	
 
 		final Composite checkboxContainer = new Composite(this, SWT.INHERIT_NONE);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.BEGINNING).span(1, 2).applyTo(checkboxContainer);
@@ -60,6 +63,7 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 
 		checkbox = new Button(checkboxContainer, SWT.CHECK | SWT.INHERIT_FORCE);
 		checkbox.setText(" "); //$NON-NLS-1$
+		checkbox.setEnabled(!installed);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(checkbox);
 		checkbox.addListener(SWT.Selection, new Listener() {
 			
@@ -69,14 +73,34 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 			}
 		});
 
-		final Label iconLabel = new Label(checkboxContainer, SWT.NONE);
-		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(iconLabel);
-		iconLabel.setImage(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, "/icons/icon32/plug32.png").createImage());
-
 		final Label nameLabel = new Label(this, SWT.NONE);
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.BEGINNING, SWT.CENTER).applyTo(nameLabel);
 		nameLabel.setFont(resources.getSmallHeaderFont());
-		nameLabel.setText(getData().getName());
+		String name = null;
+		if(installed){
+			name = NLS.bind("{0} (installed)", getData().getName());
+		}else{
+			name = getData().getName();
+		}
+		nameLabel.setText(name);
+		
+		final Label maintainerLabel = new Label(this, SWT.NONE);
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.END, SWT.CENTER).applyTo(maintainerLabel);
+		maintainerLabel.setFont(resources.getSubTextFont());
+		Map<String, String> maintainers = getData().getMaintainers();
+		Set<String> keys = maintainers.keySet();
+		StringBuilder maints = new StringBuilder("By: ");
+		StringBuilder maintToolTipText = new StringBuilder();
+		for (String mail : keys) {
+			maints.append(maintainers.get(mail)).append(" ");
+			maintToolTipText.append(NLS.bind("{0} <{1}>", new String[]{maintainers.get(mail),mail}));
+			if(keys.size() >1){
+				maintToolTipText.append("\n");
+			}
+		}
+		maintainerLabel.setText(maints.toString());
+		maintainerLabel.setToolTipText(maintToolTipText.toString());
+		
 		
 		final Label description = new Label(this, SWT.NULL | SWT.WRAP);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).hint(100, SWT.DEFAULT).applyTo(description);
@@ -90,18 +114,15 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 		}
 		description.setText(descriptionText.replaceAll("(\\r\\n)|\\n|\\r", " ")); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		final Composite detailsContainer = new Composite(this, SWT.INHERIT_NONE);
-		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER ).span(3, 1).applyTo(detailsContainer);
-		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(detailsContainer);
-		final Label versionLbl = new Label(detailsContainer, SWT.NONE);
+		final Label versionLbl = new Label(this, SWT.NONE);
 		versionLbl.setFont(resources.getSubTextFont());
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(versionLbl);
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(versionLbl);
 		versionLbl.setText("Latest: "+ getData().getLatestVersion());
 		
 		List<String> keywords = getData().getKeywords();
 		if (keywords != null) {
 			int colSize = keywords == null ? 1 : keywords.size() + 1;
-			Composite keywordsContainer = new Composite(detailsContainer,
+			Composite keywordsContainer = new Composite(this,
 					SWT.INHERIT_NONE);
 			GridDataFactory.swtDefaults().align(SWT.END, SWT.BEGINNING)
 					.span(1, 1).applyTo(keywordsContainer);
@@ -111,12 +132,13 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 			final Label keywordLbl = new Label(keywordsContainer, SWT.NONE);
 			keywordLbl.setFont(resources.getSubTextFont());
 			keywordLbl.setText("keywords:");
+			
 			for (String string : keywords) {
 				final Link hyperlink = new Link(keywordsContainer, SWT.NONE);
 				hyperlink.setFont(resources.getSubTextFont());
 				GridDataFactory.fillDefaults().grab(false, false)
 						.applyTo(hyperlink);
-				hyperlink.setText("<a >" + string + " </a>");
+				hyperlink.setText(NLS.bind("<a >{0}</a>", string));
 				hyperlink.setData(string);
 				hyperlink.addListener(SWT.Selection, new Listener() {
 					
@@ -131,5 +153,17 @@ public class CordovaPluginInfoItem extends ControlListItem<CordovaRegistryPlugin
 		}
 		
 	}
+	
+	@Override
+	public void updateColors(int index) {
+		super.updateColors(index);
+		if(installed){
+			setForeground(resources.getDisabledColor());
+		}else{
+			setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+		}
+	}
+	
+	
 
 }
