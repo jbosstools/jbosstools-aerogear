@@ -95,6 +95,10 @@ public class CordovaEngineProvider {
 		engineList = new HashMap<String, HybridMobileEngine>();
 		
 		File libFolder = getLibFolder();
+		if( !libFolder.isDirectory()){
+			//engine folder does not exist
+			return;
+		}
 		File[] platformDirs = libFolder.listFiles();
 		for (int i = 0; i < platformDirs.length; i++) {
 			if(platformDirs[i].isDirectory() && !platformDirs[i].getName().equals(PlatformConstants.DIR_WWW)){
