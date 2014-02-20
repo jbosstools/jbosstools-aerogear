@@ -31,7 +31,7 @@ public class EngineDownloadReceiver implements IFileTransferListener {
 	 private Object lock;
 	
 	public EngineDownloadReceiver(String version, String platformId, Object lock, IProgressMonitor pm ){
-		 folder = new File(CordovaEngineProvider.getLibFolder(),platformId+"/"+CordovaEngineProvider.CORDOVA_ENGINE_ID+"/"+version);
+		 folder = new File(CordovaEngineProvider.getLibFolder().toFile(),platformId+"/"+CordovaEngineProvider.CORDOVA_ENGINE_ID+"/"+version);
 		 tempFile = new File(folder, platformId+"_"+version+"_"+"engine.tgz");
 		 this.monitor = pm;
 		 this.lock = lock;

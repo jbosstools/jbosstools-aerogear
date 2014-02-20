@@ -25,9 +25,11 @@ import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.osgi.service.debug.DebugTrace;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngineLocator;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ExtensionPointProxy;
 import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
 import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
+import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -199,4 +201,14 @@ final public class HybridCore implements BundleActivator, DebugOptionsListener {
 		return ExtensionPointProxy.getNativeExtensionPointProxy(NativeProjectBuilder.EXTENSION_POINT_ID, NativeProjectBuilder.class);
 	}
 	
+	/**
+	 * Returns the {@link HybridMobileEngineLocator} implementations
+	 * @return engine locators
+	 */
+	public static List<HybridMobileEngineLocator> getEngineLocators(){
+		ArrayList<HybridMobileEngineLocator> locators = new ArrayList<HybridMobileEngineLocator>();
+		locators.add(new CordovaEngineProvider());
+		return locators;
+	}
+
 }

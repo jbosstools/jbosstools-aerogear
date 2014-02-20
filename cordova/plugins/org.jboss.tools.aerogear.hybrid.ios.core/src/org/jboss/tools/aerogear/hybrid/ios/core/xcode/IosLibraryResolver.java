@@ -10,7 +10,10 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ios.core.xcode;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +29,7 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
+import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 
 import com.github.zafarkhaja.semver.Version;
 /**
@@ -119,5 +123,27 @@ public class IosLibraryResolver extends HybridMobileLibraryResolver {
 	@Override
 	public boolean needsPreCompilation() {
 		return false;
+	}
+
+	@Override
+	public String detectVersion() {
+		File versionFile = this.libraryRoot.append("CordovaLib").append("VERSION").toFile();
+		if (versionFile.exists()) {
+			BufferedReader reader = null;
+			try {
+				try {
+					reader = new BufferedReader(new FileReader(versionFile));
+					String version = reader.readLine();
+					return version;
+				} finally {
+					if (reader != null)
+						reader.close();
+				}
+			} catch (IOException e) {
+				IOSCore.log(IStatus.ERROR, "Can not detect version on library",
+						e);
+			}
+		}
+		return "0.0.0";
 	}
 }

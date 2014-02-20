@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
 
 import com.github.zafarkhaja.semver.Version;
 
@@ -167,11 +168,11 @@ public class CordovaPlugin extends PlatformObject{
 		if(engine.getId().equals(definition.name)){// Engine ids match 
 			Version engineVer = Version.valueOf(engine.getVersion());
 			if(engineVer.satisfies(definition.version)){ // version is satisfied
-				List<String> enginePlatforms = engine.getPlatforms();
-				for (String ep : enginePlatforms) {	
+				List<PlatformLibrary> enginePlatforms = engine.getPlatformLibs();
+				for (PlatformLibrary ep : enginePlatforms) {	
 					if(definition.platform == null ||
 							"*".equals(definition.platform)||
-							definition.platform.contains(ep))
+							definition.platform.contains(ep.getPlatformId()))
 					{
 						return Status.OK_STATUS;
 					}

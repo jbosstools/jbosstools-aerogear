@@ -12,6 +12,9 @@ package org.jboss.tools.aerogear.hybrid.ios.core;
 
 import java.util.Hashtable;
 
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.osgi.service.debug.DebugTrace;
@@ -23,6 +26,7 @@ public class IOSCore implements BundleActivator, DebugOptionsListener {
 	public static final String  PLUGIN_ID = "org.jboss.tools.aerogear.hybrid.ios.core";
 	
 	private static BundleContext context;
+	private static ILog logger;
 	public static boolean DEBUG=false;
 	private static DebugTrace TRACE;
 	
@@ -37,6 +41,7 @@ public class IOSCore implements BundleActivator, DebugOptionsListener {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		IOSCore.context = bundleContext;
+		logger = Platform.getLog(getContext().getBundle());
 		Hashtable<String,Object> props = new Hashtable<String, Object>();
 		props.put(org.eclipse.osgi.service.debug.DebugOptions.LISTENER_SYMBOLICNAME, PLUGIN_ID);
 		context.registerService(DebugOptionsListener.class.getName(), this, props);
@@ -61,6 +66,10 @@ public class IOSCore implements BundleActivator, DebugOptionsListener {
 	public static void trace(String option, String message){
 		if( !DEBUG ) return;
 		TRACE.trace(option, message);
+	}
+	
+	public static void log(int status, String message, Throwable throwable ){
+		logger.log(new Status(status, message, PLUGIN_ID,throwable));
 	}
 
 }

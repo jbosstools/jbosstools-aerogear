@@ -226,7 +226,9 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 			engines = engineProvider.getAvailableEngines();
 		}
 		for (HybridMobileEngine engine : engines) {
-			if(engine.getVersion().equals(version) && engine.getPlatforms().contains(platformId)){
+			if(engine.getVersion().equals(version) 
+					&& engine.getId().equals(CordovaEngineProvider.CORDOVA_ENGINE_ID) 
+					&& engine.getPlatformLib(platformId) != null ){
 				return true;
 			}
 		}

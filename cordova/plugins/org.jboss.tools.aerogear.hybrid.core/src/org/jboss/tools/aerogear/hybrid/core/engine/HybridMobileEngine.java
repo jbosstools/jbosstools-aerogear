@@ -14,23 +14,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.Path;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
-import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
-import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 
 public class HybridMobileEngine{
 	
 	private String id;
 	private String name;
 	private String version;
-	private ArrayList<String> platforms = new ArrayList<String>();
+	private ArrayList<PlatformLibrary> platforms = new ArrayList<PlatformLibrary>();
 	
 	public String getName() {
 		return name;
@@ -51,32 +46,24 @@ public class HybridMobileEngine{
 		this.id = id;
 	}
 	
-	public HybridMobileLibraryResolver getPlatformLibraryResolver(String platformId){
-        Assert.isNotNull(platformId);
-        PlatformSupport platform = HybridCore.getPlatformSupport(platformId);
-        if(platform == null ) return null;
-        
-        HybridMobileLibraryResolver resolver;
-		try {
-			resolver = platform.getLibraryResolver();
-		} catch (CoreException e) {
-			HybridCore.log(IStatus.ERROR,"Library resolver creation error ", e);
-			return null;
-		}
-		IPath libraryRoot = new Path(CordovaEngineProvider.getLibFolder().toString());
-		libraryRoot = libraryRoot.append(platformId).append(getId()).append(getVersion());
-        resolver.init(libraryRoot, getVersion());
-        return resolver;
-	}
-	
-	public void addPlatform(String platform) {
+	public void addPlatformLib(PlatformLibrary platform) {
 		if(!platforms.contains(platform)){
 			platforms.add(platform);
 		}
 	}
 	
-	public List<String> getPlatforms(){
+	public List<PlatformLibrary> getPlatformLibs(){
 		return Collections.unmodifiableList(platforms);
+	}
+	
+	public PlatformLibrary getPlatformLib(String id){
+		List<PlatformLibrary> pls = getPlatformLibs();
+		for (PlatformLibrary thePlatform : pls) {
+			if(thePlatform.getPlatformId().equals(id)){
+				return thePlatform;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -86,10 +73,10 @@ public class HybridMobileEngine{
 	 * @return status of the library
 	 */
 	public IStatus isLibraryConsistent(){
-		List<String> pls = getPlatforms();
+		List<PlatformLibrary> pls = getPlatformLibs();
 		MultiStatus status = new MultiStatus(HybridCore.PLUGIN_ID, 0, "The library can not support this application",null);
-		for (String thePlatform : pls) {
-			status.add(getPlatformLibraryResolver(thePlatform).isLibraryConsistent());
+		for (PlatformLibrary thePlatform : pls) {
+			status.add(thePlatform.getPlatformLibraryResolver().isLibraryConsistent());
 		}
 		return status;
 	}
@@ -100,9 +87,9 @@ public class HybridMobileEngine{
 	 * @throws CoreException
 	 */
 	public void preCompile(IProgressMonitor monitor) throws CoreException{
-		List<String> pls = getPlatforms();
-		for (String thePlatform : pls) {
-			HybridMobileLibraryResolver resolver = getPlatformLibraryResolver(thePlatform);
+		List<PlatformLibrary> pls = getPlatformLibs();
+		for (PlatformLibrary thePlatform : pls) {
+			HybridMobileLibraryResolver resolver = thePlatform.getPlatformLibraryResolver();
 			if(resolver.needsPreCompilation())
 			{
 				resolver.preCompile(monitor);

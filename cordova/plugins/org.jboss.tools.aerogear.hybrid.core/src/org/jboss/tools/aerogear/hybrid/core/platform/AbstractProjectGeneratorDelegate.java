@@ -30,6 +30,7 @@ import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
+import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.osgi.framework.Bundle;
@@ -94,13 +95,13 @@ public abstract class AbstractProjectGeneratorDelegate {
 				throw new CoreException(HybridMobileStatus.newMissingEngineStatus(project, 
 					"Active Hybrid Mobile Engine is missing. Please install the missing engine or use a different engine."));
 			}
-			List<String> platforms= engine.getPlatforms();
-			if(!platforms.contains(getTargetShortName())){
+			PlatformLibrary lib = engine.getPlatformLib(getTargetShortName());
+			if(lib == null ){
 				throw new CoreException(HybridMobileStatus.newMissingEngineStatus(getProject(),
 						NLS.bind("Active Hybrid Mobile Engine for {0} project does not have {1} support installed.",new Object[]{getProject().getName(), getTargetShortName()}) ));
 			}
 			
-			HybridMobileLibraryResolver resolver = engine.getPlatformLibraryResolver(getTargetShortName());
+			HybridMobileLibraryResolver resolver = lib.getPlatformLibraryResolver();
 			if(resolver == null ){
 				throw new CoreException(HybridMobileStatus.newMissingEngineStatus(getProject(),
 						NLS.bind("Active Hybrid Mobile Engine can not support {0}.",getTargetShortName()) ));

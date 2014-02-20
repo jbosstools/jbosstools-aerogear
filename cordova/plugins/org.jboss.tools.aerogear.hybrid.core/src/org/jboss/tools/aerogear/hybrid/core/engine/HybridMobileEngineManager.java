@@ -25,7 +25,7 @@ public class HybridMobileEngineManager {
 			}
 			if(CordovaEngineProvider.CORDOVA_ENGINE_ID.equals(configJson.getEngineId())){
 				CordovaEngineProvider engineProvider = new CordovaEngineProvider();
-				HybridMobileEngine engine = engineProvider.getEngine(configJson.getEngineVersion());
+				HybridMobileEngine engine = engineProvider.getEngine(configJson.getEngineId(),configJson.getEngineVersion());
 				return engine;
 			}
 			
@@ -38,7 +38,7 @@ public class HybridMobileEngineManager {
 
 	private static HybridMobileEngine defaultEngine() {
         CordovaEngineProvider engineProvider = new CordovaEngineProvider();
-        HybridMobileEngine engine =  engineProvider.createEngine("3.1.0");
+        HybridMobileEngine engine =  engineProvider.createEngine(CordovaEngineProvider.CORDOVA_ENGINE_ID,"3.1.0");
         return engine;
 	}
 

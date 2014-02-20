@@ -18,9 +18,9 @@ public abstract class HybridMobileLibraryResolver {
 	 * 
 	 * @param engine
 	 */
-	public void init(IPath libraryRoot, String version){
+	public void init(IPath libraryRoot){
 		this.libraryRoot = libraryRoot;
-		this.version = version;
+		this.version = detectVersion();
 	}
 	
 	/**
@@ -53,5 +53,11 @@ public abstract class HybridMobileLibraryResolver {
 	 * @return
 	 */
 	public abstract boolean needsPreCompilation();
+	
+	/**
+	 * Detects the version of the engine from layout
+	 * @return
+	 */
+	public abstract String detectVersion();
 	
 }

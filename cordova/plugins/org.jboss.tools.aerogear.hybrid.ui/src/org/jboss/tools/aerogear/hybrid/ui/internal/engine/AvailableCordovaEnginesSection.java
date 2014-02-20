@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 
 import com.github.zafarkhaja.semver.Version;
@@ -106,10 +107,10 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			case 0:
 				return engine.getName()+" [" + engine.getVersion() +"]";
 			case 1:
-				 List<String> platforms =  engine.getPlatforms();
+				 List<PlatformLibrary> platforms =  engine.getPlatformLibs();
 				 String platformString = "";
-				 for (String string : platforms) {
-					platformString += string +" ";
+				 for (PlatformLibrary lib : platforms) {
+					platformString += lib.getPlatformId() +" ";
 				}
 				return platformString;
 			default:
@@ -170,6 +171,7 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 		
 		Table table= new Table(composite, SWT.CHECK | SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 		GridDataFactory.fillDefaults().hint(new Point(TABLE_WIDTH, TABLE_HEIGHT)).applyTo(table); 
+		
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);	
 
