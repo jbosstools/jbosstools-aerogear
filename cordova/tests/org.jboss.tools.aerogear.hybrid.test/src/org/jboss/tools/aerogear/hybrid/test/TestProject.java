@@ -46,7 +46,8 @@ public class TestProject {
 		HybridProjectCreator projectCreator = new HybridProjectCreator();
 		try {
 			CordovaEngineProvider engineProvider = new CordovaEngineProvider();
-			projectCreator.createProject(PROJECT_NAME, null, APPLICATION_NAME, APPLICATION_ID, engineProvider.createEngine(CordovaEngineProvider.CORDOVA_ENGINE_ID, "3.1.0"),new NullProgressMonitor());
+			projectCreator.createProject(PROJECT_NAME, null, APPLICATION_NAME, APPLICATION_ID, 
+					engineProvider.createEngine(CordovaEngineProvider.CORDOVA_ENGINE_ID, "3.1.0"),new NullProgressMonitor());
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}

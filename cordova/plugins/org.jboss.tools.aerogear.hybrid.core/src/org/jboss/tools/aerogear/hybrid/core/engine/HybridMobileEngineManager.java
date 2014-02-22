@@ -23,7 +23,8 @@ public class HybridMobileEngineManager {
 				HybridCore.log(IStatus.WARNING, "No engine information on the config.json, this is OK if using an old project. Falling back to default engine.",null );
 				return defaultEngine();
 			}
-			if(CordovaEngineProvider.CORDOVA_ENGINE_ID.equals(configJson.getEngineId())){
+			if(CordovaEngineProvider.CORDOVA_ENGINE_ID.equals(configJson.getEngineId()) || 
+					CordovaEngineProvider.CUSTOM_CORDOVA_ENGINE_ID.equals(configJson.getEngineId())){
 				CordovaEngineProvider engineProvider = new CordovaEngineProvider();
 				HybridMobileEngine engine = engineProvider.getEngine(configJson.getEngineId(),configJson.getEngineVersion());
 				return engine;

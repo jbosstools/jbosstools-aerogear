@@ -58,7 +58,7 @@ public class HybridProjectCreatorTest {
 		HybridProjectCreator creator = new HybridProjectCreator();
 		CordovaEngineProvider engineProvider = new CordovaEngineProvider();
 		creator.createProject(PROJECT_NAME, null, APP_NAME, APP_ID, 
-				engineProvider.createEngine(CordovaEngineProvider.CORDOVA_ENGINE_ID, CORDOVA_ENGINE_VER),new NullProgressMonitor());
+				engineProvider.createEngine(CordovaEngineProvider.CORDOVA_ENGINE_ID,  CORDOVA_ENGINE_VER),new NullProgressMonitor());
 	}
 
 	@Test

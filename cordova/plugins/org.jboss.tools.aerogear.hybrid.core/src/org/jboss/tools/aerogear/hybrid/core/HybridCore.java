@@ -29,6 +29,7 @@ import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngineLocator;
 import org.jboss.tools.aerogear.hybrid.core.extensions.ExtensionPointProxy;
 import org.jboss.tools.aerogear.hybrid.core.extensions.NativeProjectBuilder;
 import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -209,6 +210,18 @@ final public class HybridCore implements BundleActivator, DebugOptionsListener {
 		ArrayList<HybridMobileEngineLocator> locators = new ArrayList<HybridMobileEngineLocator>();
 		locators.add(new CordovaEngineProvider());
 		return locators;
+	}
+	
+	/**
+	 * Returns the preference value for custom engine locations.
+	 * @return
+	 */
+	public String[] getCustomLibraryLocations(){
+		String s =  Platform.getPreferencesService().getString("org.jboss.tools.aerogear.hybrid.ui", PlatformConstants.PREF_CUSTOM_LIB_LOCS, null, null);
+		if(s == null || s.length()<1){
+			return new String[0];
+		}
+		return s.split(",");
 	}
 
 }

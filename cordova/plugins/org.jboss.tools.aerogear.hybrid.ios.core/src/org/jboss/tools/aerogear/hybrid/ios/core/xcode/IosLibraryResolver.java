@@ -50,6 +50,9 @@ public class IosLibraryResolver extends HybridMobileLibraryResolver {
 	
 	private void initFiles() {
 		IPath templatePrjRoot = libraryRoot.append("bin/templates/project");
+		if(version == null ){
+			return;
+		}
 		Version v = Version.valueOf(version);
 		/* In 3.4 ios template stopped using the __TESTING__ variable 
 		 * on the template. Also started using two versions for .pbxproj files
@@ -91,6 +94,9 @@ public class IosLibraryResolver extends HybridMobileLibraryResolver {
 	
 	@Override
 	public IStatus isLibraryConsistent() {
+		if(version == null ){
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Library for iOS platform is not compatible with this tool. VERSION file is missing.");
+		}
 		if(files.isEmpty()) initFiles();
 		Iterator<IPath> paths = files.keySet().iterator();
 		while (paths.hasNext()) {
@@ -134,7 +140,7 @@ public class IosLibraryResolver extends HybridMobileLibraryResolver {
 				try {
 					reader = new BufferedReader(new FileReader(versionFile));
 					String version = reader.readLine();
-					return version;
+					return version.trim();
 				} finally {
 					if (reader != null)
 						reader.close();
@@ -143,7 +149,9 @@ public class IosLibraryResolver extends HybridMobileLibraryResolver {
 				IOSCore.log(IStatus.ERROR, "Can not detect version on library",
 						e);
 			}
+		}else{
+			IOSCore.log(IStatus.ERROR, NLS.bind("Can not detect version. VERSION file {0} is missing",versionFile.toString()), null);
 		}
-		return "0.0.0";
+		return null;
 	}
 }

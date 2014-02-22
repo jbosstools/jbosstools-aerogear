@@ -25,5 +25,7 @@ public interface PlatformConstants {
 	 * plugin definition file for Cordova plugins
 	 */
 	public static final String FILE_XML_PLUGIN = "plugin.xml";
+	
+	public static final String PREF_CUSTOM_LIB_LOCS = "custom_engine_loc";
 
 }

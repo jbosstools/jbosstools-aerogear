@@ -47,6 +47,9 @@ public class AndroidLibraryResolver extends
 	
 	private void initFiles() {
 		Assert.isNotNull(libraryRoot, "Library resolver is not initialized. Call init before accessing any other functions.");
+		if(version == null ){
+			return;
+		}
 		IPath templatePrjRoot = libraryRoot.append("bin/templates/project");
 		IPath cordovaJar = libraryRoot.append("framework").append(NLS.bind("cordova-{0}.jar",version));
 		files.put(KEY_PATH_CORDOVA_JAR, getEngineFile(cordovaJar));	
@@ -69,6 +72,9 @@ public class AndroidLibraryResolver extends
 
 	@Override
 	public IStatus isLibraryConsistent() {
+		if(version == null ){
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Library for Android platform is not compatible with this tool. File for path {0} is missing.");
+		}
 		if(files.isEmpty()) initFiles();
 		Iterator<IPath> paths = files.keySet().iterator();
 		while (paths.hasNext()) {
@@ -131,8 +137,10 @@ public class AndroidLibraryResolver extends
 			}catch (IOException e) {
 				AndroidCore.log(IStatus.ERROR, "Can not detect version on library", e);
 			}
+		}else{
+			AndroidCore.log(IStatus.ERROR, NLS.bind("Can not detect version. VERSION file {0} is missing",versionFile.toString()), null);
 		}
-		return "0.0.0";
+		return null;
 	}
 
 }

@@ -14,6 +14,9 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.swt.graphics.Image;
 /**
  * Proxy object for the platformImages extension point.
  * 
@@ -23,9 +26,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 public class PlatformImage {
 	
 	private static final String ATTR_ICON = "icon";
-	public static final String ATTR_PLATFFORM_SUPPORT="platformSupport";
+	public static final String ATTR_PLATFORM_SUPPORT="platformSupport";
 	public static final String ATTR_PROJECT_BUILDER="projectBuilder";
 	public static final String EXTENSION_POINT_ID= "org.jboss.tools.aerogear.hybrid.ui.platformImages";
+	public static final String IMAGE_REG_BASE= HybridUI.PLUGIN_ID + ".platformImage";
 
 	private ImageDescriptor icon;
 	private String projectGeneratorID;
@@ -34,7 +38,7 @@ public class PlatformImage {
 	PlatformImage(IConfigurationElement configurationElement) {
 		String iconPath = configurationElement.getAttribute(ATTR_ICON);
 		icon= HybridUI.getImageDescriptor(configurationElement.getContributor().getName(), iconPath);
-		projectGeneratorID = configurationElement.getAttribute(ATTR_PLATFFORM_SUPPORT);
+		projectGeneratorID = configurationElement.getAttribute(ATTR_PLATFORM_SUPPORT);
 		projectBuilderID = configurationElement.getAttribute(ATTR_PROJECT_BUILDER);
 		
 	}
@@ -50,11 +54,19 @@ public class PlatformImage {
 	public String getProjectBuilderID() {
 		return projectBuilderID;
 	}
-	
+	/**
+	 * Returns the {@link ImageDescriptor} for the attribute and platform id. This is not cached 
+	 * and it is recommended to use {@link #getImageFor(String, String)} for cached and managed 
+	 * image use.
+	 * 
+	 * @param attribute
+	 * @param id
+	 * @return
+	 */
 	public static ImageDescriptor getIconFor(String attribute, String id ){
 		List<PlatformImage> images = HybridUI.getPlatformImages();
 		for (PlatformImage platformImage : images) {			
-			if(attribute.equals(ATTR_PLATFFORM_SUPPORT) && id.equals(platformImage.getProjectGeneratorID())){
+			if(attribute.equals(ATTR_PLATFORM_SUPPORT) && id.equals(platformImage.getProjectGeneratorID())){
 				return platformImage.getIcon();
 			}
 			if(attribute.equals(ATTR_PROJECT_BUILDER) && id.equals(platformImage.getProjectBuilderID())){
@@ -62,6 +74,26 @@ public class PlatformImage {
 			}
 		}
 		return null;
+	}
+	/**
+	 * Returns the image for attribute and platform id. Image is cached by {@link JFaceResources}
+	 * {@link ImageRegistry}
+	 * 
+	 * @param attribute
+	 * @param id
+	 * @return
+	 */
+	public static Image getImageFor(String attribute, String id){
+		String key = IMAGE_REG_BASE +attribute+id;
+		ImageRegistry imageRegistry = JFaceResources.getImageRegistry();
+		Image image = imageRegistry.get(key);
+		if(image == null ){
+			ImageDescriptor desc = getIconFor(attribute, id);
+			if(desc == null ) return null;
+			imageRegistry.put(key, getIconFor(attribute, id));
+			image = imageRegistry.get(key);
+		}
+		return image;
 	}
 
 }

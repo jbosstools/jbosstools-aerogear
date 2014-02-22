@@ -50,14 +50,14 @@ import com.github.zafarkhaja.semver.Version;
 public class CordovaEngineProvider implements HybridMobileEngineLocator, EngineSearchListener {
 	
 	private static final Version MIN_VERSION = Version.forIntegers(3, 0, 0);
-	private static final String ENGINE_NAME = "Apache Cordova";
 	/**
 	 * Engine id for the engine provided by the Apache cordova project.
 	 */
 	public static final String CORDOVA_ENGINE_ID = "cordova";
+	public static final String ENGINE_NAME = "Apache Cordova";
 	
 	public static final String CUSTOM_CORDOVA_ENGINE_ID = "custom_cordova";
-
+	
 	private static HashMap<String, Ref> downloadeableVersionsCache = new HashMap<String, Ref>();
 	private static ArrayList<HybridMobileEngine> engineList;
 	
@@ -104,7 +104,15 @@ public class CordovaEngineProvider implements HybridMobileEngineLocator, EngineS
 			//engine folder does not exist
 			return;
 		}
+		//search for engines on default location.
 		searchForRuntimes(new Path(libFolder.toString()), this, new NullProgressMonitor());
+		//Now the custom locations 
+		String[] locs = HybridCore.getDefault().getCustomLibraryLocations();
+		if(locs != null ){
+			for (int i = 0; i < locs.length; i++) {
+				searchForRuntimes(new Path(locs[i]), this,  new NullProgressMonitor());
+			}
+		}
 	}
 	
 	/**
@@ -297,13 +305,16 @@ public class CordovaEngineProvider implements HybridMobileEngineLocator, EngineS
 	@Override
 	public void libraryFound(PlatformLibrary library) {
 		String version = library.getPlatformLibraryResolver().detectVersion();
-		
-		String id = getLibFolder().isPrefixOf(library.getLocation())? CORDOVA_ENGINE_ID: CUSTOM_CORDOVA_ENGINE_ID;
+		if(version == null ){
+			return;
+		}
+		boolean isDefaultLoc = getLibFolder().isPrefixOf(library.getLocation());
+		String id = isDefaultLoc ? CORDOVA_ENGINE_ID: CUSTOM_CORDOVA_ENGINE_ID;
 		Version v = Version.valueOf(version);
 		if(v.greaterThanOrEqualTo(MIN_VERSION)){//check the minimum supported version
 			HybridMobileEngine engine = getEngine(id, version);
 			if(engine == null ){
-				engineList.add(createEngine(id,version, library));
+				engineList.add(createEngine(id, version, library));
 			}else{
 				engine.addPlatformLib(library);
 			}
