@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -45,7 +46,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
@@ -56,7 +56,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -70,7 +69,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE.SharedImages;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngineLocator;
@@ -81,6 +79,7 @@ import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.PlatformImage;
+import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 
 import com.github.zafarkhaja.semver.Version;
 
@@ -340,67 +339,11 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			
 			@Override
 			public void handleEvent(Event event) {
-				DirectoryDialog directoryDialog = new DirectoryDialog(parent.getShell());
-				directoryDialog.setMessage("Select the directory in which to search for hybrid mobile engines");
-				directoryDialog.setText("Search for Hybrid Mobile Engines");
-				
-				String pathStr = directoryDialog.open();
-				if (pathStr == null)
-					return;
-				
-				final IPath path = new Path(pathStr);
-				final ProgressMonitorDialog dialog = new ProgressMonitorDialog(parent.getShell());
-				dialog.setBlockOnOpen(false);
-				dialog.setCancelable(true);
-				dialog.open();
-				final EngineSearchListener listener = new EngineSearchListener() {
-					
-					@Override
-					public void libraryFound(PlatformLibrary library) {
-						IPreferenceStore store = HybridUI.getDefault().getPreferenceStore();
-						String locs = store.getString(PlatformConstants.PREF_CUSTOM_LIB_LOCS);
-						if(locs == null || locs.isEmpty() ){
-							locs = library.getLocation().toString();
-						}else{
-							locs += ","+library.getLocation();
-						}
-						store.setValue(PlatformConstants.PREF_CUSTOM_LIB_LOCS, locs);
-					}
-				};
-				
-				IRunnableWithProgress runnable = new IRunnableWithProgress() {
-					
-					@Override
-					public void run(IProgressMonitor monitor) throws InvocationTargetException,
-							InterruptedException {
-						List<HybridMobileEngineLocator> locators = HybridCore.getEngineLocators();
-						for (HybridMobileEngineLocator locator : locators) {
-							locator.searchForRuntimes(path, listener, monitor);
-						}
-						parent.getDisplay().asyncExec(new Runnable() {
-							
-							@Override
-							public void run() {
-								updateAvailableEngines();
-							}
-						});
-						
-					}
-				};
-				try {
-					dialog.run(true, true, runnable);
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				
-				
+				handleSearch(parent);
 			}
 		});
+		
+		
 		
 		updateAvailableEngines();
 //		updateButtons();
@@ -478,6 +421,70 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			ISelectionChangedListener listener = (ISelectionChangedListener)listeners[i];
 			listener.selectionChanged(event);
 		}	
+	}
+
+	private void handleSearch(final Composite parent) {
+		DirectoryDialog directoryDialog = new DirectoryDialog(parent.getShell());
+		directoryDialog.setMessage("Select the directory in which to search for hybrid mobile engines");
+		directoryDialog.setText("Search for Hybrid Mobile Engines");
+		
+		String pathStr = directoryDialog.open();
+		if (pathStr == null)
+			return;
+		
+		final IPath path = new Path(pathStr);
+		final ProgressMonitorDialog dialog = new ProgressMonitorDialog(parent.getShell());
+		dialog.setBlockOnOpen(false);
+		dialog.setCancelable(true);
+		dialog.open();
+		final EngineSearchListener listener = new EngineSearchListener() {
+			
+			@Override
+			public void libraryFound(PlatformLibrary library) {
+				IPreferenceStore store = HybridUI.getDefault().getPreferenceStore();
+				String locs = store.getString(PlatformConstants.PREF_CUSTOM_LIB_LOCS);
+				if(locs == null || locs.isEmpty() ){
+					locs = library.getLocation().toString();
+				}else{
+					locs += ","+library.getLocation();
+				}
+				store.setValue(PlatformConstants.PREF_CUSTOM_LIB_LOCS, locs);
+			}
+		};
+		
+		IRunnableWithProgress runnable = new IRunnableWithProgress() {
+			
+			@Override
+			public void run(IProgressMonitor monitor) throws InvocationTargetException,
+					InterruptedException {
+				List<HybridMobileEngineLocator> locators = HybridCore.getEngineLocators();
+				for (HybridMobileEngineLocator locator : locators) {
+					locator.searchForRuntimes(path, listener, monitor);
+				}
+				parent.getDisplay().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						updateAvailableEngines();
+					}
+				});
+			}
+		};
+		
+		try {
+			dialog.run(true, true, runnable);
+		} catch (InvocationTargetException e) {
+			if (e.getTargetException() != null) {
+				if(e.getTargetException() instanceof CoreException ){
+					StatusManager.handle((CoreException) e.getTargetException());
+				}else{
+					ErrorDialog.openError(parent.getShell(), "Local Engine Search Error",null, 
+							new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error when searching for local hybrid mobile engines", e.getTargetException() ));
+				}
+			}
+		} catch (InterruptedException e) {
+			HybridUI.log(IStatus.ERROR, "Search for Cordova Engines error", e);
+		}
 	}
 
 }
