@@ -64,6 +64,7 @@ public class EngineConfigurationPage extends WizardPage {
 			setErrorMessage("Please select a Hybrid Mobile Engine ");
 			return false;
 		}
+		setErrorMessage(null);
 		setMessage(null);
 		return true;
 	}
