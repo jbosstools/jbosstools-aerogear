@@ -320,5 +320,19 @@ public class CordovaEngineProvider implements HybridMobileEngineLocator, EngineS
 			}
 		}
 	}
+
+
+	public void deleteEngineLibraries(HybridMobileEngine selectedEngine) {
+		if(selectedEngine.getId().equals(CORDOVA_ENGINE_ID)){
+			// Do not delete custom engines we do not manage them
+			List<PlatformLibrary> libs = selectedEngine.getPlatformLibs();
+			if(libs.isEmpty()) return;
+			for (PlatformLibrary library : libs) {
+				IPath path = library.getLocation();
+				FileUtils.deleteQuietly(path.toFile());
+			}
+		}
+		resetEngineList();
+	}
 	
 }

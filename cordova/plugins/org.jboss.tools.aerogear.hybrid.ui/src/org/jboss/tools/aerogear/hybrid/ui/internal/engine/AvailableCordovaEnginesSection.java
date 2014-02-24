@@ -92,6 +92,8 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 	private ListenerList selectionListeners;
 	private CheckboxTableViewer engineList;
 	private ISelection prevSelection = new StructuredSelection();
+	private CordovaEngineProvider provider;
+	private Button removeBtn;
 	
 	private class EngineTooltip extends ToolTip{
 
@@ -295,7 +297,7 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 	
 		engineList.addCheckStateListener(new ICheckStateListener(){
 			public void checkStateChanged(CheckStateChangedEvent event) {
-				if (event.getChecked()) {
+			if (event.getChecked()) {
 					setSelection(new StructuredSelection(event.getElement()));
 				} else {
 					setSelection(new StructuredSelection());
@@ -343,20 +345,28 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			}
 		});
 		
-		
-		
+		removeBtn = new Button(buttonsContainer, SWT.PUSH);
+		removeBtn.setText("Remove");
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(removeBtn);
+		removeBtn.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				handleRemoveEngine();
+			}
+		});
+	
 		updateAvailableEngines();
-//		updateButtons();
+		updateButtons();
 		
 	}
 
 	private void updateButtons() {
-		// TODO Auto-generated method stub
-		
+		removeBtn.setEnabled(!engineList.getSelection().isEmpty());
 	}
 
 	private void updateAvailableEngines() {
-		CordovaEngineProvider provider = new CordovaEngineProvider();
+		CordovaEngineProvider provider = getEngineProvider();
 		final List<HybridMobileEngine> engines = provider.getAvailableEngines();
 		Job preCompileJob = new Job("Hybrid Mobile Engine Library pre-compilation") {
 			
@@ -376,6 +386,13 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 		preCompileJob.schedule();
 		engineList.setInput(engines);
 		
+	}
+
+	private CordovaEngineProvider getEngineProvider() {
+		if(provider == null ){
+			provider = new CordovaEngineProvider();
+		}
+		return provider;
 	}
 
 	@Override
@@ -398,7 +415,7 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 	@Override
 	public void setSelection(ISelection selection) {
 		if (selection instanceof IStructuredSelection) {
-			if (!selection.equals(prevSelection)) {
+			if (!selection.equals(prevSelection)) { 
 				prevSelection = selection;
 				Object engine = ((IStructuredSelection)selection).getFirstElement();
 				if (engine == null) {
@@ -441,14 +458,8 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			
 			@Override
 			public void libraryFound(PlatformLibrary library) {
-				IPreferenceStore store = HybridUI.getDefault().getPreferenceStore();
-				String locs = store.getString(PlatformConstants.PREF_CUSTOM_LIB_LOCS);
-				if(locs == null || locs.isEmpty() ){
-					locs = library.getLocation().toString();
-				}else{
-					locs += ","+library.getLocation();
-				}
-				store.setValue(PlatformConstants.PREF_CUSTOM_LIB_LOCS, locs);
+				addPathToPreference(library.getLocation());
+				getEngineProvider().libraryFound(library);
 			}
 		};
 		
@@ -484,6 +495,67 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			}
 		} catch (InterruptedException e) {
 			HybridUI.log(IStatus.ERROR, "Search for Cordova Engines error", e);
+		}
+	}
+	
+	private void addPathToPreference(IPath path){
+		IPreferenceStore store = HybridUI.getDefault().getPreferenceStore();
+		String locs = store.getString(PlatformConstants.PREF_CUSTOM_LIB_LOCS);
+		String pathString = path.toString();
+		if(locs == null || locs.isEmpty() ){
+			locs = pathString;
+		}else{
+			String[] locArray = locs.split(",");
+			for (int i = 0; i < locArray.length; i++) {//Check for duplicates
+				if(locArray[i].equals(pathString)){
+					return;
+				}
+			}
+			locs += ","+pathString;
+		}
+		store.setValue(PlatformConstants.PREF_CUSTOM_LIB_LOCS, locs);
+	}
+	
+	private void removePathFromPreference(IPath path ){
+		IPreferenceStore store = HybridUI.getDefault().getPreferenceStore();
+		String locs = store.getString(PlatformConstants.PREF_CUSTOM_LIB_LOCS);
+		if(locs == null || locs.isEmpty() ) return;
+		String pathString = path.toString();
+		String[] locArray = locs.split(",");
+		StringBuilder newLocs = new StringBuilder();
+		for (int i = 0; i < locArray.length; i++) {
+			if(locArray[i].equals(pathString)){
+				continue;
+			}
+			if(i>0)
+				newLocs.append(",");
+			newLocs.append(locArray[i]);
+		}
+		store.setValue(PlatformConstants.PREF_CUSTOM_LIB_LOCS, newLocs.toString());
+		
+	}
+
+	private void handleRemoveEngine() {
+		
+		IStructuredSelection selection = (IStructuredSelection) engineList.getSelection();
+		ISelection cSelection = getSelection();
+		HybridMobileEngine checkedEngine =null;
+		if(cSelection != null && !cSelection.isEmpty() ){
+			IStructuredSelection css = (IStructuredSelection) cSelection;
+			checkedEngine = (HybridMobileEngine) css.getFirstElement();
+		}
+		HybridMobileEngine selectedEngine = (HybridMobileEngine) selection.getFirstElement();
+		getEngineProvider().deleteEngineLibraries(selectedEngine);
+		if(selectedEngine.getId().equals(CordovaEngineProvider.CUSTOM_CORDOVA_ENGINE_ID)){//Update the prefs for custom engines.
+			List<PlatformLibrary> libs = selectedEngine.getPlatformLibs();
+			for (PlatformLibrary pl : libs) {
+				removePathFromPreference(pl.getLocation());
+			}
+		}
+		
+		updateAvailableEngines();
+		if(checkedEngine != null && checkedEngine == selectedEngine){
+			setSelection(new StructuredSelection());
 		}
 	}
 
