@@ -144,11 +144,6 @@ public class CordovaFileUtil {
 		return null;
 	}
 	
-	
-	public static String getCordovaVersion(String resourseBase) throws FileNotFoundException { 
-		return "3.1.0"; // Will be implemented in the context of multiple version support issue //$NON-NLS-1$
-	}
-
 	private static File getParentDir(String childDir) {
 		File file = new File(childDir);
 		if (file.exists()) {

@@ -30,6 +30,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jboss.tools.vpe.cordovasim.plugin.util.CordovaFileUtil;
+import org.jboss.tools.vpe.cordovasim.servlet.cordova.engine.CordovaJsServlet;
 import org.jboss.tools.vpe.cordovasim.servlet.plugin.CordovaPluginJsServlet;
 import org.jboss.tools.vpe.cordovasim.servlet.plugin.PluginServlet;
 import org.jboss.tools.vpe.cordovasim.servlets.camera.FormatDataServlet;
@@ -94,6 +95,10 @@ public class ServerCreator {
 		ContextHandler wwwContextHandler = new ContextHandler("/"); 
 		wwwContextHandler.setHandler(wwwResourceHandler);
 		
+		ServletHolder cordovaJsServletHolder = new ServletHolder(new CordovaJsServlet(CordovaSimArgs.getCordovaEngineLocation()));
+		ServletHandler cordovaJsServetHandler = new ServletHandler();
+		cordovaJsServetHandler.addServletWithMapping(cordovaJsServletHolder, "/cordova.js"); 
+		
 		File pluginDir = CordovaFileUtil.getPluginDir(resourceBase); 
 		ServletHolder cordovaPluginJsServletHolder = new ServletHolder(new CordovaPluginJsServlet(pluginDir));
 		ServletHandler cordovaPluginJsServetHandler = new ServletHandler();
@@ -118,43 +123,15 @@ public class ServerCreator {
 				}
 			}
 		});
-		
-		RewriteHandler cordovaRewriteHandler = new RewriteHandler();
-		cordovaRewriteHandler.setRewriteRequestURI(true);
-		cordovaRewriteHandler.setRewritePathInfo(true);
-		cordovaRewriteHandler.setHandler(cordovaContextHandler);
-		cordovaRewriteHandler.addRule(new Rule() {
-			@Override
-			public String matchAndApply(String target, HttpServletRequest request,
-					HttpServletResponse response) throws IOException {
-				String pathInfo = request.getPathInfo(); 
-				String cordovaVersion = CordovaFileUtil.getCordovaVersion(resourceBase);
 				
-				if (cordovaVersion.startsWith("3.")) { 
-					if (pathInfo.equals("/cordova.js")) { 
-						return "/ripple/cordova/cordova-3.1.0.js"; 
- 					} else if (pathInfo.equals("/cordova_plugins.json")) { // XXX need to delete this after multiple version support migration
-						return "/ripple/cordova/cordova_plugins.json";
-					}
-					return null;
-				} else { // Will be implemented in the context of multiple version support issue
-					if (pathInfo.equals("/cordova.js")) { // JBIDE-14319 
-						return "/ripple/cordova/cordova-2.7.0.js"; 
-					} else if (pathInfo.equals("/cordova_plugins.json")) { // JBIDE-14453 
-						return "/ripple/cordova/cordova_plugins.json"; 
-					}
-					return null;
-				}
-			}
-		});
-		
 		HandlerList handlers = new HandlerList();
 		handlers.setHandlers(new Handler[] {
 				userAgentServletHandler,
 				rippleRewriteHandler,
 				wwwContextHandler,
-				cordovaRewriteHandler,
+				cordovaJsServetHandler,
 				cordovaPluginJsServetHandler,
+				cordovaContextHandler,
 				pluginServletHandler,
 				proxyServletHandler,
 				fileUploadContextHandler,

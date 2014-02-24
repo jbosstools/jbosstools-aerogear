@@ -37,6 +37,7 @@ import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
 
 /**
  * @author "Yahor Radtsevich (yradtsevich)"
+ * @author "Ilya Buziuk (ibuziuk)"
  */
 public class CordovaSimLauncher {
 	public static final String CORDOVASIM_CLASS_NAME = "org.jboss.tools.vpe.cordovasim.CordovaSimRunner"; //$NON-NLS-1$
@@ -81,8 +82,16 @@ public class CordovaSimLauncher {
 
 		IContainer rootFolder = null;
 		IProject project = null;
+		String cordovaEngineLocation = null;
+		String cordovaVersion = null;
+		
 		if (projectString != null) {
 			project = CordovaSimLaunchParametersUtil.getProject(projectString);
+			
+			if (project != null) {
+				cordovaEngineLocation = CordovaSimLaunchParametersUtil.getCordovaEngineLocation(project);
+				cordovaVersion = CordovaSimLaunchParametersUtil.getCordovaVersion(project);			
+			}
 			
 			if (rootFolderString != null) {
 				rootFolder = CordovaSimLaunchParametersUtil.getRootFolder(project, rootFolderString);
@@ -109,6 +118,16 @@ public class CordovaSimLauncher {
 			if (port != null) {
 				parameters.add("-port"); //$NON-NLS-1$
 				parameters.add(String.valueOf(port));
+			}
+			
+			if (cordovaEngineLocation != null) {
+				parameters.add("-engine"); //$NON-NLS-1$
+				parameters.add(cordovaEngineLocation);
+			}
+			
+			if (cordovaVersion != null) {
+				parameters.add("-version"); //$NON-NLS-1$
+				parameters.add(cordovaVersion);
 			}
 
 			launchCordovaSim(parameters);
