@@ -10,16 +10,22 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.engine.AvailableCordovaEnginesSection;
 
 public class EngineConfigurationPage extends WizardPage {
@@ -54,6 +60,7 @@ public class EngineConfigurationPage extends WizardPage {
 		});
 		
 		setControl(control);
+		setDefaultEngine();
 		setPageComplete(validatePage());
 		Dialog.applyDialogFont(getControl());
 	}
@@ -69,6 +76,20 @@ public class EngineConfigurationPage extends WizardPage {
 		return true;
 	}
 	
+	private void setDefaultEngine() {
+		CordovaEngineProvider ep = new CordovaEngineProvider();
+		String defaultEngString = HybridUI.getDefault().getPreferenceStore().getString(PlatformConstants.PREF_DEFAULT_ENGINE);
+		if(defaultEngString != null && !defaultEngString.isEmpty()){
+			String[] valuePair = defaultEngString.split(":");
+
+			List<HybridMobileEngine> engines = ep.getAvailableEngines();
+			for (HybridMobileEngine engine : engines) {
+				if(engine.getId().equals(valuePair[0]) && engine.getVersion().equals(valuePair[1])){
+					engineSection.setSelection(new StructuredSelection(engine));
+				}
+			}
+		}
+	}
 	public HybridMobileEngine getSelectedEngine(){
 		IStructuredSelection selection = (IStructuredSelection) engineSection.getSelection();
 		HybridMobileEngine engine = (HybridMobileEngine) selection.getFirstElement();
