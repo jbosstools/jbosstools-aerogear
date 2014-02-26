@@ -23,6 +23,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngineManager;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
@@ -77,19 +78,12 @@ public class EngineConfigurationPage extends WizardPage {
 	}
 	
 	private void setDefaultEngine() {
-		CordovaEngineProvider ep = new CordovaEngineProvider();
-		String defaultEngString = HybridUI.getDefault().getPreferenceStore().getString(PlatformConstants.PREF_DEFAULT_ENGINE);
-		if(defaultEngString != null && !defaultEngString.isEmpty()){
-			String[] valuePair = defaultEngString.split(":");
-
-			List<HybridMobileEngine> engines = ep.getAvailableEngines();
-			for (HybridMobileEngine engine : engines) {
-				if(engine.getId().equals(valuePair[0]) && engine.getVersion().equals(valuePair[1])){
-					engineSection.setSelection(new StructuredSelection(engine));
-				}
-			}
+		HybridMobileEngine defaultEngine = HybridMobileEngineManager.getDefaultEngine();
+		if(defaultEngine != null ){
+			engineSection.setSelection(new StructuredSelection(defaultEngine));
 		}
 	}
+	
 	public HybridMobileEngine getSelectedEngine(){
 		IStructuredSelection selection = (IStructuredSelection) engineSection.getSelection();
 		HybridMobileEngine engine = (HybridMobileEngine) selection.getFirstElement();

@@ -1,11 +1,15 @@
 package org.jboss.tools.aerogear.hybrid.core.engine;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.ConfigJSon;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 
 public class HybridMobileEngineManager {
@@ -37,11 +41,36 @@ public class HybridMobileEngineManager {
 		return defaultEngine();
 	}
 
-	private static HybridMobileEngine defaultEngine() {
-        CordovaEngineProvider engineProvider = new CordovaEngineProvider();
-        HybridMobileEngine engine =  engineProvider.createEngine(CordovaEngineProvider.CORDOVA_ENGINE_ID,"3.1.0");
-        return engine;
+	private HybridMobileEngine defaultEngine() {
+		HybridMobileEngine engine = getDefaultEngine();
+		if(engine == null ){
+			CordovaEngineProvider engineProvider = new CordovaEngineProvider();
+			engine =  engineProvider.createEngine(CordovaEngineProvider.CORDOVA_ENGINE_ID,"3.1.0");
+		}
+		return engine;
 	}
+
+	/**
+	 * Returns the default engine defined by preferences or null if it is not 
+	 * defined or does not exist anymore.
+	 * 
+	 * @return engine
+	 */
+	public static HybridMobileEngine getDefaultEngine() {
+		CordovaEngineProvider engineProvider = new CordovaEngineProvider();
+		String pref =  Platform.getPreferencesService().getString("org.jboss.tools.aerogear.hybrid.ui", PlatformConstants.PREF_DEFAULT_ENGINE, null, null);
+		if(pref != null && !pref.isEmpty()){
+			String[] valuePair = pref.split(":");
+			List<HybridMobileEngine> engines = engineProvider.getAvailableEngines();
+			for (HybridMobileEngine engine : engines) {
+				if(engine.getId().equals(valuePair[0]) && engine.getVersion().equals(valuePair[1])){
+					return engine;
+				}
+			}
+		}
+		return null;
+	}
+	
 
 	public void updateEngine(HybridMobileEngine engine) throws CoreException{
 		ConfigJSon configJSon = ConfigJSon.readConfigJson(project.getProject());
