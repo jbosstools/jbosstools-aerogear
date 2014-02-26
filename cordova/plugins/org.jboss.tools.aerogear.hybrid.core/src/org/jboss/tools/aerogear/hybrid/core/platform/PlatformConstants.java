@@ -27,5 +27,6 @@ public interface PlatformConstants {
 	public static final String FILE_XML_PLUGIN = "plugin.xml";
 	
 	public static final String PREF_CUSTOM_LIB_LOCS = "custom_engine_loc";
+	public static final String PREF_DEFAULT_ENGINE = "default_engine";
 
 }

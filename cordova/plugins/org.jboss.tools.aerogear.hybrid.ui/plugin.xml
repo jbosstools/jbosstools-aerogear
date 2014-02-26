@@ -39,6 +39,12 @@
            id="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage"
            name="Hybrid Mobile">
      </page>
+     <page
+           category="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage"
+           class="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.EnginePreferencesPage"
+           id="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.EnginePreferencesPage"
+           name="Engines">
+     </page>
   </extension>
   <extension
         point="org.eclipse.core.runtime.preferences">
