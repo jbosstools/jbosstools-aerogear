@@ -6,8 +6,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 
 public abstract class HybridMobileLibraryResolver {
+	
+	public static final IPath PATH_CORDOVA_JS = new Path(PlatformConstants.FILE_JS_CORDOVA);
 	
 	public static final String VAR_PACKAGE_NAME = "$package";
 	public static final String VAR_APP_NAME = "$appname";

@@ -15,10 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -30,11 +31,11 @@ import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 import org.eclipse.wst.jsdt.core.compiler.libraries.LibraryLocation;
 import org.eclipse.wst.jsdt.core.infer.DefaultInferrenceProvider;
-import org.jboss.tools.aerogear.hybrid.cordova.CordovaLibrarySupport;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
+import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
-import org.osgi.framework.Bundle;
 
 public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainerInitializer {
 	
@@ -111,15 +112,20 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 	}
 
 	private IIncludePathEntry getCordovaJsIncludePathEntry(){
-		Bundle cordovaLibBundle = Platform.getBundle(CordovaLibrarySupport.PLUGIN_ID);
 		try {
 			IPath cordovaJSRuntimePath = getLibraryRuntimeFolder().append(PlatformConstants.FILE_JS_CORDOVA);
 			File cordovaJS = cordovaJSRuntimePath.toFile();
 			if (!cordovaJS.exists()) {
-				InputStream is = FileLocator.openStream(cordovaLibBundle, new Path("/templates/android/cordova.android.js"), false);
-				if (is != null) {
-					FileUtils.copyInputStreamToFile(is, cordovaJS);
+				HybridProject prj = HybridProject.getHybridProject(project.getProject());
+				List<PlatformLibrary> platforms = prj.getActiveEngine().getPlatformLibs();
+				if(platforms.isEmpty()){
+					return null;
 				}
+				HybridMobileLibraryResolver resolver = platforms.get(0).getPlatformLibraryResolver();
+				URL templateCordovaJS = resolver.getTemplateFile(HybridMobileLibraryResolver.PATH_CORDOVA_JS);
+
+				org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.fileCopy(templateCordovaJS,
+						org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.toURL(cordovaJS));
 			}
 			return JavaScriptCore.newLibraryEntry(cordovaJSRuntimePath.makeAbsolute(),null, null);
 			

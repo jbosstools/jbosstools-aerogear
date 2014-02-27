@@ -82,6 +82,7 @@ public class IosLibraryResolver extends HybridMobileLibraryResolver {
 		files.put(new Path(VAR_APP_NAME+"/main.m"), getEngineFile(templatePrjRoot.append(NLS.bind("{0}/main.m",prjDirVar))));
 		
 		files.put(new Path("CordovaLib"), getEngineFile(libraryRoot.append("CordovaLib")));
+		files.put(PATH_CORDOVA_JS, getEngineFile(libraryRoot.append("CordovaLib").append(PATH_CORDOVA_JS)) );
 	}
 
 	@Override

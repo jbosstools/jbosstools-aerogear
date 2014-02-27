@@ -208,7 +208,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 	@Override
 	protected void replaceCordovaPlatformFiles(HybridMobileLibraryResolver resolver) throws IOException {
 		IPath cordovaJSPath = new Path(getPlatformWWWDirectory().toString()).append(PlatformConstants.FILE_JS_CORDOVA);
-		fileCopy(resolver.getTemplateFile(cordovaJSPath.makeRelativeTo(new Path(getDestination().toString()))), 
+		fileCopy(resolver.getTemplateFile(HybridMobileLibraryResolver.PATH_CORDOVA_JS),
 				toURL(cordovaJSPath.toFile()));
 	}
 

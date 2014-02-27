@@ -193,12 +193,8 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 
 	@Override
 	protected void replaceCordovaPlatformFiles(HybridMobileLibraryResolver resolver) throws IOException{
-		IPath cordovaLibPath = getCordovaLibPath();
-		File cordova = cordovaLibPath.append("cordova.ios.js").toFile();
-		if(!cordova.exists()){//later versions no longer have cordova.ios.js in the distro
-			cordova = cordovaLibPath.append(PlatformConstants.FILE_JS_CORDOVA).toFile();
-		}
-		fileCopy(toURL(cordova), toURL(new File(getPlatformWWWDirectory(), PlatformConstants.FILE_JS_CORDOVA)));
+		fileCopy(resolver.getTemplateFile(HybridMobileLibraryResolver.PATH_CORDOVA_JS), 
+				toURL(new File(getPlatformWWWDirectory(), PlatformConstants.FILE_JS_CORDOVA)));
 	}
 
 	@Override

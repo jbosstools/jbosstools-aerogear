@@ -57,7 +57,7 @@ public class AndroidLibraryResolver extends
 		files.put(new Path(FILE_XML_ANDROIDMANIFEST), getEngineFile(templatePrjRoot.append(FILE_XML_ANDROIDMANIFEST)));
 		files.put(new Path(DIR_SRC).append(VAR_PACKAGE_NAME.replace('.', '/')).append(VAR_APP_NAME+".java"), 
 				getEngineFile(templatePrjRoot.append("Activity.java")));
-		files.put(new Path("assets/www/cordova.js"), getEngineFile(libraryRoot.append("framework/assets/www/cordova.js")));
+		files.put(PATH_CORDOVA_JS, getEngineFile(libraryRoot.append("framework/assets/www/cordova.js")));
 		
 	}
 
