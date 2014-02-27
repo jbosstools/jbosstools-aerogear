@@ -18,6 +18,5 @@
 		<module>org.jboss.tools.aerogear.hybrid.ui</module>
 		<module>org.jboss.tools.aerogear.hybrid.android.core</module>
 		<module>org.jboss.tools.aerogear.hybrid.android.ui</module>
-		<module>org.jboss.tools.aerogear.hybrid.cordova</module>
 	</modules>
 </project>
