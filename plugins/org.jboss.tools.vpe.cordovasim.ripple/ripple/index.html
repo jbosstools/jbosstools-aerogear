@@ -1072,7 +1072,7 @@
             <section class="collapse-img ui-state-default ui-corner-all">
                     <span class="ui-icon ui-icon-plus"></span>
              </section>
-            <div class="collapse-text">Platforms</div>
+            <div class="collapse-text">Platform</div>
         </section>
         <section class="drag-handle ui-state-default ui-corner-all ui-state-hover">
             <span class="ui-icon ui-icon-arrow-4"></span>
@@ -1083,16 +1083,18 @@
         <table class="panel-table">
             <tr>
                 <td><label class="ui-text-label">Platform</label></td>
-                <td><select id="platform-select" class="ui-state-default ui-corner-all"></select></td>
+                <td><span class="text-is-selectable multiple-version-platform">Apache Cordova</span></td>
+                <td><select id="platform-select" class="ui-state-default ui-corner-all" style="display:none"></select></td>
             </tr>
             <tr>
                 <td><label class="ui-text-label">Version</label></td>
-                <td><select id="version-select" class="ui-state-default ui-corner-all"></select></td>
+                <td><span id="cordova-version-container" class="text-is-selectable multiple-version-platform"></span></td>
+                <td><select id="version-select" class="ui-state-default ui-corner-all" style="display:none"></select></td>
             </tr>
         </table>
         
         <button id="change-platform" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
-            <span class="ui-button-text">Change Platform</span>
+            <span class="ui-button-text">Refresh</span>
         </button>
     </section>
 </section>
