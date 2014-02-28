@@ -2103,3 +2103,10 @@ fieldset {
 .skanDialogFieldSet select {
     width: 305px;
 }
+
+.multiple-version-platform {
+    font-style: normal;
+    font-weight: bold;
+    display: inline;
+    padding-right: 8px;
+}
