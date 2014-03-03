@@ -29,6 +29,29 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
 	private static final String IMAGE_WIZBAN = "/icons/wizban/newcordovaprj_wiz.png";
 	private Text txtName;
 	private Text txtID;
+	private final PropertyModifyListener propertyModifyListener = new PropertyModifyListener();
+	
+	class PropertyModifyListener implements ModifyListener{
+		private boolean skipValidation = false;
+		private boolean changed =false;
+		@Override
+		public void modifyText(ModifyEvent e) {
+			if(!skipValidation){
+				if(!changed && (e.widget == txtID || e.widget == txtName) ){
+					changed =true;
+				}
+				setPageComplete(validatePage());	
+			}
+		}
+		
+		public void setSkipValidation(boolean skipValidation) {
+			this.skipValidation = skipValidation;
+		}
+		
+		public boolean isNameOrIDChanged(){
+			return changed;
+		}
+	}
 	
 	public WizardNewHybridProjectCreationPage(String pageName) {
 		super(pageName);
@@ -51,23 +74,17 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
         Label lblName = new Label(applicationGroup, SWT.NONE);
         lblName.setText("Name:");
         
+        
+        
         txtName = new Text(applicationGroup, SWT.BORDER);
-        txtName.addModifyListener(new ModifyListener() {
-        	public void modifyText(ModifyEvent e) {
-        		setPageComplete(validatePage());
-        	}
-        });
+        txtName.addModifyListener(propertyModifyListener);
         txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         
         Label lblId = new Label(applicationGroup, SWT.NONE);
         lblId.setText("ID:");
         
         txtID = new Text(applicationGroup, SWT.BORDER);
-        txtID.addModifyListener(new ModifyListener() {
-        	public void modifyText(ModifyEvent e) {
-        		setPageComplete(validatePage());
-        	}
-        });
+        txtID.addModifyListener(propertyModifyListener);
         txtID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         
    
@@ -84,6 +101,15 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
 		if(txtID == null || txtName == null ){//validate is actually called first time on super.createControl()
 			return superValidate;             // in order to avoid NPEs for the half initialized UI we do a partial
 		}                                     // until all UI components are in place.
+		
+		if( !propertyModifyListener.isNameOrIDChanged() ){
+			String id = HybridProjectConventions.generateProjectID(getProjectName());
+			String name = HybridProjectConventions.generateApplicationName(getProjectName());
+			propertyModifyListener.setSkipValidation(true);
+			txtID.setText(id);
+			txtName.setText(name);
+			propertyModifyListener.setSkipValidation(false);
+		}
 		
 		IStatus status1 = HybridProjectConventions.validateApplicationName(txtName.getText());
 		IStatus status2 = HybridProjectConventions.validateProjectID(txtID.getText());

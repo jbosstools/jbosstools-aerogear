@@ -78,5 +78,30 @@ public class HybridProjectConventionsTest {
 		}
 	}
 	
+	@Test
+	public void testGenerateApplicationName(){
+		String[][] projectNames = {{"MyProject", "My Project"},
+				{"My_Project","My Project"},
+				{"This is a project","This is a project"},
+				{"This Is1Project","This Is1 Project"},
+				{"This_ISAProject","This ISA Project"}
+		};
+		for (int i = 0; i < projectNames.length; i++) {
+			assertEquals(projectNames[i][1], HybridProjectConventions.generateApplicationName(projectNames[i][0]));
+		}
+	}
+	
+	@Test
+	public void testGenerateProjectID(){
+		String[][] projectNames = {{"MyProject", "My.Project"},
+				{"My_Project","My.Project"},
+				{"This is a project","This.is.a.project"},
+				{"This Is1Project","This.Is1.Project"},
+				{"This_ISAProject","This.ISA.Project"}
+		};
+		for (int i = 0; i < projectNames.length; i++) {
+			assertEquals(projectNames[i][1], HybridProjectConventions.generateProjectID(projectNames[i][0]));
+		}
+	}
 	
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IStatus;
@@ -22,7 +24,7 @@ import org.eclipse.core.runtime.Status;
  *
  */
 public class HybridProjectConventions {
-	
+		
 	/**
 	 * Validates if a project name is valid.
 	 * 
@@ -57,6 +59,11 @@ public class HybridProjectConventions {
 		return Status.OK_STATUS;
 	}
 	
+	/**
+	 * Validates if the application name is suitable for use on app stores.
+	 * @param name
+	 * @return
+	 */
 	public static IStatus validateApplicationName(String name ){
 		if( name == null || name.trim().isEmpty() )
 			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Application name must be specified");
@@ -69,5 +76,59 @@ public class HybridProjectConventions {
 		}
 		return Status.OK_STATUS;
 	}
+	
+	public static String generateProjectID(String projectName) {
+		return generateName(projectName, ".");
+	}
+
+	public static String generateApplicationName(String projectName) {
+		return generateName(projectName, " ");
+	}
+	
+	private static String generateName(String projectName, String seperator) {
+		if (projectName == null || projectName.isEmpty())
+			return "";
+		List<String> tokens = tokenizeProjectName(projectName);
+		StringBuilder sb = new StringBuilder();
+		for (String string : tokens) {
+			if (sb.length() > 0) {
+				sb.append(seperator);
+			}
+			sb.append(string);
+		}
+		return sb.toString();
+	}
+
+	private static List<String> tokenizeProjectName(String projectName) {
+		char[] c = projectName.toCharArray();	
+        List<String> list = new ArrayList<String>();
+        int tokenStart = 0;
+        int currentType = Character.getType(c[tokenStart]);
+        for (int pos = tokenStart + 1; pos < c.length; pos++) {
+               int type = Character.getType(c[pos]);
+               if ((type == currentType && c[pos] != '_') || type == Character.DECIMAL_DIGIT_NUMBER){
+                    continue;
+                }
+                if (type == Character.LOWERCASE_LETTER && currentType == Character.UPPERCASE_LETTER) {//Adds all upper case
+                    int newTokenStart = pos - 1;
+                    if (newTokenStart != tokenStart) {
+                        list.add(new String(c, tokenStart, newTokenStart - tokenStart));
+                         tokenStart = newTokenStart;
+                    }
+                } else {
+                	list.add(new String(c, tokenStart, pos - tokenStart));
+                    if(!Character.isJavaIdentifierStart(c[pos]) && !Character.isJavaIdentifierPart(c[pos]) || c[pos] == '_'){
+                    	tokenStart = Math.min(pos+1, c.length-1);
+                    	type = Character.getType(c[tokenStart]);
+                    }else{
+                    	tokenStart = pos;
+                    }
+                }
+                currentType = type;
+            }
+            list.add(new String(c, tokenStart, c.length - tokenStart));
+		return list;
+	}
+
 	
 }
