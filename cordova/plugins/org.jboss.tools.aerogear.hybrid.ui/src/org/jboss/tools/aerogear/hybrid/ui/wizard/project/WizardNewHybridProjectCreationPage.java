@@ -106,7 +106,9 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
 			String id = HybridProjectConventions.generateProjectID(getProjectName());
 			String name = HybridProjectConventions.generateApplicationName(getProjectName());
 			propertyModifyListener.setSkipValidation(true);
-			txtID.setText(id);
+			if(id != null ){
+				txtID.setText(id);
+			}
 			txtName.setText(name);
 			propertyModifyListener.setSkipValidation(false);
 		}

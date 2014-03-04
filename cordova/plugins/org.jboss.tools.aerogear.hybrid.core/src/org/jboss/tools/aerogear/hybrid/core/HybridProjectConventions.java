@@ -16,10 +16,12 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * Provides utilities for checking against Hybrid mobile project conventions
  * such as the naming syntax
+ * 
  * @author Gorkem Ercan
  *
  */
@@ -36,7 +38,7 @@ public class HybridProjectConventions {
 			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Project name must be specified");
 		Pattern pattern  = Pattern.compile("[_a-zA-z][_a-zA-Z0-9]*");
 		if(!pattern.matcher(name).matches()){
-			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, name + " is not a valid application name");
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, NLS.bind("{0} is not a valid application name", name));
 		}
 		return Status.OK_STATUS;
 
@@ -54,7 +56,7 @@ public class HybridProjectConventions {
 
 		Pattern pattern  = Pattern.compile("([a-zA-Z][a-zA-Z\\d_]*[\\.])+[a-zA-Z_][a-zA-Z\\d_]*");
 		if( !pattern.matcher(id).matches()){
-			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, id + " is not a valid application id");
+			return new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, NLS.bind("{0} is not a valid application id", id));
 		}
 		return Status.OK_STATUS;
 	}
@@ -77,28 +79,54 @@ public class HybridProjectConventions {
 		return Status.OK_STATUS;
 	}
 	
+	/**
+	 * Generates a project ID given an Eclipse project name. 
+	 * This method returns null of it can not determine the project ID
+	 * @param projectName
+	 * @return a project id or null
+	 */
 	public static String generateProjectID(String projectName) {
-		return generateName(projectName, ".");
-	}
+		if (projectName == null || projectName.isEmpty())
+			return "";
+		List<String> tokens = tokenizeProjectName(projectName);
+		if(tokens.size() < 2 ){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		for (String string : tokens) {
+			if (sb.length() > 0) {
+				sb.append(".");
+			}
+			sb.append(string);
+		}
+		return sb.toString();
 
-	public static String generateApplicationName(String projectName) {
-		return generateName(projectName, " ");
 	}
-	
-	private static String generateName(String projectName, String seperator) {
+	/**
+	 * Generates a cordova application name from a given Eclipse project name
+	 * 
+	 * @param projectName
+	 * @return
+	 */
+	public static String generateApplicationName(String projectName) {
 		if (projectName == null || projectName.isEmpty())
 			return "";
 		List<String> tokens = tokenizeProjectName(projectName);
 		StringBuilder sb = new StringBuilder();
 		for (String string : tokens) {
 			if (sb.length() > 0) {
-				sb.append(seperator);
+				sb.append(" ");
 			}
 			sb.append(string);
 		}
 		return sb.toString();
 	}
-
+	/**
+	 * Tokenize a project id. It considers all character type changes as 
+	 * a new token.
+	 * @param projectName
+	 * @return
+	 */
 	private static List<String> tokenizeProjectName(String projectName) {
 		char[] c = projectName.toCharArray();	
         List<String> list = new ArrayList<String>();
@@ -129,6 +157,5 @@ public class HybridProjectConventions {
             list.add(new String(c, tokenStart, c.length - tokenStart));
 		return list;
 	}
-
 	
 }
