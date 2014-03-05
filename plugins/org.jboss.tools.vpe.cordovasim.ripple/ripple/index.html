@@ -961,6 +961,46 @@
 </section>
 
 <!--
+ * Battery status container 
+ *
+-->
+<section id="battery-status-container" class="ui-box ui-state-default ui-corner-all">
+    <section class="h2 info-header">
+        <section class="collapse-handle">
+            <section class="collapse-img ui-state-default ui-corner-all">
+                    <span class="ui-icon ui-icon-plus"></span>
+             </section>
+            <div class="collapse-text">Battery Status</div>
+        </section>
+        <section class="drag-handle ui-state-default ui-corner-all ui-state-hover">
+            <span class="ui-icon ui-icon-arrow-4"></span>
+        </section>
+    </section>
+
+    <section class="info ui-widget-content ui-corner-all" style="display: none;">
+        <p></p>
+
+        <table class="panel-table">
+            <tr id="battery-level-container">
+                <td><span class="ui-text-label">Battery Level</span></td>
+                <td>
+                    <label id="battery-level-label" class="range-label-left">100 %</label>
+                    <input id="battery-level" type="range" value="100" min="0" max="100" class="ui-state-default ui-corner-all">
+                </td>
+            </tr>
+            <tr id="is-plugged-container">
+                <td>
+                    <span class="ui-text-label">Is Plugged</span>
+                </td>
+                <td>
+                    <input id="is-plugged" type="checkbox" />
+                </td>
+            </tr>
+        </table>
+    </section>
+</section>
+
+<!--
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
