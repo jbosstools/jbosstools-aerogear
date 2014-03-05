@@ -26280,6 +26280,90 @@ module.exports = {
 };
 
 });
+
+ripple.define('ui/plugins/batteryStatus', function (ripple, exports, module) {
+/*
+ * Battery Status plugin
+ *
+ */
+
+var constants = ripple('constants'),
+    db = ripple('db');
+
+function _fireEvent(name, data) {
+    return function () {
+        var win = ripple('emulatorBridge').window();
+
+        if (!win.cordova) {
+            throw "You must have cordova.js included in your projects, to be able to trigger events";
+        }
+
+        win.cordova.fireWindowEvent(name, data);
+    };
+}
+
+module.exports = {
+    panel: {
+        domId: "battery-status-container",
+        collapsed: true,
+        pane: "left"
+    },
+
+    initialize: function () {
+        var batteryLevel = document.getElementById(constants.BATTERY_STATUS.LEVEL_VALUE);
+        var batteryLevelLabel = document.getElementById(constants.BATTERY_STATUS.LEVEL_LABEL);
+        var isPlugged = document.getElementById(constants.BATTERY_STATUS.IS_PLUGGED_CHECKBOX);
+
+        jQuery("#" + constants.BATTERY_STATUS.LEVEL_VALUE).bind("mouseup", function () {
+            var level = batteryLevel.value;
+            var info = { level : level, isPlugged : isPlugged.checked }; 
+            batteryLevelLabel.innerHTML = level + " %";
+            fireBatteryEvents(info);
+            db.save(constants.BATTERY_STATUS.BATTERY_STATUS_KEY, level);
+        });
+
+        jQuery("#" + constants.BATTERY_STATUS.IS_PLUGGED_CHECKBOX).bind("click", function () {
+            var info = { level : batteryLevel.value, isPlugged : isPlugged.checked };
+            fireBatteryEvents(info);
+            db.save(constants.BATTERY_STATUS.IS_PLUGGED_KEY, isPlugged.checked);
+        });
+
+        var savedStatus = db.retrieve(constants.BATTERY_STATUS.BATTERY_STATUS_KEY); 
+        var savedIsPlugged = db.retrieve(constants.BATTERY_STATUS.IS_PLUGGED_KEY);
+
+        if (savedStatus) {
+            setBatteryStatus(savedStatus);
+        }
+
+        if (savedIsPlugged) {
+            isPlugged.checked = savedIsPlugged;
+        }
+
+        function setBatteryStatus(status) {
+            batteryLevel.value = status;
+            batteryLevelLabel.innerHTML = status + " %"; 
+        } 
+         
+        // The code was taken from the Battery plugin (battery.js)
+        function fireBatteryEvents(info) { 
+            _fireEvent("batterystatus", info)();
+            var level = parseInt(info.level)
+            
+            // Fire low battery event 
+            if (level === 20 || level === 5) {
+                if (level === 20) {
+                    _fireEvent("batterylow", info)();
+                }
+                else {
+                    _fireEvent("batterycritical", info)();
+                }
+            }
+        }
+
+    }
+};
+});
+
 ripple.define('ui/plugins/about-dialog', function (ripple, exports, module) {
 /*
  *
@@ -34395,6 +34479,14 @@ module.exports = {
         }
     },
 
+    "BATTERY_STATUS" : {
+        "BATTERY_STATUS_KEY": "tool-tips-key",
+        "IS_PLUGGED_KEY" : "is-plugged-key",
+        "LEVEL_LABEL" : "battery-level-label",
+        "LEVEL_VALUE" : "battery-level",
+        "IS_PLUGGED_CHECKBOX" : "is-plugged"
+    },
+
     "CSS_PREFIX":  {
         "IRRELEVANT" : "irrelevant"
     },
@@ -38516,6 +38608,7 @@ module.exports = {
         "accelerometer",
         "deviceSettings",
         "geoView",
+        "batteryStatus",
         "widgetConfig",
         "platformEvents"
     ]
@@ -40715,7 +40808,8 @@ var _prompt = ripple('ui/plugins/exec-dialog'),
         "Notification": ripple('platform/cordova/2.0.0/bridge/notification'),
         "Vibration": ripple('platform/cordova/2.0.0/bridge/notification'),
         "SplashScreen": ripple('platform/cordova/3.0.0/bridge/splashscreen'),
-        "InAppBrowser": ripple('platform/cordova/3.0.0/bridge/inappbrowser')
+        "InAppBrowser": ripple('platform/cordova/3.0.0/bridge/inappbrowser'),
+        "Battery" : ripple('platform/cordova/3.0.0/bridge/battery')
     },
     processException = function(success, fail, service, action, args, exception) {
           console.log("missing exec:" + service + "." + action);
@@ -41447,6 +41541,25 @@ module.exports = {
 };
 
 });
+
+ripple.define('platform/cordova/3.0.0/bridge/battery', function (ripple, exports, module) {
+
+    var constants = ripple('constants');
+    var emulatorBridge = ripple('emulatorBridge');
+
+    module.exports = {
+        start : function (win, fail, args) {
+            var batteryLevel = parseInt(document.getElementById(constants.BATTERY_STATUS.LEVEL_VALUE).value);
+            var isPlugged = document.getElementById(constants.BATTERY_STATUS.IS_PLUGGED_CHECKBOX).checked;
+            var info = {level : batteryLevel, isPlugged : isPlugged};
+            win(info);           
+        },
+
+        stop : function (win, fail, args) {
+        }
+    }
+});
+
 ripple.define('platform/webworks.handset/2.0.0/spec/device', function (ripple, exports, module) {
 /*
  *
@@ -54957,7 +55070,7 @@ if (!localStorage2.ripple) {
                                          { 
                                             "id":"tinyhippos-ui-application-state-cordova",
                                             "key":"ui-application-state-cordova",
-                                            "value":"[{\"domId\":\"devices-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"platforms-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"information-container\",\"collapsed\":false,\"pane\":\"left\"},{\"domId\":\"settings-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"accelerometer-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"devicesettings-panel-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"gps-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"config-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"platform-events-container\",\"collapsed\":true,\"pane\":\"left\"}]","prefix":"tinyhippos-"
+                                            "value":"[{\"domId\":\"devices-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"platforms-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"information-container\",\"collapsed\":false,\"pane\":\"left\"},{\"domId\":\"settings-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"accelerometer-container\",\"collapsed\":true,\"pane\":\"left\"},{\"domId\":\"devicesettings-panel-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"gps-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"config-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"battery-status-container\",\"collapsed\":true,\"pane\":\"right\"},{\"domId\":\"platform-events-container\",\"collapsed\":true,\"pane\":\"left\"}]","prefix":"tinyhippos-"
                                           },
                       "tinyhippos-layout": 
                                           {
