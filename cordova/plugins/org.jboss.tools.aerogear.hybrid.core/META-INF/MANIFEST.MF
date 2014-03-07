@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jgit;bundle-version="[3.0.0,4.0.0)",
  org.eclipse.ecf.filetransfer;bundle-version="[5.0.0,6.0.0)",
  org.eclipse.ecf;bundle-version="[3.2.0,4.0.0)",
- org.eclipse.wst.jsdt.core;bundle-version="[1.1.0,2.0.0)"
+ org.eclipse.wst.jsdt.core;bundle-version="[1.1.0,2.0.0)",
+ org.apache.httpcomponents.httpcore;bundle-version="4.2.5"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.github.zafarkhaja.semver;x-friends:="org.jboss.tools.aerogear.hybrid.ui,org.jboss.tools.aerogear.hybrid.ios.core",
@@ -36,9 +37,7 @@ Export-Package: com.github.zafarkhaja.semver;x-friends:="org.jboss.tools.aerogea
  org.jboss.tools.aerogear.hybrid.core.plugin.registry,
  org.jboss.tools.aerogear.hybrid.engine.internal.cordova;x-friends:="org.jboss.tools.aerogear.hybrid.ui"
 Bundle-Localization: plugin
-Import-Package: org.apache.http;version="4.1.4",
- org.apache.http.entity;version="4.1.4",
- org.eclipse.ecf.core.identity;version="3.2.0",
+Import-Package: org.eclipse.ecf.core.identity;version="3.2.0",
  org.eclipse.ui.services
 Bundle-ClassPath: lib/java-semver-0.8.0-20131230.170230-3.jar,
  .

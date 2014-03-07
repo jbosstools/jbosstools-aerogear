@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013,2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -32,6 +32,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.cache.CacheConfig;
+import org.apache.http.impl.client.cache.CachingHttpClient;
+import org.apache.http.impl.client.cache.FileResourceFactory;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -44,7 +47,9 @@ import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.BundleHttpCacheStorage;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.osgi.framework.BundleContext;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -187,13 +192,21 @@ public class CordovaPluginRegistryManager {
 		return cachedPluginDir;
 	}
 	
+	private static CacheConfig getCacheConfig(){
+		CacheConfig config = new CacheConfig();
+		config.setMaxObjectSize(120 *1024);
+		return config;
+	}
 	
 	public List<CordovaRegistryPluginInfo> retrievePluginInfos(IProgressMonitor monitor) throws CoreException
 	{
 		if(monitor == null )
 			monitor = new NullProgressMonitor();
 		
-		HttpClient client = new DefaultHttpClient();
+		BundleContext context = HybridCore.getContext();
+		HttpClient client = new CachingHttpClient(new DefaultHttpClient(), 
+				new FileResourceFactory(context.getDataFile(BundleHttpCacheStorage.SUBDIR_HTTP_CACHE)), 
+				new BundleHttpCacheStorage(HybridCore.getContext().getBundle()), getCacheConfig());
 		String url = registry.endsWith("/") ? registry+"-/all" : registry+"/-/all";
 		HttpGet get = new HttpGet(url);
 		HttpResponse response;
@@ -234,7 +247,6 @@ public class CordovaPluginRegistryManager {
 				
 			}
 			reader.endObject();
-			
 			return plugins;
 
 		} catch (ClientProtocolException e) {
