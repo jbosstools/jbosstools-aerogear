@@ -10,17 +10,18 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.core.platform;
 
-import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.directoryCopy;
 import static org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils.toURL;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -31,6 +32,7 @@ import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.osgi.framework.Bundle;
@@ -117,19 +119,19 @@ public abstract class AbstractProjectGeneratorDelegate {
 			generateNativeFiles(resolver);
 			monitor.worked(10);
 			IFolder folder = getProject().getFolder("/"+PlatformConstants.DIR_WWW);
-			if ( !folder.exists() ){
-				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "No www directory. Can not generate target without www directory"));
+			if ( !folder.isAccessible()){
+				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "www folder is missing. Can not generate target project without www directory"));
 			}
 			File targetWWW = getPlatformWWWDirectory();
 			Assert.isNotNull(targetWWW,"Platform implementation must return a file location for www directory");
 			if( !targetWWW.exists() && !targetWWW.mkdirs() ){
 				throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, " Unable to create www directory for native project "));
 			}
-			directoryCopy( toURL(folder.getLocation().toFile()), toURL(targetWWW));
+			copyResource(folder, folder.getFullPath(), targetWWW);
 			monitor.worked(10);
 			folder = getProject().getFolder("/"+ PlatformConstants.DIR_MERGES+"/"+getTargetShortName());
 			if (folder.exists()){
-				directoryCopy(folder.getLocationURI().toURL() , toURL(targetWWW));
+				copyResource(folder, folder.getFullPath(), targetWWW);
 			}
 			monitor.worked(10);
 			replaceCordovaPlatformFiles(resolver);
@@ -143,10 +145,36 @@ public abstract class AbstractProjectGeneratorDelegate {
 		}
 		HybridCore.trace(getTargetShortName()+ " project generated in " + Long.toString(System.currentTimeMillis() - start) +" ms.");
 		return getDestination();
+	}
+	
+	private void copyResource(final IResource resource, final IPath workspaceRoot, final File root) throws IOException{
+		if(!resource.isAccessible()) return;
 		
+		File destinationFile = createDestinationFile( resource, workspaceRoot, root);
+		if(resource.getType() == IResource.FILE ){
+			FileUtils.fileCopy(resource.getLocationURI().toURL(), toURL(destinationFile));
+		}else{
+			IContainer container = (IContainer) resource;
+			IResource[] childs = null;
+			try {
+				childs = container.members();
+			} catch (CoreException e) {
+				// isAccessible() call before is guarding this, should never happen.
+				HybridCore.log(IStatus.ERROR, "Copying resources to generated project", e);
+			}
+			
+			destinationFile.mkdir();
+			for (int i = 0; i < childs.length; i++) {
+				copyResource(childs[i], workspaceRoot, root);
+			}
+		}
 	}
 	
 	
+	private File createDestinationFile(IResource resource, IPath workspaceRoot, File root) {
+		return new File(root, resource.getFullPath().makeRelativeTo(workspaceRoot).toOSString());
+	}
+
 	protected void completeCordovaPluginInstallations(IProgressMonitor monitor) throws CoreException{
 		HybridProject project = HybridProject.getHybridProject(getProject());
 		if( project == null ) return;
