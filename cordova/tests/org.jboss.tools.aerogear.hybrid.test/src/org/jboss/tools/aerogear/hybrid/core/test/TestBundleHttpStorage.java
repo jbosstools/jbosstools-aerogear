@@ -23,7 +23,6 @@ import org.apache.http.impl.client.cache.HeapResource;
 import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicStatusLine;
-import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.BundleHttpCacheStorage;
 import org.jboss.tools.aerogear.hybrid.test.Activator;
 
