@@ -93,11 +93,11 @@ public class HybridProjectConventionsTest {
 	
 	@Test
 	public void testGenerateProjectID(){
-		String[][] projectNames = {{"MyProject", "My.Project"},
-				{"My_Project","My.Project"},
-				{"This is a project","This.is.a.project"},
-				{"This Is1Project","This.Is1.Project"},
-				{"This_ISAProject","This.ISA.Project"}
+		String[][] projectNames = {{"MyProject", "my.project"},
+				{"My_Project","my.project"},
+				{"This is a project","this.is.a.project"},
+				{"This Is1Project","this.is1.project"},
+				{"This_ISAProject","this.isa.project"}
 		};
 		for (int i = 0; i < projectNames.length; i++) {
 			assertEquals(projectNames[i][1], HybridProjectConventions.generateProjectID(projectNames[i][0]));

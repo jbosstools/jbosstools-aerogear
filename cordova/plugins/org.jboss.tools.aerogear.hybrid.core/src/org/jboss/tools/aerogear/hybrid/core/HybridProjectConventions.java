@@ -97,7 +97,7 @@ public class HybridProjectConventions {
 			if (sb.length() > 0) {
 				sb.append(".");
 			}
-			sb.append(string);
+			sb.append(string.toLowerCase());
 		}
 		return sb.toString();
 
