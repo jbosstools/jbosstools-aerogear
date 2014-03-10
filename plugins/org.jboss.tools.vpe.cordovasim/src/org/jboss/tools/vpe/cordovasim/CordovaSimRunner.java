@@ -65,17 +65,8 @@ public class CordovaSimRunner {
 		}
 	}
 
-	static { // TODO need to do this better
-		if (PlatformUtil.OS_LINUX.equals(PlatformUtil.getOs())) {
-			isJavaFxAvailable = false; // JavaFx web engine is not supported on Linux
-		} else {
-			isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
-			//no need to load both engines because engines switches after complete restart.
-			//@see JBIDE-16493
-//			if (isJavaFxAvailable) {
-//				BrowserSimUtil.loadWebkitLibraries();
-//			}
-		}
+	static { 
+		isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
 	}
 
 	/**
