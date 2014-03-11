@@ -66,7 +66,13 @@ public class CordovaSimRunner {
 	}
 
 	static { 
-		isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
+		isJavaFxAvailable = false;
+		boolean isLinux = PlatformUtil.OS_LINUX.equals(PlatformUtil.getOs());
+		
+		// Trying to load javaFx libs except Linux GTK3 case
+		if (!(isLinux && !BrowserSimUtil.isRunningAgainstGTK2())) {
+			isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
+		}
 	}
 
 	/**
