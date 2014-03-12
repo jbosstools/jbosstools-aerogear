@@ -42,7 +42,6 @@ public class IOSSimulator {
 
 	public IOSSimulator(){
 		try {
-			
 			Bundle bundle = IOSCore.getContext().getBundle();
 			File bundleDataDirectory = bundle.getDataFile("/");			
 			iosSim = new File(bundleDataDirectory, "ios-sim");
@@ -50,14 +49,12 @@ public class IOSSimulator {
 			if (!iosSim.exists() || FileUtils.isNewer(iosSimBinary, FileUtils.toURL(iosSim))) {// Copied earlier
 				directoryCopy(iosSimBinary,toURL( bundleDataDirectory));
 			}
-			if (iosSim.exists()){
+			if (iosSim.exists() && !iosSim.canExecute()){
 				iosSim.setExecutable(true, false);
 			}
-			
 		} catch (IOException e) {
-
+			IOSCore.log(IStatus.ERROR, "IO error when copying the ios-sim", e);
 		}
-
 	}
 	
 	public void launch() throws CoreException{
@@ -66,9 +63,6 @@ public class IOSSimulator {
 		}
 		StringBuilder cmdLine = new StringBuilder();
 		cmdLine.append("\"").append(iosSim.getPath()).append("\" launch ");
-
-		
-		
 		
 		assert pathToBinary != null: "Path to the app binary to launch on the simulator is missing"; 
 		cmdLine.append("\"").append(pathToBinary).append("\"");
