@@ -10,11 +10,13 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
+import static org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants.DIR_MERGES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStreamReader;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,7 +27,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
@@ -81,6 +87,13 @@ public class HybridProjectCreatorTest {
 		for (int i = 0; i < paths.length; i++) {
 			IFolder folder = theProject.getFolder( paths[i]);
 			assertTrue(paths[i]+ " is not created. ", folder.exists());
+		}
+		List<PlatformSupport> platforms = HybridCore.getPlatformSupports();
+		IPath merges = new Path(PlatformConstants.DIR_MERGES);
+		for (PlatformSupport platform : platforms) {
+			IPath platformDir = merges.append(platform.getPlatformId());
+			IFolder folder = theProject.getFolder(platformDir);
+			assertTrue(platformDir+ " is not created. ", folder.exists());
 		}
 	}
 	

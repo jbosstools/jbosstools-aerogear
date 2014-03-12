@@ -32,6 +32,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -47,6 +48,7 @@ import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.core.internal.libraries.CordovaLibraryJsContainerInitializer;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.ConfigJSon;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
@@ -143,7 +145,11 @@ public class HybridProjectCreator {
 
 
 	private void addPlatformPaths(IProject project, IProgressMonitor monitor) throws CoreException{
-			//TODO: should we even bother to add platform paths now? 
+		List<PlatformSupport> platforms = HybridCore.getPlatformSupports();
+		IPath merges = new Path(DIR_MERGES);
+		for (PlatformSupport platform : platforms) {
+			createFolder(project.getFolder(merges.append(platform.getPlatformId())), monitor);
+		}
 		monitor.done();
 	}
 
