@@ -152,7 +152,8 @@ public abstract class AbstractProjectGeneratorDelegate {
 		
 		File destinationFile = createDestinationFile( resource, workspaceRoot, root);
 		if(resource.getType() == IResource.FILE ){
-			FileUtils.fileCopy(resource.getLocationURI().toURL(), toURL(destinationFile));
+			File sourceFile = resource.getLocation().toFile();
+			FileUtils.fileCopy(toURL(sourceFile), toURL(destinationFile));
 		}else{
 			IContainer container = (IContainer) resource;
 			IResource[] childs = null;
