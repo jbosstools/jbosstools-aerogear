@@ -22,7 +22,6 @@ public class IOSPluginInstallationActionsFactory extends
 		File source = new File(getPluginDirectory(), src);
 		StringBuilder targetPath = calculateTargetPath("Plugins",targetDir, pluginId,
 				source);
-		HybridProject prj = HybridProject.getHybridProject(getProject());
 		File target = new File(getProjectDirectory(), targetPath.toString());
 		boolean isFramework= Boolean.parseBoolean(framework);
 		File pbx = getPbxprojectFile();
@@ -33,7 +32,6 @@ public class IOSPluginInstallationActionsFactory extends
 	@Override
 	public IPluginInstallationAction getResourceFileAction(String src) {
 		File source = new File(getPluginDirectory(), src);
-		HybridProject prj = HybridProject.getHybridProject(getProject());
 		String targetPath = calculateTargetPath("Resources", null, null, source).toString();
 		File target = new File(getProjectDirectory(), targetPath);
 		File pbx = getPbxprojectFile();

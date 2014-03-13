@@ -45,7 +45,6 @@ public class JSModuleAction implements IPluginInstallationAction {
 		} catch (IOException e) {
 			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Error while creating file " + target, e));
 		}
-
 	}
 
 	@Override

@@ -421,14 +421,17 @@ public class CordovaPluginManager {
 		Document doc = XMLUtil.loadXML(pluginFile); 
 		//TODO: check  supported engines
 		ArrayList<IPluginInstallationAction> allActions = new ArrayList<IPluginInstallationAction>();
+		AbstractPluginInstallationActionsFactory actionFactory = platform.getPluginInstallationActionsFactory(this.project.getProject(), 
+				pluginHome, platformProject);
+		
+		// Process jsmodules even if there is no platform node. 
+		// See JBIDE-16544 
+		allActions.addAll(getCommonAndPlatformJSModuleActions(plugin, platform.getPlatformId(), actionFactory)); // add all js-module actions
 		
 		Node node = getPlatformNode(doc, platform.getPlatformId());
 		if( node != null ){
-			AbstractPluginInstallationActionsFactory actionFactory = platform.getPluginInstallationActionsFactory(this.project.getProject(), 
-					pluginHome, platformProject);
 			allActions.addAll(getAssetActionsForPlatform(doc.getDocumentElement(),actionFactory ));// add common assets
 			allActions.addAll(getConfigFileActionsForPlatform(doc.getDocumentElement(), actionFactory)); // common config changes
-			allActions.addAll(getJSModuleActionsForPlatform(plugin, platform.getPlatformId(), actionFactory)); // add all js-module actions
 			//We do not need to create this file 
 			//with every plugin. TODO: find a better place
 			allActions.add(actionFactory.getCreatePluginJSAction(this.getCordovaPluginJSContent(platform.getPlatformId())));
@@ -437,7 +440,7 @@ public class CordovaPluginManager {
 		runActions(allActions,false,overwrite,monitor);
 	}
 	
-	private List<IPluginInstallationAction> getJSModuleActionsForPlatform(CordovaPlugin plugin,String platformId,AbstractPluginInstallationActionsFactory factory) {
+	private List<IPluginInstallationAction> getCommonAndPlatformJSModuleActions(CordovaPlugin plugin,String platformId,AbstractPluginInstallationActionsFactory factory) {
 		List<PluginJavaScriptModule> modules =  plugin.getModules(); 
 		List<IPluginInstallationAction> actions = new ArrayList<IPluginInstallationAction>();
 		for (PluginJavaScriptModule scriptModule : modules) {
