@@ -87,5 +87,14 @@
             plugin="org.jboss.tools.aerogear.hybrid.android.core">
       </statusHandler>
    </extension>
+   <extension
+         point="org.jboss.tools.aerogear.hybrid.ui.hybridMobileStatusHandler">
+      <statusHandler
+            class="org.jboss.tools.aerogear.hybrid.android.ui.internal.statushandler.MissingSDKStatusHandler"
+            code="200"
+            id="org.jboss.tools.aerogear.hybrid.android.ui.missingSDKStatusHandler"
+            plugin="org.jboss.tools.aerogear.hybrid.android.core">
+      </statusHandler>
+   </extension>
  
 </plugin>

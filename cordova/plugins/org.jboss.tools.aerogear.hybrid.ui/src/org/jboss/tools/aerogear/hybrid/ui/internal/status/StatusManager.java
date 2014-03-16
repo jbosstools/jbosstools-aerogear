@@ -10,11 +10,21 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.internal.status;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.status.AbstractStatusHandler;
 
 public class StatusManager {
+	
+	
+	private static Map<String, AbstractStatusHandler> handlers;
 
 	
 	public static void handle(IStatus status){
@@ -55,12 +65,27 @@ public class StatusManager {
 	}
 	
 	private static AbstractStatusHandler getHybridMobileStatusHandler(HybridMobileStatus status){
-		switch (status.getCode()) {
-		case HybridMobileStatus.STATUS_CODE_MISSING_ENGINE:
-			return new EngineStatusHandler();
-		default:
-			return new DefaultStatusHandler();
+		initHandlers();
+		String key = makeHandlerKey(status.getPlugin(), status.getCode());
+		if(handlers.containsKey(key)){
+			return handlers.get(key);
+		}
+        return new DefaultStatusHandler();
+	}
+	
+	private static void initHandlers(){
+		if(handlers != null ) return;
+		handlers = new HashMap<String, AbstractStatusHandler>();
+		List<HybridMobileStatusExtension> extensions = HybridUI.getHybridMobileStatusExtensions();
+		for (HybridMobileStatusExtension extension : extensions) {
+			String key = makeHandlerKey(extension.getPluginID() ,extension.getCode());
+			handlers.put(key, extension.getHandler());
 		}
 	}
+	
+	private static String makeHandlerKey(String pluginID, int code){
+		return  NLS.bind("{0}_{1}",new String[]{pluginID, Integer.toString(code)});
+	}
+	
 	
 }

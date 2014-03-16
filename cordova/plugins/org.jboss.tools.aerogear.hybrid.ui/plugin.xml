@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="org.jboss.tools.aerogear.hybrid.ui.platformImages" name="Platform mages" schema="schema/org.jboss.tools.aerogear.hybrid.ui.platformImage.exsd"/>
+   <extension-point id="hybridMobileStatusHandler" name="Hybrid Mobile Status Handler" schema="schema/hybridMobileStatusHandler.exsd"/>
 
    <extension
          point="org.eclipse.ui.newWizards">
@@ -164,6 +165,15 @@
   </extension>
   <extension
         point="org.eclipse.debug.core.statusHandlers">
+     <statusHandler
+           class="org.jboss.tools.aerogear.hybrid.ui.internal.status.EngineStatusHandler"
+           code="100"
+           id="org.jboss.tools.aerogear.hybrid.ui.engineStatusHandler"
+           plugin="org.jboss.tools.aerogear.hybrid.core">
+     </statusHandler>
+  </extension>
+  <extension
+        point="org.jboss.tools.aerogear.hybrid.ui.hybridMobileStatusHandler">
      <statusHandler
            class="org.jboss.tools.aerogear.hybrid.ui.internal.status.EngineStatusHandler"
            code="100"

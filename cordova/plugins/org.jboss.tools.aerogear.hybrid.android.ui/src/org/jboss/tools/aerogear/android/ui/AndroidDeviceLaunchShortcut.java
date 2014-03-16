@@ -23,8 +23,6 @@ public class AndroidDeviceLaunchShortcut extends HybridProjectLaunchShortcut {
 
 	@Override
 	protected boolean validateBuildToolsReady() throws CoreException {
-		if(!SDKLocationHelper.defineSDKLocationIfNecessary())
-			return false;
 		AndroidSDKManager sdkManager = AndroidSDKManager.getManager();
 		List<AndroidSDK> targets = sdkManager.listTargets();
 		if(targets == null || targets.isEmpty() ){

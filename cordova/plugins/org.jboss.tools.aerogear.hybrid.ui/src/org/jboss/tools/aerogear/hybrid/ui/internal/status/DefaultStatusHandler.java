@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.status.AbstractStatusHandler;
 
 public class DefaultStatusHandler extends AbstractStatusHandler {
 

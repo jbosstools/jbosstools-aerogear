@@ -26,6 +26,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridToolsPreferences;
+import org.jboss.tools.aerogear.hybrid.ui.internal.status.HybridMobileStatusExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -119,4 +120,15 @@ public class HybridUI extends AbstractUIPlugin {
 		}
     	return images;
     }
+    
+    public static List<HybridMobileStatusExtension> getHybridMobileStatusExtensions(){
+    	IConfigurationElement[] configurationElements = Platform.getExtensionRegistry().getConfigurationElementsFor(HybridMobileStatusExtension.EXTENSION_POINT_ID);
+    	List<HybridMobileStatusExtension> handlers = new ArrayList<HybridMobileStatusExtension>();
+    	for (int i = 0; i < configurationElements.length; i++) {
+			HybridMobileStatusExtension ext = new HybridMobileStatusExtension(configurationElements[i]);
+			handlers.add(ext);
+		}
+    	return handlers;
+    }
+    
 }

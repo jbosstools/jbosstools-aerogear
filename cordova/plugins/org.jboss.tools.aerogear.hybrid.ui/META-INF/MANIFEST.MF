@@ -36,6 +36,7 @@ Export-Package: org.jboss.tools.aerogear.hybrid.ui,
  org.jboss.tools.aerogear.hybrid.ui.config.internal;x-internal:=true,
  org.jboss.tools.aerogear.hybrid.ui.internal.preferences,
  org.jboss.tools.aerogear.hybrid.ui.launch,
+ org.jboss.tools.aerogear.hybrid.ui.status,
  org.jboss.tools.aerogear.hybrid.ui.util,
  org.jboss.tools.aerogear.hybrid.ui.wizard.project;x-internal:=true
 Bundle-Vendor: %Bundle-Vendor

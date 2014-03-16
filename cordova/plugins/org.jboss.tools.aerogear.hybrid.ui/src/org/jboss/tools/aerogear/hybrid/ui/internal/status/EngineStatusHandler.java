@@ -24,6 +24,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.properties.EnginePropertyPage;
+import org.jboss.tools.aerogear.hybrid.ui.status.AbstractStatusHandler;
 
 public class EngineStatusHandler extends AbstractStatusHandler implements IStatusHandler {
 
@@ -48,8 +49,6 @@ public class EngineStatusHandler extends AbstractStatusHandler implements IStatu
 			handleStatus(status, null);
 		} catch (CoreException e) {
 			HybridUI.log(IStatus.ERROR, "Handle status failed", e);
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	

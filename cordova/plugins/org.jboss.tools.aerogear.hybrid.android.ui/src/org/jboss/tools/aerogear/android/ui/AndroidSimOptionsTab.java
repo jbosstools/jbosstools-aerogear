@@ -40,6 +40,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidConstants;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidAVD;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidSDKManager;
+import org.jboss.tools.aerogear.hybrid.android.ui.internal.statushandler.MissingSDKStatusHandler;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants;

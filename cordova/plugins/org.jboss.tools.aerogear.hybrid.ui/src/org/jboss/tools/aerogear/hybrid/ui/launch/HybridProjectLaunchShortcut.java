@@ -30,12 +30,10 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ide.ResourceUtil;
-import org.eclipse.ui.statushandlers.IStatusAdapterConstants;
-import org.eclipse.ui.statushandlers.StatusAdapter;
-import org.eclipse.ui.statushandlers.StatusManager;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectLaunchConfigConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 /**
  * General hybrid mobile project launch shortcut.
  * 
@@ -73,17 +71,13 @@ public abstract class HybridProjectLaunchShortcut implements ILaunchShortcut{
 			DebugUITools.launch(launchConfig, "run");
 			
 		} catch (CoreException e) {
-			StatusManager manager = StatusManager.getManager();
 			if (e.getCause() instanceof IOException) {
 				Status status = new Status(IStatus.ERROR, HybridUI.PLUGIN_ID,
 						"Unable to complete the build for target plarform",
 						e.getCause());
-				StatusAdapter adapter = new StatusAdapter(status);
-				adapter.setProperty(IStatusAdapterConstants.TITLE_PROPERTY,
-						"Mobile Hybrid Project Build Error");
-				manager.handle(adapter, StatusManager.SHOW);
-			} else {
-				manager.handle(e.getStatus(),StatusManager.SHOW);
+				StatusManager.handle(status);
+			}else{
+				StatusManager.handle(e);
 			}
 		}
 	}
