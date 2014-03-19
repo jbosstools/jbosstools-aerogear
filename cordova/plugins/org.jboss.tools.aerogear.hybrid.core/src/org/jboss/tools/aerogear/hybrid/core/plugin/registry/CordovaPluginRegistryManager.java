@@ -76,8 +76,10 @@ public class CordovaPluginRegistryManager {
 		CordovaRegistryPlugin plugin = detailedPluginInfoCache.get(name);
 		if(plugin != null )
 			return plugin;
-		
-		HttpClient client = new DefaultHttpClient();
+		BundleContext context = HybridCore.getContext();	
+		HttpClient client =new CachingHttpClient(new DefaultHttpClient(), 
+				new FileResourceFactory(context.getDataFile(BundleHttpCacheStorage.SUBDIR_HTTP_CACHE)), 
+				new BundleHttpCacheStorage(HybridCore.getContext().getBundle()), getCacheConfig()); 
 		String url = registry.endsWith("/") ? registry + name : registry + "/"
 				+ name;
 		HttpGet get = new HttpGet(url);
