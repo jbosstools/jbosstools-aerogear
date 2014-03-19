@@ -33,6 +33,7 @@ import org.eclipse.wst.jsdt.core.compiler.libraries.LibraryLocation;
 import org.eclipse.wst.jsdt.core.infer.DefaultInferrenceProvider;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
@@ -117,7 +118,12 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 			File cordovaJS = cordovaJSRuntimePath.toFile();
 			if (!cordovaJS.exists()) {
 				HybridProject prj = HybridProject.getHybridProject(project.getProject());
-				List<PlatformLibrary> platforms = prj.getActiveEngine().getPlatformLibs();
+				
+				HybridMobileEngine activeEngine = prj.getActiveEngine();
+				if(activeEngine == null){
+					return null;
+				}
+				List<PlatformLibrary> platforms = activeEngine.getPlatformLibs();
 				if(platforms.isEmpty()){
 					return null;
 				}
