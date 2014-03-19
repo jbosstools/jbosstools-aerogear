@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>parent</artifactId>
-		<version>4.2.0.Alpha2-SNAPSHOT</version>
+		<version>4.2.0.Beta1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools</groupId>
 	<artifactId>vpe</artifactId>
@@ -23,19 +23,24 @@
 	</modules>
 	<repositories>
                 <repository>
+                        <id>jbosstools-aerogear</id>
+                        <layout>p2</layout>
+                        <url>${jbosstools-aerogear-site}</url>
+                </repository>
+                <repository>
                         <id>jbosstools-base</id>
                         <layout>p2</layout>
                         <url>${jbosstools-base-site}</url>
                 </repository>
                 <repository>
-                        <id>jbosstools-jst</id>
-                        <layout>p2</layout>
-                        <url>${jbosstools-jst-site}</url>
-                </repository>
-                <repository>
                         <id>jbosstools-javaee</id>
                         <layout>p2</layout>
                         <url>${jbosstools-javaee-site}</url>
+                </repository>
+                <repository>
+                        <id>jbosstools-jst</id>
+                        <layout>p2</layout>
+                        <url>${jbosstools-jst-site}</url>
                 </repository>
                 <repository>
                         <id>jbosstools-xulrunner</id>
