@@ -10,10 +10,13 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.jboss.tools.vpe.browsersim.model.preferences.CommonPreferences;
 import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 import org.jboss.tools.vpe.browsersim.ui.ControlHandler;
+import org.jboss.tools.vpe.browsersim.ui.PreferencesWrapper;
 import org.jboss.tools.vpe.browsersim.ui.menu.BrowserSimMenuCreator;
 import org.jboss.tools.vpe.browsersim.ui.menu.ToolsMenuCreator;
 import org.jboss.tools.vpe.browsersim.ui.skin.BrowserSimSkin;
@@ -37,5 +40,12 @@ public class CordovaSimMenuCreator extends BrowserSimMenuCreator {
 	@Override
 	protected void addFileItems(Menu menu, BrowserSimSkin skin,	CommonPreferences commonPreferences, SpecificPreferences specificPreferences) {
 		new CordovaSimFileMenuCreator().addItems(menu, skin, commonPreferences, specificPreferences);	
+	}
+	
+	@Override
+	protected PreferencesWrapper openDialog(Shell parentShell, CommonPreferences commonPreferences,
+			SpecificPreferences specificPreferences, String currentUrl) {
+		return new CordovaSimManageDeviceDialog(parentShell, SWT.APPLICATION_MODAL
+				| SWT.SHELL_TRIM, commonPreferences, specificPreferences, currentUrl).open();
 	}
 }
