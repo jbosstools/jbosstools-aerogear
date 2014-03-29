@@ -21,6 +21,7 @@ import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.W
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_PREFERENCE;
 import static org.jboss.tools.aerogear.hybrid.core.config.WidgetModelConstants.WIDGET_TAG_SPLASH;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,10 +33,13 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.model.ModelLifecycleEvent;
 import org.eclipse.wst.sse.core.internal.provisional.IModelLifecycleListener;
@@ -69,7 +73,7 @@ public class WidgetModel implements IModelLifecycleListener{
 	private static Map<HybridProject, WidgetModel> widgetModels = new HashMap<HybridProject, WidgetModel>();
 	public static final String[] ICON_EXTENSIONS = {"gif", "ico", "jpeg", "jpg", "png","svg" };
 	
-	private HybridProject project;
+	private File configFile;
 	private Widget editableWidget;
 	private Widget readonlyWidget;
 	private long readonlyTimestamp;
@@ -78,8 +82,13 @@ public class WidgetModel implements IModelLifecycleListener{
 	
 	
 	private WidgetModel(HybridProject project){
-		this.project = project;
+		this(getConfigXml(project));
 	}
+	
+	private WidgetModel(File file){
+		this.configFile = file; 
+	}
+	
 	
 	public static final WidgetModel getModel(HybridProject project){
 		if( !widgetModels.containsKey(project) ){
@@ -90,6 +99,23 @@ public class WidgetModel implements IModelLifecycleListener{
 		}
 		return widgetModels.get(project);
 	}
+	
+	/**
+	 * Parses a given config.xml file to WidgetModel.
+	 *  
+	 * @param file
+	 * @return
+	 * @throws CoreException
+	 */
+	public static final Widget parseToWidget(File file) throws CoreException{
+		if( file.isFile()){
+			WidgetModel model = new WidgetModel(file);
+			return model.getWidgetForRead();
+		}else{
+			throw new IllegalArgumentException(NLS.bind("File {0} does not exist ",	 file.toString()));
+		}
+	}
+	
 	
 	public static final void shutdown(){
 		Collection<WidgetModel> createdModels = widgetModels.values();
@@ -113,20 +139,19 @@ public class WidgetModel implements IModelLifecycleListener{
 	 */
 	public Widget getWidgetForRead() throws CoreException{
 		long enter = System.currentTimeMillis();
-		IFile configXml = getConfigXml();
-		if (!configXml.exists()) {
+		if (!this.configFile.exists()) {
 			return null;
 		}
-		if (readonlyWidget == null || readonlyTimestamp != configXml.getModificationStamp()) {
+		if (readonlyWidget == null || readonlyTimestamp != configFile.lastModified()) {
 			synchronized (this) {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				dbf.setNamespaceAware(true);
 				DocumentBuilder db;
 				try {
 					db = dbf.newDocumentBuilder();
-					Document configDocument = db.parse(configXml.getLocation().toFile());
+					Document configDocument = db.parse(configFile);
 					readonlyWidget = load(configDocument);
-					readonlyTimestamp = configXml.getModificationStamp();
+					readonlyTimestamp = configFile.lastModified();
 					
 				} catch (ParserConfigurationException e) {
 					throw new CoreException(new Status(IStatus.ERROR,
@@ -151,7 +176,10 @@ public class WidgetModel implements IModelLifecycleListener{
 		long enter = System.currentTimeMillis();
 		if (editableWidget == null){
 			synchronized (this) {
-				IFile configXml = getConfigXml();
+				IFile configXml = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(Path.fromOSString(configFile.toString()));
+				if(configXml == null ){
+					return null;
+				}
 				IModelManager manager = StructuredModelManager
 						.getModelManager();
 				try {
@@ -172,10 +200,10 @@ public class WidgetModel implements IModelLifecycleListener{
 		return editableWidget;
 	}
 
-	private IFile getConfigXml() {
-		IProject prj = this.project.getProject();
+	private static File getConfigXml(HybridProject project) {
+		IProject prj = project.getProject();
 		IFile configXml = prj.getFile(PATH_CONFIG_XML);
-		return configXml;
+		return configXml.getLocation().toFile();
 	}
 	
 	
