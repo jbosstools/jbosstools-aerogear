@@ -181,4 +181,18 @@
            plugin="org.jboss.tools.aerogear.hybrid.core">
      </statusHandler>
   </extension>
+  <extension
+        point="org.eclipse.ui.importWizards">
+     <wizard
+           category="org.jboss.tools.aerogear.hybrid.ui.category"
+           class="org.jboss.tools.aerogear.hybrid.ui.internal.wizard.imports.HybridMobileProjectImportWizard"
+           icon="icons/etool16/newcordovaprj_wiz.png"
+           id="org.jboss.tools.aerogear.hybrid.ui.HybridMobileProjectImportWizard"
+           name="Import Cordova  Project">
+     </wizard>
+     <category
+           id="org.jboss.tools.aerogear.hybrid.ui.category"
+           name="Mobile">
+     </category>
+  </extension>
 </plugin>
