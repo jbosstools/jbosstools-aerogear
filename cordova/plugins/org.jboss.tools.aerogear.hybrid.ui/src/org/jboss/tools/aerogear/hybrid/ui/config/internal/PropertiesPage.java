@@ -173,6 +173,7 @@ public class PropertiesPage extends FormPage {
 		});
 
 		Button btnFeatureRemove = managedForm.getToolkit().createButton(featureBtnsComposite, BTN_LBL_REMOVE, SWT.NONE);
+		btnFeatureRemove.setEnabled(false);
 		btnFeatureRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -209,7 +210,9 @@ public class PropertiesPage extends FormPage {
 			}
 		});
 		
-		
+		featuresTableViewer.addSelectionChangedListener(new ButtonStateUpdater(
+				btnFeatureRemove));
+
 		// Params section 
 		
 		Section sctnParams = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR| Section.DESCRIPTION);
@@ -318,8 +321,10 @@ public class PropertiesPage extends FormPage {
 				}
 			}
 		});
-
+		this.featuresTableViewer.addSelectionChangedListener(new ButtonStateUpdater(btnAdd));
+		
 		Button btnRemove = managedForm.getToolkit().createButton(featureParamBtnsComposite, BTN_LBL_REMOVE, SWT.NONE);
+		btnRemove.setEnabled(false);
 		new Label(featuresComposite, SWT.NONE);
 		btnRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -333,7 +338,8 @@ public class PropertiesPage extends FormPage {
 				selectedFeature.removeParam(param.getKey());
 			}
 		});
-
+		featureParamsTableViewer.addSelectionChangedListener(new ButtonStateUpdater(
+				btnRemove));
 
 		Section sctnPreferences = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
 		TableWrapData twd_sctnPreferences = new TableWrapData(TableWrapData.FILL, TableWrapData.FILL, 1, 1);
@@ -385,6 +391,7 @@ public class PropertiesPage extends FormPage {
 		});
 				
 		Button btnPreferenceRemove = managedForm.getToolkit().createButton(composite_1, BTN_LBL_REMOVE, SWT.NONE);
+		btnPreferenceRemove.setEnabled(false);
 		btnPreferenceRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -395,6 +402,7 @@ public class PropertiesPage extends FormPage {
 				getWidget().removePreference(preference);
 			}
 		});
+		preferencesViewer.addSelectionChangedListener(new ButtonStateUpdater(btnPreferenceRemove));
 		
 		Section sctnAccess = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), Section.TITLE_BAR);
 		TableWrapData twd_sctnAccess = new TableWrapData(TableWrapData.LEFT, TableWrapData.TOP, 1, 1);
@@ -449,6 +457,7 @@ public class PropertiesPage extends FormPage {
 		});
 		
 		Button btnAccessRemove = managedForm.getToolkit().createButton(composite_2, BTN_LBL_REMOVE, SWT.NONE);
+		btnAccessRemove.setEnabled(false);
 		btnAccessRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -459,7 +468,7 @@ public class PropertiesPage extends FormPage {
 				getWidget().removeAccess(access);
 			}
 		});
-		
+		accessViewer.addSelectionChangedListener(new ButtonStateUpdater( btnAccessRemove ));
 		
 		m_bindingContext = initDataBindings();
 		
@@ -503,4 +512,17 @@ public class PropertiesPage extends FormPage {
 		//
 		return bindingContext;
 	}
+
+	private final class ButtonStateUpdater implements ISelectionChangedListener{
+		private Button btn;
+		public ButtonStateUpdater(final Button btn) {
+			this.btn = btn;
+		}
+
+		@Override
+		public void selectionChanged(SelectionChangedEvent event) {
+			btn.setEnabled(!event.getSelection().isEmpty());
+		}
+	}
+
 }
