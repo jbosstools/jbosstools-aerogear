@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<description>To install these features, point Eclipse at this site.</description>
+	<!-- JBoss Tools vpe Nightly Build Update Site -->
+	<!--VPE-->
+	<category-def label="JBoss Tools vpe Nightly Build Update Site" name="JBoss Tools vpe Nightly Build Update Site">
+		<description>JBoss Tools vpe Nightly Build Update Site: contains all features in this build.</description>
+	</category-def>
+	<feature url="features/org.jboss.tools.vpe.feature_0.0.0.jar" id="org.jboss.tools.vpe.feature" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature>
+	<feature url="features/org.jboss.tools.vpe.test.feature_0.0.0.jar" id="org.jboss.tools.vpe.test.feature" version="0.0.0">
+		<category name="JBoss Tools VPE Test Nightly Build Update Site"/>
+	</feature>
+
+	<!-- sources -->	
+	<feature url="features/org.jboss.tools.vpe.feature.source_0.0.0.jar" id="org.jboss.tools.vpe.feature.source" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature>
+	<feature url="features/org.jboss.tools.vpe.test.feature.source_0.0.0.jar" id="org.jboss.tools.vpe.test.feature.source" version="0.0.0">
+		<category name="JBoss Tools VPE Test Nightly Build Update Site"/>
+	</feature>
+
+	<!--BrowserSim-->
+	<feature url="features/org.jboss.tools.vpe.browsersim.feature_0.0.0.jar" id="org.jboss.tools.vpe.browsersim.feature" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature>
+	<feature url="features/org.jboss.tools.vpe.browsersim.feature.source_0.0.0.jar" id="org.jboss.tools.vpe.browsersim.feature.source" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature>
+	<!-- <feature url="features/org.jboss.tools.vpe.browsersim.test.feature_0.0.0.jar" id="org.jboss.tools.vpe.browsersim.test.feature" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature> -->
+
+	<!-- CordovaSim -->
+	<feature id="org.jboss.tools.vpe.cordovasim.feature" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature>
+	<feature id="org.jboss.tools.vpe.cordovasim.feature.source" version="0.0.0">
+		<category name="JBoss Tools vpe Nightly Build Update Site"/>
+	</feature>
+
+	<!-- include but leave uncategorized -->
+	<feature url="features/org.mozilla.xulrunner.feature_0.0.0.jar" id="org.mozilla.xulrunner.feature" version="0.0.0">
+	</feature>
+	<feature url="features/org.jboss.tools.xulrunner.feature_0.0.0.jar" id="org.jboss.tools.xulrunner.feature" version="0.0.0">
+	</feature>
+	<feature url="features/org.jboss.tools.xulrunner.feature.source_0.0.0.jar" id="org.jboss.tools.xulrunner.feature.source" version="0.0.0">
+	</feature>
+
+</site>
