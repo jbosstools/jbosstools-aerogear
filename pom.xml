@@ -17,6 +17,7 @@
 	
 	<modules>
 		<module>cordova</module>
+		<module>cordovasim</module>
 		<module>site</module>
 	</modules>
 </project>
