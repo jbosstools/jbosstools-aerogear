@@ -2,22 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.jboss.tools</groupId>
-		<artifactId>vpe</artifactId>
+		<groupId>org.jboss.tools.aerogear</groupId>
+		<artifactId>cordovasim</artifactId>
 		<version>3.5.100-SNAPSHOT</version>
 	</parent>
-	<groupId>org.jboss.tools.vpe</groupId>
+	<groupId>org.jboss.tools.aerogear.cordovasim</groupId>
 	<artifactId>features</artifactId>
 	
-	<name>vpe.features</name>
+	<name>cordovasim.features</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.jboss.tools.vpe.feature</module>
-		<module>org.jboss.tools.vpe.test.feature</module>
-		<module>org.jboss.tools.xulrunner.feature</module>
-		<module>org.jboss.tools.vpe.browsersim.feature</module>
 		<module>org.jboss.tools.vpe.cordovasim.feature</module>
-		<module>org.jboss.tools.vpe.vpv.feature</module>
 	</modules>
 	<build>
 		<plugins>

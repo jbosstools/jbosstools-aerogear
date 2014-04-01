@@ -3,31 +3,22 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.jboss.tools</groupId>
-		<artifactId>parent</artifactId>
-		<version>4.2.0.Beta2-SNAPSHOT</version>
+		<artifactId>aerogear</artifactId>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.jboss.tools</groupId>
-	<artifactId>vpe</artifactId>
+	<groupId>org.jboss.tools.aerogear</groupId>
+	<artifactId>cordovasim</artifactId>
 	<version>3.5.100-SNAPSHOT</version>
-	<name>vpe.all</name>
+	<name>cordovasim.all</name>
 	<packaging>pom</packaging>
-	<properties>
-		<tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-vpe.git</tycho.scmUrl>
-	</properties>
 	<modules>
-		<module>win32_win32_x86</module>
 		<module>plugins</module>
 		<module>tests</module>
 		<module>features</module>
 		<module>site</module>
 	</modules>
 	<repositories>
-                <repository>
-                        <id>jbosstools-aerogear</id>
-                        <layout>p2</layout>
-                        <url>${jbosstools-aerogear-site}</url>
-                </repository>
-                <repository>
+                <!--repository>
                         <id>jbosstools-base</id>
                         <layout>p2</layout>
                         <url>${jbosstools-base-site}</url>
@@ -46,7 +37,7 @@
                         <id>jbosstools-xulrunner</id>
                         <layout>p2</layout>
                         <url>${jbosstools-xulrunner-site}</url>
-                </repository>
+                </repository-->
 
 
 		<!-- To resolve parent artifact -->
