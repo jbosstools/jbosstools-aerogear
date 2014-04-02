@@ -17,7 +17,25 @@
 	
 	<modules>
 		<module>cordova</module>
+		<module>cordovasim</module>
 		<module>site</module>
 	</modules>
+        <repositories>
+                <repository>
+                        <id>jbosstools-base</id>
+                        <layout>p2</layout>
+                        <url>${jbosstools-base-site}</url>
+                </repository>
+                <repository>
+                        <id>jbosstools-jst</id>
+                        <layout>p2</layout>
+                        <url>${jbosstools-jst-site}</url>
+                </repository>
+                <repository>
+                        <id>jbosstools-browsersim</id>
+                        <layout>p2</layout>
+                        <url>${jbosstools-browsersim-site}</url>
+                </repository>
+        </repositories>
 </project>
 	
