@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cordovasim version="11">
+	<selectedDeviceId>3cacc17b-a6d5-4959-88fb-bf861c69fb64</selectedDeviceId>
+	<location>
+		<x></x>
+		<y></y>
+	</location>
+	<orientationAngle>0</orientationAngle>
+	<useSkins>true</useSkins>
+	<enableLiveReload>false</enableLiveReload>
+	<liveReloadPort>35729</liveReloadPort>
+	<enableTouchEvents>false</enableTouchEvents>
+	<cordova>
+		<cordovaLocation>
+			<x></x>
+			<y></y>
+		</cordovaLocation>
+		<size>
+			<width>750</width>
+			<height>450</height>
+		</size>
+	</cordova>
+</cordovasim>
