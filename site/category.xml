@@ -12,4 +12,11 @@
 	<feature id="org.jboss.tools.aerogear.hybrid.feature.source" version="0.0.0">
 		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
 	</feature>
+        <feature id="org.jboss.tools.vpe.cordovasim.feature" version="0.0.0">
+                <category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+        </feature>
+        <feature id="org.jboss.tools.vpe.cordovasim.feature.source" version="0.0.0">
+                <category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+        </feature>
+
 </site>
