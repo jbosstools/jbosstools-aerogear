@@ -63,31 +63,57 @@ public class HybridProjectCreator {
 	
 	/**
 	 * Creates a hybrid project with the given name and location. Location can be null, if location is null 
-	 * the default location will be used for creating the project. 
+	 * the default location will be used for creating the project. Uses the basic hello world template 
+	 * to populate the initial files.
+	 *  
 	 * @param projectName
 	 * @param location
 	 * @param monitor
 	 * @throws CoreException
 	 */
-	public void createProject( String projectName, URI location, String appName, String appID, HybridMobileEngine engine, IProgressMonitor monitor ) throws CoreException {
-		Assert.isNotNull(projectName, "Project name is null, can not create a project without a name");
+	public IProject createBasicTemplatedProject( String projectName, URI location, String appName, String appID, HybridMobileEngine engine, IProgressMonitor monitor ) throws CoreException {
 		if(monitor == null )
 			monitor = new NullProgressMonitor();
 		
-		IProject project = createBasicProject(projectName, location, monitor);
-		addNature(project, new SubProgressMonitor(monitor, 5));
-		
-		
-		
-		addCommonPaths(project, new SubProgressMonitor(monitor, 5));
-		addPlatformPaths(project, new SubProgressMonitor( monitor, 5));
-		addConfigJSon(project, appName, appID, engine, new SubProgressMonitor(monitor, 5));
-		addTemplateFiles(project, new SubProgressMonitor(monitor, 5));
-		setUpJavaScriptProject(monitor, project);
+		IProject project = createProject(projectName, location, appName, appID, engine, monitor);
+		addTemplateFiles(project, new SubProgressMonitor(monitor, 5));	
 		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-		updateConfig(project, appName, appID, new SubProgressMonitor(monitor, 5) );
+		updateConfig(project, appName, appID, new SubProgressMonitor(monitor, 1));
 		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		return project;
 	}
+	
+	
+	/**
+	 * Creates a hybrid project with the given name and location. Location can be null, if location is null 
+	 * the default location will be used for creating the project. Does not add any files to the project 
+	 * including the config.xml file. If location has existing files they are kept.
+	 *  
+	 * @param projectName
+	 * @param location
+	 * @param monitor
+	 * @throws CoreException
+	 */
+	public IProject createProject( String projectName, URI location,  String appName, String appID, HybridMobileEngine engine, IProgressMonitor monitor ) throws CoreException {
+		if(monitor == null )
+			monitor = new NullProgressMonitor();
+		IProject project = createHybridMobileProject(projectName, location, new SubProgressMonitor(monitor, 1));
+		addCommonPaths(project, monitor);
+		addPlatformPaths(project, new SubProgressMonitor( monitor, 1));
+		addConfigJSon(project, appName, appID, engine, monitor);
+		setUpJavaScriptProject(monitor, project);
+		return project;
+	}
+
+	private IProject createHybridMobileProject(String projectName,
+			URI location, IProgressMonitor monitor) throws CoreException {
+		Assert.isNotNull(projectName, "Project name is null, can not create a project without a name");
+		IProject project = createBasicProject(projectName, location, new SubProgressMonitor(monitor, 5));
+		addNature(project, new SubProgressMonitor(monitor, 5));
+		return project;
+	}
+	
+	
 
 
 	private void setUpJavaScriptProject(IProgressMonitor monitor,
@@ -148,7 +174,10 @@ public class HybridProjectCreator {
 		List<PlatformSupport> platforms = HybridCore.getPlatformSupports();
 		IPath merges = new Path(DIR_MERGES);
 		for (PlatformSupport platform : platforms) {
-			createFolder(project.getFolder(merges.append(platform.getPlatformId())), monitor);
+			IFolder folder = project.getFolder(merges.append(platform.getPlatformId()));
+			if(!folder.exists()){
+				createFolder(folder, monitor);
+			}
 		}
 		monitor.done();
 	}
@@ -157,7 +186,10 @@ public class HybridProjectCreator {
 	private void addCommonPaths(IProject project, IProgressMonitor monitor) throws CoreException {
 		SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, COMMON_PATHS.length);
 		for (String path : COMMON_PATHS) {
-			createFolder(project.getFolder(path),subMonitor);
+			IFolder folder = project.getFolder(path);
+			if( !folder.exists()){
+				createFolder(folder,subMonitor);
+			}
 			subMonitor.worked(1);
 		}
 		subMonitor.done();

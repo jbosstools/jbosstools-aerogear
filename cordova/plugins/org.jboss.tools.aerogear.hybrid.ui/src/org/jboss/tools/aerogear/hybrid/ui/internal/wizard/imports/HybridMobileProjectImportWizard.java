@@ -15,7 +15,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class HybridMobileProjectImportWizard extends Wizard implements

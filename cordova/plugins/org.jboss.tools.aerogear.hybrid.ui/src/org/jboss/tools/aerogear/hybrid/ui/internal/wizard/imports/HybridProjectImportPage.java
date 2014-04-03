@@ -13,16 +13,22 @@ package org.jboss.tools.aerogear.hybrid.ui.internal.wizard.imports;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -49,13 +55,19 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.dialogs.IOverwriteQuery;
+import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
+import org.eclipse.ui.wizards.datatransfer.ImportOperation;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
+import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngineManager;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
+import org.jboss.tools.aerogear.hybrid.ui.wizard.project.HybridProjectCreator;
 
-public class HybridProjectImportPage extends WizardPage {
+public class HybridProjectImportPage extends WizardPage implements IOverwriteQuery{
 	
 	private class ProjectCandidate {
 		private Widget widget;
@@ -63,12 +75,13 @@ public class HybridProjectImportPage extends WizardPage {
 		File configLocation;
 		boolean conflicts;
 		
+		
 		public ProjectCandidate(File www, File config){
 			this.configLocation = config;
 			this.wwwLocation = www;
 		}
 		
-		public String getLabel(){
+		String getLabel(){
 			if(getWidget() == null ){
 				return NLS.bind("INVALID {0}",wwwLocation.toString()); 
 			}
@@ -76,7 +89,7 @@ public class HybridProjectImportPage extends WizardPage {
 			return NLS.bind("{0} ({1})", new String[]{appName,wwwLocation.toString() });
 		}
 
-		private String getProjectName() {
+		String getProjectName() {
 			String projectName = getWidget().getId();
 			if(widget.getName() != null ){
 				projectName = getWidget().getName();
@@ -84,7 +97,16 @@ public class HybridProjectImportPage extends WizardPage {
 			return projectName;
 		}
 		
-		private Widget getWidget(){
+		boolean exists(){
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			final String projectName = getProjectName();
+			IPath wsPath = root.getLocation();
+			IPath localProjectPath = wsPath.append(projectName);
+			IProject project = root.getProject(projectName);
+			return project.exists() || localProjectPath.toFile().exists();
+		}
+		
+		Widget getWidget(){
 			if(widget == null ){
 				try {
 					widget = WidgetModel.parseToWidget(configLocation);
@@ -104,7 +126,7 @@ public class HybridProjectImportPage extends WizardPage {
 		@Override
 		public Color getForeground(Object element) {
 			ProjectCandidate candie = (ProjectCandidate) element;
-			if(candie.conflicts){
+			if(candie.conflicts || candie.exists()){
 				return getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
 			}
 			return null;
@@ -124,6 +146,7 @@ public class HybridProjectImportPage extends WizardPage {
 	private ProjectCandidate[] candidates;
 	private CheckboxTreeViewer projectList;
 	private Button copyCheckbox;
+	private boolean copyFiles;
 
 	protected HybridProjectImportPage() {
 		super("HybridProjectImportPage");
@@ -199,6 +222,11 @@ public class HybridProjectImportPage extends WizardPage {
 			@Override
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				ProjectCandidate candidate = (ProjectCandidate)event.getElement();
+				//Cancel out existing projects
+				if(candidate.exists()){
+					projectList.setChecked(candidate, false);
+					return;
+				}
 				//Update conflicts 
 				for(ProjectCandidate elem: candidates ){
 					Widget w1 = elem.getWidget();
@@ -288,6 +316,14 @@ public class HybridProjectImportPage extends WizardPage {
 			@Override
 			public void handleEvent(Event event) {
 				handleBrowseButtonPressed();
+			}
+		});
+		
+		directoryPathField.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				updateProjectsList(directoryPathField.getText());
 			}
 		});
 	}
@@ -406,6 +442,12 @@ public class HybridProjectImportPage extends WizardPage {
 		copyCheckbox = new Button(optionsGroup, SWT.CHECK);
 		copyCheckbox.setText("Copy into workspace");
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL);
+		copyCheckbox.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				copyFiles = copyCheckbox.getSelection();
+			}
+		});
 	}
 	
 	private void restoreFromHistory(){
@@ -420,8 +462,8 @@ public class HybridProjectImportPage extends WizardPage {
 			directoryPathField.add(dirname);
 		}
 		//copy to workspace
-		copyCheckbox.setSelection(settings.getBoolean(SETTINGSKEY_COPY));
-
+		copyFiles = settings.getBoolean(SETTINGSKEY_COPY);
+		copyCheckbox.setSelection(copyFiles);
 	}
 	
 	private void saveInHistroy(){
@@ -445,7 +487,69 @@ public class HybridProjectImportPage extends WizardPage {
 	
 	boolean createProjects(){
 		saveInHistroy();
-		return false;
+		
+		final Object[] selectedCandidates = projectList.getCheckedElements();
+		WorkspaceModifyOperation wop = new WorkspaceModifyOperation() {
+			
+			@Override
+			protected void execute(IProgressMonitor monitor) throws CoreException,
+					InvocationTargetException, InterruptedException {
+				monitor.beginTask("", selectedCandidates.length);
+				if (monitor.isCanceled()) {
+					throw new OperationCanceledException();
+				}
+				try {
+					for (int i = 0; i < selectedCandidates.length; i++) {
+						ProjectCandidate pc = (ProjectCandidate) selectedCandidates[i];
+						doCreateProject(pc, new SubProgressMonitor(monitor, 1));
+					}
+				}finally{
+					monitor.done();
+				}
+			}
+		};
+		
+		try {
+			getContainer().run(true, true, wop);
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+	
+
+	private void doCreateProject(ProjectCandidate pc, IProgressMonitor monitor) throws CoreException, InterruptedException, InvocationTargetException{
+		HybridProjectCreator projectCreator = new HybridProjectCreator();
+		Widget w = pc.getWidget();
+		String projectName = pc.getProjectName();
+		URI location = null;
+		if(!copyFiles){
+			location = pc.wwwLocation.getParentFile().toURI();
+		}
+		IProject project = projectCreator.createProject(projectName, location, w.getName(), w.getId(), HybridMobileEngineManager.getDefaultEngine(), monitor);
+		if(copyFiles){
+			ImportOperation operation = new ImportOperation(project
+					.getFullPath(), pc.wwwLocation.getParentFile(), FileSystemStructureProvider.INSTANCE
+					, this);
+			operation.setContext(getShell());
+			operation.setOverwriteResources(true); 
+			operation.setCreateContainerStructure(false);
+			operation.run(monitor);
+			IStatus status = operation.getStatus();
+			if (!status.isOK())
+				throw new InvocationTargetException(new CoreException(status));
+		}
+
+	}
+
+	@Override
+	public String queryOverwrite(String pathString) {
+		return IOverwriteQuery.ALL;
 	}
 	
 }

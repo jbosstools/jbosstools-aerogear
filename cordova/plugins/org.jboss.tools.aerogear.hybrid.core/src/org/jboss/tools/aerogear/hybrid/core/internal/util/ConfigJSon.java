@@ -112,9 +112,13 @@ public class ConfigJSon {
 	}
 
 	public void setEngineInfo(HybridMobileEngine hybridMobileEngine) {
-		this.engine = new Engine();
-		this.engine.id = hybridMobileEngine.getId();
-		this.engine.ver = hybridMobileEngine.getVersion();
+		if( hybridMobileEngine == null ){
+			this.engine = null;
+		}else{
+			this.engine = new Engine();
+			this.engine.id = hybridMobileEngine.getId();
+			this.engine.ver = hybridMobileEngine.getVersion();
+		}
 	}
 	
 	public static ConfigJSon readConfigJson(IProject project) throws CoreException{

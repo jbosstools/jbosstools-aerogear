@@ -15,11 +15,12 @@ import java.net.URI;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -34,6 +35,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 
 public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	
@@ -67,8 +69,8 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 					String appName = page.getApplicationName();
 					String appID = page.getApplicationID();
 					HybridMobileEngine engine = enginePage.getSelectedEngine();
-					creator.createProject(page.getProjectName(), location ,appName, appID, engine, monitor);
-					openAndSelectConfigFile();
+					IProject project = creator.createBasicTemplatedProject(page.getProjectName(), location ,appName, appID, engine, monitor);
+					openAndSelectConfigFile(project);
 					
 					} catch (CoreException e) {
 					// TODO Auto-generated catch block
@@ -81,20 +83,22 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 		try {
 			getContainer().run(false, true, runnable);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (e.getTargetException() != null) {
+				if(e.getTargetException() instanceof CoreException ){
+					StatusManager.handle((CoreException) e.getTargetException());
+				}else{
+					ErrorDialog.openError(getShell(), "Error creating project",null, 
+							new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Project create error", e.getTargetException() ));
+				}
+			}
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new OperationCanceledException();
 		}
 		return true;
 	}
 	
-	private void openAndSelectConfigFile(){
+	private void openAndSelectConfigFile(IProject project){
 		IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		WizardNewHybridProjectCreationPage page = (WizardNewHybridProjectCreationPage)pageOne;
-		IProject project = root.getProject(page.getProjectName());
 		IFile file = project.getFile(PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG);
 		
 		BasicNewResourceWizard.selectAndReveal(file, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
