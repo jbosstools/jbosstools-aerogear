@@ -197,6 +197,10 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 	
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig) {
+		return isTabValid() && SDKLocationHelper.isSDKLocationDefined() && super.isValid(launchConfig);
+	}
+
+	private boolean isTabValid() {
 		setMessage(null);
 		setErrorMessage(null);
 		String avd = AVDCombo.getText();
@@ -209,9 +213,11 @@ public class AndroidSimOptionsTab extends AbstractLaunchConfigurationTab {
 				}
 			}	
 		}
-		if(SDKLocationHelper.isSDKLocationDefined())
-			return super.isValid(launchConfig);
-		return false;
+		return true;
 	}
 	
+	@Override
+	public boolean canSave() {
+		return isTabValid();
+	}
 }
