@@ -32,6 +32,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
+import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
@@ -99,7 +100,8 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 	
 	private void openAndSelectConfigFile(IProject project){
 		IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IFile file = project.getFile(PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG);
+		HybridProject hp = HybridProject.getHybridProject(project);
+		IFile file = hp.getConfigFile();
 		
 		BasicNewResourceWizard.selectAndReveal(file, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
 		try {

@@ -29,7 +29,7 @@ public class ConfigXMLUpdateAction extends XMLConfigFileAction {
 	private final HybridProject project;
 
 	public ConfigXMLUpdateAction(HybridProject project, String parent, String value) {
-		super(project.getProject().getFile(PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG).getLocation().toFile(), parent,value);
+		super(project.getConfigFile().getLocation().toFile(), parent,value);
 		this.project = project;
 	}
 

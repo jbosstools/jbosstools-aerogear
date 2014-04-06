@@ -11,16 +11,20 @@
 package org.jboss.tools.aerogear.hybrid.core;
 
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngineManager;
 import org.jboss.tools.aerogear.hybrid.core.natures.HybridAppNature;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
 
 /**
@@ -30,7 +34,8 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
  */
 public class HybridProject implements IAdaptable {
 	
-
+	private static final IPath[] CONFIG_PATHS = {new Path(PlatformConstants.DIR_WWW).append(PlatformConstants.FILE_XML_CONFIG),
+													new Path(PlatformConstants.FILE_XML_CONFIG) };
 	private IProject kernelProject;
 	private CordovaPluginManager pluginManager;
 	private HybridMobileEngineManager engineManager;
@@ -127,6 +132,22 @@ public class HybridProject implements IAdaptable {
 		String name = getAppName();
 		name = name.replaceAll("\\W", "_");
 		return name;
+	}
+	
+	/**
+	 * Returns the config.xml file for the project.
+	 * This method searches all the valid locations for the config.xml file.
+	 * May return null if one does not exist.
+	 * @return
+	 */
+	public IFile getConfigFile(){
+		for (IPath configPath : CONFIG_PATHS) {
+			IFile f = kernelProject.getFile(configPath);
+			if(f.exists()){
+				return f;
+			}
+		}
+		return null;
 	}
 	
 	private HybridMobileEngineManager getHybridMobileEngineManager(){

@@ -134,6 +134,15 @@ public abstract class AbstractProjectGeneratorDelegate {
 				copyResource(folder, folder.getFullPath(), targetWWW);
 			}
 			monitor.worked(10);
+			
+			// Copy config.xml if it is not already exists.
+			// this is needed to support config.xml files to live on the root of the project.
+			File configDestination = new File(targetWWW, PlatformConstants.FILE_XML_CONFIG);
+			if(!configDestination.exists()){
+				File sourceFile = hybridProject.getConfigFile().getLocation().toFile();
+				FileUtils.fileCopy(toURL(sourceFile), toURL(configDestination));
+			}
+			
 			replaceCordovaPlatformFiles(resolver);
 			completeCordovaPluginInstallations(monitor);
 		}

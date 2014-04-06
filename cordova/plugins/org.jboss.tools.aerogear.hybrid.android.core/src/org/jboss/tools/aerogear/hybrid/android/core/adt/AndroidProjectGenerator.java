@@ -119,7 +119,7 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 			directoryCopy(resolver.getTemplateFile(resPath.makeRelativeTo(destinationPath)),
 					toURL(resPath.toFile()));
 			
-			IFile configFile = getProject().getFile(PlatformConstants.DIR_WWW+ "/" + PlatformConstants.FILE_XML_CONFIG);
+			IFile configFile = hybridProject.getConfigFile();
 			IPath xmlPath = resPath.append(DIR_XML);
 			File xmldir = xmlPath.toFile();
 			if( !xmldir.exists() ){//only config.xml uses xml 

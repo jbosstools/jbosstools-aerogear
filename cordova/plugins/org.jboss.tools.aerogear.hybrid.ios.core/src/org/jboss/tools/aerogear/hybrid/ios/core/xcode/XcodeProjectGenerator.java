@@ -149,7 +149,7 @@ public class XcodeProjectGenerator extends AbstractProjectGeneratorDelegate{
 			updateCordovaSubProjectPath(xcodeprojectFile, "CordovaLib/CordovaLib.xcodeproj", "<group>");
 		
 			//iOS config.xml needs to be copied outside www to be used
-			File configxml = getProject().getFile(PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG).getLocation().toFile();
+			File configxml = hybridProject.getConfigFile().getLocation().toFile();
 			fileCopy(toURL(configxml),toURL(new File(prjdir, "/"+PlatformConstants.FILE_XML_CONFIG)));
 		}
 		catch(IOException e ){

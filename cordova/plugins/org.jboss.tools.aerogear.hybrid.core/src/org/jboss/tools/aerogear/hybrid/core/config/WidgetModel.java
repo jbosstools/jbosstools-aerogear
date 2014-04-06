@@ -68,8 +68,6 @@ import org.xml.sax.SAXException;
 @SuppressWarnings("restriction")
 public class WidgetModel implements IModelLifecycleListener{
 	
-	private static final String PATH_CONFIG_XML = "/"+PlatformConstants.DIR_WWW+"/"+PlatformConstants.FILE_XML_CONFIG;
-	
 	private static Map<HybridProject, WidgetModel> widgetModels = new HashMap<HybridProject, WidgetModel>();
 	public static final String[] ICON_EXTENSIONS = {"gif", "ico", "jpeg", "jpg", "png","svg" };
 	
@@ -201,8 +199,7 @@ public class WidgetModel implements IModelLifecycleListener{
 	}
 
 	private static File getConfigXml(HybridProject project) {
-		IProject prj = project.getProject();
-		IFile configXml = prj.getFile(PATH_CONFIG_XML);
+		IFile configXml = project.getConfigFile();
 		return configXml.getLocation().toFile();
 	}
 	
