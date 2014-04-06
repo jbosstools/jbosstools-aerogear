@@ -76,6 +76,9 @@
             class="org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences.AndroidPreferencePage"
             id="org.jboss.tools.aerogear.hybrid.android.ui.AndroidPreferencePages"
             name="Android">
+         <keywordReference
+               id="org.jboss.tools.aerogear.hybrid.ui.keyword">
+         </keywordReference>
       </page>
    </extension>
    <extension

@@ -15,6 +15,9 @@
             id="org.jboss.tools.aerogear.hybrid.ui.NewHybridProjectWizard"
             name="Hybrid Mobile (Cordova) Application Project"
             project="true">
+         <keywordReference
+               id="org.jboss.tools.aerogear.hybrid.ui.keyword">
+         </keywordReference>
       </wizard>
       <category
             id="org.jboss.tools.aerogear.hybrid.ui.category"
@@ -39,12 +42,18 @@
            class="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMobilePreferencePage"
            id="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage"
            name="Hybrid Mobile">
+        <keywordReference
+              id="org.jboss.tools.aerogear.hybrid.ui.keyword">
+        </keywordReference>
      </page>
      <page
            category="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridMoblePreferencePage"
            class="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.EnginePreferencesPage"
            id="org.jboss.tools.aerogear.hybrid.ui.internal.preferences.EnginePreferencesPage"
            name="Engines">
+        <keywordReference
+              id="org.jboss.tools.aerogear.hybrid.ui.keyword">
+        </keywordReference>
      </page>
   </extension>
   <extension
@@ -61,6 +70,9 @@
            icon="icons/etool16/exportnativeprj_wiz.png"
            id="org.jboss.tools.aerogear.hybrid.ui.exportNativeProjectWizard"
            name="Export Native Platform Project">
+        <keywordReference
+              id="org.jboss.tools.aerogear.hybrid.ui.keyword">
+        </keywordReference>
      </wizard>
      <wizard
            category="org.jboss.tools.aerogear.hybrid.ui.category"
@@ -68,6 +80,9 @@
            icon="icons/etool16/exportnativeprj_wiz.png"
            id="org.jboss.tools.aerogear.hybrid.ui.exportNativeBinaryWizard"
            name="Export Mobile Application">
+        <keywordReference
+              id="org.jboss.tools.aerogear.hybrid.ui.keyword">
+        </keywordReference>
      </wizard>
      <category
            id="org.jboss.tools.aerogear.hybrid.ui.category"
@@ -189,10 +204,20 @@
            icon="icons/etool16/newcordovaprj_wiz.png"
            id="org.jboss.tools.aerogear.hybrid.ui.HybridMobileProjectImportWizard"
            name="Import Cordova  Project">
+        <keywordReference
+              id="org.jboss.tools.aerogear.hybrid.ui.keyword">
+        </keywordReference>
      </wizard>
      <category
            id="org.jboss.tools.aerogear.hybrid.ui.category"
            name="Mobile">
      </category>
+  </extension>
+  <extension
+        point="org.eclipse.ui.keywords">
+     <keyword
+           id="org.jboss.tools.aerogear.hybrid.ui.keyword"
+           label="hybrid mobile cordova">
+     </keyword>
   </extension>
 </plugin>
