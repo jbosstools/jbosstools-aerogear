@@ -333,7 +333,7 @@ public class Widget extends AbstractConfigObject {
 		if (object == null )
 			return;
 		List<T> objects = new ArrayList<T>();
-		if(property.getValue() == null ){
+		if(property.getValue() == null || property.getValue().isEmpty()){
 			Node newNode = itemNode.appendChild(object.itemNode);
 			if (newNode != null ){
 				objects.add(object);
