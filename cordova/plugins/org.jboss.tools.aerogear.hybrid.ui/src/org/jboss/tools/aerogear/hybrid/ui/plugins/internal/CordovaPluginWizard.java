@@ -43,6 +43,7 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
 import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
+import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 
 public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, FileOverwriteCallback{
 	static final String IMAGE_WIZBAN = "/icons/wizban/cordova_plugin_wiz.png";
@@ -179,9 +180,13 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 			getContainer().run(true, true, op);
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() != null) {
+				if(e.getTargetException() instanceof CoreException ){
+					StatusManager.handle((CoreException) e.getTargetException());
+				}else{
 				ErrorDialog.openError(getShell(), "Plug-in installation problem", null, 
 						new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Errors occured during plug-in installation", e.getTargetException() ));
 				return false;
+				}
 			}
 			return false;
 		} catch (InterruptedException e) {

@@ -17,10 +17,12 @@ public final class ActionVariableHelper {
 		Widget widget = model.getWidgetForRead();
 		xml = xml.replaceAll("\\$PACKAGE_NAME", widget.getId());
 		List<Preference> preferences = widget.getPreferences();
-		for ( Preference preference : preferences) {
-			String preferenceKey = "\\$"+preference.getName();
-			if(xml.contains(preferenceKey)){
-				xml = xml.replaceAll(preferenceKey, preference.getValue());
+		if (preferences != null) {
+			for (Preference preference : preferences) {
+				String preferenceKey = "\\$" + preference.getName();
+				if (xml.contains(preferenceKey)) {
+					xml = xml.replaceAll(preferenceKey, preference.getValue());
+				}
 			}
 		}
 		return xml;
