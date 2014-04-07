@@ -27,8 +27,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.cordavasim.eclipse.callbacks.CordovaSimRestartCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.Activator;
-import org.jboss.tools.vpe.browsersim.eclipse.callbacks.JsLogCallback;
-import org.jboss.tools.vpe.browsersim.eclipse.callbacks.LogCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.callbacks.OpenFileCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.callbacks.ViewSourceCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
@@ -46,8 +44,6 @@ public class CordovaSimLauncher {
 	private static final List<ExternalProcessCallback> CORDOVASIM_CALLBACKS = Arrays.asList(
 			new ViewSourceCallback(),
 			new OpenFileCallback(),
-			new LogCallback(),
-			new JsLogCallback(),
 			new CordovaSimRestartCallback()
 		);
 
