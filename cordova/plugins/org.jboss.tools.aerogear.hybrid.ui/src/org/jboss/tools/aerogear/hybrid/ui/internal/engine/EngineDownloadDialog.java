@@ -16,14 +16,20 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.operation.ModalContext;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -34,9 +40,11 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.ProgressMonitorPart;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -47,8 +55,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
+import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator.ProjectGeneratorContentProvider;
 import org.jboss.tools.aerogear.hybrid.ui.internal.projectGenerator.ProjectGeneratorLabelProvider;
+import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 
 import com.github.zafarkhaja.semver.Version;
 
@@ -129,8 +139,7 @@ public class EngineDownloadDialog extends TitleAreaDialog{
                 try {
 					versions = engineProvider.getDownloadableVersions();
 				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					StatusManager.handle(e);
 				}
 			}
 			return versions;
@@ -141,6 +150,13 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 	public EngineDownloadDialog(Shell parent) {
 		super(parent);
 		setShellStyle(getShellStyle()| SWT.SHEET);
+	}
+	
+	@Override
+	protected Control createContents(Composite parent) {
+		Control contents = super.createContents(parent);
+		toggleOKButton(false);
+		return contents;
 	}
 	
 	@Override
@@ -178,15 +194,22 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 	
 		TableColumn col = new TableColumn(table, SWT.NONE);
 		col.setWidth(120);
-		col.setText("platform");
+		col.setText("Platform");
 				
 		platformList = new CheckboxTableViewer(table);
 		// Use ProjectGeneratorContentProvider which gives us the supported platforms.
 		// we then filter out the platforms that are not supported by the content provider 
-		// and the already installed using the he ContentProviderSupportFilter
+		// and the already installed using the ContentProviderSupportFilter
 		platformList.setContentProvider(new ProjectGeneratorContentProvider());
 		platformList.setFilters(new ViewerFilter[]{ new ContentProviderSupportFilter()});
 		platformList.setLabelProvider(new PlatformsLabelProvider());
+		platformList.addCheckStateListener(new ICheckStateListener() {
+			
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				validate();
+			}
+		});
 
 		createProgressMonitorPart(composite);
 		
@@ -194,10 +217,9 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 		try {
 			versionViewer.setInput(engineProvider.getDownloadableVersions());
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			setErrorMessage("Unable to retrieve the downloadable versions list, please try again later.");
+			HybridUI.log(IStatus.ERROR, "Unable to retrieve the downloadable versions list", e);
 		}
-
 		return composite;
 	}
 
@@ -237,12 +259,25 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 
 	private void validate() {
 		if(platformList.getElementAt(0) == null ){
-			setErrorMessage("All supported platforms are already installed for "+engineProvider.getName() +" "+ getVersion() );
-			getButton(IDialogConstants.OK_ID).setEnabled(false);
+			setErrorMessage(NLS.bind("All supported platforms are already installed for {0} {1}", new String[]{engineProvider.getName(),getVersion()} ));
+			toggleOKButton(false);
+			return;
+		}
+		Object[] checked = platformList.getCheckedElements();
+		if(checked == null || checked.length == 0 ){
+			toggleOKButton(false);
 			return;
 		}
 		setErrorMessage(null);
-		getButton(IDialogConstants.OK_ID).setEnabled(true);
+		toggleOKButton(true);
+	}
+
+
+	private void toggleOKButton(boolean state) {
+		Button ok = getButton(IDialogConstants.OK_ID);
+		if(ok != null && !ok.isDisposed()){
+			ok.setEnabled(state);
+		}
 	}	
 	
 	@Override
@@ -273,11 +308,16 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 			ModalContext.run(runnable, true, progressMonitorPart, getShell().getDisplay());
 			
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (e.getTargetException() != null) {
+				if(e.getTargetException() instanceof CoreException ){
+					StatusManager.handle((CoreException) e.getTargetException());
+				}else{
+					ErrorDialog.openError(getShell(), "Error downloading engine",null, 
+							new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Error downloading the engine", e.getTargetException() ));
+				}
+			}
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new OperationCanceledException();
 		}
 		
 		progressMonitorPart.removeFromCancelComponent(getButton(IDialogConstants.CANCEL_ID));
