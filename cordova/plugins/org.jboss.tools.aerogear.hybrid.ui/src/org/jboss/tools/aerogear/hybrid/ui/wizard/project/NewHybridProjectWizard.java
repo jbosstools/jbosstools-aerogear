@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013, 2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -34,7 +34,6 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
-import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 
@@ -74,8 +73,7 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 					openAndSelectConfigFile(project);
 					
 					} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+						throw new InvocationTargetException(e);
 				}
 				
 			}
