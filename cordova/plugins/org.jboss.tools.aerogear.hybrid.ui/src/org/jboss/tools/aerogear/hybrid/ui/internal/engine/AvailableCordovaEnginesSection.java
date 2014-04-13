@@ -373,11 +373,17 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				for (HybridMobileEngine hybridMobileEngine : engines) {
-					try{
+					try {
 						hybridMobileEngine.preCompile(monitor);
-					}
-					catch(CoreException e ){
-						return e.getStatus();
+					} catch (CoreException e) {
+						// Because at this point whether the an engine is going to 
+						// be used or not is not determined yet 
+						// We just log the engine pre-compilation problems here. 
+						HybridUI.log(
+								IStatus.WARNING,
+								NLS.bind(
+										"Pre-compilation for engine {0} {1} has failed",
+										new String[] { hybridMobileEngine.getName(), hybridMobileEngine.getVersion() }), e);
 					}
 				}
 				return Status.OK_STATUS;
