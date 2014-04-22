@@ -14,9 +14,14 @@ import org.jboss.tools.vpe.browsersim.BrowserSimLogger;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
+ * @author Ilya Buziuk (ibuziuk)
  */
 public class CordovaSimLogger {
+	
+	private CordovaSimLogger() {
+	}
+	
 	public static void logError(String message, Throwable throwable) {
-		BrowserSimLogger.logError(message, throwable, CordovaSimRunner.PLUGIN_ID);
+		BrowserSimLogger.logError(message, throwable);
 	}
 }
