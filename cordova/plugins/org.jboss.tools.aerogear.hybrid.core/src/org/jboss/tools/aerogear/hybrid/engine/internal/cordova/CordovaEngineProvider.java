@@ -187,7 +187,7 @@ public class CordovaEngineProvider implements HybridMobileEngineLocator, EngineS
 		return downloadeableVersionsCache.keySet().toArray(new String[downloadeableVersionsCache.size()]);
 	}
 	
-	public void downloadEngine(String version, IProgressMonitor monitor, String... platforms){
+	public void downloadEngine(String version, IProgressMonitor monitor, String... platforms) {
 		if(monitor == null ){
 			monitor = new NullProgressMonitor();
 		}
@@ -212,24 +212,19 @@ public class CordovaEngineProvider implements HybridMobileEngineLocator, EngineS
 				}
 				transfer.sendRetrieveRequest(remoteFileID, new EngineDownloadReceiver(version, platforms[i], lock, sm), null);
 			} catch (FileCreateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				HybridCore.log(IStatus.ERROR, "Engine download file create error", e);
 			} catch (IncomingFileTransferException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				HybridCore.log(IStatus.ERROR, "Engine download file transfer error", e);
 			}
-			
 		}
 		synchronized (lock) {
 			while(incompleteCount >0){
 				try {
 					lock.wait();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					HybridCore.log(IStatus.INFO, "interrupted while waiting for all engines to download", e);
 				}
 				incompleteCount--;
-				System.out.println("COMPLETED ONE " + incompleteCount + " MORE TO GO");
 			}
 		}
 		monitor.done();

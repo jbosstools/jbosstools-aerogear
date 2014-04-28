@@ -15,12 +15,14 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.TarException;
 
 public class EngineDownloadReceiver implements IFileTransferListener {
@@ -65,7 +67,6 @@ public class EngineDownloadReceiver implements IFileTransferListener {
 			 return;
 		 }
 		 int completed = (int) (source.getPercentComplete() *100);
-		
 		 if(completed > 0 ){//supports reporting progress
 			 int worked = percentComplete - completed;
 			 if(worked > 0){
@@ -91,11 +92,9 @@ public class EngineDownloadReceiver implements IFileTransferListener {
 				}
 				FileUtils.deleteQuietly(tempFile);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				HybridCore.log(IStatus.ERROR, "Error while saving downlaoded engine", e);
 			} catch (TarException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				HybridCore.log(IStatus.ERROR, "Error while extracting downlaoded engine ", e);
 			}
 			finally{
 				synchronized (lock) {
@@ -117,9 +116,7 @@ public class EngineDownloadReceiver implements IFileTransferListener {
 			folder.mkdirs();
 			startEvent.receive(tempFile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			HybridCore.log(IStatus.ERROR, "Error starting engine download", e);
 		}
 	}
-
 }
