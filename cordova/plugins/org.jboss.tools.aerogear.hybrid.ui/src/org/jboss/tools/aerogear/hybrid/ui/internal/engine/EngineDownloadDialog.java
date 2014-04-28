@@ -289,6 +289,8 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 			platforms[i] = gen.getPlatformId();
 		}
 		final String version = getVersion();
+		versionViewer.getCombo().setEnabled(false);
+		platformList.getTable().setEnabled(false);
 		run(new IRunnableWithProgress() {
 			
 			@Override
