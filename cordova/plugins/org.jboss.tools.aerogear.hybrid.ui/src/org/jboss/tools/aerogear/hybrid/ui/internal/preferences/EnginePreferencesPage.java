@@ -31,6 +31,7 @@ import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.engine.internal.cordova.CordovaEngineProvider;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.engine.AvailableCordovaEnginesSection;
+import org.jboss.tools.aerogear.hybrid.ui.internal.engine.AvailableCordovaEnginesSection.EngineListChangeListener;
 
 public class EnginePreferencesPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -59,11 +60,18 @@ public class EnginePreferencesPage extends PreferencePage implements
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				setValid(isValid());
+				setValid(validate());
+			}
+		});
+		engineSection.addEngineListChangeListener(new EngineListChangeListener() {
+			@Override
+			public void listChanged() {
+				initDefaultEngine();
 			}
 		});
 		noDefaultAndApplyButton();
 		initDefaultEngine();
+		setValid(validate());
 		return control;
 	}
 
@@ -71,12 +79,15 @@ public class EnginePreferencesPage extends PreferencePage implements
 		HybridMobileEngine defaultEngine = HybridMobileEngineManager.getDefaultEngine();
 		if(defaultEngine != null ){
 			engineSection.setSelection(new StructuredSelection(defaultEngine));
-			
+		}else{
+			List<HybridMobileEngine> engines = engineSection.getListedEngines();
+			if(engines != null && engines.size() ==1){
+				engineSection.setSelection(new StructuredSelection(engines.get(0)));
+			}
 		}
 	}
 	
-	@Override
-	public boolean isValid() {
+	private boolean validate() {
 		if(engineSection.getSelection().isEmpty()){
 			setErrorMessage("Default engine is not selected");
 			return false;

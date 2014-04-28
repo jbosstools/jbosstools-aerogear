@@ -90,10 +90,15 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 	private static final int TABLE_WIDTH = 350;
 	
 	private ListenerList selectionListeners;
+	private ListenerList engineChangeListeners;
 	private CheckboxTableViewer engineList;
 	private ISelection prevSelection = new StructuredSelection();
 	private CordovaEngineProvider provider;
 	private Button removeBtn;
+	
+	public static interface EngineListChangeListener{
+		public void listChanged();
+	}
 	
 	private class EngineTooltip extends ToolTip{
 
@@ -229,18 +234,20 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 	
 	public AvailableCordovaEnginesSection() {
 		this.selectionListeners = new ListenerList();
+		this.engineChangeListeners = new ListenerList();
 	}
 
 	public void createControl(final Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(composite);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(composite);
 		
 		Label tableLbl = new Label(composite, SWT.NULL);
 		tableLbl.setText("Available Engines: ");
 		GridDataFactory.generate(tableLbl, 2, 1);
 		
 		final Table table= new Table(composite, SWT.CHECK | SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
-		GridDataFactory.fillDefaults().hint(new Point(TABLE_WIDTH, TABLE_HEIGHT)).applyTo(table); 
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).minSize(new Point(TABLE_WIDTH, TABLE_HEIGHT)).applyTo(table); 
 		
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);	
@@ -391,6 +398,7 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 		};
 		preCompileJob.schedule();
 		engineList.setInput(engines);
+		fireEngineListChanged();
 		
 	}
 
@@ -405,10 +413,31 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionListeners.add(listener);
 	}
+	
+	public void addEngineListChangeListener( EngineListChangeListener listener){
+		engineChangeListeners.add(listener);
+	}
+	
+	public void removeEngineListChangeListener(EngineListChangeListener listener){
+		engineChangeListeners.remove(listener);
+	}
 
 	@Override
 	public ISelection getSelection() {
 		return new StructuredSelection(engineList.getCheckedElements());
+	}
+	
+	/**
+	 * Returns the list of {@link HybridMobileEngine}s that 
+	 * are listed null if the list is empty.
+	 * @return
+	 */
+	public List<HybridMobileEngine> getListedEngines(){
+		Object o = engineList.getInput();
+		if(o == null)
+			return null;
+		return (List<HybridMobileEngine>) o;
+		
 	}
 
 	@Override
@@ -444,6 +473,14 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			ISelectionChangedListener listener = (ISelectionChangedListener)listeners[i];
 			listener.selectionChanged(event);
 		}	
+	}
+	
+	private void fireEngineListChanged(){
+		Object[] listeners = engineChangeListeners.getListeners();
+		for (int i = 0; i < listeners.length; i++) {
+			EngineListChangeListener l = (EngineListChangeListener)listeners[i];
+			l.listChanged();
+		}
 	}
 
 	private void handleSearch(final Composite parent) {
