@@ -101,8 +101,7 @@ public class AndroidSDKManager {
 	
 	private static class AVDListParser implements IStreamListener{
 		private static final String PREFIX_NAME = "Name:";
-		private static final String PREFIX_TARGET = "Target:";
-		private static final String MARKER_LEVEL = "level";
+		private static final String MARKER_LEVEL = "API level";
 		private StringBuffer buffer = new StringBuffer();
 		@Override
 		public void streamAppended(String text, IStreamMonitor monitor) {
@@ -127,9 +126,9 @@ public class AndroidSDKManager {
 						currentAVD.setName(line.substring(idx+PREFIX_NAME.length()).trim());
 						continue;
 					}
-					idx = line.indexOf(PREFIX_TARGET);
-					if(idx>-1 && currentAVD != null){
-						int startIndex = line.indexOf(MARKER_LEVEL) + MARKER_LEVEL.length();
+					idx = line.indexOf(MARKER_LEVEL) ;
+					if(idx > -1 && currentAVD != null){
+						int startIndex = idx + MARKER_LEVEL.length();
 						int endIndex = line.indexOf(')');
 						currentAVD.setApiLevel((Integer.parseInt(line.substring(startIndex, endIndex).trim())));
 						list.add(currentAVD);

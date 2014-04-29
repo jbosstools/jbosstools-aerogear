@@ -53,6 +53,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.android.core.AndroidCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
@@ -95,17 +96,18 @@ public class AndroidProjectGenerator extends AbstractProjectGeneratorDelegate{
 		AndroidSDK target = AndroidProjectUtils.selectBestValidTarget();
 		File destinationDir = getDestination();
 		IPath destinationPath = new Path(destinationDir.toString());
-		if(getDestination().exists()){
+		if(destinationDir.exists()){
 			try {//Clean the android directory to avoid and "Error:" message 
 				 // from the command line tools for using update. Otherwise all create
 				// project calls will be recognized as failed.
-				FileUtils.cleanDirectory(getDestination());
+				FileUtils.cleanDirectory(destinationDir);
 			} catch (IOException e) {
-				throw new CoreException(new Status(IStatus.ERROR, AndroidCore.PLUGIN_ID, "Error cleaning android working direcrtory", e));
+				throw new CoreException(new Status(IStatus.WARNING, AndroidCore.PLUGIN_ID,
+						NLS.bind("Could not clean the android working directory at {0}",destinationDir), e));
 			}
 		}
 		
-		sdkManager.createProject(target, name, getDestination(),name, packageName, new NullProgressMonitor());
+		sdkManager.createProject(target, name, destinationDir,name, packageName, new NullProgressMonitor());
 		
 		
 		try{
