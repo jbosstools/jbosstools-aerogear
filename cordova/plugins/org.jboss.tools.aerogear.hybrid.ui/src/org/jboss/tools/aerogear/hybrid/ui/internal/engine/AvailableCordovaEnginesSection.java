@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -579,7 +580,6 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 	}
 
 	private void handleRemoveEngine() {
-		
 		IStructuredSelection selection = (IStructuredSelection) engineList.getSelection();
 		ISelection cSelection = getSelection();
 		HybridMobileEngine checkedEngine =null;
@@ -588,6 +588,15 @@ public class AvailableCordovaEnginesSection implements ISelectionProvider{
 			checkedEngine = (HybridMobileEngine) css.getFirstElement();
 		}
 		HybridMobileEngine selectedEngine = (HybridMobileEngine) selection.getFirstElement();
+		//Because we do not manage custom engines we do not delete them. 
+		if (selectedEngine.getId().equals( CordovaEngineProvider.CORDOVA_ENGINE_ID)) {
+			boolean deleteConfirm = MessageDialog.openConfirm( this.engineList.getTable().getShell(), "Confirm Delete",
+							NLS.bind( "This will remove {0} {1} from your computer. Do you want to continue?",
+									new String[] { selectedEngine.getName(), selectedEngine.getVersion() }));
+			if (!deleteConfirm) {
+				return;
+			}
+		}
 		getEngineProvider().deleteEngineLibraries(selectedEngine);
 		if(selectedEngine.getId().equals(CordovaEngineProvider.CUSTOM_CORDOVA_ENGINE_ID)){//Update the prefs for custom engines.
 			List<PlatformLibrary> libs = selectedEngine.getPlatformLibs();
