@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013,2014 Red Hat, Inc.
+ * Copyright (c) 2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,31 +8,24 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.aerogear.hybrid.android.ui.internal.statushandler;
+package org.jboss.tools.aerogear.hybrid.ui.internal.status;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.jboss.tools.aerogear.hybrid.android.ui.internal.preferences.AndroidPreferencePage;
 import org.jboss.tools.aerogear.hybrid.ui.status.AbstractStatusHandler;
 
-public class MissingSDKStatusHandler extends AbstractStatusHandler {
+public class ConfigXMLStatusHandler extends AbstractStatusHandler {
 
 	@Override
 	public void handle(IStatus status) {
-		boolean define = MessageDialog.openQuestion(AbstractStatusHandler.getShell(), "Missing Android SDK",
-				"Location of the Android SDK must be defined. Define Now?");
-		if(define){
-			PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getShell(), AndroidPreferencePage.PAGE_ID, 
-					null, null);
-			dialog.open();
-		}
+		MessageDialog.openError(AbstractStatusHandler.getShell(), "Plug-in Error", 
+				"Error parsing the plug-in information. Your platform(s) may not be supported by this plug-in or it may indicate a problem with the plug-in itself.");
 	}
 
 	@Override
 	public void handle(CoreException e) {
 		handle(e.getStatus());
 	}
+
 }

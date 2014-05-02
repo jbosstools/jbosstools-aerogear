@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Status;
 public class HybridMobileStatus extends Status {
 	
 	public static final int STATUS_CODE_MISSING_ENGINE = 100;
+	public static final int STATUS_CODE_CONFIG_PARSE_ERROR = 423;
 	private IProject project;
 
 

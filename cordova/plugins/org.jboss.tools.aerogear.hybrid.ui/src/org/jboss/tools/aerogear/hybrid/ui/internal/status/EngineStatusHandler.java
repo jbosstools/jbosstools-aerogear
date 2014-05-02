@@ -17,9 +17,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
@@ -33,7 +30,7 @@ public class EngineStatusHandler extends AbstractStatusHandler implements IStatu
 			throws CoreException {
 		HybridMobileStatus hs = (HybridMobileStatus) status;
 		
-		boolean open = MessageDialog.openQuestion(getShell(), "Missing or incomplete Hybrid Mobile Engine", 
+		boolean open = MessageDialog.openQuestion(AbstractStatusHandler.getShell(), "Missing or incomplete Hybrid Mobile Engine", 
 				NLS.bind("{0} \n\nWould you like to modify Hybrid Mobile Engine preferences to correct this issue?",hs.getMessage() ));
 		
 		if(open){
@@ -57,17 +54,5 @@ public class EngineStatusHandler extends AbstractStatusHandler implements IStatu
 		handle(e.getStatus());
 	}
 	
-	private Shell getShell(){
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		if (window == null) {
-			IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
-			if (windows.length > 0) {
-				return windows[0].getShell();
-			}
-		} 
-		return window.getShell();
-	}
-
-
 
 }

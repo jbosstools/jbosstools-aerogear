@@ -12,11 +12,25 @@ package org.jboss.tools.aerogear.hybrid.ui.status;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 
 public abstract class AbstractStatusHandler {
 	
 	public abstract void handle(IStatus status);
 	
 	public abstract void handle(CoreException e);
+	
+	protected static Shell getShell(){
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		if (window == null) {
+			IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+			if (windows.length > 0) {
+				return windows[0].getShell();
+			}
+		} 
+		return window.getShell();
+	}
 
 }

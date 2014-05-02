@@ -29,6 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -58,11 +59,11 @@ public class XMLUtil {
 	    	return db.parse(f); 
 	    }
 		catch (ParserConfigurationException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser error when parsing " + f.toString(), e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parser configuration error", e));
 		} catch (SAXException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Parsing error "+f.toString(), e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, NLS.bind("Error when parsing file: {0}", f.toString()), e));
 		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "IO error when parsing "+f.toString(), e));
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, NLS.bind("IO error when parsing file: {0}",f.toString()), e));
 		} 
 	}
 

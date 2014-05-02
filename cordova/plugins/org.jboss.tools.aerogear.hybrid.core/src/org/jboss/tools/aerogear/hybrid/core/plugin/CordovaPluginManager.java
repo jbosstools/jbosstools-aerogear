@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013,2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -49,6 +49,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
+import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.XMLUtil;
@@ -62,6 +63,7 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.actions.DependencyInstallActi
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXParseException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -106,7 +108,21 @@ public class CordovaPluginManager {
 		Assert.isTrue(pluginFile.exists());
 		if(monitor.isCanceled())
 			return;
-		Document doc = XMLUtil.loadXML(pluginFile); 
+		Document doc = null;
+		try{
+			doc = XMLUtil.loadXML(pluginFile); 
+		}catch(CoreException e ){
+			//Convert the SAXParseException exceptions to HybridMobileStatus because
+			//it may indicate a broken plugin.xml or an platform not supported 
+			// see https://issues.jboss.org/browse/JBIDE-15768
+			if(e.getCause() != null && e.getCause() instanceof SAXParseException){
+				HybridMobileStatus hms = new HybridMobileStatus(IStatus.ERROR, HybridCore.PLUGIN_ID, HybridMobileStatus.STATUS_CODE_CONFIG_PARSE_ERROR,
+						e.getStatus().getMessage(), e.getCause());
+				e = new CoreException(hms);
+			}
+			throw e;
+		}
+		
 		String id = CordovaPluginXMLHelper.getAttributeValue(doc.getDocumentElement(), "id");
 		if(isPluginInstalled(id)){
 			HybridCore.log(IStatus.WARNING, "Cordova Plugin ("+id+") is already installed, skipping.",null);

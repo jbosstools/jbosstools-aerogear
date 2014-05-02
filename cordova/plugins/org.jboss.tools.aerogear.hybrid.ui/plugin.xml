@@ -195,6 +195,12 @@
            id="org.jboss.tools.aerogear.hybrid.ui.engineStatusHandler"
            plugin="org.jboss.tools.aerogear.hybrid.core">
      </statusHandler>
+     <statusHandler
+           class="org.jboss.tools.aerogear.hybrid.ui.internal.status.ConfigXMLStatusHandler"
+           code="423"
+           id="org.jboss.tools.aerogear.hybrid.ui.configxmStatusandler"
+           plugin="org.jboss.tools.aerogear.hybrid.core">
+     </statusHandler>
   </extension>
   <extension
         point="org.eclipse.ui.importWizards">
