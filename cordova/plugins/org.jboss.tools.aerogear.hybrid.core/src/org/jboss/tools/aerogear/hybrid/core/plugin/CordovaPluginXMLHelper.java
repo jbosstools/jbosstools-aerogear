@@ -159,7 +159,7 @@ public class CordovaPluginXMLHelper {
 		if(attrib == null ){
 			return null;
 		}
-		return attrib.getNodeValue();
+		return attrib.getNodeValue().trim();
 	}
 	
 	public static String stringifyNode(Node node){
@@ -234,7 +234,7 @@ public class CordovaPluginXMLHelper {
 	private static String getChildNodeValue(Element node, String tagName){
 		NodeList nodes = node.getElementsByTagName(tagName);
 		if(nodes.getLength()>0){
-			return nodes.item(0).getTextContent();
+			return nodes.item(0).getTextContent().trim();
 		}
 		return null;
 	}
