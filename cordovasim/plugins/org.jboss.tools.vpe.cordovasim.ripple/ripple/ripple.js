@@ -41182,16 +41182,11 @@ module.exports = {
                             attributeName: "name",
                             type: "list",
                             required: true,
-                            listValues: ["http://api.phonegap.com/1.0/accelerometer", "http://api.phonegap.com/1.0/camera",
-                                "http://api.phonegap.com/1.0/compass", "http://api.phonegap.com/1.0/contacts", "http://api.phonegap.com/1.0/device",
-                                "http://api.phonegap.com/1.0/events", "http://api.phonegap.com/1.0/file", "http://api.phonegap.com/1.0/geolocation",
-                                "http://api.phonegap.com/1.0/media", "http://api.phonegap.com/1.0/network", "http://api.phonegap.com/1.0/notification",
-                                "http://api.phonegap.com/1.0/storage"]
-                        },
-                        required: {
-                            attributeName: "required",
-                            type: "boolean",
-                            required: false
+                            listValues: ["App", "Battery", "Camera", "Contacts", "Device", 
+                                         "Accelerometer", "Compass", "Notification", "File",
+                                         "FileTransfer", "Geolocation", "Globalization", 
+                                         "InAppBrowser", "Media", "Capture", "NetworkStatus", 
+                                         "SplashScreen", "Vibration"]
                         }
                     }
                 },
