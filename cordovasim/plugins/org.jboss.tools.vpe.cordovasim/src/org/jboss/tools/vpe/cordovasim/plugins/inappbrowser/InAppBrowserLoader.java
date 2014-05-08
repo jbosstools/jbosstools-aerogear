@@ -18,7 +18,6 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 import org.jboss.tools.vpe.browsersim.browser.ExtendedCloseWindowListener;
 import org.jboss.tools.vpe.browsersim.browser.ExtendedWindowEvent;
 import org.jboss.tools.vpe.browsersim.browser.IBrowser;
@@ -55,7 +54,8 @@ public class InAppBrowserLoader {
 		final IBrowser inAppBrowser = createInAppBrowser(browserSimParentComposite, browserSimBrowser, device); 
 		browserSim.setInAppBrowser(inAppBrowser);
 
-		if (PlatformUtil.OS_WIN32.equals(currentOs)) {
+		// Only on windows for SWT.WebKit browser
+		if (PlatformUtil.OS_WIN32.equals(currentOs) && !(browserSimBrowser instanceof JavaFXBrowser)) {
 			browserSimBrowser.setParent((Composite) inAppBrowser);
 		}
 		
@@ -97,7 +97,8 @@ public class InAppBrowserLoader {
 			
 		});
 				
-		if (PlatformUtil.OS_WIN32.equals(currentOs)) { // prevent permanent crashes after skin changing on windows
+		// Prevent permanent crashes on windows for SWT.WebKit after skin changing
+		if (PlatformUtil.OS_WIN32.equals(currentOs) && !(browserSimBrowser instanceof JavaFXBrowser)) { 
 			inAppBrowser.addDisposeListener(new DisposeListener() {
 				
 				@Override

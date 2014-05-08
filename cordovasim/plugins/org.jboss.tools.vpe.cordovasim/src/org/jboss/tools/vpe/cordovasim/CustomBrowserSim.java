@@ -70,14 +70,17 @@ public class CustomBrowserSim extends BrowserSim {
 			String currentOs = PlatformUtil.getOs();
 			
 			// JBIDE-16060 this solution works for mac os and linux (both ubuntu and fedora)
-			if (!PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && refreshRequired == null) {
-				rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()"); 
+			if (inAppBrowser != null && refreshRequired == null) {
+				// Not execute that script only for SWT Browser on Windows
+				if (!(PlatformUtil.OS_WIN32.equals(currentOs) && !(inAppBrowser instanceof JavaFXBrowser))) {
+					rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()"); 
+				}
 			}
 			
 			super.setSelectedDevice(refreshRequired);
 			
-			// workaround for windows - preventing permanent crashes after skin changing 
-			if (PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && refreshRequired == null) {
+			// Workaround for windows SWT Browser - preventing permanent crashes after skin changing 
+			if (PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && !(inAppBrowser instanceof JavaFXBrowser) && refreshRequired == null) {
 				this.inAppBrowser = null;
 				rippleToolSuiteBrowser.refresh();
 			}
