@@ -58,6 +58,7 @@ public class CordovaSimRunner {
 	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private static Server server;	
 	private static boolean isJavaFxAvailable;
+	private static boolean isWebKitAvailable;
 	
 	static {
 		if (PlatformUtil.OS_MACOSX.equals(PlatformUtil.getOs())) {
@@ -66,12 +67,21 @@ public class CordovaSimRunner {
 	}
 
 	static { 
+		String platform = PlatformUtil.getOs();
 		isJavaFxAvailable = false;
-		boolean isLinux = PlatformUtil.OS_LINUX.equals(PlatformUtil.getOs());
+		isWebKitAvailable = true;
+		
+		boolean isLinux = PlatformUtil.OS_LINUX.equals(platform);
 		
 		// Trying to load javaFx libs except Linux GTK3 case
 		if (!(isLinux && !BrowserSimUtil.isRunningAgainstGTK2())) {
 			isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
+		}
+		
+		//check if AAS is installed on Windows
+		boolean isWindows = PlatformUtil.OS_WIN32.equals(platform);
+		if (isWindows && !BrowserSimUtil.isWindowsSwtWebkitInstalled()) {
+			isWebKitAvailable = false;
 		}
 	}
 
@@ -87,6 +97,9 @@ public class CordovaSimRunner {
 	private static void startCordovaSim() throws Exception {
 		Display display = Display.getDefault();
 		try {
+			if (!isWebKitAvailable && !isJavaFxAvailable) {
+				throw new SWTError(org.jboss.tools.vpe.browsersim.ui.Messages.BrowserSim_NO_WEB_ENGINES);
+			}
 			Shell shell = createCordovaSim(display);
 			CordovaSimArgs.setRestartRequired(false);
 			while (!shell.isDisposed()) {
@@ -177,6 +190,12 @@ public class CordovaSimRunner {
 		CordovaSimArgs.setPort(port);
 
 		final CordovaSimSpecificPreferences sp = loadPreferences();
+		
+		if (PlatformUtil.OS_WIN32.equals(PlatformUtil.getOs()) && !BrowserSimUtil.isWindowsSwtWebkitInstalled()) {
+			if (isJavaFxAvailable) {
+				sp.setJavaFx(true);
+			}
+		}
 		if (!isJavaFxAvailable) {
 			sp.setJavaFx(false);
 		}
