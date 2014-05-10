@@ -205,6 +205,7 @@ public class CordovaPluginRegistryManager {
 		if(monitor == null )
 			monitor = new NullProgressMonitor();
 		
+		monitor.beginTask("Retrieve plug-in registry catalog", 10);
 		BundleContext context = HybridCore.getContext();
 		HttpClient client = new CachingHttpClient(new DefaultHttpClient(), 
 				new FileResourceFactory(context.getDataFile(BundleHttpCacheStorage.SUBDIR_HTTP_CACHE)), 
@@ -220,7 +221,7 @@ public class CordovaPluginRegistryManager {
 			response = client.execute(get);
 			HttpEntity entity = response.getEntity();
 			InputStream stream = entity.getContent();
-			monitor.worked(9);
+			monitor.worked(7);
 			JsonReader reader = new JsonReader(new InputStreamReader(stream));
 			reader.beginObject();//start the Registry
 			plugins = new ArrayList<CordovaRegistryPluginInfo>();

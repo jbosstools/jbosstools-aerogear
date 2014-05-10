@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013,2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -30,6 +30,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -45,7 +46,7 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugi
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 
-public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, FileOverwriteCallback{
+public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, FileOverwriteCallback, ICordovaPluginWizard{
 	static final String IMAGE_WIZBAN = "/icons/wizban/cordova_plugin_wiz.png";
 	private static final String DIALOG_SETTINGS_KEY = "CordovaPluginWizard";
 	
@@ -208,7 +209,7 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 		addPage(pageTwo);
 	}
 	
-	RegistryConfirmPage getRegistryConfirmPage(){
+	public WizardPage getRegistryConfirmPage(){
 		return pageTwo;
 	}
 	
@@ -239,5 +240,10 @@ public class CordovaPluginWizard extends Wizard implements IWorkbenchWizard, Fil
 			}
 		});
 		return dialog.getReturnCode() == OverwriteDialog.YES_TO_ALL_INDEX;
+	}
+
+	@Override
+	public boolean isPluginSelectionOptional() {
+		return false;
 	}
 }

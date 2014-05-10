@@ -25,6 +25,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -36,14 +37,21 @@ import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
+import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage;
+import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.ICordovaPluginWizard;
+import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.RegistryConfirmPage;
 
-public class NewHybridProjectWizard extends Wizard implements INewWizard {
-	
+public class NewHybridProjectWizard extends Wizard implements INewWizard,ICordovaPluginWizard {
+	private static final String IMAGE_WIZBAN = "/icons/wizban/newcordovaprj_wiz.png";
+
 	private IWizardPage pageOne;
 	private EngineConfigurationPage pageTwo;
+	private CordovaPluginSelectionPage pageThree;
+	private RegistryConfirmPage pageFour;
 
 	public NewHybridProjectWizard() {
 		setWindowTitle("Hybrid Mobile (Cordova) Application Project");
+		setDefaultPageImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, IMAGE_WIZBAN));
 		
 	}
 
@@ -116,6 +124,20 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard {
 		addPage( pageOne );
 		pageTwo = new EngineConfigurationPage("Configure Engine");
 		addPage( pageTwo);
+		pageThree = new CordovaPluginSelectionPage(true);
+		addPage(pageThree);
+		pageFour = new RegistryConfirmPage();
+		addPage(pageFour);
+	}
+
+	@Override
+	public WizardPage getRegistryConfirmPage() {
+		return pageFour;
+	}
+
+	@Override
+	public boolean isPluginSelectionOptional() {
+		return true;
 	}
 
 }

@@ -74,8 +74,8 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 	public CordovaPluginCatalogViewer(int style) {
 		this.style = style;
 		selectionProvider = new SelectionProviderAdapter();
+		setAutomaticFind(false);
 	}
-	
 	
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionProvider.addSelectionChangedListener(listener);
@@ -90,12 +90,14 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 	}
 	
 	void modifySelection ( CordovaRegistryPluginInfo element, boolean selection){
-		if (selection) {
+		if (selection && !selectedItems.contains(element)) {
 			selectedItems.add(element);
-		}else{
-			selectedItems.remove(element);
+			selectionProvider.setSelection(new StructuredSelection(selectedItems));
 		}
-		selectionProvider.setSelection(new StructuredSelection(selectedItems));
+		if(!selection && selectedItems.contains(element)){
+			selectedItems.remove(element);
+			selectionProvider.setSelection(new StructuredSelection(selectedItems));
+		}
 	}
 
 	@Override
@@ -104,11 +106,9 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 			showInstalledBtn = new Button(parent, SWT.CHECK);
 			showInstalledBtn.setText("Show Installed");
 			showInstalledBtn.addListener(SWT.Selection, new Listener() {
-				
 				@Override
 				public void handleEvent(Event event) {
 					updateInstalledPluginsFilter();
-					
 				}
 			});
 		}
@@ -124,7 +124,6 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 		resources = new CordovaPluginWizardResources(container.getDisplay());
 		
 		StructuredViewer viewer = new ControlListViewer(container, SWT.BORDER) {
-
 			@Override
 			protected ControlListItem<CordovaRegistryPluginInfo> doCreateItem(
 					Composite parent, Object element) {
@@ -138,7 +137,6 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 	}
 	
 	private ControlListItem<CordovaRegistryPluginInfo> doCreateViewerItem(Composite parent, Object element ){
-		
 		CordovaRegistryPluginInfo pluginInfo = (CordovaRegistryPluginInfo) element;
 		boolean installed = false;
 		if(project != null ){

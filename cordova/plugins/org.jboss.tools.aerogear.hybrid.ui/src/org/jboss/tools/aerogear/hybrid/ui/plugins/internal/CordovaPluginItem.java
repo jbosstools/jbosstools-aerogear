@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013, 2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,7 +12,6 @@ package org.jboss.tools.aerogear.hybrid.ui.plugins.internal;
 
 import java.util.List;
 
-import org.eclipse.equinox.internal.p2.ui.discovery.util.ControlListItem;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -33,6 +32,9 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPlugi
 
 @SuppressWarnings("restriction")
 public class CordovaPluginItem extends BaseCordovaPluginItem<CordovaRegistryPlugin> {
+	
+	private final static int MAX_DESCRIPTION_LENGTH = 162;
+	
 	private Label description;
 	private Label nameLabel;
 	private Label licenseLbl;
@@ -48,6 +50,7 @@ public class CordovaPluginItem extends BaseCordovaPluginItem<CordovaRegistryPlug
 
 	@Override
 	protected void refresh() {
+	//Nothing to do
 	}
 
 	private void createContent(){
@@ -149,12 +152,11 @@ public class CordovaPluginItem extends BaseCordovaPluginItem<CordovaRegistryPlug
 	}
 
 	private void setDescriptionText(String descriptionText) {
-		int maxDescriptionLength = 162;
 		if (descriptionText == null) {
 			descriptionText = ""; //$NON-NLS-1$
 		}
-		if (descriptionText.length() > maxDescriptionLength) {
-			descriptionText = descriptionText.substring(0, maxDescriptionLength);
+		if (descriptionText.length() > MAX_DESCRIPTION_LENGTH) {
+			descriptionText = descriptionText.substring(0, MAX_DESCRIPTION_LENGTH);
 		}
 		description.setText(descriptionText.replaceAll("(\\r\\n)|\\n|\\r", " ")); //$NON-NLS-1$ //$NON-NLS-2$
 	}

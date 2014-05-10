@@ -33,6 +33,7 @@ import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 public class RegistryConfirmPage extends WizardPage {
 
 	private CordovaPluginViewer pluginViewer;
+	private List<CordovaRegistryPluginInfo> selected;
 	final CordovaPluginRegistryManager client = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
 	private static final String PAGE_NAME = "Fetch from Registry";
 	private static final String PAGE_TITLE = "Confirm plug-ins to be downloaded from registry";
@@ -75,7 +76,7 @@ public class RegistryConfirmPage extends WizardPage {
 		
 	}
 
-	protected RegistryConfirmPage() {
+	public RegistryConfirmPage() {
 		super(PAGE_NAME,PAGE_TITLE,HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, CordovaPluginWizard.IMAGE_WIZBAN));
 		setDescription(PAGE_DESC);	
 	}
@@ -86,9 +87,17 @@ public class RegistryConfirmPage extends WizardPage {
 		pluginViewer.setHeaderVisible(false);
 		pluginViewer.createControl(parent);
 		setControl(pluginViewer.getControl());
+		updatePluginViewerInput();
 	}
 	
 	void setSelectedPlugins(List<CordovaRegistryPluginInfo> selected) {
+		this.selected = selected;
+		updatePluginViewerInput();
+	}
+
+	private void updatePluginViewerInput() {
+		if(pluginViewer == null || selected == null )
+			return;
 		List<String> pluginNames = new ArrayList<String>(selected.size());
 		for (CordovaRegistryPluginInfo cordovaRegistryPluginInfo : selected) {
 			pluginNames.add(cordovaRegistryPluginInfo.getName());
@@ -97,6 +106,7 @@ public class RegistryConfirmPage extends WizardPage {
 		job.schedule();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<CordovaRegistryPluginVersion> getSelectedPluginVersions(){
 			IStructuredSelection selection = (IStructuredSelection) pluginViewer.getSelection();
 			if(selection == null || selection.isEmpty())

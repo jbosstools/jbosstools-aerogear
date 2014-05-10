@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013, 2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -43,19 +43,14 @@ public class CordovaPluginInfoItem extends BaseCordovaPluginItem<CordovaRegistry
 
 	@Override
 	protected void refresh() {
-		if(checkbox != null ){
-			viewer.modifySelection(getData(), checkbox.getSelection());
-		}
+		checkbox.setEnabled(!installed);
 	}
 	
 	private void createContent(){
 		GridLayout layout = new GridLayout(3, false);
 		layout.marginLeft = 7;
 		layout.marginTop = 2;
-//		layout.marginBottom = 2;
 		setLayout(layout);
-		
-	
 
 		final Composite checkboxContainer = new Composite(this, SWT.INHERIT_NONE);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.BEGINNING).span(1, 2).applyTo(checkboxContainer);
@@ -164,6 +159,4 @@ public class CordovaPluginInfoItem extends BaseCordovaPluginItem<CordovaRegistry
 		}
 	}
 	
-	
-
 }

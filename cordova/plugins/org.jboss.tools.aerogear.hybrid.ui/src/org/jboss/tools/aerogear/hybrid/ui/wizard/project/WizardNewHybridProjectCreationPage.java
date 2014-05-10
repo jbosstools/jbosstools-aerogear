@@ -26,7 +26,6 @@ import org.jboss.tools.aerogear.hybrid.core.HybridProjectConventions;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreationPage{
-	private static final String IMAGE_WIZBAN = "/icons/wizban/newcordovaprj_wiz.png";
 	private Text txtName;
 	private Text txtID;
 	private final PropertyModifyListener propertyModifyListener = new PropertyModifyListener();
@@ -57,12 +56,10 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
 		super(pageName);
 		setTitle("Create Hybrid Mobile Application Project");
 		setDescription("Create a hybrid mobile application using Apache Cordova for cross-platform mobile development");
-		setImageDescriptor(HybridUI.getImageDescriptor(HybridUI.PLUGIN_ID, IMAGE_WIZBAN));
 	}
 
 	public void createControl(Composite parent ){		
         super.createControl(parent);
-        
          
         Group applicationGroup = new Group((Composite)getControl(), SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -73,7 +70,6 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
         
         Label lblName = new Label(applicationGroup, SWT.NONE);
         lblName.setText("Name:");
-        
         
         
         txtName = new Text(applicationGroup, SWT.BORDER);
@@ -98,9 +94,9 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
 	@Override
 	protected boolean validatePage() {
 		boolean superValidate = super.validatePage();
-		if(txtID == null || txtName == null ){//validate is actually called first time on super.createControl()
-			return superValidate;             // in order to avoid NPEs for the half initialized UI we do a partial
-		}                                     // until all UI components are in place.
+		if(!superValidate || txtID == null || txtName == null ){//validate is actually called first time on super.createControl()
+			return superValidate;                                // in order to avoid NPEs for the half initialized UI we do a partial
+		}                                                       // until all UI components are in place.
 		
 		if( !propertyModifyListener.isNameOrIDChanged() ){
 			String id = HybridProjectConventions.generateProjectID(getProjectName());
