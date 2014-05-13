@@ -10,11 +10,18 @@
  ******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.wizard.project;
 
+import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage.PLUGIN_SOURCE_DIRECTORY;
+import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage.PLUGIN_SOURCE_GIT;
+import static org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage.PLUGIN_SOURCE_REGISTRY;
+
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -35,6 +42,10 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
+import org.jboss.tools.aerogear.hybrid.core.plugin.CordovaPluginManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.FileOverwriteCallback;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaPluginRegistryManager;
+import org.jboss.tools.aerogear.hybrid.core.plugin.registry.CordovaRegistryPluginVersion;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 import org.jboss.tools.aerogear.hybrid.ui.internal.status.StatusManager;
 import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.CordovaPluginSelectionPage;
@@ -78,6 +89,7 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard,ICordov
 					String appID = page.getApplicationID();
 					HybridMobileEngine engine = enginePage.getSelectedEngine();
 					IProject project = creator.createBasicTemplatedProject(page.getProjectName(), location ,appName, appID, engine, monitor);
+					installSelectedPlugins(project, monitor);
 					openAndSelectConfigFile(project);
 					
 					} catch (CoreException e) {
@@ -102,6 +114,39 @@ public class NewHybridProjectWizard extends Wizard implements INewWizard,ICordov
 			throw new OperationCanceledException();
 		}
 		return true;
+	}
+	
+	private void installSelectedPlugins(IProject project, IProgressMonitor monitor) throws CoreException{
+		Assert.isNotNull(project);
+		HybridProject hybridProject = HybridProject.getHybridProject(project);
+		FileOverwriteCallback cb = new FileOverwriteCallback() {
+			@Override
+			public boolean isOverwiteAllowed(String[] files) {
+				return true;
+			}
+		};
+		CordovaPluginManager pm = new CordovaPluginManager(hybridProject);
+		switch (pageThree.getPluginSourceType()){
+		case PLUGIN_SOURCE_DIRECTORY:
+			File directory = new File(pageThree.getSelectedDirectory());
+			pm.installPlugin(directory,cb, monitor);
+			break;
+		case PLUGIN_SOURCE_GIT:
+			URI uri = URI.create(pageThree.getSpecifiedGitURL());
+			pm.installPlugin(uri,null,null,cb,monitor );
+			break;
+		case PLUGIN_SOURCE_REGISTRY:
+			List<CordovaRegistryPluginVersion> plugins = pageFour.getSelectedPluginVersions();
+			CordovaPluginRegistryManager regMgr = new CordovaPluginRegistryManager(CordovaPluginRegistryManager.DEFAULT_REGISTRY_URL);
+			for (CordovaRegistryPluginVersion cordovaRegistryPluginVersion : plugins) {
+				pm.installPlugin(regMgr.getInstallationDirectory(cordovaRegistryPluginVersion,monitor),cb,monitor);
+			}
+			break;
+		default:
+			Assert.isTrue(false, "No valid plugin source can be determined");
+			break;
+		}
+
 	}
 	
 	private void openAndSelectConfigFile(IProject project){

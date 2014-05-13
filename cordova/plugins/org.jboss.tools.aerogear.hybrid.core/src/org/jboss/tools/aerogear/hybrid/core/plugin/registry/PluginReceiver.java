@@ -53,16 +53,19 @@ public class PluginReceiver implements IFileTransferListener{
 		 }else if(event instanceof IIncomingFileTransferReceiveDataEvent){
 			 IIncomingFileTransferReceiveDataEvent dataEvent = (IIncomingFileTransferReceiveDataEvent) event;
 			 int completed = (int) (dataEvent.getSource().getPercentComplete() *100);
-			 monitor.worked((percentComplete - completed));
+//			 monitor.worked((percentComplete - completed));
 			 percentComplete = completed;
 		 }else if(event instanceof IIncomingFileTransferReceiveDoneEvent ){
 			 try {
 				 IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) event;
 				 Exception ex = doneEvent.getException();
+				 
 				 if(ex == null){
-			
 					FileUtils.untarFile(tarFile, cacheDirectory);
+				 }else{
+					 ex.printStackTrace();
 				 }
+				 
 			 }catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

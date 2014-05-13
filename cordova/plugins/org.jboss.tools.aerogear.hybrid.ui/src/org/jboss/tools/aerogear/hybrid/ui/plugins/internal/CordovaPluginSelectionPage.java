@@ -75,9 +75,9 @@ import org.jboss.tools.aerogear.hybrid.ui.wizard.export.DirectorySelectionGroup;
  */
 public class CordovaPluginSelectionPage extends WizardPage {
 
-	static final int PLUGIN_SOURCE_REGISTRY =1;
-	static final int PLUGIN_SOURCE_GIT =2;
-	static final int PLUGIN_SOURCE_DIRECTORY =3;
+	public static final int PLUGIN_SOURCE_REGISTRY =1;
+	public static final int PLUGIN_SOURCE_GIT =2;
+	public static final int PLUGIN_SOURCE_DIRECTORY =3;
 	private static final String PAGE_NAME = "Cordova Plug-in Selection Page";
 	private static final String PAGE_TITLE = "Install Cordova Plug-in";
 	private static final String PAGE_DESCRIPTION = "Discover and Install Cordova Plug-ins";
