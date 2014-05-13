@@ -211,7 +211,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	@Override
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
-		if(visible){
+		if(visible && cordovaPluginInfos == null){
 			Display.getCurrent().asyncExec(new Runnable() {
 				@Override
 				public void run() {
