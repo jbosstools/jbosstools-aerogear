@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -162,21 +163,27 @@ public class CordovaPluginCatalogViewer extends FilteredViewer {
 	
 	private void updateInstalledPluginsFilter(){
 		if(( style & FILTER_INSTALLED) == 0 ) return;
-		if( showInstalledBtn.getSelection() ){
-			if(installedPluginsFilter != null ){
-			getViewer().removeFilter(installedPluginsFilter);
-			installedPluginsFilter = null;
+		BusyIndicator.showWhile(this.getControl().getDisplay(), new Runnable() {
+			
+			@Override
+			public void run() {
+				if( showInstalledBtn.getSelection() ){
+					if(installedPluginsFilter != null ){
+						getViewer().removeFilter(installedPluginsFilter);
+						installedPluginsFilter = null;
+					}
+				}else{
+					if(installedPluginsFilter == null ){
+						installedPluginsFilter = new InstalledPluginFilter();
+						installedPluginsFilter.setProject(project);
+						getViewer().addFilter(installedPluginsFilter);
+					}else{
+						installedPluginsFilter.setProject(project);
+						getViewer().refresh();
+					}
+				}
 			}
-		}else{
-			if(installedPluginsFilter == null ){
-				installedPluginsFilter = new InstalledPluginFilter();
-				installedPluginsFilter.setProject(project);
-				getViewer().addFilter(installedPluginsFilter);
-			}else{
-				installedPluginsFilter.setProject(project);
-				getViewer().refresh();
-			}
-		}
+		});
 	}
 
 }

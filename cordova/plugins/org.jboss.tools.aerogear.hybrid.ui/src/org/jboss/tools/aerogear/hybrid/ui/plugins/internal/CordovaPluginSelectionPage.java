@@ -39,6 +39,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -282,14 +283,19 @@ public class CordovaPluginSelectionPage extends WizardPage {
 						throw new InvocationTargetException(e);
 					}
 					final Object[] pluginInfos = cordovaPluginInfos.toArray();
-					Display display = getControl().getDisplay();
+					final Display display = getControl().getDisplay();
 					display.syncExec(new Runnable() {
-						@SuppressWarnings("restriction")
 						@Override
 						public void run() {
-							if(!getControl().isDisposed() && isCurrentPage()){
-								catalogViewer.getViewer().setInput(pluginInfos);
-							}
+							BusyIndicator.showWhile(display, new Runnable() {
+								@SuppressWarnings("restriction")
+								@Override
+								public void run() {
+									if(!getControl().isDisposed() && isCurrentPage()){
+										catalogViewer.getViewer().setInput(pluginInfos);
+									}
+								}
+							});
 						}
 					});
 				}
