@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.plugins.inappbrowser;
+package org.jboss.tools.vpe.cordovasim.plugin.inappbrowser;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.LocationEvent;

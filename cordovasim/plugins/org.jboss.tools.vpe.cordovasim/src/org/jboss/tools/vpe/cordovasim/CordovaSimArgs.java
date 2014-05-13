@@ -11,23 +11,21 @@
 package org.jboss.tools.vpe.cordovasim;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
-import org.jboss.tools.vpe.browsersim.BrowserSimLogger;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
  */
 public class CordovaSimArgs {
-	private static final int DEFAULT_PORT = 0;// any free port
-	
 	private static String rootFolder;
-	private static String startPage;
-	private static String cordovaEngineLocation;
+	private static String homeUrl;
 	private static String cordovaVersion;
 	private static int port;
 	private static boolean restartRequired;
@@ -48,36 +46,20 @@ public class CordovaSimArgs {
 		} else {
 			cordovaVersion = "3.1.0";  //$NON-NLS-1$ Using cordova-3.1.0.js
 		}
-
-		int engineParameterIndex = params.indexOf("-engine"); //$NON-NLS-1$
-		if (engineParameterIndex >= 0) {
-			params.remove(engineParameterIndex);
-			cordovaEngineLocation = params.remove(engineParameterIndex);
-		} else {
-			cordovaEngineLocation = null;
-		}
-		
-		int portParameterIndex = params.indexOf("-port"); //$NON-NLS-1$
-		if (portParameterIndex >= 0) {
-			params.remove(portParameterIndex);
+				
+		if (params.size() > 0) {
+			homeUrl = params.remove(params.size() - 1); // the parameter before the last one 	
 			try {
-				port = Integer.parseInt(params.remove(portParameterIndex));
-			} catch (NumberFormatException e) {
-				BrowserSimLogger.logError("Incorrect port value", e); //$NON-NLS-1$
-				port = DEFAULT_PORT;
+				port = getPortFromURL(homeUrl);
+			} catch (MalformedURLException e) {
+				CordovaSimLogger.logError(e.getMessage(), e);
 			}
 		} else {
-			port = DEFAULT_PORT;
+			homeUrl = ""; //$NON-NLS-1$
 		}
 		
 		if (params.size() > 0) {
-			startPage = params.remove(params.size() - 1); // the last parameter
-		} else {
-			startPage = ""; //$NON-NLS-1$
-		}
-		
-		if (params.size() > 0) {
-			rootFolder = params.remove(params.size() - 1); // the parameter before the last one
+			rootFolder = params.remove(params.size() - 1); // the last parameter
 		} else {
 			rootFolder = "."; //$NON-NLS-1$
 		}
@@ -95,32 +77,30 @@ public class CordovaSimArgs {
 		return rootFolder;
 	}
 
-	public static String getStartPage() {
-		return startPage;
-	}
 
 	public static int getPort() {
 		return port;
 	}
-	
-	public static String getCordovaEngineLocation() {
-		return cordovaEngineLocation;
-	}
-	
+		
 	public static String getCordovaVersion() {
 		return cordovaVersion;
 	}
 	
-	public static void setPort(int port) {
-		CordovaSimArgs.port = port;
-	}
-
 	public static boolean isRestartRequired() {
 		return restartRequired;
 	}
 
 	public static void setRestartRequired(boolean restartRequired) {
 		CordovaSimArgs.restartRequired = restartRequired;
+	}
+
+	public static String getHomeUrl() {
+		return homeUrl;
+	}
+	
+	private static int getPortFromURL(String homeUrl) throws MalformedURLException {
+		URL url = new URL(homeUrl);
+		return url.getPort();
 	}
 
 }

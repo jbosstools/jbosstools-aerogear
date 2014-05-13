@@ -29,6 +29,7 @@ public class Messages extends NLS {
 	public static String CordovaSimLaunchParametersUtil_INVALID_PORT;
 	public static String CordovaSimLaunchParametersUtil_INVALID_ROOT_FOLDER_PATH;
 	public static String CordovaSimLaunchParametersUtil_INVALID_START_PAGE_PATH;
+	public static String ExceptionNotifier_PORT_IN_USE;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

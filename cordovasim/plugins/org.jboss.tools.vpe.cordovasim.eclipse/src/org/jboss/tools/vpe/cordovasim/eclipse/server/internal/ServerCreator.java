@@ -2,11 +2,17 @@ package org.jboss.tools.vpe.cordovasim.eclipse.server.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
 import org.eclipse.jetty.rewrite.handler.Rule;
 import org.eclipse.jetty.server.Handler;
@@ -19,6 +25,7 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jboss.tools.vpe.browsersim.eclipse.Activator;
 import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.CordovaFileUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CordovaJsServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CordovaPluginJsServlet;
@@ -29,6 +36,8 @@ import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.NotCachingResourc
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.PluginServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.StaticResponseServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.UploadFileServlet;
+import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.WorkspaceFileServlet;
+import org.osgi.framework.Bundle;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -37,12 +46,15 @@ import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.UploadFileServlet
 public class ServerCreator {	
 
 	@SuppressWarnings("nls")
-	public static Server createServer(final String resourceBase, String cordovaEngineLocation, int port) {
+	public static Server createServer(final IProject project, final IContainer resourceBase, String cordovaEngineLocation, Integer port) {
 		Server server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setReuseAddress(false);
 		connector.setSoLingerTime(0);  // Linux keeps the port blocked without this line
+		
+		port = (port != null) ? port : 0; // If port is undefined use any free port
 		connector.setPort(port);
+		
 		connector.setHost("localhost"); 
 		server.addConnector(connector);
 				
@@ -71,28 +83,35 @@ public class ServerCreator {
 		ResourceHandler rippleResourceHandler = new ResourceHandler();
 		rippleResourceHandler.setDirectoriesListed(true);
 		rippleResourceHandler.setWelcomeFiles(new String[] { "index.html" }); 
-		String ripplePath = ServerCreator.class.getClassLoader().getResource("ripple").toExternalForm(); 
+				
+		String ripplePath = getRippleResoursePath("ripple"); 
 		rippleResourceHandler.setResourceBase(ripplePath);
 		ContextHandler rippleContextHandler = new ContextHandler("/ripple/assets");
 		rippleContextHandler.setHandler(rippleResourceHandler);
 		
 		ResourceHandler cordovaResourceHandler = new NotCachingResourceHandler();
-		String cordovaPath = ServerCreator.class.getClassLoader().getResource("ripple/cordova").toExternalForm(); 
+		String cordovaPath = getRippleResoursePath("ripple/cordova");
 		cordovaResourceHandler.setResourceBase(cordovaPath);
 		ContextHandler cordovaContextHandler = new ContextHandler("/ripple/cordova");
 		cordovaContextHandler.setHandler(cordovaResourceHandler);
 		
+		String resourseLocation = resourceBase.getRawLocation().makeAbsolute().toOSString();
 		ResourceHandler wwwResourceHandler = new NotCachingResourceHandler();
 		wwwResourceHandler.setDirectoriesListed(true);
-		wwwResourceHandler.setResourceBase(resourceBase);
+		wwwResourceHandler.setResourceBase(resourseLocation);
 		ContextHandler wwwContextHandler = new ContextHandler("/"); 
 		wwwContextHandler.setHandler(wwwResourceHandler);
 		
+		String workspaceResoureLocation = "/" + project.getName() + "/" + resourceBase.getProjectRelativePath().toOSString();
+		ServletHolder workspaceServletHolder = new ServletHolder(new WorkspaceFileServlet(workspaceResoureLocation));
+		ServletHandler workspaceServletHandler = new ServletHandler();
+		workspaceServletHandler.addServletWithMapping(workspaceServletHolder, "/*");
+						
 		ServletHolder cordovaJsServletHolder = new ServletHolder(new CordovaJsServlet(cordovaEngineLocation));
 		ServletHandler cordovaJsServetHandler = new ServletHandler();
 		cordovaJsServetHandler.addServletWithMapping(cordovaJsServletHolder, "/cordova.js"); 
 		
-		File pluginDir = CordovaFileUtil.getPluginDir(resourceBase); 
+		File pluginDir = CordovaFileUtil.getPluginDir(resourseLocation); 
 		ServletHolder cordovaPluginJsServletHolder = new ServletHolder(new CordovaPluginJsServlet(pluginDir));
 		ServletHandler cordovaPluginJsServetHandler = new ServletHandler();
 		cordovaPluginJsServetHandler.addServletWithMapping(cordovaPluginJsServletHolder, "/cordova_plugins.js"); 
@@ -121,7 +140,7 @@ public class ServerCreator {
 		handlers.setHandlers(new Handler[] {
 				userAgentServletHandler,
 				rippleRewriteHandler,
-				wwwContextHandler,
+				wwwResourceHandler,
 				cordovaJsServetHandler,
 				cordovaPluginJsServetHandler,
 				cordovaContextHandler,
@@ -130,10 +149,29 @@ public class ServerCreator {
 				fileUploadContextHandler,
 				hostFileServletHandler,
 				formatDataServletHandler,
+				workspaceServletHandler,
 				new DefaultHandler()
 			});
 		server.setHandler(handlers);
 		return server;
+	}
+	
+	private static String getRippleResoursePath(String relativePath) {
+		String ripplePath = null;
+		Bundle bundle = Platform.getBundle("org.jboss.tools.vpe.cordovasim.ripple"); //$NON-NLS-1$
+		URL fileURL = bundle.getEntry(relativePath); 
+		try {
+			File file = new File(FileLocator.resolve(fileURL).toURI());
+			if (file != null && file.exists()) {
+				ripplePath = file.getAbsolutePath();				
+			}
+		} catch (URISyntaxException e) {
+			Activator.logError(e.getMessage(), e);
+		} catch (IOException e) {
+			Activator.logError(e.getMessage(), e);
+		}
+		
+		return ripplePath;
 	}
 	
 }

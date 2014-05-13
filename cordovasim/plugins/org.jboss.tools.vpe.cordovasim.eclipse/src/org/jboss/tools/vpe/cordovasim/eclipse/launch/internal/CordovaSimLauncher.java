@@ -11,6 +11,8 @@
 package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
 
 import java.io.File;
+import java.net.BindException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,12 +22,15 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.cordavasim.eclipse.callbacks.CordovaSimRestartCallback;
+import org.jboss.tools.cordavasim.eclipse.callbacks.StopServerCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.Activator;
 import org.jboss.tools.vpe.browsersim.eclipse.callbacks.OpenFileCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.callbacks.ViewSourceCallback;
@@ -33,18 +38,22 @@ import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.preferences.BrowserSimPreferencesPage;
+import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.server.internal.ServerCreator;
 
 /**
  * @author "Yahor Radtsevich (yradtsevich)"
  * @author "Ilya Buziuk (ibuziuk)"
  */
 public class CordovaSimLauncher {
+	private static Server server;
 	public static final String CORDOVASIM_CLASS_NAME = "org.jboss.tools.vpe.cordovasim.CordovaSimRunner"; //$NON-NLS-1$
 	private static final List<ExternalProcessCallback> CORDOVASIM_CALLBACKS = Arrays.asList(
 			new ViewSourceCallback(),
 			new OpenFileCallback(),
-			new CordovaSimRestartCallback()
+			new CordovaSimRestartCallback(),
+			new StopServerCallback()
 		);
 
 
@@ -89,26 +98,38 @@ public class CordovaSimLauncher {
 			}
 		}
 		
-		if (rootFolder != null && actualStartPageString != null) {
-			parameters.add(rootFolder.getLocation().toString());
-			parameters.add(actualStartPageString);
-			
-			if (port != null) {
-				parameters.add("-port"); //$NON-NLS-1$
-				parameters.add(String.valueOf(port));
+		if (rootFolder != null && actualStartPageString != null) {		
+			try {
+				startServer(project, rootFolder, cordovaEngineLocation, port);
+				Connector connector = server.getConnectors()[0];
+				port = connector.getLocalPort(); // for the case if port equals 0 is requested (any free port)
+				
+				parameters.add(rootFolder.getRawLocation().makeAbsolute().toString());
+				parameters.add("http://localhost:" + port + "/" + actualStartPageString); //$NON-NLS-1$ //$NON-NLS-2$
+				
+				if (cordovaVersion != null) {
+					parameters.add("-version"); //$NON-NLS-1$
+					parameters.add(cordovaVersion);
+				}
+				
+				launchCordovaSim(parameters);
+			} catch (BindException e) {
+				Activator.logError(e.getMessage(), e);
+				try {
+					showPortInUseMessage(port);
+				} catch (Exception e1) {
+					Activator.logError(e1.getMessage(), e1);
+				} finally {
+					try {
+						server.stop();
+						server.join();
+					} catch (Exception e1) {
+						Activator.logError(e1.getMessage(), e);
+					}
+				}
+			} catch (Exception e) {
+				Activator.logError(e.getMessage(), e);
 			}
-			
-			if (cordovaEngineLocation != null) {
-				parameters.add("-engine"); //$NON-NLS-1$
-				parameters.add(cordovaEngineLocation);
-			}
-			
-			if (cordovaVersion != null) {
-				parameters.add("-version"); //$NON-NLS-1$
-				parameters.add(cordovaVersion);
-			}
-
-			launchCordovaSim(parameters);
 		} else {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
@@ -165,4 +186,29 @@ public class CordovaSimLauncher {
 		ExternalProcessLauncher.launchAsExternalProcess(bundles, RESOURCES_BUNDLES,
 				CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM, jvm);
 	}
+
+	public static Server getServer() {
+		return server;
+	}
+	
+	private static void startServer(IProject project, IContainer rootFolder, String cordovaEngineLocation, Integer port)
+			throws Exception {
+		server = ServerCreator.createServer(project, rootFolder, cordovaEngineLocation, port);
+		server.start();
+	}
+	
+	private static void showPortInUseMessage(final Integer port) throws Exception {
+		final Display display = Display.getDefault();
+		display.asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				Shell shell = new Shell(display);
+				String message = MessageFormat.format(Messages.ExceptionNotifier_PORT_IN_USE, port);
+				ExceptionNotifier.showErrorMessage(shell, message);
+				shell.dispose();
+			}
+		});
+	}
+	
 }

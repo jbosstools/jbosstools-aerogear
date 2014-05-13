@@ -18,7 +18,6 @@ import org.jboss.tools.vpe.browsersim.util.NLS;
 public class Messages {
 	private static final String BUNDLE_NAME = Messages.class.getName().toString().toLowerCase();
 
-	public static String ExceptionNotifier_PORT_IN_USE;
 	public static String CordovaSim_CORDOVA_SIM;
 
 	static {
