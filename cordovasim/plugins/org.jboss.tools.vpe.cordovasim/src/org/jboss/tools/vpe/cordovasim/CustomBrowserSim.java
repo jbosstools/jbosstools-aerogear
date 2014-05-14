@@ -59,31 +59,24 @@ public class CustomBrowserSim extends BrowserSim {
 	@Override
 	@SuppressWarnings("nls")
 	protected void setSelectedDevice(final Boolean refreshRequired) {
-		boolean needToChangeEngine = (skin.getBrowser() instanceof JavaFXBrowser && !getSpecificPreferences().isJavaFx())
-								  || (!(skin.getBrowser() instanceof JavaFXBrowser) && getSpecificPreferences().isJavaFx());
-		if (needToChangeEngine) {
-			final Shell shell = rippleToolSuiteBrowser.getShell();
-			CordovaSimArgs.setRestartRequired(true);
-			shell.close();
-			shell.dispose();
-		} else {
-			String currentOs = PlatformUtil.getOs();
-			
-			// JBIDE-16060 this solution works for mac os and linux (both ubuntu and fedora)
-			if (inAppBrowser != null && refreshRequired == null) {
-				// Not execute that script only for SWT Browser on Windows
-				if (!(PlatformUtil.OS_WIN32.equals(currentOs) && !(inAppBrowser instanceof JavaFXBrowser))) {
-					rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()"); 
-				}
+		String currentOs = PlatformUtil.getOs();
+
+		// JBIDE-16060 this solution works for mac os and linux (both ubuntu and fedora)
+		if (inAppBrowser != null && refreshRequired == null) {
+			// Not execute that script only for SWT Browser on Windows
+			if (!(PlatformUtil.OS_WIN32.equals(currentOs) && !(inAppBrowser instanceof JavaFXBrowser))) {
+				rippleToolSuiteBrowser
+						.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').close();})()");
 			}
-			
-			super.setSelectedDevice(refreshRequired);
-			
-			// Workaround for windows SWT Browser - preventing permanent crashes after skin changing 
-			if (PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && !(inAppBrowser instanceof JavaFXBrowser) && refreshRequired == null) {
-				this.inAppBrowser = null;
-				rippleToolSuiteBrowser.refresh();
-			}
+		}
+
+		super.setSelectedDevice(refreshRequired);
+
+		// Workaround for windows SWT Browser - preventing permanent crashes after skin changing
+		if (PlatformUtil.OS_WIN32.equals(currentOs) && inAppBrowser != null && !(inAppBrowser instanceof JavaFXBrowser)
+				&& refreshRequired == null) {
+			this.inAppBrowser = null;
+			rippleToolSuiteBrowser.refresh();
 		}
 	}
 	

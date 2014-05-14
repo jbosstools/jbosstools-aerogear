@@ -96,7 +96,6 @@ public class CordovaSimRunner {
 				throw new SWTError(org.jboss.tools.vpe.browsersim.ui.Messages.BrowserSim_NO_WEB_ENGINES);
 			}
 			Shell shell = createCordovaSim(display);
-			CordovaSimArgs.setRestartRequired(false);
 			while (!shell.isDisposed()) {
 				if (!shell.getDisplay().readAndDispatch())
 					shell.getDisplay().sleep();
@@ -106,10 +105,9 @@ public class CordovaSimRunner {
 		} catch (Throwable t) {
 			CordovaSimLogger.logError(t.getMessage(), t);
 		} finally {
-			if (CordovaSimArgs.isRestartRequired()) {
-				startCordovaSim();
+			if (!CordovaSimArgs.isRestartRequired()) { 
+				sendStopServerCommand(); // If no need to restart CS with a new engine - stop the server
 			} else {
-				sendStopServerCommand();
 				if (display != null) {
 					display.dispose();
 				}
