@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.ExternalProcessUtility;
-import org.jboss.tools.aerogear.hybrid.core.internal.util.FileUtils;
 import org.jboss.tools.aerogear.hybrid.ios.core.IOSCore;
 import org.osgi.framework.Bundle;
 /**
@@ -32,9 +31,11 @@ import org.osgi.framework.Bundle;
  */
 public class IOSSimulator {
 
+	private static boolean iosSimCopied =false;
 	private File iosSim;
 	private boolean tall;
 	private boolean retina;
+	private boolean is64bit;
 	private String family;
 	private String[] environment;
 	private String pathToBinary;
@@ -46,8 +47,9 @@ public class IOSSimulator {
 			File bundleDataDirectory = bundle.getDataFile("/");			
 			iosSim = new File(bundleDataDirectory, "ios-sim");
 			URL iosSimBinary = bundle.getEntry("/ios-sim");
-			if (!iosSim.exists() || FileUtils.isNewer(iosSimBinary, FileUtils.toURL(iosSim))) {// Copied earlier
+			if(!iosSimCopied){
 				directoryCopy(iosSimBinary,toURL( bundleDataDirectory));
+				iosSimCopied = true;
 			}
 			if (iosSim.exists() && !iosSim.canExecute()){
 				iosSim.setExecutable(true, false);
@@ -78,6 +80,9 @@ public class IOSSimulator {
 		if(tall){
 			cmdLine.append(" --tall");
 		}
+		if(is64bit){
+			cmdLine.append(" --64bit");
+		}
 		ExternalProcessUtility processUtility = new ExternalProcessUtility();
 		processUtility.execAsync(cmdLine.toString(), iosSim.getParentFile(), null, null,environment);
 	}
@@ -88,6 +93,10 @@ public class IOSSimulator {
 
 	public void setRetina(boolean retina) {
 		this.retina = retina;
+	}
+	
+	public void set64bit(boolean setbit){
+		this.is64bit = setbit;
 	}
 
 	public void setFamily(String family) {
@@ -101,6 +110,7 @@ public class IOSSimulator {
 	private CoreException newException(int severity, String message ){
 		return new CoreException(new Status(severity,IOSCore.PLUGIN_ID,message));
 	}
+	
 	/**
 	 * The environment variables set in the process
 	 * @param envp

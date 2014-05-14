@@ -33,6 +33,11 @@ public interface IOSSimulatorLaunchConstants {
 	 * Attribute to enable retina display or not for the simulator
 	 */
 	public static final String ATTR_USE_RETINA = IOSCore.PLUGIN_ID + ".ATTR_USE_RETINA";
+
+	/**
+	 * Attribute to enable 64 bit device or not for the simulator
+	 */
+	public static final String ATTR_USE_64BIT = IOSCore.PLUGIN_ID + ".ATTR_USE_64BIT";
 	
 	/**
 	 * Attribute to use taller device skin

@@ -13,6 +13,7 @@ package org.jboss.tools.aerogear.hybrid.ios.core.simulator;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_DEVICE_FAMILY;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_RETINA;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_TALL;
+import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_64BIT;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.VAL_DEVICE_FAMILY_IPHONE;
 
 import java.io.File;
@@ -61,6 +62,7 @@ public class IOSSimulatorLaunchDelegate implements
 		simulator.setFamily(configuration.getAttribute(ATTR_DEVICE_FAMILY, VAL_DEVICE_FAMILY_IPHONE));
 		simulator.setRetina(configuration.getAttribute(ATTR_USE_RETINA, false));
 		simulator.setTall(configuration.getAttribute(ATTR_USE_TALL, false));
+		simulator.set64bit(configuration.getAttribute(ATTR_USE_64BIT, false));
 	
 		String[] envp = DebugPlugin.getDefault().getLaunchManager()
 				.getEnvironment(configuration);

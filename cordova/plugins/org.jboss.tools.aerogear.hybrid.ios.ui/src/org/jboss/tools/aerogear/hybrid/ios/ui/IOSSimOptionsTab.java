@@ -15,6 +15,7 @@ import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLau
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_SIMULATOR_SDK_VERSION;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_RETINA;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_TALL;
+import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.ATTR_USE_64BIT;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.VAL_DEVICE_FAMILY_IPAD;
 import static org.jboss.tools.aerogear.hybrid.ios.core.simulator.IOSSimulatorLaunchConstants.VAL_DEVICE_FAMILY_IPHONE;
 
@@ -27,6 +28,8 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.IDebugUIConstants;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -61,6 +64,7 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 	private Button btnTall;
 	private Combo comboSDKVer;
 	private ComboViewer comboViewer;
+	private Button btn64Bit;
 	
 	private class DirtyListener implements Listener{
 		@Override
@@ -176,13 +180,22 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		comboDeviceFamily.select(0);
 		comboDeviceFamily.addListener(SWT.Selection, dirtyFlagListener);
 		
-		btnCheckRetina = new Button(grpSimulator, SWT.CHECK);
+		Composite optionsComposite = new Composite(grpSimulator, SWT.NULL);
+		GridDataFactory.fillDefaults().span(2, 1).align(SWT.FILL, SWT.FILL).applyTo(optionsComposite);
+		GridLayoutFactory.fillDefaults().numColumns(3).applyTo(optionsComposite);
+		
+		
+		btnCheckRetina = new Button(optionsComposite, SWT.CHECK);
 		btnCheckRetina.setText("Retina");
 		btnCheckRetina.addListener(SWT.Selection, dirtyFlagListener);
 		
-		btnTall = new Button(grpSimulator, SWT.CHECK);
+		btnTall = new Button(optionsComposite, SWT.CHECK);
 		btnTall.setText("Tall");
 		btnTall.addListener(SWT.Selection, dirtyFlagListener);
+		
+		btn64Bit = new Button(optionsComposite, SWT.CHECK);
+		btn64Bit.setText("64 bit");
+		btn64Bit.addListener(SWT.Selection, dirtyFlagListener);
 		
 	}
 
@@ -241,7 +254,13 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		}catch(CoreException e){
 			
 		}
+
+		try{
+			btn64Bit.setSelection(configuration.getAttribute(ATTR_USE_64BIT, false));
+		}catch(CoreException e){
 			
+		}
+				
 		setDirty(false);
 	}
 
@@ -251,6 +270,7 @@ public class IOSSimOptionsTab extends AbstractLaunchConfigurationTab {
 		configuration.setAttribute(ATTR_DEVICE_FAMILY, comboDeviceFamily.getText());
 		configuration.setAttribute(ATTR_USE_RETINA, btnCheckRetina.getSelection() );
 		configuration.setAttribute(ATTR_USE_TALL, btnTall.getSelection());
+		configuration.setAttribute(ATTR_USE_64BIT, btn64Bit.getSelection());
 		IStructuredSelection selection = (IStructuredSelection) comboViewer.getSelection();
 		if(!selection.isEmpty()){
 			XCodeSDK selectedSDK = (XCodeSDK) selection.getFirstElement();
