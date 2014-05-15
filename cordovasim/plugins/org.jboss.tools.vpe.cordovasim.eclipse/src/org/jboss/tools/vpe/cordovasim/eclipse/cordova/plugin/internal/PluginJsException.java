@@ -8,22 +8,29 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim;
-
-import org.jboss.tools.vpe.browsersim.util.NLS;
+package org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class Messages {
-	private static final String BUNDLE_NAME = Messages.class.getName().toString().toLowerCase();
+public class PluginJsException extends Exception {
 
-	public static String CordovaSim_CORDOVA_SIM;
+	private static final long serialVersionUID = 1L;
 
-	static {
-		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	public PluginJsException() {
+		super();
 	}
 
-	private Messages() {
+	public PluginJsException(String message, Throwable cause) {
+		super(message, cause);
 	}
+
+	public PluginJsException(String message) {
+		super(message);
+	}
+
+	public PluginJsException(Throwable cause) {
+		super(cause);
+	}
+
 }

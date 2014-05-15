@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Copyright (c) 2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,22 +8,25 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim;
+package org.jboss.tools.vpe.cordovasim.eclipse.server.internal;
 
-import org.jboss.tools.vpe.browsersim.util.NLS;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jetty.server.Server;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class Messages {
-	private static final String BUNDLE_NAME = Messages.class.getName().toString().toLowerCase();
-
-	public static String CordovaSim_CORDOVA_SIM;
-
-	static {
-		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+public final class ServerStorage {
+	private ServerStorage() {
 	}
 
-	private Messages() {
+	private static final Map<Integer, Server> INSTANCE = Collections.synchronizedMap(new HashMap<Integer, Server>());
+
+	public static Map<Integer, Server> getStorage() {
+		return INSTANCE;
 	}
+
 }

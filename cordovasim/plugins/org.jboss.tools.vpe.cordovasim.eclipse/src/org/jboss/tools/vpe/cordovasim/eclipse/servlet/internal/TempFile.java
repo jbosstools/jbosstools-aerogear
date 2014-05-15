@@ -8,22 +8,34 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim;
+package org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal;
 
-import org.jboss.tools.vpe.browsersim.util.NLS;
+import java.io.File;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class Messages {
-	private static final String BUNDLE_NAME = Messages.class.getName().toString().toLowerCase();
+public class TempFile {
+	private File file;
+	private String mimeType;
 
-	public static String CordovaSim_CORDOVA_SIM;
-
-	static {
-		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	public TempFile() {
 	}
 
-	private Messages() {
+	public String getMimeType() {
+		return mimeType;
 	}
+
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
 }

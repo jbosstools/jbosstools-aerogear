@@ -8,22 +8,21 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim;
+package org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal;
 
-import org.jboss.tools.vpe.browsersim.util.NLS;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class Messages {
-	private static final String BUNDLE_NAME = Messages.class.getName().toString().toLowerCase();
+public class TempFileStorage {
+	private static final Map<String, TempFile> TEMP_FILE_STORAGE = new ConcurrentHashMap<String, TempFile>();
 
-	public static String CordovaSim_CORDOVA_SIM;
-
-	static {
-		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	private TempFileStorage() {
 	}
 
-	private Messages() {
+	public static Map<String, TempFile> getTempFileStorage() {
+		return TEMP_FILE_STORAGE;
 	}
 }

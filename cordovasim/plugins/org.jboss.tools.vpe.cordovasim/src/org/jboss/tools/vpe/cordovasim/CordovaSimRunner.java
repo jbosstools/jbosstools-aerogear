@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2013 Red Hat, Inc.
+	 * Copyright (c) 2007-2013 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,11 +10,6 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
-import java.io.File;
-import java.net.BindException;
-import java.text.MessageFormat;
-
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -44,7 +39,7 @@ import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPreferencesStorage;
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
-import org.jboss.tools.vpe.cordovasim.plugins.inappbrowser.InAppBrowserLoader;
+import org.jboss.tools.vpe.cordovasim.plugin.inappbrowser.InAppBrowserLoader;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
 
 /**
@@ -53,10 +48,10 @@ import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
  */
 public class CordovaSimRunner {
 	public static final String PLUGIN_ID = "org.jboss.tools.vpe.cordovasim"; //$NON-NLS-1$
+	private static final String STOP_SERVER_COMMAND = "org.jboss.tools.vpe.cordavasim.command.stop.server:"; //$NON-NLS-1$
 	
 	private static CustomBrowserSim browserSim;
 	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-	private static Server server;	
 	private static boolean isJavaFxAvailable;
 	private static boolean isWebKitAvailable;
 	
@@ -101,36 +96,23 @@ public class CordovaSimRunner {
 				throw new SWTError(org.jboss.tools.vpe.browsersim.ui.Messages.BrowserSim_NO_WEB_ENGINES);
 			}
 			Shell shell = createCordovaSim(display);
-			CordovaSimArgs.setRestartRequired(false);
 			while (!shell.isDisposed()) {
 				if (!shell.getDisplay().readAndDispatch())
 					shell.getDisplay().sleep();
 			}
 		} catch (SWTError e) {
 			ExceptionNotifier.showBrowserSimLoadError(new Shell(Display.getDefault()), e, Messages.CordovaSim_CORDOVA_SIM);
-		} catch (BindException e) {
-			showPortInUseMessage(CordovaSimArgs.getPort());
 		} catch (Throwable t) {
 			CordovaSimLogger.logError(t.getMessage(), t);
 		} finally {
-			if (server != null) {
-				server.stop();
-				server.join();
-			}
-			if (CordovaSimArgs.isRestartRequired()) {
-				startCordovaSim();
-			} else if (display != null) {
-				display.dispose();
+			if (!CordovaSimArgs.isRestartRequired()) { 
+				sendStopServerCommand(); // If no need to restart CS with a new engine - stop the server
+			} else {
+				if (display != null) {
+					display.dispose();
+				}
 			}
 		}
-	}
-	
-	private static void showPortInUseMessage(int port) throws Exception {
-		Display display = Display.getDefault();
-		Shell shell = new Shell(display);
-		String message = MessageFormat.format(Messages.ExceptionNotifier_PORT_IN_USE, port);
-		ExceptionNotifier.showErrorMessage(shell, message);
-		display.dispose();
 	}
 
 	private static void createBrowserSim(final SpecificPreferences sp, final IBrowser rippleToolSuiteBrowser, final String homeUrl) {
@@ -181,14 +163,6 @@ public class CordovaSimRunner {
 	}
 	
 	private static Shell createCordovaSim(Display display) throws Exception {
-		File rootFolder = new File(CordovaSimArgs.getRootFolder());		
-
-		server = ServerCreator.createServer(rootFolder.getAbsolutePath(), CordovaSimArgs.getPort());// XXX
-		server.start();
-		Connector connector = server.getConnectors()[0];
-		int port = connector.getLocalPort(); // for the case if port equals 0 is requested (any free port)
-		CordovaSimArgs.setPort(port);
-
 		final CordovaSimSpecificPreferences sp = loadPreferences();
 		
 		if (PlatformUtil.OS_WIN32.equals(PlatformUtil.getOs()) && !BrowserSimUtil.isWindowsSwtWebkitInstalled()) {
@@ -206,7 +180,7 @@ public class CordovaSimRunner {
 		
 		
 		final IBrowser rippleToolSuiteBrowser = new WebKitBrowserFactory().createBrowser(shell, SWT.WEBKIT, sp.isJavaFx());
-		final String homeUrl = "http://localhost:" + port + "/" + CordovaSimArgs.getStartPage();  //$NON-NLS-1$ //$NON-NLS-2$
+		final String homeUrl = CordovaSimArgs.getHomeUrl();
 		rippleToolSuiteBrowser.setUrl(homeUrl + "?enableripple=true"); //$NON-NLS-1$
 		
 		shell.addListener(SWT.Close, new Listener() {
@@ -277,7 +251,11 @@ public class CordovaSimRunner {
 		});
 		
 		shell.open();
-
 		return shell;
 	}
+	
+	private static void sendStopServerCommand() {
+		System.out.println(STOP_SERVER_COMMAND + " Server on port " + CordovaSimArgs.getPort() + " was stopped"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
 }
