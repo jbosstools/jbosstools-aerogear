@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal;
+package org.jboss.tools.vpe.cordovasim.eclipse.internal.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+
+import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.Plugin;
 
 /**
  * @author Ilya Buziuk (ibuziuk)

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributor:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal;
 
 import java.io.BufferedInputStream;
@@ -14,6 +24,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.tools.vpe.browsersim.eclipse.Activator;
 
+/**
+ * @author Ilya Buziuk (ibuziuk)
+ */
 public class CordovaJsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB

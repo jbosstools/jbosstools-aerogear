@@ -36,9 +36,7 @@ public class CordovaSimArgs {
 		if (!BrowserSimArgs.standalone) {
 			params.remove(BrowserSimArgs.NOT_STANDALONE);
 		}
-	
-		restartRequired = false;
-		
+			
 		int versionParameterIndex = params.indexOf("-version"); //$NON-NLS-1$
 		if (versionParameterIndex >= 0) {
 			params.remove(versionParameterIndex);

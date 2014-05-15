@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal;
+package org.jboss.tools.vpe.cordovasim.eclipse.internal.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

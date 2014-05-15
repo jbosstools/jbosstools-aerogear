@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013-2014 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributor:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim.eclipse.server.internal;
 
 import java.io.File;
@@ -26,7 +36,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jboss.tools.vpe.browsersim.eclipse.Activator;
-import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.CordovaFileUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.CordovaFileUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CordovaJsServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CordovaPluginJsServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CrossOriginProxyServlet;
@@ -105,7 +115,7 @@ public class ServerCreator {
 		String workspaceResoureLocation = "/" + project.getName() + "/" + resourceBase.getProjectRelativePath().toOSString();
 		ServletHolder workspaceServletHolder = new ServletHolder(new WorkspaceFileServlet(workspaceResoureLocation));
 		ServletHandler workspaceServletHandler = new ServletHandler();
-		workspaceServletHandler.addServletWithMapping(workspaceServletHolder, "/*");
+		workspaceServletHandler.addServletWithMapping(workspaceServletHolder, "/");
 						
 		ServletHolder cordovaJsServletHolder = new ServletHolder(new CordovaJsServlet(cordovaEngineLocation));
 		ServletHandler cordovaJsServetHandler = new ServletHandler();

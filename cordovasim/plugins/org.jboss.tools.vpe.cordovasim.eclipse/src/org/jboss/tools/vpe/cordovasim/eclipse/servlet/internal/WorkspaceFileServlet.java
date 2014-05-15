@@ -12,6 +12,8 @@ package org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,7 +24,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.jboss.tools.vpe.browsersim.eclipse.Activator;
-import org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.ResourceUtils;
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.HttpUtils;
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.ResourceUtils;
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.ServletUtil;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
@@ -55,13 +59,12 @@ public class WorkspaceFileServlet extends HttpServlet {
 					httpServletResponse.getOutputStream().write(content);
 					httpServletResponse.setStatus(HttpServletResponse.SC_OK);
 					
-//					final Charset charset = HttpUtils.getContentCharSet(request.getHeader("accept"), workspaceFile.getCharset());
-//					String guessedContentType = URLConnection.guessContentTypeFromName(resource.getName());
-//					if(guessedContentType != null && !guessedContentType.contains("charset")) {
-//						guessedContentType = guessedContentType.concat("; charset=").concat(charset.name());
-//					}
-//					httpServletResponse.setContentType(guessedContentType);
-					// httpServletResponse.setContentType("text/javascript");
+					final Charset charset = HttpUtils.getContentCharSet(request.getHeader("accept"), workspaceFile.getCharset()); //$NON-NLS-1$
+					String guessedContentType = URLConnection.guessContentTypeFromName(resource.getName());
+					if(guessedContentType != null && !guessedContentType.contains("charset")) { //$NON-NLS-1$
+						guessedContentType = guessedContentType.concat("; charset=").concat(charset.name()); //$NON-NLS-1$
+					}
+					httpServletResponse.setContentType(guessedContentType);
 				} catch (CoreException e) {
 					Activator.logError(e.getMessage(), e);
 					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

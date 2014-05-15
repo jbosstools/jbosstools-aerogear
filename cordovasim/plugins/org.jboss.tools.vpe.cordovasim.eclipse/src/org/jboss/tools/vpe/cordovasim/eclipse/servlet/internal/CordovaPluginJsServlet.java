@@ -20,13 +20,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.tools.vpe.browsersim.eclipse.Activator;
-import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.CordovaFileUtil;
-import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.CordovaPluginXmlUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.Plugin;
 import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.PluginIdCache;
 import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.PluginJsException;
-
-
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.CordovaFileUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.CordovaPluginXmlUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.ServletUtil;
 
 /**
  * @author Ilya Buziuk (ibuziuk)

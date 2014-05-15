@@ -39,7 +39,8 @@ public class CordovaSimManageDeviceDialog extends ManageDevicesDialog {
 	@Override
 	protected void sendRestartCommand() {
 		CordovaSimArgs.setRestartRequired(true);
-		System.out.println(CORDOVASIM_RESTART_COMMAND + PARAMETER_DELIMITER + CordovaSimArgs.getRootFolder() + PARAMETER_DELIMITER  + CordovaSimArgs.getHomeUrl()  
-				+ PARAMETER_DELIMITER + "-version" + PARAMETER_DELIMITER + CordovaSimArgs.getCordovaVersion()); //$NON-NLS-1$		
+		System.out.println(CORDOVASIM_RESTART_COMMAND + PARAMETER_DELIMITER + CordovaSimArgs.getRootFolder()
+				+ PARAMETER_DELIMITER + CordovaSimArgs.getHomeUrl() + PARAMETER_DELIMITER
+				+ "-version" + PARAMETER_DELIMITER + CordovaSimArgs.getCordovaVersion()); //$NON-NLS-1$		
 	}
 }

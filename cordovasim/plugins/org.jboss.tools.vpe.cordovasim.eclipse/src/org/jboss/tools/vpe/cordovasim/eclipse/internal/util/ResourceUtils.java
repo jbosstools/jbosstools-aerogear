@@ -1,4 +1,4 @@
-package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
+package org.jboss.tools.vpe.cordovasim.eclipse.internal.util;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;

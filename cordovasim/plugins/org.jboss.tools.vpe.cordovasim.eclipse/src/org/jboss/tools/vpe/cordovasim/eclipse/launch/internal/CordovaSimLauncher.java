@@ -11,7 +11,6 @@
 package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
 
 import java.io.File;
-import java.net.BindException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,14 +39,16 @@ import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.preferences.BrowserSimPreferencesPage;
 import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.ServerUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.server.internal.ServerCreator;
+import org.jboss.tools.vpe.cordovasim.eclipse.server.internal.ServerStorage;
 
 /**
  * @author "Yahor Radtsevich (yradtsevich)"
  * @author "Ilya Buziuk (ibuziuk)"
  */
 public class CordovaSimLauncher {
-	private static Server server;
+
 	public static final String CORDOVASIM_CLASS_NAME = "org.jboss.tools.vpe.cordovasim.CordovaSimRunner"; //$NON-NLS-1$
 	private static final List<ExternalProcessCallback> CORDOVASIM_CALLBACKS = Arrays.asList(
 			new ViewSourceCallback(),
@@ -100,32 +101,25 @@ public class CordovaSimLauncher {
 		
 		if (rootFolder != null && actualStartPageString != null) {		
 			try {
-				startServer(project, rootFolder, cordovaEngineLocation, port);
-				Connector connector = server.getConnectors()[0];
-				port = connector.getLocalPort(); // for the case if port equals 0 is requested (any free port)
-				
-				parameters.add(rootFolder.getRawLocation().makeAbsolute().toString());
-				parameters.add("http://localhost:" + port + "/" + actualStartPageString); //$NON-NLS-1$ //$NON-NLS-2$
-				
-				if (cordovaVersion != null) {
-					parameters.add("-version"); //$NON-NLS-1$
-					parameters.add(cordovaVersion);
-				}
-				
-				launchCordovaSim(parameters);
-			} catch (BindException e) {
-				Activator.logError(e.getMessage(), e);
-				try {
-					showPortInUseMessage(port);
-				} catch (Exception e1) {
-					Activator.logError(e1.getMessage(), e1);
-				} finally {
-					try {
-						server.stop();
-						server.join();
-					} catch (Exception e1) {
-						Activator.logError(e1.getMessage(), e);
+				if (!ServerStorage.getStorage().containsKey(port) && ServerUtil.isPortAvailable(port)) {
+					Server server = ServerCreator.createServer(project, rootFolder, cordovaEngineLocation, port);
+					server.start();
+										
+					Connector connector = server.getConnectors()[0];
+					port = connector.getLocalPort(); // for the case if port equals 0 is requested (any free port)
+					
+					ServerStorage.getStorage().put(port, server); // Adding server to the ServerStorage
+					
+					parameters.add(rootFolder.getRawLocation().makeAbsolute().toString());
+					parameters.add("http://localhost:" + port + "/" + actualStartPageString); //$NON-NLS-1$ //$NON-NLS-2$
+					
+					if (cordovaVersion != null) {
+						parameters.add("-version"); //$NON-NLS-1$
+						parameters.add(cordovaVersion);
 					}
+					launchCordovaSim(parameters);
+				} else {
+					showPortInUseMessage(port);
 				}
 			} catch (Exception e) {
 				Activator.logError(e.getMessage(), e);
@@ -185,16 +179,6 @@ public class CordovaSimLauncher {
 		
 		ExternalProcessLauncher.launchAsExternalProcess(bundles, RESOURCES_BUNDLES,
 				CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM, jvm);
-	}
-
-	public static Server getServer() {
-		return server;
-	}
-	
-	private static void startServer(IProject project, IContainer rootFolder, String cordovaEngineLocation, Integer port)
-			throws Exception {
-		server = ServerCreator.createServer(project, rootFolder, cordovaEngineLocation, port);
-		server.start();
 	}
 	
 	private static void showPortInUseMessage(final Integer port) throws Exception {

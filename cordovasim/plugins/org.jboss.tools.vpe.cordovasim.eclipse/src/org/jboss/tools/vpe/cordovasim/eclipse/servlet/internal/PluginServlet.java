@@ -17,10 +17,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.CordovaFileUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.cordova.plugin.internal.PluginIdCache;
-
-
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.CordovaFileUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.ServletUtil;
 
 /**
  * @author Ilya Buziuk (ibuziuk)

@@ -255,7 +255,7 @@ public class CordovaSimRunner {
 	}
 	
 	private static void sendStopServerCommand() {
-		System.out.println(STOP_SERVER_COMMAND + " Server was stopped"); //$NON-NLS-1$
+		System.out.println(STOP_SERVER_COMMAND + " Server on port " + CordovaSimArgs.getPort() + " was stopped"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 }
