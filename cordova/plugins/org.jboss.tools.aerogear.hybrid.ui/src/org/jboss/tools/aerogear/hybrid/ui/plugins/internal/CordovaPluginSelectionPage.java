@@ -467,7 +467,7 @@ public class CordovaPluginSelectionPage extends WizardPage {
 			project = fixedProject;
 		}if(noProject) {
 			project = null;
-		}else{
+		}else if(project == null && textProject != null ){
 			project = HybridProject.getHybridProject(textProject.getText());
 		}
 		catalogViewer.setProject(project);
