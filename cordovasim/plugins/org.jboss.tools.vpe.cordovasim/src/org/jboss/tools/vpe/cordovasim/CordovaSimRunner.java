@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -64,7 +66,6 @@ public class CordovaSimRunner {
 	static { 
 		String platform = PlatformUtil.getOs();
 		isJavaFxAvailable = false;
-		isWebKitAvailable = true;
 		
 		boolean isLinux = PlatformUtil.OS_LINUX.equals(platform);
 		
@@ -72,12 +73,8 @@ public class CordovaSimRunner {
 		if (!(isLinux && !BrowserSimUtil.isRunningAgainstGTK2())) {
 			isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
 		}
-		
-		//check if AAS is installed on Windows
-		boolean isWindows = PlatformUtil.OS_WIN32.equals(platform);
-		if (isWindows && !BrowserSimUtil.isWindowsSwtWebkitInstalled()) {
-			isWebKitAvailable = false;
-		}
+
+		isWebKitAvailable = BrowserSimUtil.isWebkitAvailable();
 	}
 
 	/**
@@ -92,9 +89,21 @@ public class CordovaSimRunner {
 	private static void startCordovaSim() throws Exception {
 		Display display = Display.getDefault();
 		try {
-			if (!isWebKitAvailable && !isJavaFxAvailable) {
-				throw new SWTError(org.jboss.tools.vpe.browsersim.ui.Messages.BrowserSim_NO_WEB_ENGINES);
+			if (!isJavaFxAvailable && !isWebKitAvailable) {
+				String errorMessage = "";
+				String os = PlatformUtil.getOs();
+				if (PlatformUtil.OS_LINUX.equals(os)) {
+					errorMessage = MessageFormat.format(
+							org.jboss.tools.vpe.browsersim.ui.Messages.BrowserSim_NO_WEB_ENGINES_LINUX,
+							Messages.CordovaSim_CORDOVA_SIM);
+				} else if(PlatformUtil.OS_WIN32.equals(os)) {
+					errorMessage = MessageFormat.format(
+							org.jboss.tools.vpe.browsersim.ui.Messages.BrowserSim_NO_WEB_ENGINES_WINDOWS,
+							Messages.CordovaSim_CORDOVA_SIM);
+				}
+				throw new SWTError(errorMessage);
 			}
+			
 			Shell shell = createCordovaSim(display);
 			while (!shell.isDisposed()) {
 				if (!shell.getDisplay().readAndDispatch())
@@ -165,7 +174,7 @@ public class CordovaSimRunner {
 	private static Shell createCordovaSim(Display display) throws Exception {
 		final CordovaSimSpecificPreferences sp = loadPreferences();
 		
-		if (PlatformUtil.OS_WIN32.equals(PlatformUtil.getOs()) && !BrowserSimUtil.isWindowsSwtWebkitInstalled()) {
+		if (!isWebKitAvailable) {
 			if (isJavaFxAvailable) {
 				sp.setJavaFx(true);
 			}
