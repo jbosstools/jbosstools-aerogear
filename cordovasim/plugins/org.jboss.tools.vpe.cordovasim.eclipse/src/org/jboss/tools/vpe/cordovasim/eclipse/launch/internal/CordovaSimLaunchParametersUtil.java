@@ -87,6 +87,10 @@ public class CordovaSimLaunchParametersUtil {
 
 	public static IResource getStartPage(IContainer container, String path) {
 		if (container != null && path != null && path.length() > 0) {
+			int queryIndex = path.indexOf("?"); //$NON-NLS-1$ Processing query parameters
+			if (queryIndex > 0) {
+				path = path.substring(0, queryIndex);
+			}
 			return container.findMember(new Path(path));
 		}
 		return null;
@@ -102,6 +106,10 @@ public class CordovaSimLaunchParametersUtil {
 	
 	public static IResource validateAndGetStartPage(IContainer rootFolder, String startPageString)
 			throws CoreException {
+		int indexOfQueryParameter = startPageString.indexOf("?"); //$NON-NLS-1$
+		if (indexOfQueryParameter > 0) {
+			startPageString = startPageString.substring(0, indexOfQueryParameter);
+		}
 		IResource startPage = getStartPage(rootFolder, startPageString);
 		if (startPage == null || !startPage.exists()) {
 			throw new CoreException(createErrorStatus(Messages.CordovaSimLaunchParametersUtil_INVALID_START_PAGE_PATH)); 

@@ -149,7 +149,7 @@ public class CordovaSimLaunchConfigurationTab extends
 				IProject project = getSelectedProject();
 				IContainer rootFolder = getActualRootFolder(project);
 				if (useDefaultStartPage) {
-					setSelectedStartPage(project, rootFolder, null);
+					setSelectedStartPage(project, rootFolder, null, null);
 				} else {
 					startPageText.setEnabled(true);
 					startPageButton.setEnabled(true);
@@ -265,7 +265,7 @@ public class CordovaSimLaunchConfigurationTab extends
 		Object result = dialog.getFirstResult();
 		if (result instanceof IFile) {
 			IFile newStartPageFile = (IFile) result;
-			setSelectedStartPage(project, rootFolder, newStartPageFile);
+			setSelectedStartPage(project, rootFolder, newStartPageFile, null);
 		}
 	}
 
@@ -317,12 +317,13 @@ public class CordovaSimLaunchConfigurationTab extends
 		setSelectedRootFolder(project, rootFolder);
 		rootFolder = getActualRootFolder(project);
 		IResource startPage = null;
+		String startPageString = null;
 		try {
-			String startPageString = configuration.getAttribute(CordovaSimLaunchConstants.START_PAGE, (String) null);
+			startPageString = configuration.getAttribute(CordovaSimLaunchConstants.START_PAGE, (String) null);
 			startPage = CordovaSimLaunchParametersUtil.getStartPage(rootFolder, startPageString);
 		} catch (CoreException e) {
 		}
-		setSelectedStartPage(project, rootFolder, startPage);
+		setSelectedStartPage(project, rootFolder, startPage, startPageString);
 		
 		Integer port = null;
 		try {
@@ -448,7 +449,7 @@ public class CordovaSimLaunchConfigurationTab extends
 			rootFolder = CordovaSimLaunchParametersUtil.getDefaultRootFolder(project);
 		}
 		if (getSelectedStartPage(project, rootFolder) == null) {
-			setSelectedStartPage(project, rootFolder, null);
+			setSelectedStartPage(project, rootFolder, null, null);
 		}
 	}
 	
@@ -486,7 +487,7 @@ public class CordovaSimLaunchConfigurationTab extends
 		}
 	}
 	
-	private void setSelectedStartPage(IProject project, IContainer rootFolder, IResource startPage) {
+	private void setSelectedStartPage(IProject project, IContainer rootFolder, IResource startPage, String startPageString) {
 		boolean useDefaultStartPage = (startPage == null);
 		useDefaultStartPageCheckbox.setSelection(useDefaultStartPage);
 		startPageText.setEnabled(!useDefaultStartPage);
@@ -499,7 +500,16 @@ public class CordovaSimLaunchConfigurationTab extends
 			actualStartPage = startPage;
 		}
 		IPath startPagePath = CordovaSimLaunchParametersUtil.getRelativePath(rootFolder, actualStartPage);
-		startPageText.setText(startPagePath != null ? startPagePath.toString() : ""); //$NON-NLS-1$
+		String queryParameters = ""; //$NON-NLS-1$
+		
+		if (startPageString != null) {
+			int queryIndex = startPageString.indexOf("?"); //$NON-NLS-1$
+			if (queryIndex > 0) {
+				queryParameters = startPageString.substring(queryIndex, startPageString.length());
+			}
+		}
+		
+		startPageText.setText(startPagePath != null ? startPagePath.toString() + queryParameters : ""); //$NON-NLS-1$
 	}
 	
 	private IResource getActualStartPage(IProject project, IContainer rootFolder) {
