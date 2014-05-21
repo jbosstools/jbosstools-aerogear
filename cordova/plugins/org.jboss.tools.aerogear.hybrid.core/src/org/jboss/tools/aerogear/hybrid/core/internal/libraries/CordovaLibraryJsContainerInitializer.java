@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013 - 2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -37,6 +37,7 @@ import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
+import org.jboss.tools.jst.jsdt.utils.ConfigUtils;
 
 public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainerInitializer {
 	
@@ -59,7 +60,11 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 			throws CoreException {
 		CordovaLibraryJsContainerInitializer scopeContainer = new CordovaLibraryJsContainerInitializer(project);
 		JavaScriptCore.setJsGlobalScopeContainer(containerPath, new IJavaScriptProject[] { project }, new IJsGlobalScopeContainer[] {scopeContainer} , null);
-	
+		try {
+			ConfigUtils.enableCordovaJSPlugin(project.getProject());
+		} catch (IOException e) {
+			HybridCore.log(IStatus.ERROR, "Error configuring the Cordova library plugin for Content Assist", e);	
+		}
 	}
 	
 	@Override
