@@ -164,21 +164,24 @@ public class CordovaSimLauncher {
 	
 	public static void launchCordovaSim(List<String> parameters) {
 		IVMInstall jvm = BrowserSimLauncher.getSelectedVM();
-		
-		String jvmPath = jvm.getInstallLocation().getAbsolutePath();
-		String jrePath = jvm.getInstallLocation().getAbsolutePath() + File.separator + "jre"; //$NON-NLS-1$
-		
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		
-		List<String> bundles = getBundles();
-		
-		if ((IPreferenceStore.FALSE.equals(store.getString(BrowserSimPreferencesPage.BROWSERSIM_GTK_2))
-				|| (!BrowserSimUtil.isJavaFxAvailable(jvmPath) && !BrowserSimUtil.isJavaFxAvailable(jrePath)))) {
-			bundles.add("org.jboss.tools.vpe.browsersim.javafx.mock"); //$NON-NLS-1$
+		if (jvm == null) {// no suitable vm
+			ExternalProcessLauncher.showErrorDialog(Messages.CordovaSimLauncher_CORDOVASIM);
+		} else {
+			String jvmPath = jvm.getInstallLocation().getAbsolutePath();
+			String jrePath = jvm.getInstallLocation().getAbsolutePath() + File.separator + "jre"; //$NON-NLS-1$
+			
+			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+			
+			List<String> bundles = getBundles();
+			
+			if ((IPreferenceStore.FALSE.equals(store.getString(BrowserSimPreferencesPage.BROWSERSIM_GTK_2))
+					|| (!BrowserSimUtil.isJavaFxAvailable(jvmPath) && !BrowserSimUtil.isJavaFxAvailable(jrePath)))) {
+				bundles.add("org.jboss.tools.vpe.browsersim.javafx.mock"); //$NON-NLS-1$
+			}
+			
+			ExternalProcessLauncher.launchAsExternalProcess(bundles, RESOURCES_BUNDLES,
+					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM, jvm);
 		}
-		
-		ExternalProcessLauncher.launchAsExternalProcess(bundles, RESOURCES_BUNDLES,
-				CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM, jvm);
 	}
 	
 	private static void showPortInUseMessage(final Integer port) throws Exception {
