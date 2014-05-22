@@ -151,8 +151,25 @@ public class CordovaSimLaunchParametersUtil {
 		return rootFolder;
 	}
 	
-	public static IResource getDefaultStartPage(IProject project, IContainer rootFolder) {
-		String startPageName = null;
+	public static IResource getDefaultStartPage(IProject project, IContainer rootFolder) {		
+		String startPageName = getDefaultStartPageFromConfigXml(project, rootFolder);
+		
+		IResource startPage = getStartPage(rootFolder, startPageName);
+		return startPage;
+	}
+	
+	public static String getDefaultStartPageFromConfigXml(IProject project, IContainer rootFolder) {
+		IFile configFile = getConfigXml(project, rootFolder);
+		String startPageName = getStartPageName(configFile);
+
+		if (startPageName == null) {
+			startPageName = "index.html"; // standard default value //$NON-NLS-1$
+		}
+		return startPageName;
+	}
+	
+	public static IFile getConfigXml(IProject project, IContainer rootFolder) {
+		IFile configFile = null;
 		if (project != null && project.isOpen()) {
 			try {
 				String configFilePath = null;
@@ -164,20 +181,14 @@ public class CordovaSimLaunchParametersUtil {
 				if (configFilePath != null) {
 					IResource configResource = project.findMember("www/config.xml"); //$NON-NLS-1$
 					if (configResource instanceof IFile) {
-						IFile configFile = (IFile) configResource;
-						startPageName = getStartPageName(configFile);
+						configFile = (IFile) configResource;
 					}
 				}
 			} catch (CoreException e) {
 				Activator.logError(e.getMessage(), e);
 			}
 		}
-		
-		if (startPageName == null) {
-			startPageName = "index.html"; // standard default value //$NON-NLS-1$
-		}
-		IResource startPage = getStartPage(rootFolder, startPageName);
-		return startPage;
+		return configFile;
 	}
 	
 	
@@ -238,7 +249,7 @@ public class CordovaSimLaunchParametersUtil {
 	 * 
 	 * Returns {@code null} if it is not found.
 	 */
-	private static String getStartPageName(IFile configFile) {
+	public static String getStartPageName(IFile configFile) {
 		String startPageName = null;
 		InputStream inputStream = null;
 		try {
@@ -295,6 +306,19 @@ public class CordovaSimLaunchParametersUtil {
 			return resourcePath.removeFirstSegments(containerPathSegmentCount);			
 		}
 		return null;
+	}
+		
+	public static String getStartPageParameters(String StartPageName) {
+		String parameterString = null;
+		int indexOfQueryParameter = getQueryIndex(StartPageName);
+		if (indexOfQueryParameter > 0) {
+			parameterString = StartPageName.substring(indexOfQueryParameter, StartPageName.length());
+		}
+		return parameterString;
+	}
+	
+	private static int getQueryIndex(String homeUrl) {
+		return homeUrl.indexOf("?"); //$NON-NLS-1$
 	}
 
 }

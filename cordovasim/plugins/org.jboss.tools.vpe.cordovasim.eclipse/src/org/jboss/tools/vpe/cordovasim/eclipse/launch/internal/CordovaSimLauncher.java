@@ -95,7 +95,13 @@ public class CordovaSimLauncher {
 			IResource startPage = CordovaSimLaunchParametersUtil.getDefaultStartPage(project, rootFolder);
 			IPath startPagePath = CordovaSimLaunchParametersUtil.getRelativePath(rootFolder, startPage);
 			if (startPagePath != null) {
-				actualStartPageString = startPagePath.toString();
+				String startPageFromConfigXml =  CordovaSimLaunchParametersUtil.getDefaultStartPageFromConfigXml(project, rootFolder);
+				String startPageParameters = CordovaSimLaunchParametersUtil.getStartPageParameters(startPageFromConfigXml);
+				if (startPageParameters != null) {
+					actualStartPageString = startPagePath.toString() + startPageParameters;
+				} else {
+					actualStartPageString = startPagePath.toString();					
+				}
 			}
 		}
 		

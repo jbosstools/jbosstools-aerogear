@@ -500,15 +500,16 @@ public class CordovaSimLaunchConfigurationTab extends
 			actualStartPage = startPage;
 		}
 		IPath startPagePath = CordovaSimLaunchParametersUtil.getRelativePath(rootFolder, actualStartPage);
-		String queryParameters = ""; //$NON-NLS-1$
+		String queryParameters = null; 
 		
 		if (startPageString != null) {
-			int queryIndex = startPageString.indexOf("?"); //$NON-NLS-1$
-			if (queryIndex > 0) {
-				queryParameters = startPageString.substring(queryIndex, startPageString.length());
-			}
-		}
-		
+			queryParameters = CordovaSimLaunchParametersUtil.getStartPageParameters(startPageString);
+		} else {
+			String startPageFromConfigXml =  CordovaSimLaunchParametersUtil.getDefaultStartPageFromConfigXml(project, rootFolder);
+			queryParameters = CordovaSimLaunchParametersUtil.getStartPageParameters(startPageFromConfigXml);
+		} 
+
+		queryParameters = (queryParameters == null) ? "" : queryParameters; //$NON-NLS-1$		
 		startPageText.setText(startPagePath != null ? startPagePath.toString() + queryParameters : ""); //$NON-NLS-1$
 	}
 	

@@ -45,6 +45,7 @@ import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPrefer
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
 import org.jboss.tools.vpe.cordovasim.plugin.inappbrowser.InAppBrowserLoader;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
+import org.jboss.tools.vpe.cordovasim.util.StartPageParametersUtil;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -194,12 +195,12 @@ public class CordovaSimRunner {
 		final IBrowser rippleToolBarBrowser = new WebKitBrowserFactory().createBrowser(shell, SWT.WEBKIT, sp.isJavaFx());
 		final String homeUrl = CordovaSimArgs.getHomeUrl();
 		
-		String startPageParameters = getStartPageParameters(homeUrl);
+		String startPageParameters = StartPageParametersUtil.getStartPageParameters(homeUrl);
 		if (startPageParameters != null) {
 			processStartPageParameters(rippleToolBarBrowser, startPageParameters);
 		}
 					
-		rippleToolBarBrowser.setUrl(getRippleHomeUrl(homeUrl));
+		rippleToolBarBrowser.setUrl(StartPageParametersUtil.getRippleHomeUrl(homeUrl));
 		
 		shell.addListener(SWT.Close, new Listener() {
 			@Override
@@ -287,27 +288,5 @@ public class CordovaSimRunner {
 	private static void sendStopServerCommand() {
 		System.out.println(STOP_SERVER_COMMAND + " Server on port " + CordovaSimArgs.getPort() + " was stopped"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-	
-	private static String getRippleHomeUrl(String homeUrl) {
-		String rippleHomeUrl = homeUrl;
-		int indexOfQueryParameter = getQueryIndex(homeUrl);
-		if (indexOfQueryParameter > 0) {
-			rippleHomeUrl = homeUrl.substring(0, indexOfQueryParameter); // removing startPage query parameters
-		}
-		return rippleHomeUrl + "?enableripple=true"; //$NON-NLS-1$
-	}
-	
-	private static String getStartPageParameters(String homeUrl) {
-		String parameterString = null;
-		int indexOfQueryParameter = getQueryIndex(homeUrl);
-		if (indexOfQueryParameter > 0) {
-			parameterString = homeUrl.substring(indexOfQueryParameter, homeUrl.length());
-		}
-		return parameterString;
-	}
-	
-	private static int getQueryIndex(String homeUrl) {
-		return homeUrl.indexOf("?"); //$NON-NLS-1$
-	}
-	
+
 }
