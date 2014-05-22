@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.cordavasim.eclipse.callbacks.CordovaSimRestartCallback;
 import org.jboss.tools.cordavasim.eclipse.callbacks.StopServerCallback;
-import org.jboss.tools.vpe.browsersim.eclipse.Activator;
 import org.jboss.tools.vpe.browsersim.eclipse.callbacks.OpenFileCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.callbacks.ViewSourceCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
@@ -39,6 +38,7 @@ import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.preferences.BrowserSimPreferencesPage;
 import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
 import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.ServerUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.server.internal.ServerCreator;
 import org.jboss.tools.vpe.cordovasim.eclipse.server.internal.ServerStorage;
@@ -163,6 +163,7 @@ public class CordovaSimLauncher {
 	}
 	
 	public static void launchCordovaSim(List<String> parameters) {
+		Activator.getDefault().countLaunchEvent();
 		IVMInstall jvm = BrowserSimLauncher.getSelectedVM();
 		if (jvm == null) {// no suitable vm
 			ExternalProcessLauncher.showErrorDialog(Messages.CordovaSimLauncher_CORDOVASIM);
