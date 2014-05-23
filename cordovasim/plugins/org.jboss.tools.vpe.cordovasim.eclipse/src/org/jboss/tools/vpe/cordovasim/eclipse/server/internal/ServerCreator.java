@@ -12,6 +12,8 @@ package org.jboss.tools.vpe.cordovasim.eclipse.server.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
 import org.eclipse.jetty.rewrite.handler.Rule;
 import org.eclipse.jetty.server.Handler;
@@ -31,6 +35,7 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
 import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.CordovaFileUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CordovaJsServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CordovaPluginJsServlet;
@@ -42,6 +47,7 @@ import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.PluginServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.StaticResponseServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.UploadFileServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.WorkspaceFileServlet;
+import org.osgi.framework.Bundle;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -160,8 +166,20 @@ public class ServerCreator {
 		return server;
 	}
 	
-	private static String getRippleResoursePath(String path) {
-		return ServerCreator.class.getClassLoader().getResource(path).toExternalForm();
+	private static String getRippleResoursePath(String ripplePath) {
+		Bundle bundle = Platform.getBundle("org.jboss.tools.vpe.cordovasim.ripple"); //$NON-NLS-1$
+		URL fileURL = bundle.getEntry(ripplePath);
+		try {
+			File file = new File(FileLocator.toFileURL(fileURL).toURI());
+			if (file != null && file.exists()) {
+				ripplePath = file.getAbsolutePath();
+			}
+		} catch (URISyntaxException e) {
+			Activator.logError(e.getMessage(), e);
+		} catch (IOException e) {
+			Activator.logError(e.getMessage(), e);
+		}
+		return ripplePath;
 	}
 	
 }
