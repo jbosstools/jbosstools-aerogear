@@ -34009,6 +34009,9 @@ function _bindObjects(win, doc) {
 }
 
 function _createBsPopup(src) {
+    if (window._startPageParameters) {
+      src += window._startPageParameters; // JBIDE-16389 see CordovaSimRunner processStartPageParameters()
+    }
     var bsPopup = window.open(src ,'bsPopup',
         'width=500,height=500,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0');
     bsPopup.focus();

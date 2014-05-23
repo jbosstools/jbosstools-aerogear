@@ -15,6 +15,8 @@ import java.text.MessageFormat;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
+import org.eclipse.swt.browser.LocationAdapter;
+import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Image;
@@ -43,6 +45,7 @@ import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPrefer
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
 import org.jboss.tools.vpe.cordovasim.plugin.inappbrowser.InAppBrowserLoader;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
+import org.jboss.tools.vpe.cordovasim.util.StartPageParametersUtil;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -90,7 +93,7 @@ public class CordovaSimRunner {
 		Display display = Display.getDefault();
 		try {
 			if (!isJavaFxAvailable && !isWebKitAvailable) {
-				String errorMessage = "";
+				String errorMessage = ""; //$NON-NLS-1$
 				String os = PlatformUtil.getOs();
 				if (PlatformUtil.OS_LINUX.equals(os)) {
 					errorMessage = MessageFormat.format(
@@ -124,23 +127,24 @@ public class CordovaSimRunner {
 		}
 	}
 
-	private static void createBrowserSim(final SpecificPreferences sp, final IBrowser rippleToolSuiteBrowser, final String homeUrl) {
-		Shell parentShell = rippleToolSuiteBrowser.getShell();
+	private static void createBrowserSim(final SpecificPreferences sp, final IBrowser rippleToolBarBrowser, final String homeUrl) {
+		Shell parentShell = rippleToolBarBrowser.getShell();
 		if (parentShell != null) {
 			browserSim = new CustomBrowserSim(homeUrl, parentShell);
-			browserSim.setRippleToolBarBrowser(rippleToolSuiteBrowser);
+			
+			browserSim.setRippleToolBarBrowser(rippleToolBarBrowser);
 			browserSim.open(sp, null);
 			browserSim.addSkinChangeListener(new SkinChangeListener() {
 				@Override
 				public void skinChanged(SkinChangeEvent event) {
-					rippleToolSuiteBrowser.refresh();
+					rippleToolBarBrowser.refresh();
 				}
 			});
 			browserSim.addExitListener(new ExitListener() {
 				
 				@Override
 				public void exit() {
-					rippleToolSuiteBrowser.getShell().dispose();
+					rippleToolBarBrowser.getShell().dispose();
 				}
 			});
 			browserSim.getBrowser().addLocationListener(new RippleInjector());
@@ -188,9 +192,15 @@ public class CordovaSimRunner {
 		shell.setLayout(new FillLayout());
 		
 		
-		final IBrowser rippleToolSuiteBrowser = new WebKitBrowserFactory().createBrowser(shell, SWT.WEBKIT, sp.isJavaFx());
+		final IBrowser rippleToolBarBrowser = new WebKitBrowserFactory().createBrowser(shell, SWT.WEBKIT, sp.isJavaFx());
 		final String homeUrl = CordovaSimArgs.getHomeUrl();
-		rippleToolSuiteBrowser.setUrl(homeUrl + "?enableripple=true"); //$NON-NLS-1$
+		
+		String startPageParameters = StartPageParametersUtil.getStartPageParameters(homeUrl);
+		if (startPageParameters != null) {
+			processStartPageParameters(rippleToolBarBrowser, startPageParameters);
+		}
+					
+		rippleToolBarBrowser.setUrl(StartPageParametersUtil.getRippleHomeUrl(homeUrl));
 		
 		shell.addListener(SWT.Close, new Listener() {
 			@Override
@@ -212,17 +222,17 @@ public class CordovaSimRunner {
 			sp.setCordovaBrowserLocation(shell.getLocation());
 		}
 		
-		rippleToolSuiteBrowser.addOpenWindowListener(new ExtendedOpenWindowListener() {
+		rippleToolBarBrowser.addOpenWindowListener(new ExtendedOpenWindowListener() {
 			private IBrowser oldBrowser;
 
 			@Override
 			public void open(ExtendedWindowEvent event) {
 				if (InAppBrowserLoader.isInAppBrowserEvent(event) && (browserSim != null)) {
-					InAppBrowserLoader.processInAppBrowser(rippleToolSuiteBrowser, browserSim, event);
+					InAppBrowserLoader.processInAppBrowser(rippleToolBarBrowser, browserSim, event);
 				} else {
 					if (browserSim == null || browserSim.getBrowser().isDisposed()
 						|| browserSim.getBrowser().getShell().isDisposed()) {
-						createBrowserSim(sp, rippleToolSuiteBrowser, homeUrl);
+						createBrowserSim(sp, rippleToolBarBrowser, homeUrl);
 					} else if (oldBrowser == browserSim.getBrowser()) {
 						browserSim.reinitSkin();
 						browserSim.getBrowser().addLocationListener(new RippleInjector());
@@ -263,8 +273,20 @@ public class CordovaSimRunner {
 		return shell;
 	}
 	
+	// JBIDE-16389 Query parameters are not allowed in the runtime configuration for CordovaSim
+	private static void processStartPageParameters(final IBrowser rippleToolBarBrowser, final String startPageParameters) { 
+		final String addingStartPageParametersFunction = "window._startPageParameters = '" + startPageParameters + "';"; //$NON-NLS-1$ //$NON-NLS-2$
+		rippleToolBarBrowser.addLocationListener(new LocationAdapter() {
+			@Override
+			public void changed(LocationEvent event) {
+				rippleToolBarBrowser.execute(addingStartPageParametersFunction);
+			}
+		});
+	}
+
+
 	private static void sendStopServerCommand() {
 		System.out.println(STOP_SERVER_COMMAND + " Server on port " + CordovaSimArgs.getPort() + " was stopped"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-	
+
 }
