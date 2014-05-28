@@ -16,6 +16,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.tools.usage.event.UsageEventType;
 import org.jboss.tools.usage.event.UsageReporter;
+import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPreferencesStorage;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -54,7 +55,8 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public void countLaunchEvent() {
-		UsageReporter.getInstance().countEvent(launchEventType.event(UsageEventType.OPEN_ACTION));
+		String label = org.jboss.tools.vpe.browsersim.eclipse.Activator.getEngineName(CordavaSimSpecificPreferencesStorage.INSTANCE);
+		UsageReporter.getInstance().countEvent(launchEventType.event(label));
 	}
 
 	/*
