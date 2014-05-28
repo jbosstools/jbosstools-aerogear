@@ -368,7 +368,6 @@ public class CordovaPluginSelectionPage extends WizardPage {
 	}
 	
 	public String getProjectName(){
-		System.out.println("getProjectName");
 		if(fixedProject != null ){
 			return fixedProject.getProject().getName();
 		}

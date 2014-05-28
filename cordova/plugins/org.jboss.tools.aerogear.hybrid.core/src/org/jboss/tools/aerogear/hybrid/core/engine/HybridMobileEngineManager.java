@@ -58,7 +58,7 @@ public class HybridMobileEngineManager {
 	 */
 	public static HybridMobileEngine getDefaultEngine() {
 		CordovaEngineProvider engineProvider = new CordovaEngineProvider();
-		String pref =  Platform.getPreferencesService().getString("org.jboss.tools.aerogear.hybrid.ui", PlatformConstants.PREF_DEFAULT_ENGINE, null, null);
+		String pref =  Platform.getPreferencesService().getString(PlatformConstants.HYBRID_UI_PLUGIN_ID, PlatformConstants.PREF_DEFAULT_ENGINE, null, null);
 		if(pref != null && !pref.isEmpty()){
 			String[] valuePair = pref.split(":");
 			List<HybridMobileEngine> engines = engineProvider.getAvailableEngines();

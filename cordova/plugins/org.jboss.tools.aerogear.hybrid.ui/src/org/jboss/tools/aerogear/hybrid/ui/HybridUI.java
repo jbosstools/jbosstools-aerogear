@@ -25,6 +25,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridToolsPreferences;
 import org.jboss.tools.aerogear.hybrid.ui.internal.status.HybridMobileStatusExtension;
 import org.osgi.framework.Bundle;
@@ -36,7 +37,7 @@ import org.osgi.framework.BundleContext;
 public class HybridUI extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.jboss.tools.aerogear.hybrid.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = PlatformConstants.HYBRID_UI_PLUGIN_ID;
 	private static ILog logger;
 	
 	// The shared instance

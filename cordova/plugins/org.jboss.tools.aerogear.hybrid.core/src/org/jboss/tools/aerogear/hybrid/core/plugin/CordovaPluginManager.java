@@ -43,6 +43,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jgit.api.Git;
@@ -60,6 +61,7 @@ import org.jboss.tools.aerogear.hybrid.core.plugin.actions.ActionVariableHelper;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.ConfigXMLUpdateAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CopyFileAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.DependencyInstallAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.PluginInstallRecordAction;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -138,6 +140,7 @@ public class CordovaPluginManager {
 		
 		List<IPluginInstallationAction> actions = collectInstallActions(
 				directory, doc, id, dir, overwrite);
+		actions.add(getPluginInstallRecordAction(doc));
 		runActions(actions,false,overwrite,monitor); 
 		resetInstalledPlugins();
 	}
@@ -650,6 +653,21 @@ public class CordovaPluginManager {
 			list.add(action);
 		}
 		return list;
+	}
+	
+	private PluginInstallRecordAction getPluginInstallRecordAction(Document pluginXml) throws CoreException{
+		String id = CordovaPluginXMLHelper.getAttributeValue(pluginXml.getDocumentElement(),"id");
+		boolean saveVersion = Platform.getPreferencesService().getBoolean(PlatformConstants.HYBRID_UI_PLUGIN_ID, 
+				PlatformConstants.PREF_SHRINKWRAP_PLUGIN_VERSIONS,false,null);
+		String version = null;
+		if(saveVersion){
+			version = CordovaPluginXMLHelper.getAttributeValue(pluginXml.getDocumentElement(),"version");
+		}
+		Node n = CordovaPluginXMLHelper.getNameNode(pluginXml.getDocumentElement());
+		if(n == null){
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID,"plugin.xml is missing name"));
+		}
+		return new PluginInstallRecordAction(project, n.getTextContent().trim(), id, version);
 	}
 		
 }

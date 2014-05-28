@@ -80,6 +80,7 @@ public class CordovaPluginRegistryManager {
 		HttpClient client =new CachingHttpClient(new DefaultHttpClient(), 
 				new FileResourceFactory(context.getDataFile(BundleHttpCacheStorage.SUBDIR_HTTP_CACHE)), 
 				new BundleHttpCacheStorage(HybridCore.getContext().getBundle()), getCacheConfig()); 
+		
 		String url = registry.endsWith("/") ? registry + name : registry + "/"
 				+ name;
 		HttpGet get = new HttpGet(url);

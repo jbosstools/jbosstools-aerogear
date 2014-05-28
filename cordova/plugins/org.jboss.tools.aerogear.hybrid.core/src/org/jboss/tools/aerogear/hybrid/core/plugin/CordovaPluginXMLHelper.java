@@ -139,6 +139,19 @@ public class CordovaPluginXMLHelper {
 	public static NodeList getDependencies(Node node){
 		return getNodes(node, "./:dependency");
 	}
+	
+	/**
+	 * Returns the name node. May return null
+	 * @param node
+	 * @return name node or null
+	 */
+	public static Node getNameNode(Node node){
+		NodeList list = getNodes(node, "./:name");
+		if(list.getLength() == 1){
+			return list.item(0);
+		}
+		return null;
+	}
 		
 	private static NodeList getNodes(Node node, String xpathExpression){
 		try{

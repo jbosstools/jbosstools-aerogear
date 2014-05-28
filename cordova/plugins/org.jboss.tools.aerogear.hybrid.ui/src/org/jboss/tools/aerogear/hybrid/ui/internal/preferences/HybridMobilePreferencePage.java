@@ -10,14 +10,17 @@
  *******************************************************************************/
 package org.jboss.tools.aerogear.hybrid.ui.internal.preferences;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class HybridMobilePreferencePage
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
+	
 
 	public HybridMobilePreferencePage() {
 		super(GRID);
@@ -32,6 +35,8 @@ public class HybridMobilePreferencePage
 	 * restore itself.
 	 */
 	public void createFieldEditors() {
+		BooleanFieldEditor savePluginVersions = new BooleanFieldEditor(PlatformConstants.PREF_SHRINKWRAP_PLUGIN_VERSIONS,"Save installed plugin versions to config.xml (shrinkwrap)", this.getFieldEditorParent());
+		addField(savePluginVersions);
 
 	}
 
@@ -39,6 +44,7 @@ public class HybridMobilePreferencePage
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
+		
 	}
 	
 }
