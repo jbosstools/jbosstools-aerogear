@@ -12,6 +12,7 @@ package org.jboss.tools.vpe.cordovasim.eclipse.server.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -170,7 +171,10 @@ public class ServerCreator {
 		Bundle bundle = Platform.getBundle("org.jboss.tools.vpe.cordovasim.ripple"); //$NON-NLS-1$
 		URL fileURL = bundle.getEntry(ripplePath);
 		try {
-			File file = new File(FileLocator.toFileURL(fileURL).toURI());
+			URL resolvedFileURL = FileLocator.toFileURL(fileURL);
+			// We need to use the 3-arg constructor of URI in order to properly escape file system chars
+			URI resolvedURI = new URI(resolvedFileURL.getProtocol(), resolvedFileURL.getPath(), null);
+			File file = new File(resolvedURI);
 			if (file != null && file.exists()) {
 				ripplePath = file.getAbsolutePath();
 			}
