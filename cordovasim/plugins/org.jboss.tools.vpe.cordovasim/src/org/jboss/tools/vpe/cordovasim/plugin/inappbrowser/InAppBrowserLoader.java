@@ -85,13 +85,13 @@ public class InAppBrowserLoader {
 			public void changing(LocationEvent event) {
 				rippleToolSuiteBrowser.execute("ripple('emulatorBridge').window().ChildBrowser.onLocationChange('"
 						+ event.location + "');"); // fire 'ChildBrowser.onLocationChange' event
-				rippleToolSuiteBrowser.execute("ripple('event').trigger('browser-start');"); // fire 'loadstart' event
 			}
 			
 			@Override
 			public void changed(LocationEvent event) {
 				if (event.top) {
-					rippleToolSuiteBrowser.execute("ripple('event').trigger('browser-stop');"); //  fire 'loadstop' event
+					rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').loadstart('" + event.location +"');})()");
+					rippleToolSuiteBrowser.execute("(function(){ripple('platform/cordova/3.0.0/bridge/inappbrowser').loadstop('" + event.location + "');})()");
 				}
 			}
 			

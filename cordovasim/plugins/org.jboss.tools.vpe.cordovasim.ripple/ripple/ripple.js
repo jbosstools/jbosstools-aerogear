@@ -41425,6 +41425,7 @@ ripple.define('platform/cordova/3.0.0/bridge/inappbrowser', function (ripple, ex
 
 var emulatorBridge = ripple('emulatorBridge'),
     event = ripple('event'),
+    inAppWin,
     backbuttonFunction,
     csInAppBrowser,
     callbackCounter = 0;
@@ -41444,6 +41445,9 @@ module.exports = {
         var url = args[0],
             target = args[1],  // _self, _blank, _system - doesn't matter for CordovaSim
             options = args[2]; // only "location" (set to 'yes' or 'no' to turn the location bar) is supported on all platforms - CordovaSim doesn't support it  
+            
+            inAppWin = win;
+
             trigger = function (event) {
                 return function () {
                     win({type: event, url: url});
@@ -41460,15 +41464,28 @@ module.exports = {
                 emulatorBridge.document().addEventListener("backbutton", backbuttonFunction, false);
                 csInAppBrowser = emulatorBridge.window()._bsOriginalWindowOpen(url, "_csInAppBrowser");
 
-                event.on("browser-start", trigger('loadstart'));
-                event.on("browser-stop", trigger('loadstop'));
-                event.on("browser-error", trigger('loaderror'));
+                // event.on("browser-start", trigger('loadstart'));
+                // event.on("browser-stop", trigger('loadstop'));
+                // event.on("browser-error", trigger('loaderror'));
                 event.once("browser-close", trigger('exit'));
             }
     },
 
+    // See inAppBrowserLoader.java location listener
+    loadstart: function(url) {
+      inAppWin({type: 'loadstart', url: url});
+    },
+
+    loadstop: function(url) {
+      inAppWin({type: 'loadstop', url: url});
+    },
+
+    loaderror: function(url) {
+      inAppWin({type: "loaderror", url: url});
+    },
+
     show: function (win, fail, args) {
-        console.log(args);
+      console.log(args);
     },
 
     close: function (win, fail, args) {
