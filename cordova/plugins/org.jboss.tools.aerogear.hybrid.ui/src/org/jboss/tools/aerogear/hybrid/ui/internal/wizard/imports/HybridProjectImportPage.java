@@ -98,6 +98,8 @@ public class HybridProjectImportPage extends WizardPage implements IOverwriteQue
 		}
 		
 		boolean exists(){
+			if(getWidget() == null )
+				return true;
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 			final String projectName = getProjectName();
 			IPath wsPath = root.getLocation();

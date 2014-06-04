@@ -44,7 +44,12 @@ public class PluginInstallRecordAction implements IPluginInstallationAction{
 			feature.setName(pluginName);
 			widget.addFeature(feature);
 		}
-		feature.addParam("id",id);
+		String existingId= feature.getParams().get("id");
+		if(existingId == null){
+			feature.addParam("id",id);
+		}
+		//replace the new version number
+		feature.removeParam("version");
 		if(version != null && !version.isEmpty()){
 			feature.addParam("version", version);
 		}

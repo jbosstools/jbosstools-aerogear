@@ -14,6 +14,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.ILog;
@@ -28,6 +30,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.jboss.tools.aerogear.hybrid.ui.internal.preferences.HybridToolsPreferences;
 import org.jboss.tools.aerogear.hybrid.ui.internal.status.HybridMobileStatusExtension;
+import org.jboss.tools.aerogear.hybrid.ui.plugins.internal.RestorePluginsListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -42,11 +45,13 @@ public class HybridUI extends AbstractUIPlugin {
 	
 	// The shared instance
 	private static HybridUI plugin;
+	private final RestorePluginsListener pluginRestoreListener;
 	
 	/**
 	 * The constructor
 	 */
 	public HybridUI() {
+		pluginRestoreListener = new RestorePluginsListener();
 	}
 	
 	/*
@@ -68,6 +73,7 @@ public class HybridUI extends AbstractUIPlugin {
 			}
 		});
 		HybridToolsPreferences.getPrefs().loadValues();
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(pluginRestoreListener, IResourceChangeEvent.POST_CHANGE);
 		
 	}
 
@@ -77,6 +83,9 @@ public class HybridUI extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		if(pluginRestoreListener != null){
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(pluginRestoreListener);
+		}
 		super.stop(context);
 	}
 

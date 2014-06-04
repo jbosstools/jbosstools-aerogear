@@ -28,6 +28,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
@@ -52,6 +53,9 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.HybridMobileStatus;
 import org.jboss.tools.aerogear.hybrid.core.HybridProject;
+import org.jboss.tools.aerogear.hybrid.core.config.Feature;
+import org.jboss.tools.aerogear.hybrid.core.config.Widget;
+import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.extensions.PlatformSupport;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.XMLUtil;
 import org.jboss.tools.aerogear.hybrid.core.platform.AbstractPluginInstallationActionsFactory;
@@ -333,6 +337,41 @@ public class CordovaPluginManager {
 	    finalContents.append("module.exports = ").append(gson.toJson(moduleObjects)).append("\n});");
 	    
 		return finalContents.toString();
+	}
+	
+	/**
+	 * Returns the list of plugin ids that are listed on config.xml and are not already installed.
+	 * 
+	 * @param monitor
+	 * @return plugin ids
+	 * @throws CoreException
+	 */
+	public List<RestorableCordovaPlugin> getRestorablePlugins(IProgressMonitor monitor) throws CoreException{
+		if(monitor == null ){
+			monitor = new NullProgressMonitor();
+		}
+		Widget widget  = WidgetModel.getModel(this.project).getWidgetForRead();
+		if(widget == null ){
+			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Unable to read config.xml"));
+		}
+		List<Feature> features = widget.getFeatures();
+		List<RestorableCordovaPlugin> restorable = new ArrayList<RestorableCordovaPlugin>();
+		if (features != null) {
+			for (Feature feature : features) {
+				Map<String, String> params = feature.getParams();
+				String id = params.get("id");
+				if (id != null && !isPluginInstalled(id)) {
+					RestorableCordovaPlugin rp = new RestorableCordovaPlugin();
+					rp.setId(id);
+					String version = params.get("version");
+					if (version != null){
+						rp.setVersion(version);
+					}
+					restorable.add(rp);
+				}
+			}
+		}
+	return restorable;
 	}
 	
 	/*

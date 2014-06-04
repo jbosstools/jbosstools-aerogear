@@ -144,6 +144,7 @@ public class WidgetModel implements IModelLifecycleListener{
 			synchronized (this) {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				dbf.setNamespaceAware(true);
+				dbf.setValidating(false);
 				DocumentBuilder db;
 				try {
 					db = dbf.newDocumentBuilder();

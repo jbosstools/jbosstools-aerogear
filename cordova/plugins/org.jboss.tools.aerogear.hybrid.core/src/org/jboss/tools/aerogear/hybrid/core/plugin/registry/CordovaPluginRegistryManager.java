@@ -99,9 +99,7 @@ public class CordovaPluginRegistryManager {
 		} catch (IOException e) {
 			throw new CoreException(new Status(IStatus.ERROR, HybridCore.PLUGIN_ID, "Can not retrieve plugin information for " + name, e));
 		}
-
 	}
-	
 	
 	/**
 	 * Returns a directory where the given version of the Cordova Plugin 

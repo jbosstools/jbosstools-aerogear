@@ -28,7 +28,21 @@ public class CordovaRegistryPlugin extends CordovaRegistryPluginInfo {
 		versions.add(version);
 	}
 	
-	
-	
-
+	/**
+	 * Returns the {@link CordovaRegistryPluginVersion} object for the given 
+	 * version. If the give version is not available it returns null
+	 * @param version
+	 * @return version or null
+	 */
+	public CordovaRegistryPluginVersion getVersion(String version){
+		if(versions == null ){
+			return null;
+		}
+		for (CordovaRegistryPluginVersion ver : versions) {
+			if(ver.getVersionNumber().equals(version)){
+				return ver;
+			}
+		}
+		return null;
+	}
 }
