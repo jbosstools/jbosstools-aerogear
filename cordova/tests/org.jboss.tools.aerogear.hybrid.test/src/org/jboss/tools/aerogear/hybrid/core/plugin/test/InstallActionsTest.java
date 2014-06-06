@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,11 +32,17 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidPluginInstallationActionsFactory;
 import org.jboss.tools.aerogear.hybrid.android.core.adt.AndroidPluginInstallationActionsFactory.AndroidSourceFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.RestorableCordovaPlugin;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.CopyFileAction;
+import org.jboss.tools.aerogear.hybrid.core.plugin.actions.PluginInstallRecordAction;
 import org.jboss.tools.aerogear.hybrid.core.plugin.actions.XMLConfigFileAction;
+import org.jboss.tools.aerogear.hybrid.test.TestProject;
 import org.jboss.tools.aerogear.hybrid.test.TestUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -44,6 +51,21 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class InstallActionsTest {
+	
+	private TestProject project;
+	
+	@Before
+	public void setUpTestProject(){
+		project = new TestProject();
+	}
+	
+	@After
+	public void cleanProject() throws CoreException{
+		if(this.project != null ){
+			this.project.delete();
+			this.project = null;
+		}
+	}
 	
 	@Test
 	public void testCopyFileActionInstallNUninstall() throws FileNotFoundException, IOException, CoreException{
@@ -168,6 +190,44 @@ public class InstallActionsTest {
 				assertFalse("Found a node that is not suppposed to be here", current.isEqualNode(importedNodes[j]));
 			}
 		}
+	}
+	
+	@Test
+	public void testPluginInstallRecordAction() throws CoreException{
+		String id = "org.jboss.tools.test.plugin";
+		String version = "1.2.3";
+		PluginInstallRecordAction action = new PluginInstallRecordAction(project.hybridProject(), "ATest", id, version);
+		action.install();
+		List<RestorableCordovaPlugin> restorables = project.hybridProject().getPluginManager().getRestorablePlugins(new NullProgressMonitor());
+		assertNotNull(restorables);
+		assertFalse(restorables.isEmpty());
+		RestorableCordovaPlugin plugin = restorables.get(0);
+		assertEquals(id, plugin.getId());
+		assertEquals(version, plugin.getVersion());
+	}
+	
+	@Test
+	public void testPluginInstallRecordChangeVersion() throws CoreException{
+		String id = "org.jboss.tools.test.plugin";
+		String version = "1.2.3";
+		String pluginName = "ATest";
+		PluginInstallRecordAction action = new PluginInstallRecordAction(project.hybridProject(), pluginName, id, version);
+		action.install();
+		List<RestorableCordovaPlugin> restorables = project.hybridProject().getPluginManager().getRestorablePlugins(new NullProgressMonitor());
+		assertNotNull(restorables);
+		assertFalse(restorables.isEmpty());
+		RestorableCordovaPlugin plugin = restorables.get(0);
+		assertEquals(id, plugin.getId());
+		assertEquals(version, plugin.getVersion());
+		action = new PluginInstallRecordAction(project.hybridProject(), pluginName, id, null);
+		action.install();
+		assertNotNull(restorables);
+		restorables = project.hybridProject().getPluginManager().getRestorablePlugins(new NullProgressMonitor());
+		assertFalse(restorables.isEmpty());
+		plugin = restorables.get(0);
+		assertEquals(id, plugin.getId());
+		assertTrue(plugin.getVersion() == null || plugin.getVersion().isEmpty() );
+
 	}
 
 }
