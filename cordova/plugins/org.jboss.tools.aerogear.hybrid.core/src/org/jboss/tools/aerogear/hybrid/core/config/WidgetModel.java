@@ -76,7 +76,7 @@ public class WidgetModel implements IModelLifecycleListener{
 	private Widget readonlyWidget;
 	private long readonlyTimestamp;
 
-	private IStructuredModel underLyingModel;
+	public IStructuredModel underLyingModel;
 	
 	
 	private WidgetModel(HybridProject project){
@@ -197,6 +197,25 @@ public class WidgetModel implements IModelLifecycleListener{
 		}
 		HybridCore.trace("Completed WidgetModel.getWidgetForEdit it "+ Long.toString(System.currentTimeMillis() - enter)+ "ms");
 		return editableWidget;
+	}
+
+	/**
+	 * Syncs the changes done to the config.xml directly to the model by reloading it. 
+	 * This method needs to be called anytime config.xml is modified without using the 
+	 * {@link Widget} instance.
+	 * 
+	 * @throws CoreException
+	 */
+	public void resyncModel() throws CoreException{
+		if (this.underLyingModel != null) {
+			try {
+				IFile configXml = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(Path.fromOSString(configFile.toString()));
+				underLyingModel.getModelHandler().getModelLoader().load(configXml, underLyingModel);
+			} catch (IOException e) {
+				HybridCore.log(IStatus.ERROR,
+						"Error resyncing the editable model", e);
+			}
+		}
 	}
 
 	private static File getConfigXml(HybridProject project) {

@@ -18,7 +18,6 @@ import org.jboss.tools.aerogear.hybrid.core.config.Feature;
 import org.jboss.tools.aerogear.hybrid.core.config.Widget;
 import org.jboss.tools.aerogear.hybrid.core.config.WidgetModel;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.XMLUtil;
-import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,10 +35,17 @@ public class ConfigXMLUpdateAction extends XMLConfigFileAction {
 	@Override
 	public void install() throws CoreException{
 		Element featureNode = getInjectedFeatureNode();
-		if(featureNode == null ){// let parent handle it
+		WidgetModel widgetModel = WidgetModel.getModel(project);
+		if(featureNode == null ){
+			// let parent handle it
+			// We do not want to limit what plugins can insert into config.xml with our Widget model
+			// because our widget model may not be supporting the latest and greatest config.xml extensions
+			// direct xml injection that super uses does not have this problem.
 			super.install();
+			// now invite widget model to sync its underlying model with the directly 
+			// injected changes.
+			widgetModel.resyncModel();
 		}else{
-			WidgetModel widgetModel = WidgetModel.getModel(project);
 			Widget widget = widgetModel.getWidgetForEdit();
 			
 			Feature feature = getExistingFeature(featureNode, widget);
