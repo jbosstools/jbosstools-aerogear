@@ -29780,6 +29780,7 @@ function _XMLHttpRequest() {
 
         if (!isSameOriginRequest) {
             xhr.setRequestHeader("X-Ripple-User-Agent", navigator.userAgent);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         }
     };
 
