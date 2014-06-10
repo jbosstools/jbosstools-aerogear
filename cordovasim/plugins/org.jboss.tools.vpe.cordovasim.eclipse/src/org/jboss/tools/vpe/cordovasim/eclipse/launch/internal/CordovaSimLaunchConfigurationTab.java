@@ -505,7 +505,7 @@ public class CordovaSimLaunchConfigurationTab extends
 		if (startPageString != null) {
 			queryParameters = CordovaSimLaunchParametersUtil.getStartPageParameters(startPageString);
 		} else {
-			String startPageFromConfigXml =  CordovaSimLaunchParametersUtil.getDefaultStartPageFromConfigXml(project, rootFolder);
+			String startPageFromConfigXml = CordovaSimLaunchParametersUtil.getDefaultStartPageFromConfigXml(project);
 			queryParameters = CordovaSimLaunchParametersUtil.getStartPageParameters(startPageFromConfigXml);
 		} 
 

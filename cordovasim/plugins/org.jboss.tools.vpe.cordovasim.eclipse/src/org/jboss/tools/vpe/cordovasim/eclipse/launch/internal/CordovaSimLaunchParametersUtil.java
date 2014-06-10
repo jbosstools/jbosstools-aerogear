@@ -152,14 +152,13 @@ public class CordovaSimLaunchParametersUtil {
 	}
 	
 	public static IResource getDefaultStartPage(IProject project, IContainer rootFolder) {		
-		String startPageName = getDefaultStartPageFromConfigXml(project, rootFolder);
-		
+		String startPageName = getDefaultStartPageFromConfigXml(project);
 		IResource startPage = getStartPage(rootFolder, startPageName);
 		return startPage;
 	}
 	
-	public static String getDefaultStartPageFromConfigXml(IProject project, IContainer rootFolder) {
-		IFile configFile = getConfigXml(project, rootFolder);
+	public static String getDefaultStartPageFromConfigXml(IProject project) {
+		IFile configFile = getConfigXml(project);
 		String startPageName = getStartPageName(configFile);
 
 		if (startPageName == null) {
@@ -168,21 +167,14 @@ public class CordovaSimLaunchParametersUtil {
 		return startPageName;
 	}
 	
-	public static IFile getConfigXml(IProject project, IContainer rootFolder) {
+	private static IFile getConfigXml(IProject project) {
 		IFile configFile = null;
 		if (project != null && project.isOpen()) {
 			try {
-				String configFilePath = null;
 				if (project.hasNature(AEROGEAR_HYBRID_NATURE_ID)) {
-					configFilePath = "www/config.xml"; //$NON-NLS-1$
+					configFile = getConfigXmlForThymProject(project);
 				} else if (project.hasNature(ANDROID_NATURE_ID)) {
-					configFilePath = "res/xml/config.xml"; //$NON-NLS-1$
-				}
-				if (configFilePath != null) {
-					IResource configResource = project.findMember("www/config.xml"); //$NON-NLS-1$
-					if (configResource instanceof IFile) {
-						configFile = (IFile) configResource;
-					}
+					configFile = getConfigXmlForAndroidProject(project);
 				}
 			} catch (CoreException e) {
 				Activator.logError(e.getMessage(), e);
@@ -191,6 +183,17 @@ public class CordovaSimLaunchParametersUtil {
 		return configFile;
 	}
 	
+	private static IFile getConfigXmlForThymProject(IProject project) {
+		return HybridProject.getHybridProject(project).getConfigFile();
+	}
+
+	private static IFile getConfigXmlForAndroidProject(IProject project) {
+		IResource configResource = project.findMember("res/xml/config.xml"); //$NON-NLS-1$
+		if (configResource instanceof IFile) {
+			return (IFile) configResource;
+		}
+		return null;
+	}
 	
 	/**
 	 * Returns the location of the cordova.js file of the {@link HybridProject}.
