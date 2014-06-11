@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -41,12 +42,8 @@ import org.jboss.tools.jst.jsdt.utils.ConfigUtils;
 import org.osgi.framework.Bundle;
 
 public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainerInitializer {
-	
-	
 	public static final String CONTAINER_ID = "org.jboss.tools.aerogear.hybrid.core.CordovaContainerInitializer";
-	private static final int NUMBER_OF_FILES = 2;
 	private IJavaScriptProject project;
-	
 
 	public CordovaLibraryJsContainerInitializer() {
 		// we do not want super()
@@ -88,11 +85,17 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 	
 	@Override
 	public IIncludePathEntry[] getIncludepathEntries() {
-		IIncludePathEntry[] entries = new IIncludePathEntry[NUMBER_OF_FILES];
-		entries[0] = getCordovaJsIncludePathEntry();
-		entries[1] = getPluginJsIncludePathEntry();
-		return entries;
+		List<IIncludePathEntry> list = new ArrayList<IIncludePathEntry>();
 
+		IIncludePathEntry entry = getCordovaJsIncludePathEntry();
+		if (entry != null) // We shouldn't return 'null'-entries
+			list.add(entry);
+		
+		entry = getPluginJsIncludePathEntry();
+		if (entry != null) // We shouldn't return 'null'-entries
+			list.add(entry);
+		
+		return list.toArray(new IIncludePathEntry[list.size()]);
 	}
 	
 	private IIncludePathEntry getPluginJsIncludePathEntry() {
