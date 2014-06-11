@@ -48,6 +48,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 	private static final String PREFERENCES_CORDOVA_SIZE = "size"; //$NON-NLS-1$
 	private static final String PREFERENCES_WIDTH = "width"; //$NON-NLS-1$
 	private static final String PREFERENCES_HEIGHT = "height"; //$NON-NLS-1$
+	private static final String PREFERENCES_SHOW_UNSUPPORTED_PLUGINS_POP_UP = "showUnsupportedPluginsPopUp"; //$NON-NLS-1$
 	
 	
 	public static CordavaSimSpecificPreferencesStorage INSTANCE = new CordavaSimSpecificPreferencesStorage();
@@ -66,6 +67,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 		boolean enableLiveReload = false;
 		int liveReloadPort = DEFAULT_LIVE_RELOAD_PORT;
 		boolean enableTouchEvents = false;
+		boolean showUnsupportedPluginsPopUp = true;
 		Point cordovaBrowserLocation = null;
 		Point cordovaBrowserSize = null;
 		boolean isJavaFx = false;
@@ -104,6 +106,11 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 				node = document.getElementsByTagName(PREFERENCES_TOUCH_EVENTS).item(0);
 				if (!PreferencesUtil.isNullOrEmpty(node)) {
 					enableTouchEvents = Boolean.parseBoolean(node.getTextContent());
+				}
+				
+				node = document.getElementsByTagName(PREFERENCES_SHOW_UNSUPPORTED_PLUGINS_POP_UP).item(0);
+				if (!PreferencesUtil.isNullOrEmpty(node)) {
+					showUnsupportedPluginsPopUp = Boolean.parseBoolean(node.getTextContent());
 				}
 				
 				node = document.getElementsByTagName(PREFERENCES_ORIENTATION_ANGLE).item(0);
@@ -155,7 +162,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 				}
 				
 				return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents,
-						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize, isJavaFx);
+						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize, isJavaFx, showUnsupportedPluginsPopUp);
 			}
 		} catch (SAXException e) {
 			CordovaSimLogger.logError(e.getMessage(), e);
@@ -182,7 +189,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 
 	@Override
 	protected SpecificPreferences createBlankPreferences() {
-		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, false, 0, null, null, null, false);
+		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, false, 0, null, null, null, false, true);
 	}
 
 	@Override
@@ -233,6 +240,11 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			Element isJavaFx = doc.createElement(PREFERENCES_IS_JAVAFX);
 			isJavaFx.setTextContent(String.valueOf(sp.isJavaFx()));
 			rootElement.appendChild(isJavaFx);
+			
+			Element showUnsupportedPluginsPopUp = doc.createElement(PREFERENCES_SHOW_UNSUPPORTED_PLUGINS_POP_UP);
+			boolean needToShowPopUp = ((CordovaSimSpecificPreferences)sp).showUnsupportedPluginsPopUp();
+			showUnsupportedPluginsPopUp.setTextContent(String.valueOf(needToShowPopUp));
+			rootElement.appendChild(showUnsupportedPluginsPopUp);
 			
 			Element cordova = doc.createElement(PREFERENCES_CORDOVA);
 			

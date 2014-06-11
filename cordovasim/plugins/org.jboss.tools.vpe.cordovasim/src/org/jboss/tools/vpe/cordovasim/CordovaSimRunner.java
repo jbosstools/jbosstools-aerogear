@@ -132,24 +132,27 @@ public class CordovaSimRunner {
 		Shell parentShell = rippleToolBarBrowser.getShell();
 		if (parentShell != null) {
 			browserSim = new CustomBrowserSim(homeUrl, parentShell);
-			
 			browserSim.setRippleToolBarBrowser(rippleToolBarBrowser);
 			browserSim.open(sp, null);
+			
 			browserSim.addSkinChangeListener(new SkinChangeListener() {
 				@Override
 				public void skinChanged(SkinChangeEvent event) {
 					rippleToolBarBrowser.refresh();
 				}
 			});
+			
 			browserSim.addExitListener(new ExitListener() {
-				
 				@Override
 				public void exit() {
 					rippleToolBarBrowser.getShell().dispose();
 				}
 			});
-			browserSim.getBrowser().addLocationListener(new RippleInjector());
-			CordovaSimUtil.fixScrollbarStylesForMac(browserSim.getBrowser());
+			
+			IBrowser browser = browserSim.getBrowser();
+			browser.addLocationListener(new RippleInjector());			
+			browser.registerBrowserFunction("csProceessUnsupportedPluginsPopUp", new ProceessUnsupportedPluginsPopUp(browserSim)); //$NON-NLS-1$
+			CordovaSimUtil.fixScrollbarStylesForMac(browser);
 		}
 	}
 	

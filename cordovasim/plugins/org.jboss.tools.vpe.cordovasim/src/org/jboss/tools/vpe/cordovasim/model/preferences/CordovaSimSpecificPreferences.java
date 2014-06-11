@@ -19,17 +19,14 @@ import org.jboss.tools.vpe.browsersim.model.preferences.SpecificPreferences;
 public class CordovaSimSpecificPreferences extends SpecificPreferences{
 	private Point cordovaBrowserSize;
 	private Point cordovaBrowserLocation;
+	private boolean showUnsupportedPluginsPopUp;
 	
 	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload, int liveReloadPort, boolean enableTouchEvents,
-			int orientationAngle, Point location, Point cordovaBrowserLocation, Point cordovaBrowserSize, boolean isJavaFx) {
+			int orientationAngle, Point location, Point cordovaBrowserLocation, Point cordovaBrowserSize, boolean isJavaFx, boolean showUnsupportedPluginsPopUp) {
 		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents, orientationAngle, location, isJavaFx);
 		this.cordovaBrowserLocation = cordovaBrowserLocation;
 		this.cordovaBrowserSize = cordovaBrowserSize;
-	}
-
-	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload, int liveReloadPort, boolean enableTouchEvents,
-			int orientationAngle, Point location, boolean isJavaFx) {
-		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents, orientationAngle, location, isJavaFx);
+		this.showUnsupportedPluginsPopUp = showUnsupportedPluginsPopUp;
 	}
 
 	public Point getCordovaBrowserLocation() {
@@ -48,12 +45,22 @@ public class CordovaSimSpecificPreferences extends SpecificPreferences{
 		this.cordovaBrowserSize = cordovaBrowserSize;
 	}
 	
+	public boolean showUnsupportedPluginsPopUp() {
+		return showUnsupportedPluginsPopUp;
+	}
+
+	public void setShowUnsupportedPluginsPopUp(boolean showUnsupportedPluginsPopUp) {
+		this.showUnsupportedPluginsPopUp = showUnsupportedPluginsPopUp;
+	}
+	
 	@Override
 	public void copyProperties(SpecificPreferences sp) {
 		super.copyProperties(sp);
 		if (sp instanceof CordovaSimSpecificPreferences) {
 			setCordovaBrowserLocation(((CordovaSimSpecificPreferences) sp).getCordovaBrowserLocation());
 			setCordovaBrowserSize(((CordovaSimSpecificPreferences) sp).getCordovaBrowserSize());
+			setShowUnsupportedPluginsPopUp(((CordovaSimSpecificPreferences) sp).showUnsupportedPluginsPopUp());
 		}
 	}
+
 }
