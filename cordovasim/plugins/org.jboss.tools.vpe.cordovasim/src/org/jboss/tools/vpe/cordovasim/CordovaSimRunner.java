@@ -45,6 +45,7 @@ import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPrefer
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
 import org.jboss.tools.vpe.cordovasim.plugin.inappbrowser.InAppBrowserLoader;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
+import org.jboss.tools.vpe.cordovasim.util.CordovaSimUtil;
 import org.jboss.tools.vpe.cordovasim.util.StartPageParametersUtil;
 
 /**
@@ -148,6 +149,7 @@ public class CordovaSimRunner {
 				}
 			});
 			browserSim.getBrowser().addLocationListener(new RippleInjector());
+			CordovaSimUtil.fixScrollbarStylesForMac(browserSim.getBrowser());
 		}
 	}
 	
