@@ -19,6 +19,8 @@ public class Messages {
 	private static final String BUNDLE_NAME = Messages.class.getName().toString().toLowerCase();
 
 	public static String CordovaSim_CORDOVA_SIM;
+	public static String CordovaSimManageDevicesDialog_UNSUPPORTED_PLUGINS;
+	public static String CordovaSimManageDevicesDialog_UNSUPPORTED_PLUGINS_CHECKBOX;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

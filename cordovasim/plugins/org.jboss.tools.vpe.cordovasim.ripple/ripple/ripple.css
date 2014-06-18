@@ -2110,3 +2110,11 @@ fieldset {
     display: inline;
     padding-right: 8px;
 }
+
+.thick {
+    font-weight:bold;
+}
+
+.red {
+    color: red;
+}
