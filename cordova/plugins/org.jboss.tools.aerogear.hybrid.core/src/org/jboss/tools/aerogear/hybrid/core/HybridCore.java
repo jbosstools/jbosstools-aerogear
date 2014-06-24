@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.ILog;
@@ -35,6 +36,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -99,6 +101,16 @@ final public class HybridCore implements BundleActivator, DebugOptionsListener {
 	public IRetrieveFileTransfer getFileTransferService(){
 		IRetrieveFileTransferFactory factory =  getFileTransferServiceTracker().getService();
 		return factory.newInstance();
+	}
+	
+	
+	/**
+	 * Get the proxyservice
+	 * @return
+	 */
+	public IProxyService getProxyService(){
+		ServiceReference<IProxyService> sr = context.getServiceReference(IProxyService.class);
+		return context.getService(sr);
 	}
 	
 	private synchronized ServiceTracker<IRetrieveFileTransferFactory, IRetrieveFileTransferFactory> getFileTransferServiceTracker() {

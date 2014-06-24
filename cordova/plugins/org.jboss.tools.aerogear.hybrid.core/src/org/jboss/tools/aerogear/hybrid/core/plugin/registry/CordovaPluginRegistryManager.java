@@ -48,6 +48,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.jboss.tools.aerogear.hybrid.core.HybridCore;
 import org.jboss.tools.aerogear.hybrid.core.internal.util.BundleHttpCacheStorage;
+import org.jboss.tools.aerogear.hybrid.core.internal.util.HttpUtil;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
 import org.osgi.framework.BundleContext;
 
@@ -77,7 +78,9 @@ public class CordovaPluginRegistryManager {
 		if(plugin != null )
 			return plugin;
 		BundleContext context = HybridCore.getContext();	
-		HttpClient client =new CachingHttpClient(new DefaultHttpClient(), 
+		DefaultHttpClient defHttpClient = new DefaultHttpClient();
+		HttpUtil.setupProxy(defHttpClient);
+		HttpClient client =new CachingHttpClient(defHttpClient,
 				new FileResourceFactory(context.getDataFile(BundleHttpCacheStorage.SUBDIR_HTTP_CACHE)), 
 				new BundleHttpCacheStorage(HybridCore.getContext().getBundle()), getCacheConfig()); 
 		
@@ -145,7 +148,8 @@ public class CordovaPluginRegistryManager {
 		if(!registry.contains("registry.cordova.io"))//ping only cordova registry
 			return;
 		
-		HttpClient client = new DefaultHttpClient();
+		DefaultHttpClient client = new DefaultHttpClient();
+		HttpUtil.setupProxy(client);
 		String url = registry.endsWith("/") ? registry+"downloads" : registry+"/downloads";
 		HttpPost post = new HttpPost(url);
 		Date now =new Date();
@@ -206,7 +210,9 @@ public class CordovaPluginRegistryManager {
 		
 		monitor.beginTask("Retrieve plug-in registry catalog", 10);
 		BundleContext context = HybridCore.getContext();
-		HttpClient client = new CachingHttpClient(new DefaultHttpClient(), 
+		DefaultHttpClient theHttpClient = new DefaultHttpClient();
+		HttpUtil.setupProxy(theHttpClient);
+		HttpClient client = new CachingHttpClient(theHttpClient, 
 				new FileResourceFactory(context.getDataFile(BundleHttpCacheStorage.SUBDIR_HTTP_CACHE)), 
 				new BundleHttpCacheStorage(HybridCore.getContext().getBundle()), getCacheConfig());
 		String url = registry.endsWith("/") ? registry+"-/all" : registry+"/-/all";
