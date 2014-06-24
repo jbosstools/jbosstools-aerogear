@@ -75,15 +75,15 @@ public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreation
         txtName = new Text(applicationGroup, SWT.BORDER);
         txtName.addModifyListener(propertyModifyListener);
         txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtName.setMessage("a friendly name");
         
         Label lblId = new Label(applicationGroup, SWT.NONE);
         lblId.setText("ID:");
         
         txtID = new Text(applicationGroup, SWT.BORDER);
+        txtID.setMessage("com.mycom.app");
         txtID.addModifyListener(propertyModifyListener);
         txtID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
-   
 
         setPageComplete(validatePage());
         setErrorMessage(null);
