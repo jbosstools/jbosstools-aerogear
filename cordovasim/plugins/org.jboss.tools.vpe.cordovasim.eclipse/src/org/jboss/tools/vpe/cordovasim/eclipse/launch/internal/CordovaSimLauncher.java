@@ -24,7 +24,6 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -35,7 +34,6 @@ import org.jboss.tools.vpe.browsersim.eclipse.callbacks.ViewSourceCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessCallback;
 import org.jboss.tools.vpe.browsersim.eclipse.launcher.ExternalProcessLauncher;
-import org.jboss.tools.vpe.browsersim.eclipse.preferences.BrowserSimPreferencesPage;
 import org.jboss.tools.vpe.browsersim.ui.ExceptionNotifier;
 import org.jboss.tools.vpe.browsersim.util.BrowserSimUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
@@ -177,12 +175,10 @@ public class CordovaSimLauncher {
 			String jvmPath = jvm.getInstallLocation().getAbsolutePath();
 			String jrePath = jvm.getInstallLocation().getAbsolutePath() + File.separator + "jre"; //$NON-NLS-1$
 			
-			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-			
 			List<String> bundles = getBundles();
 			
-			if ((IPreferenceStore.FALSE.equals(store.getString(BrowserSimPreferencesPage.BROWSERSIM_GTK_2))
-					|| (!BrowserSimUtil.isJavaFxAvailable(jvmPath) && !BrowserSimUtil.isJavaFxAvailable(jrePath)))) {
+			if (!ExternalProcessLauncher.isGTK2()
+					|| (!BrowserSimUtil.isJavaFxAvailable(jvmPath) && !BrowserSimUtil.isJavaFxAvailable(jrePath))) {
 				bundles.add("org.jboss.tools.vpe.browsersim.javafx.mock"); //$NON-NLS-1$
 			}
 			
