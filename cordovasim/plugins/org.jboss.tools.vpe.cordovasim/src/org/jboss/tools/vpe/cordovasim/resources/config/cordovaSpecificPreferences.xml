@@ -11,6 +11,7 @@
 	<liveReloadPort>35729</liveReloadPort>
 	<enableTouchEvents>false</enableTouchEvents>
 	<showUnsupportedPluginsPopUp>true</showUnsupportedPluginsPopUp>
+	<javafx>true</javafx>
 	<cordova>
 		<cordovaLocation>
 			<x></x>
