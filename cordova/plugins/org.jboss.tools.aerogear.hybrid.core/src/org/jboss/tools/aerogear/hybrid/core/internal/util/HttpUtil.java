@@ -51,6 +51,9 @@ public class HttpUtil {
 				} catch (URISyntaxException e) {
 					HybridCore.log(IStatus.ERROR, "Incorrect URI", e);
 				}
+				if(host == null ){
+					return new HttpRoute(target);
+				}
 				return new HttpRoute(target, null, host, false);
 			}
 		});
