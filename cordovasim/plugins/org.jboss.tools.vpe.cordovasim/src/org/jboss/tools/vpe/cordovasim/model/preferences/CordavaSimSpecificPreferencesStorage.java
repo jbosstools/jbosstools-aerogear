@@ -70,7 +70,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 		boolean showUnsupportedPluginsPopUp = true;
 		Point cordovaBrowserLocation = null;
 		Point cordovaBrowserSize = null;
-		boolean isJavaFx = false;
+		boolean isJavaFx = true;
 
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
