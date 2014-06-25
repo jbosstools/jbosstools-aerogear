@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.jboss.tools.aerogear.hybrid.core.HybridProjectConventions;
-import org.jboss.tools.aerogear.hybrid.ui.HybridUI;
 
 public class WizardNewHybridProjectCreationPage extends WizardNewProjectCreationPage{
 	private Text txtName;

@@ -12,6 +12,7 @@ package org.jboss.tools.aerogear.hybrid.ui.internal.wizard.imports;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -245,7 +248,7 @@ public class HybridProjectImportPage extends WizardPage implements IOverwriteQue
 					
 				}
 				projectList.refresh(true);
-				setPageComplete(projectList.getCheckedElements().length >0);
+				setPageComplete(validatePage());
 			}
 		});
 		
@@ -275,7 +278,7 @@ public class HybridProjectImportPage extends WizardPage implements IOverwriteQue
 						projectList.setChecked(candie, true);
 					}
 				}
-				setPageComplete(projectList.getCheckedElements().length>0);
+				setPageComplete(validatePage());
 			}
 		});
 		
@@ -448,6 +451,7 @@ public class HybridProjectImportPage extends WizardPage implements IOverwriteQue
 			@Override
 			public void handleEvent(Event event) {
 				copyFiles = copyCheckbox.getSelection();
+				setPageComplete(validatePage());
 			}
 		});
 	}
@@ -494,8 +498,7 @@ public class HybridProjectImportPage extends WizardPage implements IOverwriteQue
 		WorkspaceModifyOperation wop = new WorkspaceModifyOperation() {
 			
 			@Override
-			protected void execute(IProgressMonitor monitor) throws CoreException,
-					InvocationTargetException, InterruptedException {
+			protected void execute(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 				monitor.beginTask("", selectedCandidates.length);
 				if (monitor.isCanceled()) {
 					throw new OperationCanceledException();
@@ -505,6 +508,9 @@ public class HybridProjectImportPage extends WizardPage implements IOverwriteQue
 						ProjectCandidate pc = (ProjectCandidate) selectedCandidates[i];
 						doCreateProject(pc, new SubProgressMonitor(monitor, 1));
 					}
+				}
+				catch(CoreException e){
+					throw new InvocationTargetException(e);
 				}finally{
 					monitor.done();
 				}
@@ -514,18 +520,23 @@ public class HybridProjectImportPage extends WizardPage implements IOverwriteQue
 		try {
 			getContainer().run(true, true, wop);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (e.getTargetException() != null) {
+				if(e.getTargetException() instanceof CoreException ){
+					StatusManager.handle((CoreException) e.getTargetException());
+				}else{
+					ErrorDialog.openError(getShell(), "Error importing project",null, 
+							new Status(IStatus.ERROR, HybridUI.PLUGIN_ID, "Project import error", e.getTargetException() ));
+				}
+			}
+
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new OperationCanceledException();
 		}
-		
 		return true;
 	}
 	
 
-	private void doCreateProject(ProjectCandidate pc, IProgressMonitor monitor) throws CoreException, InterruptedException, InvocationTargetException{
+	private void doCreateProject(ProjectCandidate pc, IProgressMonitor monitor) throws CoreException, InterruptedException {
 		HybridProjectCreator projectCreator = new HybridProjectCreator();
 		Widget w = pc.getWidget();
 		String projectName = pc.getProjectName();
@@ -541,12 +552,74 @@ public class HybridProjectImportPage extends WizardPage implements IOverwriteQue
 			operation.setContext(getShell());
 			operation.setOverwriteResources(true); 
 			operation.setCreateContainerStructure(false);
-			operation.run(monitor);
+			
+			try {
+				operation.run(monitor);
+			} catch (InvocationTargetException e) {
+				if(e.getCause() != null  && e.getCause() instanceof CoreException){
+					CoreException corex = (CoreException) e.getCause();
+					throw corex;
+				}
+			}
 			IStatus status = operation.getStatus();
 			if (!status.isOK())
-				throw new InvocationTargetException(new CoreException(status));
+				throw new CoreException(status);
 		}
 
+	}
+	
+	private boolean validatePage(){
+		final Object[] selectedCandidates = projectList.getCheckedElements();
+		if(selectedCandidates.length < 1 ){
+			return false;
+		}
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+		for (int i = 0; i < selectedCandidates.length; i++) {
+			ProjectCandidate pc = (ProjectCandidate) selectedCandidates[i];
+			
+			final IStatus nameStatus= workspace.validateName(pc.getProjectName(), IResource.PROJECT);
+			if (!nameStatus.isOK()) {
+				setErrorMessage(nameStatus.getMessage());
+				return false;
+			}
+			final IProject handle= workspace.getRoot().getProject(pc.getProjectName());
+			if (handle.exists()) {
+				setErrorMessage(NLS.bind("Project {0} already exists", pc.getProjectName()));
+				return false;
+			}			
+			
+			IPath projectLocation= ResourcesPlugin.getWorkspace().getRoot().getLocation().append(pc.getProjectName());
+			if (projectLocation.toFile().exists()) {
+				try {
+					//correct casing
+					String canonicalPath= projectLocation.toFile().getCanonicalPath();
+					projectLocation= new Path(canonicalPath);
+				} catch (IOException e) {
+					HybridUI.log(IStatus.WARNING, "Error getting canonical path", e);
+				}
+
+				String existingName= projectLocation.lastSegment();
+				if (!existingName.equals(pc.getProjectName())) {
+					setErrorMessage(NLS.bind("Project name {0} already exists on the workspace", existingName));
+					return false;
+				}
+			}
+			
+			IPath projectPath = null;
+			if(copyFiles){
+				projectPath= projectLocation;
+			}else{
+				projectPath = new Path(pc.wwwLocation.getParentFile().toString());
+			}
+			final IStatus locationStatus= workspace.validateProjectLocation(handle, projectPath);
+			if (!locationStatus.isOK()) {
+				setErrorMessage(locationStatus.getMessage());
+				return false;
+			}
+		}
+		setErrorMessage(null);
+		return true;
 	}
 
 	@Override
