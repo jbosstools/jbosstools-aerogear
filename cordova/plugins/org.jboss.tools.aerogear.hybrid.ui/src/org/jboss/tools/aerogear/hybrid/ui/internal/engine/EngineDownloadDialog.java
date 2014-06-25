@@ -296,6 +296,13 @@ public class EngineDownloadDialog extends TitleAreaDialog{
 			@Override
 			public void run(IProgressMonitor monitor) throws InvocationTargetException,
 					InterruptedException {
+				getShell().getDisplay().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						Button okButton = getButton(IDialogConstants.OK_ID);
+						okButton.setEnabled(false);
+					}
+				});
 				engineProvider.downloadEngine(version, monitor, platforms);
 			}
 		});
