@@ -38,8 +38,13 @@ public class CordovaSimMenuCreator extends BrowserSimMenuCreator {
 	}
 	
 	@Override
-	protected void addFileItems(Menu menu, BrowserSimSkin skin,	CommonPreferences commonPreferences, SpecificPreferences specificPreferences) {
-		new CordovaSimFileMenuCreator().addItems(menu, skin, commonPreferences, specificPreferences);	
+	protected void addFileItemsToContextMenu(Menu menu, BrowserSimSkin skin, CommonPreferences commonPreferences, SpecificPreferences specificPreferences) {
+		new CordovaSimFileMenuCreator().addItemsToContextMenu(menu, skin, commonPreferences, specificPreferences);	
+	}
+	
+	@Override
+	protected void addFileItemsToMenuBar(Menu menu, BrowserSimSkin skin, CommonPreferences commonPreferences, SpecificPreferences specificPreferences) {
+		new CordovaSimFileMenuCreator().addItemsToMenuBar(menu, skin, commonPreferences, specificPreferences);	
 	}
 	
 	@Override
