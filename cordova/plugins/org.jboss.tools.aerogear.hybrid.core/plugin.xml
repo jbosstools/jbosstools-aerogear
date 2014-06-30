@@ -41,4 +41,14 @@
             id="org.jboss.tools.aerogear.hybrid.core.CordovaContainerInitializer">
       </JsGlobalScopeContainerInitializer>
    </extension>
+   <extension 
+         point="tern.eclipse.ide.core.ternNatureAdapters">
+      <ternAdaptToNature
+            id = "org.jboss.tools.aerogear.hybrid.core.HybridAppNature"
+            name = "HybridAppNature">
+      	 <defaultModules>
+      	 	<module name = "cordovajs" withDependencies="true" />
+      	 </defaultModules>
+      </ternAdaptToNature>
+   </extension>
 </plugin>

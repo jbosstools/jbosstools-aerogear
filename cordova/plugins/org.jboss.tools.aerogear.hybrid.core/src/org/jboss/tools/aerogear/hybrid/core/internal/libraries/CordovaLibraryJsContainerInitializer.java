@@ -38,8 +38,6 @@ import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
 import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
 import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
 import org.jboss.tools.aerogear.hybrid.core.platform.PlatformConstants;
-import org.jboss.tools.jst.jsdt.utils.ConfigUtils;
-import org.osgi.framework.Bundle;
 
 public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainerInitializer {
 	public static final String CONTAINER_ID = "org.jboss.tools.aerogear.hybrid.core.CordovaContainerInitializer";
@@ -58,14 +56,6 @@ public class CordovaLibraryJsContainerInitializer extends JsGlobalScopeContainer
 			throws CoreException {
 		CordovaLibraryJsContainerInitializer scopeContainer = new CordovaLibraryJsContainerInitializer(project);
 		JavaScriptCore.setJsGlobalScopeContainer(containerPath, new IJavaScriptProject[] { project }, new IJsGlobalScopeContainer[] {scopeContainer} , null);
-		try {
-			Bundle optBundle = Platform.getBundle("org.jboss.tools.jst.jsdt");
-			if(optBundle!=null && optBundle.getState()==Bundle.RESOLVED) {
-				CordovaPluginConfigurator.enableCordovaJSPlugin(project.getProject());
-			}
-		} catch (IOException e) {
-			HybridCore.log(IStatus.ERROR, "Error configuring the Cordova library plugin for Content Assist", e);	
-		}
 	}
 	
 	@Override
