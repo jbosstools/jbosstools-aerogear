@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim.eclipse;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -29,8 +32,8 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.tools.vpe.cordovasim.eclipse"; //$NON-NLS-1$
 
-	private static final String CORDOVASIM_ACTION = "cordovasim";
-	private static final String USAGE_COMPONENT_NAME = "aerogear";
+	private static final String CORDOVASIM_ACTION = "cordovasim"; //$NON-NLS-1$
+	private static final String USAGE_COMPONENT_NAME = "aerogear"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -55,8 +58,14 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public void countLaunchEvent() {
-		String label = org.jboss.tools.vpe.browsersim.eclipse.Activator.getEngineName(CordavaSimSpecificPreferencesStorage.INSTANCE);
-		UsageReporter.getInstance().countEvent(launchEventType.event(label));
+		try {
+			String label = org.jboss.tools.vpe.browsersim.eclipse.Activator.getEngineName(CordavaSimSpecificPreferencesStorage.INSTANCE);
+			UsageReporter.getInstance().countEvent(launchEventType.event(label));
+		} catch (URISyntaxException e) {
+			Activator.logError(e.getMessage(), e);
+		} catch (IOException e) {
+			Activator.logError(e.getMessage(), e);
+		}
 	}
 
 	/*

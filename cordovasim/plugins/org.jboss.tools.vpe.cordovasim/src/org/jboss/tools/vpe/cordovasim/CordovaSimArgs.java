@@ -34,8 +34,14 @@ public class CordovaSimArgs {
 		List<String> params = new ArrayList<String>(Arrays.asList(args));
 		BrowserSimArgs.standalone = !params.contains(BrowserSimArgs.NOT_STANDALONE);
 		if (!BrowserSimArgs.standalone) {
-			params.remove(BrowserSimArgs.NOT_STANDALONE);
+			params.remove(BrowserSimArgs.NOT_STANDALONE); // XXX
 		}
+		
+		int configurationParameterIndex = params.indexOf("-configuration"); //$NON-NLS-1$
+		if (configurationParameterIndex >= 0) {
+			params.remove(configurationParameterIndex);
+			BrowserSimArgs.cofigurationFolder = params.remove(configurationParameterIndex); // XXX
+		} 
 			
 		int versionParameterIndex = params.indexOf("-version"); //$NON-NLS-1$
 		if (versionParameterIndex >= 0) {
@@ -44,7 +50,7 @@ public class CordovaSimArgs {
 		} else {
 			cordovaVersion = "3.1.0";  //$NON-NLS-1$ Using cordova-3.1.0.js
 		}
-				
+						
 		if (params.size() > 0) {
 			homeUrl = params.remove(params.size() - 1); // the parameter before the last one 	
 			try {
