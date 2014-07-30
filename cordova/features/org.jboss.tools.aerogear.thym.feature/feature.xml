@@ -2,20 +2,24 @@
 <feature
       id="org.jboss.tools.aerogear.thym.feature"
       label="%featureName"
-      version="1.0.0.qualifier"
+      version="1.2.0.qualifier"
       provider-name="%providerName">
 
    <description>
-        %description
+      %description
    </description>
 
    <copyright>
-        %copyright
+      %copyright
    </copyright>
 
    <license url="%licenseURL">
-        %license
+      %license
    </license>
+
+   <requires>
+      <import feature="org.eclipse.thym.feature" version="0.1.0" match="greaterOrEqual"/>
+   </requires>
 
    <plugin
          id="org.jboss.tools.aerogear.thym"
@@ -23,4 +27,5 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
 </feature>

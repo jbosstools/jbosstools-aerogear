@@ -5,11 +5,11 @@
 	<category-def label="JBoss Tools Aerogear/Hybrid Nightly Build Update Site" name="JBoss Tools Aerogear/Hybrid Nightly Build Update Site">
 		<description>JBoss Tools ws Nightly Build Update Site: contains all features in this build.</description>
 	</category-def>
-	<feature id="org.jboss.tools.aerogear.hybrid.feature" version="0.0.0">
+	<feature id="org.jboss.tools.aerogear.thym.feature" version="0.0.0">
 		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
 	</feature>
 	<!-- Sources -->
-	<feature id="org.jboss.tools.aerogear.hybrid.feature.source" version="0.0.0">
+	<feature id="org.jboss.tools.aerogear.thym.feature.source" version="0.0.0">
 		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
 	</feature>
         <feature id="org.jboss.tools.vpe.cordovasim.feature" version="0.0.0">
