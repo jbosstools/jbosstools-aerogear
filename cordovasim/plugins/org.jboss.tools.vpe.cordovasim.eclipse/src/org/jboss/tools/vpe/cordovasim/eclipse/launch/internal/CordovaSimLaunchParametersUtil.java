@@ -33,10 +33,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.jboss.tools.aerogear.hybrid.core.HybridProject;
-import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileEngine;
-import org.jboss.tools.aerogear.hybrid.core.engine.HybridMobileLibraryResolver;
-import org.jboss.tools.aerogear.hybrid.core.engine.PlatformLibrary;
+import org.eclipse.thym.core.HybridProject;
+import org.eclipse.thym.core.engine.HybridMobileEngine;
+import org.eclipse.thym.core.engine.HybridMobileLibraryResolver;
+import org.eclipse.thym.core.engine.PlatformLibrary;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
 import org.w3c.dom.Document;
@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
  * @author "Ilya Buziuk (ibuziuk)"
  */
 public class CordovaSimLaunchParametersUtil {
-	private static final String AEROGEAR_HYBRID_NATURE_ID = "org.jboss.tools.aerogear.hybrid.core.HybridAppNature"; //$NON-NLS-1$
+	private static final String AEROGEAR_HYBRID_NATURE_ID = "org.eclipse.thym.core.HybridAppNature"; //$NON-NLS-1$
 	private static final String ANDROID_NATURE_ID = "com.android.ide.eclipse.adt.AndroidNature"; //$NON-NLS-1$
 	private static final String ANDROID_PLATFORM_ID = "android"; //$NON-NLS-1$
 	private static final String IOS_PLATFORM_ID = "ios"; //$NON-NLS-1$
