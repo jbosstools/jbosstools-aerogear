@@ -151,8 +151,7 @@ public class CordovaSimRunner {
 			});
 			
 			IBrowser browser = browserSim.getBrowser();
-			browser.addLocationListener(new RippleInjector());			
-			browser.registerBrowserFunction("csProceessUnsupportedPluginsPopUp", new ProceessUnsupportedPluginsPopUp(browserSim)); //$NON-NLS-1$
+			browser.addLocationListener(new RippleInjector(browserSim));			
 			CordovaSimUtil.fixScrollbarStylesForMac(browser);
 		}
 	}
@@ -241,9 +240,9 @@ public class CordovaSimRunner {
 						createBrowserSim(sp, rippleToolBarBrowser, homeUrl);
 					} else if (oldBrowser == browserSim.getBrowser()) {
 						browserSim.reinitSkin();
-						browserSim.getBrowser().addLocationListener(new RippleInjector());
+						browserSim.getBrowser().addLocationListener(new RippleInjector(browserSim));
 					} else if (oldBrowser != browserSim.getBrowser()) {
-						browserSim.getBrowser().addLocationListener(new RippleInjector());
+						browserSim.getBrowser().addLocationListener(new RippleInjector(browserSim));
 					}					
 					event.browser = browserSim.getBrowser();
 					oldBrowser = browserSim.getBrowser();
