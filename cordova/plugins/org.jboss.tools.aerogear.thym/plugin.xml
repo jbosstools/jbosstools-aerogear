@@ -11,5 +11,10 @@
          </defaultModules>
       </ternAdaptToNature>
    </extension>
+     <extension
+           point="org.eclipse.ui.startup">
+        <startup
+              class="org.jboss.tools.aerogear.thym.internal.convert.NatureConvertListener"></startup>
+     </extension>
 
 </plugin>
