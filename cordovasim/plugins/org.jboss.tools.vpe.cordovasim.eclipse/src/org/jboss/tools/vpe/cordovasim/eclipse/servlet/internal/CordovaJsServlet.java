@@ -32,7 +32,7 @@ public class CordovaJsServlet extends HttpServlet {
 	private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB
 	private static final String MIME_TYPE = "application/javascript"; //$NON-NLS-1$
 	private static final String CONTENT_LENGTH = "Content-Length"; //$NON-NLS-1$
-	private static final String DEFAULT_CORDOVA_JS = "/ripple/cordova/cordova-3.1.0.js"; //$NON-NLS-1$
+	private static final String DEFAULT_CORDOVA_JS = "/ripple/cordova/cordova-3.5.0.js"; //$NON-NLS-1$
 	private String cordovaJsLocation;
 
 	public CordovaJsServlet(String cordovaJsLocation) {
@@ -43,14 +43,14 @@ public class CordovaJsServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (cordovaJsLocation == null) {
-			response.sendRedirect(DEFAULT_CORDOVA_JS); // Using cordova-3.1.0 engine
+			response.sendRedirect(DEFAULT_CORDOVA_JS); // Using cordova-3.5.0 engine
 			return;
 		}
 
 		File cordovaJsFile = new File(cordovaJsLocation);
 
 		if (!cordovaJsFile.exists()) {
-			response.sendRedirect(DEFAULT_CORDOVA_JS); // Using cordova-3.1.0 engine
+			response.sendRedirect(DEFAULT_CORDOVA_JS); // Using cordova-3.5.0 engine
 			return;
 		}
 
