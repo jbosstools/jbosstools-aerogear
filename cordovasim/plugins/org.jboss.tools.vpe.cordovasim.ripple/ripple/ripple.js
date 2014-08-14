@@ -35110,6 +35110,15 @@ module.exports = {
         _doc = doc;
         _xhr = win.XMLHttpRequest;
 
+        _win.BarcodeScanner = { // Mocking BarcodeScanner Encode constants 
+            Encode: {
+              TEXT_TYPE: "TEXT_TYPE",
+              EMAIL_TYPE: "EMAIL_TYPE",
+              PHONE_TYPE: "PHONE_TYPE",
+              SMS_TYPE: "SMS_TYPE"
+            } 
+        }
+
         var marshal = function (obj, key) {
                 window[key] = win[key] = obj;
             },
