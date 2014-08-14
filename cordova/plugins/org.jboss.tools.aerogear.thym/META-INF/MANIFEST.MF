@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %Bundle-Name
+Bundle-Name: %BundleName
 Bundle-SymbolicName: org.jboss.tools.aerogear.thym;singleton:=true
 Bundle-Version: 1.2.0.qualifier
 Bundle-Activator: org.jboss.tools.aerogear.thym.ThymPlugin
-Bundle-Vendor: %Bundle-Vendor
+Bundle-Vendor: %BundleVendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.jboss.tools.jst.jsdt;resolution:=optional;x-installation:=greedy,
@@ -13,3 +13,4 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: jar

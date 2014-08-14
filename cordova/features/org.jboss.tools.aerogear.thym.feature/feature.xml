@@ -3,7 +3,8 @@
       id="org.jboss.tools.aerogear.thym.feature"
       label="%featureName"
       version="1.2.0.qualifier"
-      provider-name="%providerName">
+      provider-name="%providerName"
+      plugin="org.jboss.tools.aerogear.thym">
 
    <description>
       %description
