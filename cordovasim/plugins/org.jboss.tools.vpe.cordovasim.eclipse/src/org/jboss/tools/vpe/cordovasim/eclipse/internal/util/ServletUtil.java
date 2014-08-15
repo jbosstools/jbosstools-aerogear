@@ -24,6 +24,7 @@ public class ServletUtil {
 	public static final String APPLICATION_JAVASCRIPT_CONTENT_TYPE = "application/javascript"; //$NON-NLS-1$
 	public static final String ETAG = "Etag"; //$NON-NLS-1$
 	public static final String IF_NONE_MATCH = "If-None-Match"; //$NON-NLS-1$
+	public static final String TEXT_XML = "text/xml"; //$NON-NLS-1$
 
 	public static String generateEtag(File file) {
 		if (file != null && file.exists()) {

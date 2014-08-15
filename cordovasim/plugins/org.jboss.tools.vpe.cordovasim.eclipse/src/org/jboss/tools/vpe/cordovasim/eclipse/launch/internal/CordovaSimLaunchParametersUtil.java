@@ -167,7 +167,7 @@ public class CordovaSimLaunchParametersUtil {
 		return startPageName;
 	}
 	
-	private static IFile getConfigXml(IProject project) {
+	public static IFile getConfigXml(IProject project) {
 		IFile configFile = null;
 		if (project != null && project.isOpen()) {
 			try {

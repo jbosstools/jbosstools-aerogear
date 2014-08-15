@@ -38,6 +38,7 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
 import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.CordovaFileUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.ConfigServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CordovaJsServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CordovaPluginJsServlet;
 import org.jboss.tools.vpe.cordovasim.eclipse.servlet.internal.CrossOriginProxyServlet;
@@ -122,6 +123,10 @@ public class ServerCreator {
 		ServletHandler cordovaJsServetHandler = new ServletHandler();
 		cordovaJsServetHandler.addServletWithMapping(cordovaJsServletHolder, "/cordova.js"); 
 		
+		ServletHolder configHolder = new ServletHolder(new ConfigServlet(project));
+		ServletHandler configHandler = new ServletHandler();
+		configHandler.addServletWithMapping(configHolder, "/config.xml");
+		
 		File pluginDir = CordovaFileUtil.getPluginDir(resourseLocation); 
 		ServletHolder cordovaPluginJsServletHolder = new ServletHolder(new CordovaPluginJsServlet(pluginDir));
 		ServletHandler cordovaPluginJsServetHandler = new ServletHandler();
@@ -153,6 +158,7 @@ public class ServerCreator {
 				rippleRewriteHandler,
 				wwwResourceHandler,
 				cordovaJsServetHandler,
+				configHandler,
 				cordovaPluginJsServetHandler,
 				cordovaContextHandler,
 				pluginServletHandler,
