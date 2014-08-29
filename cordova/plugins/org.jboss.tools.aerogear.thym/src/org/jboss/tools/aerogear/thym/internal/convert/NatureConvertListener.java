@@ -38,7 +38,7 @@ public class NatureConvertListener implements IResourceChangeListener, IStartup 
 			if (delta.getResource().getType() == IResource.PROJECT) {
 				final IProject project = delta.getResource().getProject();
 				try {
-					if (project.hasNature(LEGACY_NATURE_ID)
+					if (project.isOpen() && project.hasNature(LEGACY_NATURE_ID)
 							&& !project.hasNature(HybridAppNature.NATURE_ID)) {
 						WorkspaceJob job = new WorkspaceJob(
 								"Convert to Thym nature") {
