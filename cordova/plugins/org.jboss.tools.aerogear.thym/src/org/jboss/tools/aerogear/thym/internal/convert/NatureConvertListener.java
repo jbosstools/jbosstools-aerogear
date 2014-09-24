@@ -36,43 +36,53 @@ public class NatureConvertListener implements IResourceChangeListener, IStartup 
 		IResourceDelta[] projectDeltas = event.getDelta().getAffectedChildren();
 		for (IResourceDelta delta : projectDeltas) {
 			if (delta.getResource().getType() == IResource.PROJECT) {
-				final IProject project = delta.getResource().getProject();
-				try {
-					if (project.isOpen() && project.hasNature(LEGACY_NATURE_ID)
-							&& !project.hasNature(HybridAppNature.NATURE_ID)) {
-						WorkspaceJob job = new WorkspaceJob(
-								"Convert to Thym nature") {
-
-							@Override
-							public IStatus runInWorkspace(
-									IProgressMonitor monitor)
-									throws CoreException {
-								IProjectDescription desc = project
-										.getDescription();
-								String[] natures = desc.getNatureIds();
-								for (int i = 0; i < natures.length; i++) {
-									if (natures[i].equals(LEGACY_NATURE_ID)) {
-										natures[i] = HybridAppNature.NATURE_ID;
-									}
-								}
-								desc.setNatureIds(natures);
-								project.setDescription(desc, monitor);
-								return Status.OK_STATUS;
-							}
-						};
-						job.schedule();
-					}
-				} catch (CoreException e) {
-					ThymPlugin.log(IStatus.WARNING,
-							"error while reading natures", e);
-				}
+				checkNature(delta.getResource().getProject());
 			}
+		}
+	}
+
+	private void checkNature(final IProject project) {
+		try {
+			if (project.isOpen() && project.hasNature(LEGACY_NATURE_ID)
+					&& !project.hasNature(HybridAppNature.NATURE_ID)) {
+				WorkspaceJob job = new WorkspaceJob(
+						"Convert to Thym nature") {
+
+					@Override
+					public IStatus runInWorkspace(
+							IProgressMonitor monitor)
+							throws CoreException {
+						IProjectDescription desc = project
+								.getDescription();
+						String[] natures = desc.getNatureIds();
+						for (int i = 0; i < natures.length; i++) {
+							if (natures[i].equals(LEGACY_NATURE_ID)) {
+								natures[i] = HybridAppNature.NATURE_ID;
+							}
+						}
+						desc.setNatureIds(natures);
+						project.setDescription(desc, monitor);
+						ThymPlugin.log(IStatus.WARNING, "Converted obsolete \"" + LEGACY_NATURE_ID + "\" nature to \"" + HybridAppNature.NATURE_ID + "\" for project \"" + project.getName() + "\"", null);
+						return Status.OK_STATUS;
+					}
+				};
+				job.schedule();
+			}
+		} catch (CoreException e) {
+			ThymPlugin.log(IStatus.WARNING,
+					"error while reading natures", e);
 		}
 	}
 
 	@Override
 	public void earlyStartup() {
-		this.instance = new NatureConvertListener();
+		// Check existing projects when the workspace is starting
+		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for (IProject project : projects) {
+			checkNature(project);
+		}
+		// Listen to any new/imported/changed projects and check them too
+		instance = new NatureConvertListener();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(instance,IResourceChangeEvent.POST_CHANGE);
 	}
 	
