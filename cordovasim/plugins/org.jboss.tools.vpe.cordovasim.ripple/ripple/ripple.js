@@ -41284,6 +41284,7 @@ module.exports = {
                 cordova.define.remove("cordova/exec");
                 cordova.define("cordova/exec", function (require, exports, module) {
                     module.exports = bridge.exec;
+                    module.exports.init = function(){cordova.require('cordova/channel').onNativeReady.fire();} // RIPPLE-69 
                 });
             };
 
