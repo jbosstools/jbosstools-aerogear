@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Copyright (c) 2007-2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -36,9 +36,10 @@ import org.xml.sax.SAXException;
 
 /**
  * @author Konstantin Marmalyukov (kmarmaliykov)
+ * @author Ilya Buziuk (ibuziuk)
  */
 public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesStorage{
-	private static final int CURRENT_CONFIG_VERSION = 11;
+	private static final int CURRENT_CONFIG_VERSION = 12;
 	private static final String SPECIFIC_PREFERENCES_FILE = "cordovaSpecificPreferences.xml"; //$NON-NLS-1$
 	private static final String DEFAULT_SPECIFIC_PREFERENCES_RESOURCE = "config/cordovaSpecificPreferences.xml"; //$NON-NLS-1$
 	
@@ -49,6 +50,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 	private static final String PREFERENCES_WIDTH = "width"; //$NON-NLS-1$
 	private static final String PREFERENCES_HEIGHT = "height"; //$NON-NLS-1$
 	private static final String PREFERENCES_SHOW_UNSUPPORTED_PLUGINS_POP_UP = "showUnsupportedPluginsPopUp"; //$NON-NLS-1$
+	private static final String PREFERENCES_RIPPLE = "ripplePreferences"; //$NON-NLS-1$
 	
 	
 	public static CordavaSimSpecificPreferencesStorage INSTANCE = new CordavaSimSpecificPreferencesStorage();
@@ -71,6 +73,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 		Point cordovaBrowserLocation = null;
 		Point cordovaBrowserSize = null;
 		boolean isJavaFx = true;
+		String ripplePreferences = null;
 
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -123,6 +126,11 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 					isJavaFx = Boolean.parseBoolean(node.getTextContent());
 				}
 				
+				node = document.getElementsByTagName(PREFERENCES_RIPPLE).item(0);
+				if (!PreferencesUtil.isNullOrEmpty(node)) {
+					ripplePreferences = node.getTextContent();
+				}
+				
 				node = document.getElementsByTagName(PREFERENCES_LOCATION).item(0);
 				if (!PreferencesUtil.isNullOrEmpty(node) && node.getNodeType() == Node.ELEMENT_NODE) {
 					Element location = (Element) node;
@@ -162,7 +170,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 				}
 				
 				return new CordovaSimSpecificPreferences(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents,
-						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize, isJavaFx, showUnsupportedPluginsPopUp);
+						orientationAngle, currentlocation, cordovaBrowserLocation, cordovaBrowserSize, isJavaFx, showUnsupportedPluginsPopUp, ripplePreferences);
 			}
 		} catch (SAXException e) {
 			CordovaSimLogger.logError(e.getMessage(), e);
@@ -189,7 +197,7 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 
 	@Override
 	protected SpecificPreferences createBlankPreferences() {
-		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, false, 0, null, null, null, false, true);
+		return new CordovaSimSpecificPreferences(null, true, false, DEFAULT_LIVE_RELOAD_PORT, false, 0, null, null, null, true, true, null);
 	}
 
 	@Override
@@ -245,6 +253,11 @@ public class CordavaSimSpecificPreferencesStorage extends SpecificPreferencesSto
 			boolean needToShowPopUp = ((CordovaSimSpecificPreferences)sp).showUnsupportedPluginsPopUp();
 			showUnsupportedPluginsPopUp.setTextContent(String.valueOf(needToShowPopUp));
 			rootElement.appendChild(showUnsupportedPluginsPopUp);
+			
+			Element ripplePreferences = doc.createElement(PREFERENCES_RIPPLE);
+			String preferences = ((CordovaSimSpecificPreferences)sp).getRipplePreferences();
+			ripplePreferences.setTextContent(preferences);
+			rootElement.appendChild(ripplePreferences);
 			
 			Element cordova = doc.createElement(PREFERENCES_CORDOVA);
 			

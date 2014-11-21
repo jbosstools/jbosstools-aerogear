@@ -30,6 +30,7 @@ import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPrefer
  * @author Ilya Buziuk (ibuziuk)
  */
 public class CustomBrowserSim extends BrowserSim {
+	private static final String GET_RIPPLE_PREFERENCES_SCRIPT = "return window.localStorage2.ripple"; //$NON-NLS-1$	
 	private IBrowser inAppBrowser;
 	private IBrowser rippleToolSuiteBrowser;
 
@@ -90,6 +91,12 @@ public class CustomBrowserSim extends BrowserSim {
 			}
 		};
 	}
+	
+	@Override
+	protected void cleanUpOnClose(Shell shell) {
+		saveRipplePreferences(getRippleToolBarBrowser(), getSpecificPreferences());
+		super.cleanUpOnClose(shell);
+	}
 		
 	@Override
 	protected boolean isAddressBarVisibleByDefault() {
@@ -115,5 +122,15 @@ public class CustomBrowserSim extends BrowserSim {
 
 	public void setRippleToolBarBrowser(IBrowser rippleToolBarBrowser) {
 		this.rippleToolSuiteBrowser = rippleToolBarBrowser;
+	}
+	
+	private void saveRipplePreferences(IBrowser rippleToolBarBrowser, CordovaSimSpecificPreferences sp) {
+		Object ripplePreferences =  rippleToolBarBrowser.evaluate(GET_RIPPLE_PREFERENCES_SCRIPT);
+		if (ripplePreferences != null && rippleToolBarBrowser != null && !rippleToolBarBrowser.isDisposed()) {
+			String preferences = (String) ripplePreferences;
+			if (!preferences.equals("undefined")) { //$NON-NLS-1$
+				sp.setRipplePreferences(preferences);	
+			}
+		}
 	}
 }
