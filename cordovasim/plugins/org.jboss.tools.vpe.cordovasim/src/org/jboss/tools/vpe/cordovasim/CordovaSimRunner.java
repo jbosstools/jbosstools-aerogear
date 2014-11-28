@@ -1,5 +1,5 @@
 /*******************************************************************************
-	 * Copyright (c) 2007-2013 Red Hat, Inc.
+	 * Copyright (c) 2007-2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -44,6 +44,7 @@ import org.jboss.tools.vpe.browsersim.util.PreferencesUtil;
 import org.jboss.tools.vpe.cordovasim.events.RippleInjector;
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordavaSimSpecificPreferencesStorage;
 import org.jboss.tools.vpe.cordovasim.model.preferences.CordovaSimSpecificPreferences;
+import org.jboss.tools.vpe.cordovasim.model.preferences.InitRipplePreferences;
 import org.jboss.tools.vpe.cordovasim.plugin.inappbrowser.InAppBrowserLoader;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimImageList;
 import org.jboss.tools.vpe.cordovasim.util.CordovaSimUtil;
@@ -204,7 +205,7 @@ public class CordovaSimRunner {
 		if (startPageParameters != null) {
 			processStartPageParameters(rippleToolBarBrowser, startPageParameters);
 		}
-					
+		
 		rippleToolBarBrowser.setUrl(StartPageParametersUtil.getRippleHomeUrl(homeUrl));
 		
 		shell.addListener(SWT.Close, new Listener() {
@@ -226,6 +227,13 @@ public class CordovaSimRunner {
 		} else {
 			sp.setCordovaBrowserLocation(shell.getLocation());
 		}
+		
+		rippleToolBarBrowser.addLocationListener(new LocationAdapter() {
+			@Override
+			public void changed(LocationEvent event) {
+				rippleToolBarBrowser.registerBrowserFunction("initRipplePreferences", new InitRipplePreferences(rippleToolBarBrowser, sp)); //$NON-NLS-1$
+			}
+		});
 		
 		rippleToolBarBrowser.addOpenWindowListener(new ExtendedOpenWindowListener() {
 			private IBrowser oldBrowser;
@@ -289,9 +297,8 @@ public class CordovaSimRunner {
 		});
 	}
 
-
 	private static void sendStopServerCommand() {
 		System.out.println(STOP_SERVER_COMMAND + " Server on port " + CordovaSimArgs.getPort() + " was stopped"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-
+	
 }

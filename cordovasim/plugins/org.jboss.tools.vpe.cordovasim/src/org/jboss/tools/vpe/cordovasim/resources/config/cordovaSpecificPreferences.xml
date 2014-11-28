@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<cordovasim version="11">
+<cordovasim version="12">
 	<selectedDeviceId>3cacc17b-a6d5-4959-88fb-bf861c69fb64</selectedDeviceId>
 	<location>
 		<x></x>
@@ -12,6 +12,7 @@
 	<enableTouchEvents>false</enableTouchEvents>
 	<showUnsupportedPluginsPopUp>true</showUnsupportedPluginsPopUp>
 	<javafx>true</javafx>
+	<ripplePreferences>{"tinyhippos-api-key":{"id":"tinyhippos-api-key","key":"api-key","value":"{\"name\":\"cordova\",\"version\":\"3.0.0\"}","prefix":"tinyhippos-"},"tinyhippos-settings-xhr-proxy-setting":{"id":"tinyhippos-settings-xhr-proxy-setting","key":"settings-xhr-proxy-setting","value":"local","prefix":"tinyhippos-"}}</ripplePreferences>
 	<cordova>
 		<cordovaLocation>
 			<x></x>

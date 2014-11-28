@@ -20,13 +20,15 @@ public class CordovaSimSpecificPreferences extends SpecificPreferences{
 	private Point cordovaBrowserSize;
 	private Point cordovaBrowserLocation;
 	private boolean showUnsupportedPluginsPopUp;
+	private String ripplePreferences;
 	
 	public CordovaSimSpecificPreferences(String selectedDeviceId, boolean useSkins, boolean enableLiveReload, int liveReloadPort, boolean enableTouchEvents,
-			int orientationAngle, Point location, Point cordovaBrowserLocation, Point cordovaBrowserSize, boolean isJavaFx, boolean showUnsupportedPluginsPopUp) {
+			int orientationAngle, Point location, Point cordovaBrowserLocation, Point cordovaBrowserSize, boolean isJavaFx, boolean showUnsupportedPluginsPopUp, String ripplePreferences) {
 		super(selectedDeviceId, useSkins, enableLiveReload, liveReloadPort, enableTouchEvents, orientationAngle, location, isJavaFx);
 		this.cordovaBrowserLocation = cordovaBrowserLocation;
 		this.cordovaBrowserSize = cordovaBrowserSize;
 		this.showUnsupportedPluginsPopUp = showUnsupportedPluginsPopUp;
+		this.ripplePreferences = ripplePreferences;
 	}
 
 	public Point getCordovaBrowserLocation() {
@@ -60,7 +62,16 @@ public class CordovaSimSpecificPreferences extends SpecificPreferences{
 			setCordovaBrowserLocation(((CordovaSimSpecificPreferences) sp).getCordovaBrowserLocation());
 			setCordovaBrowserSize(((CordovaSimSpecificPreferences) sp).getCordovaBrowserSize());
 			setShowUnsupportedPluginsPopUp(((CordovaSimSpecificPreferences) sp).showUnsupportedPluginsPopUp());
+			setRipplePreferences(((CordovaSimSpecificPreferences) sp).getRipplePreferences());
 		}
+	}
+
+	public String getRipplePreferences() {
+		return ripplePreferences;
+	}
+
+	public void setRipplePreferences(String ripplePreferences) {
+		this.ripplePreferences = ripplePreferences;
 	}
 
 }

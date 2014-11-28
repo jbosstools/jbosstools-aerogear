@@ -67,7 +67,7 @@ public class CordovaSimManageDeviceDialog extends ManageDevicesDialog {
 				oldSpecificPreferences.getOrientationAngle(), getParent().getLocation(),
 				((CordovaSimSpecificPreferences) oldSpecificPreferences).getCordovaBrowserLocation(),
 				((CordovaSimSpecificPreferences) oldSpecificPreferences).getCordovaBrowserSize(), isJavaFx, 
-				!DontShowUnsupportedPluginsCheckBox.getSelection());
+				!DontShowUnsupportedPluginsCheckBox.getSelection(), ((CordovaSimSpecificPreferences) oldSpecificPreferences).getRipplePreferences());
 	}
 	
 	@Override
