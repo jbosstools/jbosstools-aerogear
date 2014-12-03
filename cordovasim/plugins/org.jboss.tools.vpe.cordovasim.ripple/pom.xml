@@ -9,4 +9,52 @@
 	<groupId>org.jboss.tools.aerogear.cordovasim.plugins</groupId>
 	<artifactId>org.jboss.tools.vpe.cordovasim.ripple</artifactId> 
 	<packaging>eclipse-plugin</packaging>
+	
+	<properties>
+		<rippleVersion>4.3.0-SNAPSHOT</rippleVersion>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>ripple</directory>
+							<excludes>
+								<exclude>cordova/**</exclude>
+							</excludes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<id>unpack-ripple</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifact>
+									<groupId>org.jboss.tools</groupId>
+									<artifactId>ripple</artifactId>
+									<version>${rippleVersion}</version>
+									<classifier>ripple</classifier>
+									<type>zip</type>
+									<outputDirectory>${basedir}/ripple</outputDirectory>
+								</artifact>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
