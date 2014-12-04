@@ -39734,6 +39734,10 @@ module.exports = {
         return success && success();
     },
 
+    exitApp: function(win, fail, args) {
+        emulatorBridge.window().console.warn("Application must exit now");
+    },
+
     overrideBackbutton: function (success, fail, args) { // prevent native code call
       if(args[0]) {
             window.bsBackbuttonPressed = function () {
