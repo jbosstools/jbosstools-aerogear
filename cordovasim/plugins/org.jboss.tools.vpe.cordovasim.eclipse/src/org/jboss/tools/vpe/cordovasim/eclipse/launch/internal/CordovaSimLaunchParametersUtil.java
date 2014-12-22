@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Copyright (c) 2007-2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -65,7 +65,7 @@ public class CordovaSimLaunchParametersUtil {
 		if (projectString != null) {
 			try {
 				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectString);
-				if (project.exists()) {
+				if (project != null && project.exists()) {
 					return project;
 				}
 			} catch (IllegalArgumentException e) {
@@ -256,19 +256,22 @@ public class CordovaSimLaunchParametersUtil {
 		String startPageName = null;
 		InputStream inputStream = null;
 		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			inputStream = configFile.getContents();
-			Document document = dBuilder.parse(inputStream);
+			if (configFile != null) {
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				inputStream = configFile.getContents();
+				Document document = dBuilder.parse(inputStream);
 
-			// optional, but recommended
-			// see http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-			document.getDocumentElement().normalize();
-			XPath xPath = XPathFactory.newInstance().newXPath();
-			XPathExpression xPathExpression = xPath.compile("//widget/content/@src"); //$NON-NLS-1$
-			Node startPageNameNode = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
-			if (startPageNameNode != null) {
-				startPageName = startPageNameNode.getNodeValue().trim();
+				// optional, but recommended
+				// see
+				// http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+				document.getDocumentElement().normalize();
+				XPath xPath = XPathFactory.newInstance().newXPath();
+				XPathExpression xPathExpression = xPath.compile("//widget/content/@src"); //$NON-NLS-1$
+				Node startPageNameNode = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
+				if (startPageNameNode != null) {
+					startPageName = startPageNameNode.getNodeValue().trim();
+				}
 			}
 		} catch (SAXException e) {
 			// This may happen if user has a not valid XML. We just ignore this.
