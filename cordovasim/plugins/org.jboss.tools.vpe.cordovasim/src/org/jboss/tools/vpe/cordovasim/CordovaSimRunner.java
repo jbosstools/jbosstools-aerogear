@@ -11,7 +11,7 @@
 package org.jboss.tools.vpe.cordovasim;
 
 import java.text.MessageFormat;
-
+import javafx.application.Platform;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -292,7 +292,16 @@ public class CordovaSimRunner {
 		rippleToolBarBrowser.addLocationListener(new LocationAdapter() {
 			@Override
 			public void changed(LocationEvent event) {
-				rippleToolBarBrowser.execute(addingStartPageParametersFunction);
+				if (rippleToolBarBrowser instanceof JavaFXBrowser && BrowserSimUtil.isJavaFx8Available()) {
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							rippleToolBarBrowser.execute(addingStartPageParametersFunction);
+						}
+					});
+				} else {
+					rippleToolBarBrowser.execute(addingStartPageParametersFunction);
+				}
 			}
 		});
 	}
