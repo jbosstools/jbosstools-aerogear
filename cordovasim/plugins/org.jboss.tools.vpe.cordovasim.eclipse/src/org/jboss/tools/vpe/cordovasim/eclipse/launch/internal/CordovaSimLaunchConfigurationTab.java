@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Copyright (c) 2007-2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -56,6 +56,7 @@ import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
 
 /**
  * @author "Yahor Radtsevich (yradtsevich)"
+ * @author "Ilya Buziuk(ibuziuk)"
  */
 @SuppressWarnings("restriction")
 public class CordovaSimLaunchConfigurationTab extends
@@ -337,8 +338,8 @@ public class CordovaSimLaunchConfigurationTab extends
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
+		configuration.setMappedResources(new IResource[]{getSelectedProject()});
 		configuration.setAttribute(CordovaSimLaunchConstants.PROJECT, projectText.getText());
-		
 		String rootFolderString = null;
 		if (!useDefaultRootFolderCheckbox.getSelection()) {
 			rootFolderString = rootFolderText.getText();
