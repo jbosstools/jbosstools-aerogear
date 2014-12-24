@@ -12,6 +12,7 @@ package org.jboss.tools.vpe.cordovasim;
 
 import java.text.MessageFormat;
 
+import javafx.application.Platform;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -278,13 +279,23 @@ public class CordovaSimRunner {
 		return shell;
 	}
 	
+
 	// JBIDE-16389 Query parameters are not allowed in the runtime configuration for CordovaSim
-	private static void processStartPageParameters(final IBrowser rippleToolBarBrowser, final String startPageParameters) { 
+	private static void processStartPageParameters(final IBrowser rippleToolBarBrowser, final String startPageParameters) {
 		final String addingStartPageParametersFunction = "window._startPageParameters = '" + startPageParameters + "';"; //$NON-NLS-1$ //$NON-NLS-2$
 		rippleToolBarBrowser.addLocationListener(new LocationAdapter() {
 			@Override
 			public void changed(LocationEvent event) {
-				rippleToolBarBrowser.execute(addingStartPageParametersFunction);
+				if (rippleToolBarBrowser instanceof JavaFXBrowser && BrowserSimUtil.isJavaFx8Available()) {
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							rippleToolBarBrowser.execute(addingStartPageParametersFunction);
+						}
+					});
+				} else {
+					rippleToolBarBrowser.execute(addingStartPageParametersFunction);
+				}
 			}
 		});
 	}
