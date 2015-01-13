@@ -27,7 +27,7 @@ and then clone your fork:
 
     $ git clone git@github.com:<you>/jbosstools-aerogear.git
     $ cd jbosstools-aerogear
-    $ git remote add upstream git@github.com:gorkem/jbosstools-aerogear.git
+    $ git remote add upstream git@github.com:jbosstools/jbosstools-aerogear.git
   
 At any time, you can pull changes from the upstream and merge them onto your master:
 
