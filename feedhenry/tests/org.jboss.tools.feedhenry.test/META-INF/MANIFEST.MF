@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FeedHenry Plugin Tests
+Bundle-SymbolicName: org.jboss.tools.feedhenry.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.jboss.tools.feedhenry.test.FHTestPlugin
+Bundle-Vendor: JBoss By Red Hat
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.junit,
+ org.jboss.tools.feedhenry.ui;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy

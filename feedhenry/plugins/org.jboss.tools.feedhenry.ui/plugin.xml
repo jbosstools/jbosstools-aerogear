@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <wizard
+            category="org.jboss.tools.feedhenry.ui.category"
+            class="org.jboss.tools.feedhenry.ui.cordova.internal.CordovaImportWizard"
+            icon="icons/obj16/feedhenry_16.png"
+            id="org.jboss.tools.feedhenry.ui.cordova.import"
+            name="Import Cordova Application">
+      </wizard>
+      <category
+            id="org.jboss.tools.feedhenry.ui.category"
+            name="FeedHenry">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.jboss.tools.feedhenry.ui.cordova.internal.preferences.FeedHenryPreferencesPage"
+            id="org.jboss.tools.feedhenry.ui.FeedHenryPreferences"
+            name="FeedHenry ">
+      </page>
+   </extension>
+
+</plugin>
