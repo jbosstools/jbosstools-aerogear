@@ -20,10 +20,10 @@
 	
 	<modules>
 		<module>cordova</module>
-		<module>cordovasim</module>
-   		<!-- <module>feedhenry</module> -->
-		<module>site</module>
-		</modules>
+    <module>cordovasim</module>
+    <module>feedhenry</module>
+    <module>site</module>
+  </modules>
 	<repositories>
 		<repository>
 			<id>jbosstools-base</id>
