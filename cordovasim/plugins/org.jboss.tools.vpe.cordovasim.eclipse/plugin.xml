@@ -29,7 +29,7 @@
   <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
-            class="org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchShortcut"
+            class="org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchShortcut"
             id="org.jboss.tools.vpe.cordovasim.eclipse.launchShortcut"
             label="Run with CordovaSim"
             icon="icons/cordovasim_16.png"

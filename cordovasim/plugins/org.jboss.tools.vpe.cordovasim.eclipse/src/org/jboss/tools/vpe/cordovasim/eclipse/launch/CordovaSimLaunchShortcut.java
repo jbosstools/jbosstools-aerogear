@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Red Hat, Inc.
+ * Copyright (c) 2013-2015 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,7 +8,7 @@
  *  Contributors:
  *       Red Hat, Inc. - initial API and implementation
  *******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
+package org.jboss.tools.vpe.cordovasim.eclipse.launch;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -25,8 +25,12 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
-import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
+import org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchConfigurationAutofillUtil;
 
+/**
+ * @author "Yahor Radtsevich (yradtsevich)"
+ * @author "Ilya Buziuk (ibuziuk)"
+ */
 public class CordovaSimLaunchShortcut implements ILaunchShortcut {
 
 	@Override
@@ -45,7 +49,7 @@ public class CordovaSimLaunchShortcut implements ILaunchShortcut {
 		}
 	}
 	
-	private void launch(IProject project, String mode) {
+	protected void launch(IProject project, String mode) {
 		try {
 			ILaunchConfigurationType cordovaSimLaunchConfiguraionType = DebugPlugin.getDefault().getLaunchManager()
 					.getLaunchConfigurationType(CordovaSimLaunchConstants.LAUNCH_CONFIGURATION_ID); 
@@ -67,7 +71,7 @@ public class CordovaSimLaunchShortcut implements ILaunchShortcut {
 		}
 	}
 
-	private ILaunchConfigurationWorkingCopy createEmptyLaunchConfiguration(
+	protected ILaunchConfigurationWorkingCopy createEmptyLaunchConfiguration(
 			String namePrefix) throws CoreException {
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType launchConfigurationType 
