@@ -29569,12 +29569,12 @@ function _initialize() {
 
     select.value = String(db.retrieve(PROXY_SETTING));
 
-    // default to remote if unknown value is found in db
+    // default to local if unknown value is found in db
     if (!Object.keys(PROXY_SETTINGS_LIST).some(function (key) {
         return select.value === PROXY_SETTINGS_LIST[key];
     })) {
-        select.value = PROXY_SETTINGS_LIST.remote;
-        db.save(select.value);
+        select.value = PROXY_SETTINGS_LIST.local;
+        db.save(PROXY_SETTING, select.value);
     }
 
     if (select.value === PROXY_SETTINGS_LIST.local) {
@@ -55108,6 +55108,7 @@ self = module.exports = {
 
 }());
 if (!localStorage2.ripple) {
+   var csRippleProxy = window.csRippleProxy || "local"; 
    var defaultValues = {"tinyhippos-ui-application-state-cordova":
                                          { 
                                             "id":"tinyhippos-ui-application-state-cordova",
@@ -55143,14 +55144,14 @@ if (!localStorage2.ripple) {
 										{
 											"id":"tinyhippos-settings-xhr-proxy-setting",
 											"key":"settings-xhr-proxy-setting",
-											"value":"remote",
+											"value": csRippleProxy,
 											"prefix":"tinyhippos-"
 										},
 					"tinyhippos-settings-xhr-proxy-local-port":
 										{
 											"id":"tinyhippos-settings-xhr-proxy-local-port",
 											"key":"settings-xhr-proxy-local-port",
-											"value":location.port,
+											"value": location.port,
 											"prefix":"tinyhippos-"
 										}
                       };

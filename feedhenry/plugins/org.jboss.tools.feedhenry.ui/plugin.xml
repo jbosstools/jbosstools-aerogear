@@ -34,4 +34,69 @@
           label="feedhenry mobile  cordova">
     </keyword>
  </extension>
+ 
+    <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+	    <propertyTester
+	      	id="org.jboss.tools.feedhenry.ui.cordovasim.feedHenryTester"
+	      	type="org.eclipse.core.resources.IResource"
+	      	namespace="org.jboss.tools.feedhenry.ui.cordovasim"
+	      	properties="isFeedHenry"
+	      	class="org.jboss.tools.feedhenry.ui.cordovasim.internal.launch.FeedHenryTester">
+	    </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.jboss.tools.feedhenry.ui.cordovasim.internal.launch.FHLocalLaunch"
+            id="org.jboss.tools.feedhenry.ui.cordovasim.launchShortcut"
+            label="Run w/local FeedHenry server"
+            icon="icons/obj16/cordovasim_feed_henry_16.png"
+            modes="run">
+        <contextualLaunch>
+            <enablement>
+                <with variable="selection">
+                    <count value="1"/>
+                    <iterate>
+                        <adapt  type="org.eclipse.core.resources.IResource">
+                        	<and>
+	                        	<test property="org.eclipse.core.resources.projectNature" 
+	                           		value="org.eclipse.thym.core.HybridAppNature" />
+	                           	<test property="org.jboss.tools.feedhenry.ui.cordovasim.isFeedHenry" 
+	                           		forcePluginActivation="true"/>
+                        	</and>
+                        </adapt> 
+                    </iterate>
+                </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+ </extension>
+ <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.jboss.tools.feedhenry.ui.cordovasim.internal.launch.FHRemoteLaunch"
+            id="org.jboss.tools.feedhenry.ui.cordovasim.launchShortcut"
+            label="Run w/remote FeedHenry server"
+            icon="icons/obj16/cordovasim_feed_henry_16.png"
+            modes="run">
+        <contextualLaunch>
+            <enablement>
+                <with variable="selection">
+                    <count value="1"/>
+                    <iterate>
+                        <adapt  type="org.eclipse.core.resources.IResource">
+                        	<and>
+	                        	<test property="org.eclipse.core.resources.projectNature" 
+	                           		value="org.eclipse.thym.core.HybridAppNature" />
+	                           	<test property="org.jboss.tools.feedhenry.ui.cordovasim.isFeedHenry" 
+	                           		forcePluginActivation="true"/>
+                        	</and>
+                        </adapt> 
+                    </iterate>
+                </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+ </extension>
 </plugin>

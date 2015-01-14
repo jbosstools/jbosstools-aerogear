@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Copyright (c) 2013-2015 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.vpe.cordovasim.eclipse.launch.internal;
+package org.jboss.tools.vpe.cordovasim.eclipse.launch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +39,7 @@ import org.eclipse.thym.core.engine.HybridMobileLibraryResolver;
 import org.eclipse.thym.core.engine.PlatformLibrary;
 import org.jboss.tools.vpe.browsersim.browser.PlatformUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
+import org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.Messages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -293,7 +294,7 @@ public class CordovaSimLaunchParametersUtil {
 		return startPageName;
 	}
 
-	static IPath getRelativePath(IContainer container, IResource resource) {
+	public static IPath getRelativePath(IContainer container, IResource resource) {
 		if (resource == null) {
 			return null;
 		}

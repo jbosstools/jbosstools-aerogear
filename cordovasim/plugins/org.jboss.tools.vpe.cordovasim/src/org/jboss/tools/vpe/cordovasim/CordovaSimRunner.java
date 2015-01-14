@@ -13,6 +13,7 @@ package org.jboss.tools.vpe.cordovasim;
 import java.text.MessageFormat;
 
 import javafx.application.Platform;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -226,6 +227,18 @@ public class CordovaSimRunner {
 		} else {
 			sp.setCordovaBrowserLocation(shell.getLocation());
 		}
+		
+		rippleToolBarBrowser.addLocationListener(new LocationAdapter() {
+			@Override
+			public void changed(LocationEvent event) {
+				String csRippleProxy = CordovaSimArgs.getProxy(); // JBIDE-19152 FeedHenry apps must use 'disabled' proxy by default
+				if (csRippleProxy != null) {
+					rippleToolBarBrowser.execute("(function() {" //$NON-NLS-1$
+							                        + "window.csRippleProxy = '" + csRippleProxy + "';" //$NON-NLS-1$ //$NON-NLS-2$
+							                   + "})();"); //$NON-NLS-1$
+				}
+			}
+		});
 		
 		rippleToolBarBrowser.addOpenWindowListener(new ExtendedOpenWindowListener() {
 			private IBrowser oldBrowser;

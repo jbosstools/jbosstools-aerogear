@@ -35,10 +35,9 @@ public class CordovaSimLaunchConfigurationAutofillUtil {
 	public static ILaunchConfiguration chooseLaunchConfiguration(ILaunchConfiguration[] configurations, IProject project) {
 		try {
 			for (ILaunchConfiguration configuration : configurations) {
-				String projectName;
-					projectName = configuration.getAttribute(CordovaSimLaunchConstants.PROJECT, (String) null);
-				
-				if (projectName != null && projectName.equals(project.getName())) {
+				String projectName = configuration.getAttribute(CordovaSimLaunchConstants.PROJECT, (String) null);
+				String fh = configuration.getAttribute(CordovaSimLaunchConstants.FH, (String) null);
+				if (fh == null && projectName != null && projectName.equals(project.getName())) {
 					return configuration;
 				}
 			}
