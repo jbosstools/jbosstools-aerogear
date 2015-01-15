@@ -26,7 +26,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.jboss.tools.vpe.cordovasim.eclipse.Activator;
 import org.jboss.tools.vpe.cordovasim.eclipse.internal.util.ServletUtil;
-import org.jboss.tools.vpe.cordovasim.eclipse.launch.internal.CordovaSimLaunchParametersUtil;
+import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchParametersUtil;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
