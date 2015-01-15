@@ -1,0 +1,13 @@
+== Automatic Tern features Configuration for Hybrid Mobile Projects
+
+
+== Automatic Tern and angular-eclipse features configuration when Importing Ionic Projects
+
+
+== Enable Tern Features for existing Mobile Projects in worksapce
+
+
+== Enable Tern and Angular Features for existing Ionic Projects in workspace
+
+
+
