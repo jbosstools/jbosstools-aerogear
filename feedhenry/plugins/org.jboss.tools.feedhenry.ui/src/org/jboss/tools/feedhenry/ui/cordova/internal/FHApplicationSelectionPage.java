@@ -88,7 +88,7 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 	}
 	
 	public String getWorkingPath(){
-		return destinationDirectoryGroup.getText();
+		return destinationDirectoryGroup.getValue();
 	}
 	
 	public IWorkingSet[] getSelectedWorkingSets(){
