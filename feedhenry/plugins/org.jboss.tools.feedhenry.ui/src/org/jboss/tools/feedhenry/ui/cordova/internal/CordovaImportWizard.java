@@ -12,13 +12,16 @@ package org.jboss.tools.feedhenry.ui.cordova.internal;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.egit.core.op.CloneOperation;
 import org.eclipse.egit.core.op.CloneOperation.PostCloneTask;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -27,6 +30,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.thym.core.engine.HybridMobileEngineManager;
 import org.eclipse.thym.ui.HybridUI;
 import org.eclipse.thym.ui.wizard.project.HybridProjectCreator;
@@ -43,6 +47,19 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 	private static final String DIALOG_SETTINGS_KEY = "FeedHenryCordovaImportWizard";
 	private FHApplicationSelectionPage page;
 	private IStructuredSelection currentSelection;
+	
+	
+	private class ImportProjectTask implements PostCloneTask{
+		private FeedHenryApplication fhapp;
+		public ImportProjectTask(FeedHenryApplication app) {
+			fhapp = app;
+		}
+
+		@Override
+		public void execute(Repository repository, IProgressMonitor monitor) throws CoreException {
+			importProject( fhapp, repository.getWorkTree(), monitor);		
+		}
+	}
 	
 	public CordovaImportWizard() {
 		super();
@@ -70,31 +87,36 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		final List<FeedHenryApplication> apps = page.getSelectedApplications();
-		final FeedHenryApplication app = apps.get(0);
-		PostCloneTask pct = new PostCloneTask() {
-			
-			@Override
-			public void execute(Repository repository, IProgressMonitor monitor) throws CoreException {
-				importProject( app, repository.getWorkTree(), monitor);
-			}
-		};
 		try {
-			URIish uri = new URIish(app.getRepoUrl());
-			IPath workpath = new Path(page.getWorkingPath());
-			final CloneOperation op = new CloneOperation(uri, true, null, workpath.toFile(), "master", "origin", 60);
-			op.addPostCloneTask(pct);
+			final ArrayList<CloneOperation> ops = new ArrayList<CloneOperation>();
+			for (FeedHenryApplication feedHenryApplication : apps) {
+				ImportProjectTask pct = new ImportProjectTask(feedHenryApplication);
+				URIish uri = new URIish(feedHenryApplication.getRepoUrl());
+				IPath workpath = new Path(page.getWorkingPath()).append(feedHenryApplication.getTitle());
+
+				final CloneOperation op = new CloneOperation(uri, true, null, workpath.toFile(), "master", "origin", 60);
+				op.addPostCloneTask(pct);
+				ops.add(op);
+			}
 			getContainer().run(false, true, new IRunnableWithProgress() {
 
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					op.run(monitor);
+					SubMonitor sm = SubMonitor.convert(monitor, "Clone FeedHenry Application", ops.size());
+					for (CloneOperation cloneOperation : ops) {
+						if (sm.isCanceled()) {
+							throw new OperationCanceledException();
+						}
+						cloneOperation.run(sm.newChild(1));
+					}
+					sm.done();
 				}
 			});
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			return false;
-		}
+				// TODO: handle exception
+				e.printStackTrace();
+				return false;
+			}
 		savePageSettings();
 		return true;
 	}
@@ -118,8 +140,10 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 
 	@SuppressWarnings("restriction")
 	private void importProject(FeedHenryApplication app, File location,IProgressMonitor monitor) throws CoreException{
+		if(monitor.isCanceled()){
+			throw new OperationCanceledException();
+		}
 		HybridProjectCreator projectCreator = new HybridProjectCreator();
-		app.getTitle();
 		IProject project = projectCreator.createProject(app.getTitle(), location.toURI(), app.getTitle(), app.getTitle(),
 				HybridMobileEngineManager.getDefaultEngine(), monitor);
 		addToWorkingSets(project);
