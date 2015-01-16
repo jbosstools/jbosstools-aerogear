@@ -23,9 +23,6 @@
 					<filesets>
 						<fileset>
 							<directory>ripple</directory>
-							<excludes>
-								<exclude>cordova/**</exclude>
-							</excludes>
 						</fileset>
 					</filesets>
 				</configuration>
@@ -46,9 +43,8 @@
 									<groupId>org.jboss.tools</groupId>
 									<artifactId>ripple</artifactId>
 									<version>${rippleVersion}</version>
-									<classifier>ripple</classifier>
 									<type>zip</type>
-									<outputDirectory>${basedir}/ripple</outputDirectory>
+									<outputDirectory>${basedir}</outputDirectory>
 								</artifact>
 							</artifactItems>
 						</configuration>
