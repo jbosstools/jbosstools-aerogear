@@ -7,6 +7,7 @@
  *
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
+ *     Zend Technologies Ltd. - JBIDE-18678
  ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim.eclipse;
 
@@ -26,6 +27,7 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  * 
  * @author "Yahor Radtsevich (yradtsevich)"
+ * @author Kaloyan Raev (kaloyan-raev)
  */
 public class Activator extends AbstractUIPlugin {
 
@@ -53,8 +55,13 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		launchEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(this), null, CORDOVASIM_ACTION, Messages.UsageEventTypeLaunchLabelDescription, UsageEventType.HOW_MANY_TIMES_VALUE_DESCRIPTION);
-		UsageReporter.getInstance().registerEvent(launchEventType);
+		try {
+			launchEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(this), null, CORDOVASIM_ACTION, Messages.UsageEventTypeLaunchLabelDescription, UsageEventType.HOW_MANY_TIMES_VALUE_DESCRIPTION);
+			UsageReporter.getInstance().registerEvent(launchEventType);
+		} catch (NoClassDefFoundError e) {
+			// org.jboss.tools.usage bundle is not present, so no usage
+			// reporting action will be taken
+		}
 	}
 
 	public void countLaunchEvent() {
@@ -65,6 +72,9 @@ public class Activator extends AbstractUIPlugin {
 			Activator.logError(e.getMessage(), e);
 		} catch (IOException e) {
 			Activator.logError(e.getMessage(), e);
+		} catch (NoClassDefFoundError e) {
+			// org.jboss.tools.usage bundle is not present, so no usage
+			// reporting action will be taken
 		}
 	}
 
