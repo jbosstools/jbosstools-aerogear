@@ -38,13 +38,14 @@
 							<goal>unpack</goal>
 						</goals>
 						<configuration>
+							<skip>false</skip>
 							<artifactItems>
 								<artifact>
 									<groupId>org.jboss.tools</groupId>
 									<artifactId>ripple</artifactId>
 									<version>${rippleVersion}</version>
 									<type>zip</type>
-									<outputDirectory>${basedir}</outputDirectory>
+									<outputDirectory>${basedir}/ripple</outputDirectory>
 								</artifact>
 							</artifactItems>
 						</configuration>
