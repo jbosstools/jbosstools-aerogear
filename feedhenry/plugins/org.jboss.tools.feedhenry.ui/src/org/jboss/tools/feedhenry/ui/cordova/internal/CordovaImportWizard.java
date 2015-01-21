@@ -30,7 +30,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.thym.core.engine.HybridMobileEngineManager;
 import org.eclipse.thym.ui.HybridUI;
 import org.eclipse.thym.ui.wizard.project.HybridProjectCreator;
@@ -129,12 +128,15 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 	}
 	
 	private void savePageSettings() {
-		IDialogSettings workbenchSettings= HybridUI.getDefault().getDialogSettings();
-		IDialogSettings section= workbenchSettings.getSection(DIALOG_SETTINGS_KEY);
+		IDialogSettings section= getDialogSettings();
 		if(section == null ){
-			section = workbenchSettings.addNewSection(DIALOG_SETTINGS_KEY);
+			IDialogSettings workbenchSettings= HybridUI.getDefault().getDialogSettings();
+			section = workbenchSettings.getSection(DIALOG_SETTINGS_KEY);
+			if(section == null ){
+				section = workbenchSettings.addNewSection(DIALOG_SETTINGS_KEY);
+			}
+			setDialogSettings(section);
 		}
-		setDialogSettings(section);
 		page.saveWidgetValues();
 	}
 
