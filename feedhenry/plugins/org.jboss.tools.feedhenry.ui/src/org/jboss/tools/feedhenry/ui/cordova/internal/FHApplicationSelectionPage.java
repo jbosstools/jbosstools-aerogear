@@ -13,10 +13,14 @@ package org.jboss.tools.feedhenry.ui.cordova.internal;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.core.internal.resources.Workspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.osgi.util.NLS;
@@ -55,11 +59,34 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 		GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(workArea);
 		
 		appSelector = new FeedHenryApplicationSelector();
-		appSelector.
-			setValidProjectTypes(FeedHenryApplication.APP_TYPE_CORDOVA_ADVANCED).
-			showInvalidProjectTypes(false).
-			setLabel("Select applications:").
-			setSelectionChangeCallback(this).createSelector(workArea);
+		appSelector.setProjectsFilter(new IFilter() {
+			
+			@Override
+			public boolean select(Object toTest) {
+				if( !(toTest instanceof FeedHenryApplication) ){
+					return false;
+				}
+				FeedHenryApplication app = (FeedHenryApplication) toTest;
+				if(app.getType().equals(FeedHenryApplication.APP_TYPE_CORDOVA_ADVANCED)){
+					return true;
+				}
+				return false;
+			}
+		}).setLabel("Select applications:").
+			setSelectionChangeCallback(this).
+			setDisabledProjectsFilter(new IFilter() {
+				
+				@Override
+				public boolean select(Object toTest) {
+					if( !(toTest instanceof FeedHenryApplication) ){
+						return false;
+					}
+					FeedHenryApplication app = (FeedHenryApplication) toTest;
+					return app.findEclipseProject() != null;
+				}
+			}).
+			createSelector(workArea);
+		
 
 		destinationDirectoryGroup = new DirectorySelectionGroup(workArea, SWT.NONE);
 		destinationDirectoryGroup.setText("Destination:");

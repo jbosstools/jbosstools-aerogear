@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.progress.UIJob;
@@ -89,31 +90,28 @@ public class FeedHenryApplicationSelector {
 	}
 	
 	/**
-	 * Set flag to show project types that are not in the valid project type list. Invalid
-	 * project types are visible but not enabled. 
-	 * @see {@link #showInvalidProjectTypes(boolean)}  
-	 * @param show
-	 * @return selector
+	 * Sets the filter that determines which projects are displayed.
+	 * 
+	 * @param filter
+	 * @return
 	 */
-	public FeedHenryApplicationSelector showInvalidProjectTypes(final boolean show){
-		contentProvider.showInvalidProjectTypes(show);
+	public FeedHenryApplicationSelector setProjectsFilter(IFilter filter){
+		this.contentProvider.setProjectFilter(filter);
+		this.block.setProjectFilter(filter);
 		return this;
 	}
+	
 	/**
-	 * Sets the valid project types. 
-	 * 
-	 * @param types
-	 * @return selector
-	 * @throws IllegalArgumentException 
-	 * 	if types is null
+	 * Sets a filter that is used to determine the projects that will be 
+	 * disabled. For a project to be seen disabled it needs to be also 
+	 * selected  by the projects filter. 
+	 * @see #setProjectsFilter(IFilter) 
+	 * @param filter
+	 * @return
 	 */
-	public FeedHenryApplicationSelector setValidProjectTypes(final String...types ){
-		if(types == null ){
-			throw new IllegalArgumentException("null is not accepted");
-		}
-		labelProvider.setValidTypes(types);
-		contentProvider.setValidProjectTypes(types);
-		block.setValidProjectTypes(types);
+	public FeedHenryApplicationSelector setDisabledProjectsFilter(IFilter filter){
+		this.labelProvider.setDisabledItemsFilter(filter);
+		this.block.setDisabledFilter(filter);
 		return this;
 	}
 	
@@ -140,8 +138,10 @@ public class FeedHenryApplicationSelector {
 			return Collections.emptyList();
 		}
 		final List<FeedHenryApplication> selectedApps = new ArrayList<>();
-		for (Object feedHenryApplication : checked) {
-			selectedApps.add((FeedHenryApplication)feedHenryApplication);
+		for (int i = 0; i < checked.length ; i++) {
+			if(checked[i] instanceof FeedHenryApplication){
+				selectedApps.add((FeedHenryApplication)checked[i]);
+			}
 		}
 		return selectedApps;
 	}

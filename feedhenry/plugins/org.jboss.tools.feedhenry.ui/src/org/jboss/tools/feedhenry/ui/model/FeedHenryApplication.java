@@ -10,6 +10,18 @@
  *******************************************************************************/
 package org.jboss.tools.feedhenry.ui.model;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.feedhenry.ui.FHPlugin;
+
+import com.eclipsesource.json.JsonValue;
+
 /**
  * An application on the FeedHenry system.
  * @author Gorkem Ercan
@@ -57,6 +69,33 @@ public class FeedHenryApplication {
 	
 	public void setGuid(String id) {
 		this.guid = id;
+	}
+	
+	/**
+	 * Finds the eclipse project that hosts this application on the current workspace
+	 * or null if it is not imported to current workspace.
+	 * @return project or null
+	 */
+	public IProject findEclipseProject(){
+		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for (IProject project : projects) {
+			IFile f = project.getFile("www/fhconfig.json");
+			if(f.isAccessible()){
+				try{
+					Reader reader = new InputStreamReader(f.getContents());
+					JsonValue value = JsonValue.readFrom(reader);
+					String appid = value.asObject().get("appid").asString();
+					if(appid.equals(this.getGuid())){
+						return project;
+					}
+				}catch(Exception e){
+					FHPlugin.log(IStatus.ERROR, 
+							NLS.bind("Error while parsing fhconfig.json on project {0}",project.getName()), e);
+				}
+			}
+			
+		}
+		return null;
 	}
 	
 	@Override

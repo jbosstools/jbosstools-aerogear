@@ -13,6 +13,7 @@ package org.jboss.tools.feedhenry.ui.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryApplication;
@@ -20,8 +21,7 @@ import org.jboss.tools.feedhenry.ui.model.FeedHenryProject;
 
 final class FHApplicationContentProvider implements ITreeContentProvider{
 	private List<FeedHenryProject> projects;
-	private String[] validTypes;
-	private boolean showInvalids;
+	private IFilter filter;
 
 	@Override
 	public void dispose() {
@@ -35,7 +35,7 @@ final class FHApplicationContentProvider implements ITreeContentProvider{
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		if(showInvalids){
+		if(filter == null ){
 			return projects.toArray(new FeedHenryProject[projects.size()]);
 		}
 		ArrayList<FeedHenryProject> validProjects = new ArrayList<FeedHenryProject>();
@@ -53,12 +53,12 @@ final class FHApplicationContentProvider implements ITreeContentProvider{
 			FeedHenryProject prj = (FeedHenryProject)parentElement;
 			List<FeedHenryApplication> apps = prj.getApplications();
 			if(apps != null){
-				if(showInvalids){
+				if(filter == null){
 					return apps.toArray(new FeedHenryApplication[apps.size()]);
 				}
 				ArrayList<FeedHenryApplication> valids = new ArrayList<FeedHenryApplication>();
 				for (FeedHenryApplication feedHenryApplication : apps) {
-					if(FeedHenryApplicationSelectionPart.isValidApplication(feedHenryApplication, validTypes)){
+					if(filter.select(feedHenryApplication)){
 						valids.add(feedHenryApplication);
 					}
 				}
@@ -78,7 +78,7 @@ final class FHApplicationContentProvider implements ITreeContentProvider{
 	public boolean hasChildren(Object element) {
 		if(element instanceof FeedHenryProject ){
 			FeedHenryProject project = (FeedHenryProject) element;
-			if(showInvalids){
+			if(filter == null){
 				return project.getApplications() != null &&
 						!project.getApplications().isEmpty();
 			}
@@ -87,20 +87,14 @@ final class FHApplicationContentProvider implements ITreeContentProvider{
 		return false;
 	}
 
-	/*package*/ void setValidProjectTypes(final String[] types) {
-		validTypes = types;
+	/*project*/ void setProjectFilter(IFilter filter){
+		this.filter = filter;
 	}
 	
-
-	/*package*/ void showInvalidProjectTypes(boolean show) {
-		showInvalids = show;
-	}
-
 	private boolean hasValidApplications(FeedHenryProject project){
-		if(validTypes == null ) return true;
 		List<FeedHenryApplication> apps =  project.getApplications();
 		for (FeedHenryApplication application : apps) {
-			if(FeedHenryApplicationSelectionPart.isValidApplication(application,validTypes)){
+			if(filter.select(application)){
 				return true;
 			}
 		}

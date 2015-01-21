@@ -12,6 +12,7 @@ package org.jboss.tools.feedhenry.ui.internal;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IColorProvider;
+import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
@@ -27,7 +28,7 @@ import org.jboss.tools.feedhenry.ui.model.FeedHenryProject;
 
 final class FHAppLabelProvider extends LabelProvider implements IFontProvider, IColorProvider{
 	
-	private String[] validTypes;
+	private IFilter disabledFilter;
 	
 	@Override
 	public String getText(Object element) {
@@ -53,13 +54,11 @@ final class FHAppLabelProvider extends LabelProvider implements IFontProvider, I
 			}
 			return PlatformUI.getWorkbench().getSharedImages().getImage(IDE.SharedImages.IMG_OBJ_PROJECT_CLOSED);
 		}
-
 		return super.getImage(element);
 	}
 
 	@Override
 	public Font getFont(Object element) {
-
 		return null;
 	}
 
@@ -67,7 +66,7 @@ final class FHAppLabelProvider extends LabelProvider implements IFontProvider, I
 	public Color getForeground(Object element) {
 		if(element instanceof FeedHenryApplication ){
 			FeedHenryApplication app = (FeedHenryApplication) element;
-			if( !FeedHenryApplicationSelectionPart.isValidApplication(app, validTypes)){
+			if(disabledFilter != null && disabledFilter.select(app)){
 				return Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND);
 			}
 		}return null;
@@ -75,15 +74,11 @@ final class FHAppLabelProvider extends LabelProvider implements IFontProvider, I
 
 	@Override
 	public Color getBackground(Object element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	/*package*/ void setValidTypes(String[] types){
-		this.validTypes = types;
+	/*package*/ void setDisabledItemsFilter(IFilter filter){
+		this.disabledFilter = filter;
 	}
-	
-
-	
 	
 }

@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -33,8 +34,10 @@ public class FeedHenryApplicationSelectionPart {
 	private CheckboxTreeViewer appsList;
 	private FHAppLabelProvider labelProvider;
 	private FHApplicationContentProvider contentProvider;
-	private String[] validTypes;
 	private String label;
+	private IFilter filter;
+	private IFilter disabledFilter;
+	
 	
 	
 	/*package*/ FeedHenryApplicationSelectionPart(FeedHenryApplicationSelector selector) {
@@ -69,13 +72,15 @@ public class FeedHenryApplicationSelectionPart {
 				Object element = event.getElement();
 				if( element instanceof FeedHenryApplication){
 					FeedHenryApplication app = (FeedHenryApplication) element;
-					if(isValidApplication(app, validTypes)){
+					if(disabledFilter == null || !disabledFilter.select(app)){
 						selector.selectionChanged();
 						return;
 					}
 				}
 				if(element instanceof FeedHenryProject){
-					selectApplicationsOfProject((FeedHenryProject) element) ;
+					setCheckStateforApps((FeedHenryProject) element, event.getChecked());
+					selector.selectionChanged();
+					return;
 				}
 				if(event.getChecked()){
 					event.getCheckable().setChecked(element, false);
@@ -95,19 +100,6 @@ public class FeedHenryApplicationSelectionPart {
 		appsList.setInput(projects);
 	}
 
-	/*package*/ void setValidProjectTypes(String[] types) {
-		validTypes = types;
-	}	
-	
-	/*package */static boolean isValidApplication(FeedHenryApplication app, String[] validTypes){
-		if(validTypes == null )return true;
-		for (String type : validTypes) {
-			if(type.equals(app.getType())){
-				return true;
-			}
-		}
-		return false;
-	}
 
 	/*package*/ void setLabelProvider(FHAppLabelProvider labelProvider) {
 		this.labelProvider = labelProvider;
@@ -119,6 +111,12 @@ public class FeedHenryApplicationSelectionPart {
 	/*package*/ void setLabel(String string){
 		this.label = string;
 	}
+	/*package*/ void setProjectFilter(IFilter filter){
+		this.filter = filter;
+	}
+	/*package*/ void setDisabledFilter(IFilter filter) {
+		this.disabledFilter = filter;
+	}
 	
 	private IContentProvider getContentProvider(){
 		return contentProvider;
@@ -128,13 +126,16 @@ public class FeedHenryApplicationSelectionPart {
 		return labelProvider;
 	}
 	
-	private void selectApplicationsOfProject(FeedHenryProject project){
+	private void setCheckStateforApps(FeedHenryProject project, boolean state){
 		final List<FeedHenryApplication> apps = project.getApplications();
 		for (FeedHenryApplication application : apps) {
-			if(isValidApplication(application, validTypes)){
-				appsList.setChecked(application, true);
+			if((filter != null && !filter.select(application)) || 
+				(disabledFilter != null && disabledFilter.select(application))){
+				continue;
 			}
+			appsList.setChecked(application, state);
 		}
 	}
+
 
 }
