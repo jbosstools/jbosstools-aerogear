@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Red Hat, Inc.
+ * Copyright (c) 2014-2015 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,6 +12,7 @@ package org.jboss.tools.vpe.cordovasim.model.preferences;
 
 import org.jboss.tools.vpe.browsersim.browser.IBrowser;
 import org.jboss.tools.vpe.browsersim.browser.IBrowserFunction;
+import org.jboss.tools.vpe.cordovasim.CordovaSimArgs;
 
 /**
  * @author Ilya Buziuk (ibuziuk) 
@@ -31,6 +32,7 @@ public class InitRipplePreferences implements IBrowserFunction {
 		if (ripplePreferences != null) {
 			initPreferences(ripplePreferences);
 		}
+		overrideProxySettingIfNeeded(); // JBIDE-18900 Need to disable proxy for FH projects
 		return null;
 	}
 	
@@ -40,6 +42,15 @@ public class InitRipplePreferences implements IBrowserFunction {
 					             + "var defaultValues = " + ripplePreferences + ";" //$NON-NLS-1$ //$NON-NLS-2$
 					             + "window.localStorage2.setItem('ripple', JSON.stringify(defaultValues));" //$NON-NLS-1$
 				          + "})();"); //$NON-NLS-1$
+		}
+	}
+	
+	private void overrideProxySettingIfNeeded() {
+		String overridenProxy = CordovaSimArgs.getProxy();
+		if (overridenProxy != null && browser != null && !browser.isDisposed()) {
+			browser.execute("(function() {" //$NON-NLS-1$
+								+ "window.csOverridenProxy = '" + overridenProxy + "';" //$NON-NLS-1$ //$NON-NLS-2$
+						  + "})();"); //$NON-NLS-1$
 		}
 	}
 	

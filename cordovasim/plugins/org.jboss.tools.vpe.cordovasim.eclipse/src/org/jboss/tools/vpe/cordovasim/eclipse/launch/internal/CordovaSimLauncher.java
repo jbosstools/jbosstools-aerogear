@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Copyright (c) 2007-2015 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -63,7 +63,7 @@ public class CordovaSimLauncher {
 	private static final String NOT_STANDALONE = BrowserSimLauncher.NOT_STANDALONE;	
 	
 	public static void launchCordovaSim(String projectString, String rootFolderString, String startPageString,
-			Integer port) {
+			Integer port, String proxy) {
 		List<String> parameters = new ArrayList<String>();
 		parameters.add(NOT_STANDALONE);
 
@@ -121,6 +121,10 @@ public class CordovaSimLauncher {
 					if (cordovaVersion != null) {
 						parameters.add("-version"); //$NON-NLS-1$
 						parameters.add(cordovaVersion);
+					}
+					if (proxy != null) {
+						parameters.add("-proxy"); //$NON-NLS-1$
+						parameters.add(proxy);
 					}
 					launchCordovaSim(parameters);
 				} else {

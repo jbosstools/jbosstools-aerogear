@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributor:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.vpe.cordovasim;
 
 import org.eclipse.swt.SWT;
@@ -73,9 +83,19 @@ public class CordovaSimManageDeviceDialog extends ManageDevicesDialog {
 	@Override
 	protected void sendRestartCommand() {
 		CordovaSimArgs.setRestartRequired(true);
-		System.out.println(CORDOVASIM_RESTART_COMMAND + PARAMETER_DELIMITER + CordovaSimArgs.getRootFolder()
+		System.out.println(generateRestartCommand()); // Fire restart command @see CordovaSimRestartCallback.java	
+	}
+	
+	private String generateRestartCommand() {
+		String command = CORDOVASIM_RESTART_COMMAND + PARAMETER_DELIMITER + CordovaSimArgs.getRootFolder()
 				+ PARAMETER_DELIMITER + CordovaSimArgs.getHomeUrl() + PARAMETER_DELIMITER
-				+ "-version" + PARAMETER_DELIMITER + CordovaSimArgs.getCordovaVersion()); //$NON-NLS-1$		
+				+ "-version" + PARAMETER_DELIMITER + CordovaSimArgs.getCordovaVersion();  //$NON-NLS-1$
+		
+		String proxy = CordovaSimArgs.getProxy();
+		if (proxy != null) {
+			command += PARAMETER_DELIMITER + "-proxy" + PARAMETER_DELIMITER + proxy; //$NON-NLS-1$
+		}
+		return command;
 	}
 	
 }

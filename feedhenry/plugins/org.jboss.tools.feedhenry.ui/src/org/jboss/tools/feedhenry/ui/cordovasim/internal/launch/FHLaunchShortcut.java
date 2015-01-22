@@ -19,17 +19,17 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.DebugUITools;
 import org.jboss.tools.feedhenry.ui.FHPlugin;
-import org.jboss.tools.feedhenry.ui.cordovasim.util.FeedHenryUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
-import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchParametersUtil;
 import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchShortcut;
 
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class FeedHenryLaunchShortcut extends CordovaSimLaunchShortcut {
-	private static final String FH_PREFIX = "(FeedHenry)"; //$NON-NLS-1$
-
+public abstract class FHLaunchShortcut extends CordovaSimLaunchShortcut {
+	public abstract String getLaunchPrefix();
+	
+	protected abstract void setConfigAttributes(ILaunchConfigurationWorkingCopy launch, IProject project);
+	
 	@Override
 	protected void launch(IProject project, String mode) {
 		try {
@@ -42,7 +42,7 @@ public class FeedHenryLaunchShortcut extends CordovaSimLaunchShortcut {
 			if (existingConfiguraion != null) {
 				DebugUITools.launch(existingConfiguraion, mode);
 			} else if (project != null) {
-				ILaunchConfigurationWorkingCopy newConfiguration = createEmptyLaunchConfiguration(project.getName() + FH_PREFIX);
+				ILaunchConfigurationWorkingCopy newConfiguration = createEmptyLaunchConfiguration(project.getName() + getLaunchPrefix());
 				setConfigAttributes(newConfiguration, project);
 				newConfiguration.doSave();
 				DebugUITools.launch(newConfiguration, mode);
@@ -52,22 +52,12 @@ public class FeedHenryLaunchShortcut extends CordovaSimLaunchShortcut {
 		}
 	}
 
-	private void setConfigAttributes(ILaunchConfigurationWorkingCopy launchConfiguration, IProject project) {
-		if (project != null) {
-			launchConfiguration.setAttribute(CordovaSimLaunchConstants.PROJECT, project.getName());
-			launchConfiguration.setAttribute(CordovaSimLaunchConstants.FH, FH_PREFIX);
-			String startPage = CordovaSimLaunchParametersUtil.getDefaultStartPageFromConfigXml(project);
-			startPage = FeedHenryUtil.addDefaultServerParameter(startPage);
-			launchConfiguration.setAttribute(CordovaSimLaunchConstants.START_PAGE, startPage);
-		}
-	}
-
 	private ILaunchConfiguration chooseLaunchConfiguration(ILaunchConfiguration[] configurations, IProject project) {
 		try {
 			for (ILaunchConfiguration configuration : configurations) {
 				String projectName = configuration.getAttribute(CordovaSimLaunchConstants.PROJECT, (String) null);
 				String fh = configuration.getAttribute(CordovaSimLaunchConstants.FH, (String) null);
-				if (fh != null && projectName != null && projectName.equals(project.getName())) {
+				if (fh != null && fh.equals(getLaunchPrefix()) && projectName != null && projectName.equals(project.getName())) {
 					return configuration;
 				}
 			}
