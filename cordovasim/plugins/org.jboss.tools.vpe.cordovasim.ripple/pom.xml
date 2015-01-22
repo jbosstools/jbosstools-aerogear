@@ -45,7 +45,7 @@
 									<artifactId>ripple</artifactId>
 									<version>${rippleVersion}</version>
 									<type>zip</type>
-									<outputDirectory>${basedir}/ripple</outputDirectory>
+									<outputDirectory>${basedir}</outputDirectory>
 								</artifact>
 							</artifactItems>
 						</configuration>
