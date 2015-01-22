@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
 	<description>To install these features, point Eclipse at this site.</description>
-
-	<category-def label="JBoss Tools Aerogear Site" name="JBoss Tools Aerogear Site"></category-def>
-
-	<feature id="org.jboss.tools.aerogear.thym.feature"><category name="JBoss Tools Aerogear Site"/></feature>
-  <!-- <feature id="org.jboss.tools.feedhenry"><category name="JBoss Tools Aerogear Site"/></feature> -->
-  <feature id="org.jboss.tools.vpe.cordovasim.feature"><category name="JBoss Tools Aerogear Site"/></feature>  
+	<!-- JBoss Tools ws Nightly Build Update Site -->
+	<category-def label="JBoss Tools Aerogear/Hybrid Nightly Build Update Site" name="JBoss Tools Aerogear/Hybrid Nightly Build Update Site">
+		<description>JBoss Tools ws Nightly Build Update Site: contains all features in this build.</description>
+	</category-def>
+	<feature id="org.jboss.tools.aerogear.thym.feature" version="0.0.0">
+		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+  </feature>
+  <feature id="org.jboss.tools.feedhenry" version="0.0.0">
+		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+	</feature>
 
 	<!-- Sources -->
-	<feature id="org.jboss.tools.aerogear.thym.feature.source"><category name="JBoss Tools Aerogear Site"/></feature>
-  <!-- <feature id="org.jboss.tools.feedhenry.source"><category name="JBoss Tools Aerogear Site"/></feature> -->
-  <feature id="org.jboss.tools.vpe.cordovasim.feature.source"><category name="JBoss Tools Aerogear Site"/></feature>
-
-	<!-- Dependencies -->
-  <feature id="org.eclipse.thym.feature"><category name="JBoss Tools Aerogear Site"/></feature>
-
+	<feature id="org.jboss.tools.aerogear.thym.feature.source" version="0.0.0">
+		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+	</feature>
+  <feature id="org.jboss.tools.vpe.cordovasim.feature" version="0.0.0">
+    <category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+  </feature>
+  <feature id="org.jboss.tools.vpe.cordovasim.feature.source" version="0.0.0">
+    <category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+  </feature>
+  <feature id="org.jboss.tools.feedhenry.source" version="0.0.0">
+		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+	</feature>
 </site>
