@@ -12,7 +12,7 @@
 	
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.jboss.tools.feedHenry</module>
+		<module>org.jboss.tools.feedhenry</module>
 	</modules>
 	<build>
 		<plugins>
