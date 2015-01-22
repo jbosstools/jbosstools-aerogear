@@ -7,16 +7,22 @@
 	</category-def>
 	<feature id="org.jboss.tools.aerogear.thym.feature" version="0.0.0">
 		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+  </feature>
+  <feature id="org.jboss.tools.feedhenry" version="0.0.0">
+		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
 	</feature>
+
 	<!-- Sources -->
 	<feature id="org.jboss.tools.aerogear.thym.feature.source" version="0.0.0">
 		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
 	</feature>
-        <feature id="org.jboss.tools.vpe.cordovasim.feature" version="0.0.0">
-                <category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
-        </feature>
-        <feature id="org.jboss.tools.vpe.cordovasim.feature.source" version="0.0.0">
-                <category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
-        </feature>
-
+  <feature id="org.jboss.tools.vpe.cordovasim.feature" version="0.0.0">
+    <category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+  </feature>
+  <feature id="org.jboss.tools.vpe.cordovasim.feature.source" version="0.0.0">
+    <category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+  </feature>
+  <feature id="org.jboss.tools.feedhenry.source" version="0.0.0">
+		<category nnme="JBoss Tools Aerogear/Hybrid Nightly Build Update Site"/>
+	</feature>
 </site>

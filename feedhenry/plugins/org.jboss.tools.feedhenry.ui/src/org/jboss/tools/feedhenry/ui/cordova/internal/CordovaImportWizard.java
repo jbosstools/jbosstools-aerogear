@@ -15,10 +15,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
@@ -30,14 +32,19 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
+import org.eclipse.thym.core.HybridProject;
 import org.eclipse.thym.core.engine.HybridMobileEngineManager;
 import org.eclipse.thym.ui.HybridUI;
 import org.eclipse.thym.ui.wizard.project.HybridProjectCreator;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.jboss.tools.feedhenry.ui.FHPlugin;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryApplication;
 
@@ -139,7 +146,18 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 		}
 		page.saveWidgetValues();
 	}
-
+	private void openAndSelectConfigFile(IProject project){
+		IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		HybridProject hp = HybridProject.getHybridProject(project);
+		IFile file = hp.getConfigFile();
+		
+		BasicNewResourceWizard.selectAndReveal(file, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+		try {
+			IDE.openEditor(activePage, file);
+		} catch (PartInitException e) {
+			FHPlugin.log(IStatus.ERROR, "Error opening the config.xml", e);
+		}
+	}
 	@SuppressWarnings("restriction")
 	private void importProject(FeedHenryApplication app, File location,IProgressMonitor monitor) throws CoreException{
 		if(monitor.isCanceled()){
@@ -149,6 +167,7 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 		IProject project = projectCreator.createProject(app.getTitle(), location.toURI(), app.getTitle(), app.getTitle(),
 				HybridMobileEngineManager.getDefaultEngine(), monitor);
 		addToWorkingSets(project);
+		openAndSelectConfigFile(project);
 	}
 	
 }
