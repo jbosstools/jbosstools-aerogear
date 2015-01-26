@@ -46,6 +46,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.jboss.tools.feedhenry.ui.FHPlugin;
+import org.jboss.tools.feedhenry.ui.internal.FHErrorHandler;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryApplication;
 
 public class CordovaImportWizard extends Wizard implements IImportWizard {
@@ -119,10 +120,9 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 				}
 			});
 		} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-				return false;
-			}
+			FHErrorHandler.handle(e);
+			return false;
+		}
 		savePageSettings();
 		return true;
 	}
