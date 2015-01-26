@@ -40,7 +40,7 @@ public class FeedHenry {
 		return this;
 	}
 	
-	public List<FeedHenryProject> listProjects(){
+	public List<FeedHenryProject> listProjects() throws FeedHenryException{
 		String json = doAPICall("/box/api/projects");
 		if(json == null ){
 			return null;
@@ -73,7 +73,7 @@ public class FeedHenry {
 		return null;
 	}
 	
-	private String doAPICall(String api ){
+	private String doAPICall(String api ) throws FeedHenryException{
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 		HttpUtil.setupProxy(httpClient);
 		HttpGet get = new HttpGet(this.fhURL.toString() + api);
@@ -82,6 +82,7 @@ public class FeedHenry {
 		
 		try {
 			response = httpClient.execute(get);
+			int status = response.getStatusLine().getStatusCode();
 			HttpEntity entity = response.getEntity();
 			InputStream stream = entity.getContent();
 			
@@ -92,10 +93,15 @@ public class FeedHenry {
 				baos.write(buffer, 0, length);
 			}
 			String json = new String(baos.toByteArray());
+			if( status != 200 ){
+				throw new FeedHenryException(status, response.getStatusLine().getReasonPhrase());
+			}
+
 			return json;
 		} catch (IOException e) {
-			e.printStackTrace();
+			FeedHenryException fe = new FeedHenryException("Error occured while communicating with the FeedHenry server");
+			fe.initCause(e);
+			throw fe;
 		}
-		return null;
 	}
 }

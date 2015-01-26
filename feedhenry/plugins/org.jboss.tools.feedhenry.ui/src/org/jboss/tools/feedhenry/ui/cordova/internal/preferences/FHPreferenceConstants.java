@@ -11,6 +11,11 @@
 package org.jboss.tools.feedhenry.ui.cordova.internal.preferences;
 
 public interface FHPreferenceConstants {
+	
+	/**
+	 * Page id for the FeedHenry preference page.
+	 */
+	public static final String PREFERENCES_PAGE_ID = "org.jboss.tools.feedhenry.ui.FeedHenryPreferences";
 	/**
 	 * Preference key for target FeedHenry url
 	 */

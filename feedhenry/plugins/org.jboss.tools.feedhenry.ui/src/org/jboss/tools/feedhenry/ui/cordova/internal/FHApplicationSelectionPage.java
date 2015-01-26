@@ -85,7 +85,7 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 					return app.findEclipseProject() != null;
 				}
 			}).
-			createSelector(workArea);
+			createSelectorUI(workArea);
 		
 
 		destinationDirectoryGroup = new DirectorySelectionGroup(workArea, SWT.NONE);
@@ -104,6 +104,7 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 		}
 
     	createWorkingSetGroup();
+    	appSelector.retrieveProjects(getContainer());
 	
 		restoreWidgetValues();
 		setPageComplete(false);

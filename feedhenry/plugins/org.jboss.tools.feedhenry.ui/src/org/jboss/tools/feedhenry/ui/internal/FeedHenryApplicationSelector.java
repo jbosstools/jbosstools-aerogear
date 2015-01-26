@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.jboss.tools.feedhenry.ui.internal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,15 +21,23 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.progress.UIJob;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.jboss.tools.feedhenry.ui.FHPlugin;
 import org.jboss.tools.feedhenry.ui.cordova.internal.preferences.FHPreferences;
 import org.jboss.tools.feedhenry.ui.model.FeedHenry;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryApplication;
+import org.jboss.tools.feedhenry.ui.model.FeedHenryException;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryProject;
 /**
  * UI component for selecting {@link FeedHenryApplication}s 
@@ -52,6 +61,7 @@ public class FeedHenryApplicationSelector {
 	private final FHAppLabelProvider labelProvider = new FHAppLabelProvider();
 	private final FHApplicationContentProvider contentProvider = new FHApplicationContentProvider();
 	private SelectionChangeCallback selectionCallback;
+	private List<FeedHenryProject> projects;
 	
 	/**
 	 * Default constructor
@@ -63,29 +73,61 @@ public class FeedHenryApplicationSelector {
 	}
 	
 	/**
-	 * Initializes the selector. No UI components are selected before calling this method. 
+	 * Creates the UI. 
 	 * Must be called from UI (main) thread.
 	 * 
 	 * @param parent
 	 * @return selector
 	 * @throws CoreException 
 	 */
-	public FeedHenryApplicationSelector createSelector(final Composite parent) {
+	public FeedHenryApplicationSelector createSelectorUI(final Composite parent) {
 		Assert.isTrue(parent.getDisplay().getThread() == Thread.currentThread(), "Must be called from the UI thread");
 		block.createContent(parent);
-		UIJob job = new UIJob("Retrieve FeedHenry project list") {
-			
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor) {
-				try{
-					prepareInput(monitor);
-				}catch(CoreException e){
-					return errorStatus(e);
+		if(projects != null ){
+			block.setInput(projects);
+		}
+		return this;
+	}
+	
+	/**
+	 * Retrieves the application list from the FeedHenry instance. 
+	 * User the context to run the retrieval job. The retrieved 
+	 * projects are populated to the UI if UI was created  earlier.
+	 * 
+	 * {@see #createSelectorUI(Composite)}  
+	 * @param context
+	 * @return 
+	 */
+	public FeedHenryApplicationSelector retrieveProjects(IRunnableContext context){
+		Assert.isNotNull(context);
+		try {
+			context.run(true, true, new IRunnableWithProgress() {
+				
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					try {
+						prepareInput(monitor);
+						if(block != null ){
+							Display display = PlatformUI.getWorkbench().getDisplay();
+							display.asyncExec(new Runnable() {
+								@Override
+								public void run() {
+									block.setInput(projects);
+								}
+							});
+						}
+					} catch (CoreException e) {
+						throw new InvocationTargetException(e);
+					}
 				}
-				return Status.OK_STATUS;
+			});
+		} catch (InvocationTargetException e){
+			if(FHErrorHandler.handle(e)){
+				retrieveProjects(context);
 			}
-		};
-		job.schedule();
+		}catch(InterruptedException e) {
+			FHPlugin.log(IStatus.INFO, "Project retrieaval interrupted", e);
+		}
 		return this;
 	}
 	
@@ -164,22 +206,22 @@ public class FeedHenryApplicationSelector {
 	}
 	
 	private void prepareInput(IProgressMonitor monitor) throws CoreException{
-		
 		FeedHenry fh = new FeedHenry();
 		FHPreferences prefs = FHPreferences.getPreferences();
 		String feedHenryURL = prefs.getFeedHenryURL();
 		if(feedHenryURL == null || feedHenryURL.isEmpty()){
-			throw new CoreException(new Status(IStatus.ERROR, FHPlugin.PLUGIN_ID, "FeedHenry URL preference is empty. Specify FeedHenry URL on preferences."));
+			throw new CoreException(new Status(IStatus.ERROR, FHPlugin.PLUGIN_ID, FHErrorHandler.ERROR_INVALID_PREFERENCES, "FeedHenry URL preference is empty. Specify FeedHenry URL on preferences.",null));
 		}
 		try {
 			if(monitor.isCanceled()){
-				return;
+				throw new OperationCanceledException();
 			}
-			List<FeedHenryProject> projects = fh.setFeedHenryURL(new URL(feedHenryURL))
+			projects = fh.setFeedHenryURL(new URL(feedHenryURL))
 					.setAPIKey(prefs.getUserAPIKey()).listProjects();
-			block.setInput(projects);
 		} catch (MalformedURLException e) {
-			throw new CoreException(new Status(IStatus.ERROR, FHPlugin.PLUGIN_ID, NLS.bind("{0} is not a valid URL", feedHenryURL)));
+			throw new CoreException(new Status(IStatus.ERROR, FHPlugin.PLUGIN_ID, FHErrorHandler.ERROR_INVALID_PREFERENCES, NLS.bind("{0} is not a valid URL", feedHenryURL),e));
+		} catch (FeedHenryException e) {
+			throw new CoreException(new Status(IStatus.ERROR,FHPlugin.PLUGIN_ID, e.getCode(), e.getMessage(),e));
 		}
 	}
 }
