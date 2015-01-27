@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2014 Red Hat, Inc.
+ * Copyright (c) 2007-2015 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -52,8 +52,9 @@ public class RippleInjector extends LocationAdapter {
 		}
 	}
 	
-	private void inject(IBrowser browser) {
-		browser.execute(
+	private void inject(final IBrowser browser) {
+		if (browser != null && !browser.isDisposed()) {
+			browser.execute(
 				/* We have to remember userAgent of the BrowserSim, cause window.navigator object would be overridden by ripple
 				 * (see define function of the 'platform/w3c/1.0/navigator' in ripple.js and JBIDE-14652) */
 				"window.bsUserAgent = window.navigator.userAgent;" +  //$NON-NLS-1$
@@ -65,10 +66,13 @@ public class RippleInjector extends LocationAdapter {
 				"if (window.opener.ripple) {" + //$NON-NLS-1$
 					"window.opener.ripple('bootstrap').inject(window, document);" +  //$NON-NLS-1$
 				"}");  //$NON-NLS-1$
-		browser.forceFocus();
+			browser.forceFocus();
+		}
 	}
 	
-	private void registerBrowserFunctions(IBrowser browser) {
-		browser.registerBrowserFunction("csProceessUnsupportedPluginsPopUp", new ProceessUnsupportedPluginsPopUp(browserSim)); //$NON-NLS-1$
+	private void registerBrowserFunctions(final IBrowser browser) {
+		if (browser != null && !browser.isDisposed()) {
+			browser.registerBrowserFunction("csProceessUnsupportedPluginsPopUp", new ProceessUnsupportedPluginsPopUp(browserSim)); //$NON-NLS-1$
+		}
 	}
 }
