@@ -72,6 +72,17 @@ public class FeedHenryApplication {
 	}
 	
 	/**
+	 * The name of the eclipse project. This is usually 
+	 * the same value as title but this value should be used 
+	 * when creating projects and directories for an application.
+	 * 
+	 * @return
+	 */
+	public String getEclipseProjectName(){
+		return getTitle();
+	}
+	
+	/**
 	 * Finds the eclipse project that hosts this application on the current workspace
 	 * or null if it is not imported to current workspace.
 	 * @return project or null
