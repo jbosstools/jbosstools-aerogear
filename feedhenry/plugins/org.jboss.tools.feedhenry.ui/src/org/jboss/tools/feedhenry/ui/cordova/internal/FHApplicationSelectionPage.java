@@ -13,9 +13,12 @@ package org.jboss.tools.feedhenry.ui.cordova.internal;
 import java.io.File;
 import java.util.List;
 
-import org.eclipse.core.internal.resources.Workspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -148,6 +151,32 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 		if( !DirectorySelectionGroup.isValidDirectory(new File(dest))){
 			setErrorMessage(NLS.bind("{0} is not a valid directory", dest));
 			return false;
+		}
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		for (FeedHenryApplication app : selected) {
+			if(app.findEclipseProject() != null ){
+				setErrorMessage(NLS.bind("Application {0} already exist in the workspace",app.getTitle()));
+				return false;
+			}
+			final IStatus nameStatus= workspace.validateName(app.getEclipseProjectName(), IResource.PROJECT);
+			if (!nameStatus.isOK()) {
+				setErrorMessage(nameStatus.getMessage());
+				return false;
+			}
+			final IProject handle= workspace.getRoot().getProject(app.getEclipseProjectName());
+			IPath prjPath = new Path(dest);
+			prjPath = prjPath.append(app.getEclipseProjectName());
+			
+			File prjDirFile = prjPath.toFile();
+			if(prjDirFile.isDirectory() && prjDirFile.list().length > 0){
+				setErrorMessage(NLS.bind("\"{0}\" directory already exists and is not empty",prjPath.toString()));
+				return false;
+			}
+			final IStatus locationStatus= workspace.validateProjectLocation(handle, prjPath);
+			if (!locationStatus.isOK()) {
+				setErrorMessage(locationStatus.getMessage());
+				return false;
+			}
 		}
 			
 		setErrorMessage(null);

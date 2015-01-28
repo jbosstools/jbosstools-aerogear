@@ -99,7 +99,7 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 			for (FeedHenryApplication feedHenryApplication : apps) {
 				ImportProjectTask pct = new ImportProjectTask(feedHenryApplication);
 				URIish uri = new URIish(feedHenryApplication.getRepoUrl());
-				IPath workpath = new Path(page.getWorkingPath()).append(feedHenryApplication.getTitle());
+				IPath workpath = new Path(page.getWorkingPath()).append(feedHenryApplication.getEclipseProjectName());
 
 				final CloneOperation op = new CloneOperation(uri, true, null, workpath.toFile(), "master", "origin", 60);
 				op.addPostCloneTask(pct);
@@ -164,7 +164,7 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 			throw new OperationCanceledException();
 		}
 		HybridProjectCreator projectCreator = new HybridProjectCreator();
-		IProject project = projectCreator.createProject(app.getTitle(), location.toURI(), app.getTitle(), app.getTitle(),
+		IProject project = projectCreator.createProject(app.getEclipseProjectName(), location.toURI(), app.getTitle(), app.getTitle(),
 				HybridMobileEngineManager.getDefaultEngine(), monitor);
 		addToWorkingSets(project);
 		openAndSelectConfigFile(project);
