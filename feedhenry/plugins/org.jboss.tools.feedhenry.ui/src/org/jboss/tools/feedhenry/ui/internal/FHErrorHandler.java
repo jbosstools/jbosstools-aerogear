@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
@@ -38,12 +40,15 @@ public class FHErrorHandler {
 		else if(e instanceof CoreException){
 			CoreException ce = (CoreException)e;
 			return handle(ce.getStatus());
+		}else if(e instanceof TransportException){
+			displayGitTransportMessage(e.getMessage());
+			Status s = new Status(IStatus.INFO, FHPlugin.PLUGIN_ID, e.getMessage(), e);
+			StatusManager.getManager().handle(s,StatusManager.LOG);
+			return false;
 		}else{
 			Status s = new Status(IStatus.ERROR, FHPlugin.PLUGIN_ID, e.getMessage(), e);
 			return handle(s);
 		}
-		
-		
 	}
 	
 	public static boolean handle(IStatus status){
@@ -73,6 +78,13 @@ public class FHErrorHandler {
 		}
 		return false;
 	
+	}
+	
+	private static void displayGitTransportMessage(String message){
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+
+		MessageDialog.openError(shell, "Git Communication Error", 
+				"Problem when cloning the application. This can be due to a network problem or missing security credentials. Refer to error log for details.");
 	}
 	
 	
