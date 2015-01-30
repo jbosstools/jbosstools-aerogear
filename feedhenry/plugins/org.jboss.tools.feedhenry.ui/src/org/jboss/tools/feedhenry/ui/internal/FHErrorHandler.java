@@ -12,14 +12,12 @@ package org.jboss.tools.feedhenry.ui.internal;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.http.HttpResponse;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
@@ -86,7 +84,4 @@ public class FHErrorHandler {
 		MessageDialog.openError(shell, "Git Communication Error", 
 				"Problem when cloning the application. This can be due to a network problem or missing security credentials. Refer to error log for details.");
 	}
-	
-	
-
 }
