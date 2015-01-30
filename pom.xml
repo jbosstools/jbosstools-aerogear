@@ -18,8 +18,8 @@
 	<modules>
 		<module>cordova</module>
 		<module>cordovasim</module>
-                <module>site</module>
-        </modules>
+		<module>site</module>
+		</modules>
 	<repositories>
 		<repository>
 			<id>jbosstools-base</id>
@@ -35,6 +35,11 @@
 			<id>jbosstools-browsersim</id>
 			<layout>p2</layout>
 			<url>${jbosstools-browsersim-site}</url>
+		</repository>
+		<repository>
+			<id>eclipse-thym-site</id>
+			<layout>p2</layout>
+			<url>${eclipse-thym-site}</url>
 		</repository>
 	</repositories>
 
