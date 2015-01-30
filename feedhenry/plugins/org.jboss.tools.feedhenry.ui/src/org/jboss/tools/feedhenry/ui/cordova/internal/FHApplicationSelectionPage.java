@@ -50,7 +50,7 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 		super("FeedHenry Application Selection Page");
 		currentSelection = selection;
 		setTitle("FeedHenry Application Import");
-		setDescription("Import a Cordova project from FeedHenry");
+		setDescription("Import a Cordova application from FeedHenry");
 	}
 
 	@Override
