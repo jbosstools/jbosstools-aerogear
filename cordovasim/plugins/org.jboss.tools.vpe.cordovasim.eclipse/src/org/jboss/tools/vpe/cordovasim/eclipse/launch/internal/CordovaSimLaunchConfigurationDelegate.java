@@ -16,11 +16,12 @@ public class CordovaSimLaunchConfigurationDelegate implements
 		String projectString = configuration.getAttribute(CordovaSimLaunchConstants.PROJECT, (String) null);
 		String rootFolderString = configuration.getAttribute(CordovaSimLaunchConstants.ROOT_FOLDER, (String) null);
 		String startPageString = configuration.getAttribute(CordovaSimLaunchConstants.START_PAGE, (String) null);
+		String proxy = configuration.getAttribute(CordovaSimLaunchConstants.PROXY, (String) null);
 		Integer port = null;
 		if (configuration.hasAttribute(CordovaSimLaunchConstants.PORT)) {
 			port = configuration.getAttribute(CordovaSimLaunchConstants.PORT, 0);
 		}
 		
-		CordovaSimLauncher.launchCordovaSim(projectString, rootFolderString, startPageString, port);//TODO: NPE etc.
+		CordovaSimLauncher.launchCordovaSim(projectString, rootFolderString, startPageString, port, proxy);
 	}
 }

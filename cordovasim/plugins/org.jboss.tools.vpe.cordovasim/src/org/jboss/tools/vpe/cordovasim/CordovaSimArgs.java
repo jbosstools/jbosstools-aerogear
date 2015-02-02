@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007-2013 Red Hat, Inc.
+ * Copyright (c) 2007-2015 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -22,6 +22,7 @@ import org.jboss.tools.vpe.browsersim.BrowserSimArgs;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
+ * @author Ilya Buziuk (ibuziuk)
  */
 public class CordovaSimArgs {
 	private static String rootFolder;
@@ -29,6 +30,7 @@ public class CordovaSimArgs {
 	private static String cordovaVersion;
 	private static int port;
 	private static boolean restartRequired;
+	private static String proxy;
 
 	public static void parseArgs(String[] args) {
 		List<String> params = new ArrayList<String>(Arrays.asList(args));
@@ -48,9 +50,17 @@ public class CordovaSimArgs {
 			params.remove(versionParameterIndex);
 			cordovaVersion = params.remove(versionParameterIndex);
 		} else {
-			cordovaVersion = "3.1.0";  //$NON-NLS-1$ Using cordova-3.1.0.js
+			cordovaVersion = "3.5.0";  //$NON-NLS-1$ Using cordova-3.5.0.js
 		}
-						
+
+		int proxyIndex = params.indexOf("-proxy"); //$NON-NLS-1$
+		if (proxyIndex >= 0) {
+			params.remove(proxyIndex);
+			proxy = params.remove(proxyIndex);
+		} else {
+			proxy = null;
+		}
+		
 		if (params.size() > 0) {
 			homeUrl = params.remove(params.size() - 1); // the parameter before the last one 	
 			try {
@@ -81,7 +91,6 @@ public class CordovaSimArgs {
 		return rootFolder;
 	}
 
-
 	public static int getPort() {
 		return port;
 	}
@@ -102,9 +111,13 @@ public class CordovaSimArgs {
 		return homeUrl;
 	}
 	
+	public static String getProxy() {
+		return proxy;
+	}
+
 	private static int getPortFromURL(String homeUrl) throws MalformedURLException {
 		URL url = new URL(homeUrl);
 		return url.getPort();
 	}
-
+	
 }
