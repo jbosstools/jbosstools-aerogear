@@ -9,6 +9,9 @@
             icon="icons/obj16/feedhenry_16.png"
             id="org.jboss.tools.feedhenry.ui.cordova.import"
             name="Import Cordova Application">
+         <keywordReference
+               id="org.jboss.tools.feedhenry.ui.keyword">
+         </keywordReference>
       </wizard>
       <category
             id="org.jboss.tools.feedhenry.ui.category"
@@ -86,5 +89,12 @@
             </enablement>
          </contextualLaunch>
       </shortcut>
+ </extension>
+ <extension
+       point="org.eclipse.ui.keywords">
+    <keyword
+          id="org.jboss.tools.feedhenry.ui.keyword"
+          label="feedhenry mobile  cordova">
+    </keyword>
  </extension>
 </plugin>
