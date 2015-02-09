@@ -16,12 +16,25 @@
 		<tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-aerogear.git</tycho.scmUrl>
 	</properties>
 	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<configuration>
+					<pomDependencies>consider</pomDependencies>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<modules>
 		<module>cordova</module>
-    <module>cordovasim</module>
-    <module>feedhenry</module>
-                <module>site</module>
-        </modules>
+		<module>cordovasim</module>
+		<module>feedhenry</module>
+		<module>site</module>
+	</modules>
+
 	<repositories>
 		<repository>
 			<id>jbosstools-base</id>
@@ -44,6 +57,14 @@
 			<url>${eclipse-thym-site}</url>
 		</repository>
 	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.eclipsesource.minimal-json</groupId>
+			<artifactId>minimal-json</artifactId>
+			<version>0.9.2</version>
+		</dependency>
+	</dependencies>
 
 </project>
 	
