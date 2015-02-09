@@ -187,8 +187,9 @@ public class CordovaSimLauncher {
 				bundles.add("org.jboss.tools.vpe.browsersim.javafx.mock"); //$NON-NLS-1$
 			}
 			
-			ExternalProcessLauncher.launchAsExternalProcess(bundles, RESOURCES_BUNDLES,
+			ExternalProcessLauncher.launchAsExternalProcess(bundles, RESOURCES_BUNDLES, BrowserSimLauncher.getJettyBundles(),
 					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM, jvm);
+			
 		}
 	}
 	
