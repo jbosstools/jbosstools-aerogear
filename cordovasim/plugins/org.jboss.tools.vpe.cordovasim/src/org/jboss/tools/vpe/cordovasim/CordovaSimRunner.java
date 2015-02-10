@@ -1,5 +1,5 @@
 /*******************************************************************************
-	 * Copyright (c) 2007-2014 Red Hat, Inc.
+	 * Copyright (c) 2007-2015 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -57,9 +57,9 @@ import org.jboss.tools.vpe.cordovasim.util.StartPageParametersUtil;
 public class CordovaSimRunner {
 	public static final String PLUGIN_ID = "org.jboss.tools.vpe.cordovasim"; //$NON-NLS-1$
 	private static final String STOP_SERVER_COMMAND = "org.jboss.tools.vpe.cordavasim.command.stop.server:"; //$NON-NLS-1$
+	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	
 	private static CustomBrowserSim browserSim;
-	private static final String[] CORDOVASIM_ICONS = {"icons/cordovasim_36px.png", "icons/cordovasim_48px.png", "icons/cordovasim_72px.png", "icons/cordovasim_96px.png"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private static boolean isJavaFxAvailable;
 	private static boolean isWebKitAvailable;
 	
@@ -151,8 +151,7 @@ public class CordovaSimRunner {
 				}
 			});
 			
-			IBrowser browser = browserSim.getBrowser();
-			browser.addLocationListener(new RippleInjector(browserSim));			
+			IBrowser browser = browserSim.getBrowser();		
 			CordovaSimUtil.fixScrollbarStylesForMac(browser);
 		}
 	}
@@ -237,7 +236,16 @@ public class CordovaSimRunner {
 		
 		rippleToolBarBrowser.addOpenWindowListener(new ExtendedOpenWindowListener() {
 			private IBrowser oldBrowser;
-
+			private RippleInjector injector;
+			
+			private void setRippleInjector(RippleInjector injector) {
+				this.injector = injector;
+			}
+			
+			private RippleInjector getRippleInjector() {
+				return injector;
+			}
+			
 			@Override
 			public void open(ExtendedWindowEvent event) {
 				if (InAppBrowserLoader.isInAppBrowserEvent(event) && (browserSim != null)) {
@@ -245,19 +253,29 @@ public class CordovaSimRunner {
 				} else {
 					if (browserSim == null || browserSim.getBrowser().isDisposed()
 						|| browserSim.getBrowser().getShell().isDisposed()) {
+						// Create BrowserSim from scratch (startup)
 						createBrowserSim(sp, rippleToolBarBrowser, homeUrl);
+						setRippleInjector(new RippleInjector(browserSim));
+						browserSim.getBrowser().addLocationListener(getRippleInjector());	
 					} else if (oldBrowser == browserSim.getBrowser()) {
+						// Ripple browser was reloaded
+						oldBrowser.removeLocationListener(getRippleInjector());
 						browserSim.reinitSkin();
-						browserSim.getBrowser().addLocationListener(new RippleInjector(browserSim));
+						setRippleInjector(new RippleInjector(browserSim));
+						browserSim.getBrowser().addLocationListener(getRippleInjector());
 					} else if (oldBrowser != browserSim.getBrowser()) {
-						browserSim.getBrowser().addLocationListener(new RippleInjector(browserSim));
-					}					
+						// Skin was changed (not only device) 
+						oldBrowser.removeLocationListener(getRippleInjector());
+						setRippleInjector(new RippleInjector(browserSim));
+						browserSim.getBrowser().addLocationListener(getRippleInjector());
+					}
+					
 					event.browser = browserSim.getBrowser();
 					oldBrowser = browserSim.getBrowser();
 					
 					try {
 			            if (browserSim.getBrowser() instanceof JavaFXBrowser  && !Server.STARTED.equals(DevToolsDebuggerServer.getServerState())) {
-			                DevToolsDebuggerServer.startDebugServer(((JavaFXBrowser)browserSim.getBrowser()).getDebugger());
+			                DevToolsDebuggerServer.startDebugServer(((JavaFXBrowser) browserSim.getBrowser()).getDebugger());
 			            }					
 			        } catch (Exception e) {
 						CordovaSimLogger.logError(e.getMessage(), e);
