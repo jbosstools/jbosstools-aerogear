@@ -12,7 +12,9 @@
 
 	<packaging>pom</packaging>
 
-	<modules/>
+	<modules>
+		<module>org.jboss.tools.cordovasim.eclipse.test</module>
+	</modules>
 
 	<properties>
 		<surefire.timeout>3600</surefire.timeout>
