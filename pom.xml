@@ -14,14 +14,15 @@
 	<name>jbosstools-aerogear</name>
 	<properties>
 		<tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-aerogear.git</tycho.scmUrl>
-	</properties>
-	
+		<thym.reqs.url>http://download.jboss.org/jbosstools/updates/requirements/thym</thym.reqs.url>
+		<thym.version>0.1.0.201501231846</thym.version>
+	</properties>	
 	<modules>
 		<module>cordova</module>
     <module>cordovasim</module>
     <module>feedhenry</module>
-                <module>site</module>
-        </modules>
+		<module>site</module>
+	</modules>
 	<repositories>
 		<repository>
 			<id>jbosstools-base</id>
@@ -41,7 +42,7 @@
 		<repository>
 			<id>eclipse-thym</id>
 			<layout>p2</layout>
-			<url>${eclipse-thym-site}</url>
+			<url>${thym.reqs.url}/${thym.version}</url>
 		</repository>
 	</repositories>
 
