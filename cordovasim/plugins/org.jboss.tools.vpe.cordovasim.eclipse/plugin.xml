@@ -31,7 +31,7 @@
       <shortcut
             class="org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchShortcut"
             id="org.jboss.tools.vpe.cordovasim.eclipse.launchShortcut"
-            label="Run with CordovaSim"
+            label="Run w/CordovaSim"
             icon="icons/cordovasim_16.png"
             modes="run">
         <contextualLaunch>
