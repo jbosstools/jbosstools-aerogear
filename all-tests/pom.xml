@@ -13,5 +13,7 @@
 
 	<modules>
 		<module>../cordova/tests</module>
+		<module>../cordovasim/tests</module>
+		<module>../feedhenry/tests</module>
 	</modules>
 </project>

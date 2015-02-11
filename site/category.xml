@@ -5,15 +5,21 @@
 	<category-def label="JBoss Tools Aerogear Site" name="JBoss Tools Aerogear Site"></category-def>
 
 	<feature id="org.jboss.tools.aerogear.thym.feature"><category name="JBoss Tools Aerogear Site"/></feature>
-  <feature id="org.jboss.tools.feedhenry"><category name="JBoss Tools Aerogear Site"/></feature>
-  <feature id="org.jboss.tools.vpe.cordovasim.feature"><category name="JBoss Tools Aerogear Site"/></feature>  
+	<feature id="org.jboss.tools.aerogear.thym.feature.source"/>
+	<!-- moved to Thym project <bundle id="org.jboss.tools.aerogear.hybrid.test"/>
+	<bundle id="org.jboss.tools.aerogear.hybrid.test.source"/> -->
 
-	<!-- Sources -->
-	<feature id="org.jboss.tools.aerogear.thym.feature.source"><category name="JBoss Tools Aerogear Site"/></feature>
-  <feature id="org.jboss.tools.feedhenry.source"><category name="JBoss Tools Aerogear Site"/></feature>
-  <feature id="org.jboss.tools.vpe.cordovasim.feature.source"><category name="JBoss Tools Aerogear Site"/></feature>
+	<feature id="org.jboss.tools.feedhenry"><category name="JBoss Tools Aerogear Site"/></feature>
+	<feature id="org.jboss.tools.feedhenry.source"/>
+	<!-- TODO add this <bundle id="org.jboss.tools.feedhenry.test"/>
+	<bundle id="org.jboss.tools.feedhenry.test.source"/> -->
+
+	<feature id="org.jboss.tools.vpe.cordovasim.feature"><category name="JBoss Tools Aerogear Site"/></feature>
+	<feature id="org.jboss.tools.vpe.cordovasim.feature.source"/>
+	<!-- TODO add this <bundle id="org.jboss.tools.cordovasim.eclipse.test"/>
+	<bundle id="org.jboss.tools.cordovasim.eclipse.test.source"/> -->
 
 	<!-- Dependencies -->
-  <feature id="org.eclipse.thym.feature"><category name="JBoss Tools Aerogear Site"/></feature>
+	<feature id="org.eclipse.thym.feature"><category name="JBoss Tools Aerogear Site"/></feature>
 
 </site>
