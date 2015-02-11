@@ -10,19 +10,15 @@
 	<groupId>org.jboss.tools.aerogear.feedhenry.tests</groupId>
 	<artifactId>org.jboss.tools.feedhenry.test</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
-	
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
-					<explodedBundles combine.children="append">
-						<bundle>org.jboss.tools.feedhenry.test</bundle>
-					</explodedBundles>
 					<includes>
 						<include>**/*Test.class</include>
-		    			</includes>
+					</includes>
 				</configuration>
 			</plugin>
 		</plugins>
