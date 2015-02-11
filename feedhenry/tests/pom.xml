@@ -3,17 +3,20 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.jboss.tools.aerogear</groupId>
-		<artifactId>cordovasim</artifactId>
-		<version>3.7.0-SNAPSHOT</version>
+		<artifactId>feedhenry</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.jboss.tools.aerogear.cordovasim</groupId>
-	<artifactId>plugins</artifactId>
-	<version>3.7.0-SNAPSHOT</version>
-	<name>Aerogear/Cordovasim plugins</name>
+	<groupId>org.jboss.tools.aerogear.feedhenry</groupId>
+	<artifactId>tests</artifactId>
+	<name>Aerogeer/Feedhenry tests</name>
+
 	<packaging>pom</packaging>
+
 	<modules>
-		<module>org.jboss.tools.vpe.cordovasim.ripple</module>
-		<module>org.jboss.tools.vpe.cordovasim</module>
-		<module>org.jboss.tools.vpe.cordovasim.eclipse</module>
+		<module>org.jboss.tools.feedhenry.test</module>
 	</modules>
+
+	<properties>
+		<surefire.timeout>3600</surefire.timeout>
+	</properties>
 </project>

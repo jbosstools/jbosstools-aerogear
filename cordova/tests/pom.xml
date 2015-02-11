@@ -8,8 +8,7 @@
 	</parent>
 	<groupId>org.jboss.tools.aerogear.cordova</groupId>
 	<artifactId>tests</artifactId>
-	<name>Aerogear/Cordova Tests</name>
-	
+	<name>Aerogear/Cordova tests</name>
 	<packaging>pom</packaging>
 	<modules>
 	</modules>
