@@ -8,11 +8,12 @@
 	</parent>
 	<groupId>org.jboss.tools.aerogear.feedhenry</groupId>
 	<artifactId>features</artifactId>
-	<name>FeedHenry features</name>
+	<name>Aerogear/FeedHenry features</name>
 	
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.jboss.tools.feedhenry</module>
+		<module>org.jboss.tools.feedhenry.test.feature</module>
 	</modules>
 	<build>
 		<plugins>
