@@ -259,13 +259,17 @@ public class CordovaSimRunner {
 						browserSim.getBrowser().addLocationListener(getRippleInjector());	
 					} else if (oldBrowser == browserSim.getBrowser()) {
 						// Ripple browser was reloaded
-						oldBrowser.removeLocationListener(getRippleInjector());
+						if (oldBrowser != null && !oldBrowser.isDisposed()) {
+							oldBrowser.removeLocationListener(getRippleInjector());
+						}
 						browserSim.reinitSkin();
 						setRippleInjector(new RippleInjector(browserSim));
 						browserSim.getBrowser().addLocationListener(getRippleInjector());
 					} else if (oldBrowser != browserSim.getBrowser()) {
 						// Skin was changed (not only device) 
-						oldBrowser.removeLocationListener(getRippleInjector());
+						if (oldBrowser != null && !oldBrowser.isDisposed()) {
+							oldBrowser.removeLocationListener(getRippleInjector());							
+						}
 						setRippleInjector(new RippleInjector(browserSim));
 						browserSim.getBrowser().addLocationListener(getRippleInjector());
 					}
