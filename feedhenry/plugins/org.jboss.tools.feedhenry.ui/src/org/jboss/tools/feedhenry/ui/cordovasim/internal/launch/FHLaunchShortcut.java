@@ -52,7 +52,7 @@ public abstract class FHLaunchShortcut extends CordovaSimLaunchShortcut {
 		}
 	}
 
-	private ILaunchConfiguration chooseLaunchConfiguration(ILaunchConfiguration[] configurations, IProject project) {
+	protected ILaunchConfiguration chooseLaunchConfiguration(ILaunchConfiguration[] configurations, IProject project) {
 		try {
 			for (ILaunchConfiguration configuration : configurations) {
 				String projectName = configuration.getAttribute(CordovaSimLaunchConstants.PROJECT, (String) null);
