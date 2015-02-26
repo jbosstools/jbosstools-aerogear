@@ -12,8 +12,8 @@
 	<name>Aerogear/Cordovasim plugins</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.jboss.tools.vpe.cordovasim.ripple</module>
-		<module>org.jboss.tools.vpe.cordovasim</module>
-		<module>org.jboss.tools.vpe.cordovasim.eclipse</module>
+		<module>org.jboss.tools.cordovasim.ripple</module>
+		<module>org.jboss.tools.cordovasim</module>
+		<module>org.jboss.tools.cordovasim.eclipse</module>
 	</modules>
 </project>

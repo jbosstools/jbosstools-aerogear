@@ -19,8 +19,8 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.DebugUITools;
 import org.jboss.tools.feedhenry.ui.FHPlugin;
-import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
-import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchShortcut;
+import org.jboss.tools.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
+import org.jboss.tools.cordovasim.eclipse.launch.CordovaSimLaunchShortcut;
 
 /**
  * @author Ilya Buziuk (ibuziuk)

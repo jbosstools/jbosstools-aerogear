@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
-import org.jboss.tools.vpe.browsersim.eclipse.launcher.BrowserSimLauncher;
-import org.jboss.tools.vpe.browsersim.util.ManifestUtil;
+import org.jboss.tools.browsersim.eclipse.launcher.BrowserSimLauncher;
+import org.jboss.tools.browsersim.ui.util.ManifestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

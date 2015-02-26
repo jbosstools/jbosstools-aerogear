@@ -5,9 +5,9 @@ Bundle-SymbolicName: org.jboss.tools.cordovasim.eclipse.test
 Bundle-Version: 3.7.0.qualifier
 Bundle-Vendor: JBoss by Red Hat
 Require-Bundle: org.junit,
- org.jboss.tools.vpe.browsersim.eclipse,
- org.jboss.tools.vpe.cordovasim.eclipse,
- org.jboss.tools.vpe.browsersim,
- org.eclipse.osgi, 
+ org.jboss.tools.browsersim.eclipse,
+ org.jboss.tools.cordovasim.eclipse,
+ org.jboss.tools.browsersim.ui,
+ org.eclipse.osgi,
  org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

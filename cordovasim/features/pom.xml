@@ -11,8 +11,8 @@
 	<name>Aerogear/Cordovasim features</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.jboss.tools.vpe.cordovasim.feature</module>
-		<module>org.jboss.tools.vpe.cordovasim.test.feature</module>
+		<module>org.jboss.tools.cordovasim.feature</module>
+		<module>org.jboss.tools.cordovasim.test.feature</module>
 	</modules>
 	<build>
 		<plugins>

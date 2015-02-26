@@ -12,8 +12,8 @@ package org.jboss.tools.feedhenry.ui.cordovasim.internal.launch;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.jboss.tools.vpe.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
-import org.jboss.tools.vpe.cordovasim.eclipse.launch.RippleProxy;
+import org.jboss.tools.cordovasim.eclipse.launch.CordovaSimLaunchConstants;
+import org.jboss.tools.cordovasim.eclipse.launch.RippleProxy;
 
 /**
  * @author Ilya Buziuk (ibuziuk)

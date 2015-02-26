@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+ <extension
+       point="org.eclipse.debug.core.launchConfigurationTypes">
+    <launchConfigurationType
+          id="org.jboss.tools.cordovasim.eclipse.cordovaSimLaunchConfigurationType"
+          delegate="org.jboss.tools.cordovasim.eclipse.launch.internal.CordovaSimLaunchConfigurationDelegate"
+          modes="run"
+          name="CordovaSim">
+    </launchConfigurationType>
+ </extension>
+ <extension
+       point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+    <launchConfigurationTypeImage
+          configTypeID="org.jboss.tools.cordovasim.eclipse.cordovaSimLaunchConfigurationType"
+          icon="icons/cordovasim_16.png"
+          id="org.jboss.tools.cordovasim.eclipse.cordovaSimLaunchConfigurationTypeImage">
+    </launchConfigurationTypeImage>
+ </extension>
+ <extension
+       point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+    <launchConfigurationTabGroup
+          class="org.jboss.tools.cordovasim.eclipse.launch.internal.CordovaSimLaunchConfigurationTabGroup"
+          id="org.jboss.tools.cordovasim.eclipse.cordovaSimLaunchConfigurationTypeTabGroup"
+          type="org.jboss.tools.cordovasim.eclipse.cordovaSimLaunchConfigurationType">
+    </launchConfigurationTabGroup>
+ </extension>
+  <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.jboss.tools.cordovasim.eclipse.launch.CordovaSimLaunchShortcut"
+            id="org.jboss.tools.cordovasim.eclipse.launchShortcut"
+            label="Run w/CordovaSim"
+            icon="icons/cordovasim_16.png"
+            modes="run">
+        <contextualLaunch>
+            <enablement>
+                <with variable="selection">
+                    <count value="1"/>
+                    <iterate>
+                        <adapt  type="org.eclipse.core.resources.IResource">
+                        	<or>
+	                        	<test property="org.eclipse.core.resources.projectNature" 
+	                           		value="org.eclipse.thym.core.HybridAppNature" />
+	                           	<test property="org.eclipse.core.resources.projectNature" 
+	                           		value="com.android.ide.eclipse.adt.AndroidNature" />
+                        	</or>
+                        </adapt> 
+                    </iterate>
+                </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+</plugin>
