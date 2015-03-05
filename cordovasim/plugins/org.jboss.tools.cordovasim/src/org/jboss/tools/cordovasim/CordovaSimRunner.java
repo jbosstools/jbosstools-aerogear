@@ -11,7 +11,9 @@
 package org.jboss.tools.cordovasim;
 
 import java.text.MessageFormat;
+
 import javafx.application.Platform;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -40,6 +42,7 @@ import org.jboss.tools.browsersim.ui.events.ExitListener;
 import org.jboss.tools.browsersim.ui.events.SkinChangeEvent;
 import org.jboss.tools.browsersim.ui.events.SkinChangeListener;
 import org.jboss.tools.browsersim.ui.util.BrowserSimUtil;
+import org.jboss.tools.browsersim.ui.util.JavaFXUtil;
 import org.jboss.tools.browsersim.ui.util.PreferencesUtil;
 import org.jboss.tools.cordovasim.events.RippleInjector;
 import org.jboss.tools.cordovasim.model.preferences.CordavaSimSpecificPreferencesStorage;
@@ -77,7 +80,7 @@ public class CordovaSimRunner {
 		
 		// Trying to load javaFx libs except Linux GTK3 case
 		if (!(isLinux && !BrowserSimUtil.isRunningAgainstGTK2())) {
-			isJavaFxAvailable = BrowserSimUtil.loadJavaFX();
+			isJavaFxAvailable = JavaFXUtil.loadJavaFX();
 		}
 
 		isWebKitAvailable = BrowserSimUtil.isWebkitAvailable();
@@ -314,7 +317,7 @@ public class CordovaSimRunner {
 		rippleToolBarBrowser.addLocationListener(new LocationAdapter() {
 			@Override
 			public void changed(LocationEvent event) {
-				if (rippleToolBarBrowser instanceof JavaFXBrowser && BrowserSimUtil.isJavaFx8Available()) {
+				if (rippleToolBarBrowser instanceof JavaFXBrowser && JavaFXUtil.isJavaFX8OrHigher()) {
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
