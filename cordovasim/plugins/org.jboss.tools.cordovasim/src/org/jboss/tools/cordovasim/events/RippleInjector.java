@@ -12,14 +12,14 @@ package org.jboss.tools.cordovasim.events;
 
 import javafx.application.Platform;
 
+import org.eclipse.swt.browser.LocationAdapter;
+import org.eclipse.swt.browser.LocationEvent;
 import org.jboss.tools.browsersim.browser.IBrowser;
 import org.jboss.tools.browsersim.browser.javafx.JavaFXBrowser;
-import org.jboss.tools.browsersim.ui.util.BrowserSimUtil;
+import org.jboss.tools.browsersim.ui.util.JavaFXUtil;
 import org.jboss.tools.cordovasim.CordovaSimArgs;
 import org.jboss.tools.cordovasim.CustomBrowserSim;
 import org.jboss.tools.cordovasim.ProceessUnsupportedPluginsPopUp;
-import org.eclipse.swt.browser.LocationAdapter;
-import org.eclipse.swt.browser.LocationEvent;
 
 /**
  * @author Yahor Radtsevich (yradtsevich)
@@ -36,7 +36,7 @@ public class RippleInjector extends LocationAdapter {
 	public void changed(LocationEvent event) {
 		final IBrowser browser = (IBrowser) event.widget;
 		if (event.top) {
-			if (browser instanceof JavaFXBrowser && BrowserSimUtil.isJavaFx8Available()) {
+			if (browser instanceof JavaFXBrowser && JavaFXUtil.isJavaFX8OrHigher()) {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {

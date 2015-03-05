@@ -27,16 +27,16 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-import org.jboss.tools.cordovasim.eclipse.callbacks.CordovaSimRestartCallback;
-import org.jboss.tools.cordovasim.eclipse.callbacks.StopServerCallback;
 import org.jboss.tools.browsersim.eclipse.callbacks.OpenFileCallback;
 import org.jboss.tools.browsersim.eclipse.callbacks.ViewSourceCallback;
 import org.jboss.tools.browsersim.eclipse.launcher.BrowserSimLauncher;
 import org.jboss.tools.browsersim.eclipse.launcher.ExternalProcessCallback;
 import org.jboss.tools.browsersim.eclipse.launcher.ExternalProcessLauncher;
 import org.jboss.tools.browsersim.ui.ExceptionNotifier;
-import org.jboss.tools.browsersim.ui.util.BrowserSimUtil;
+import org.jboss.tools.browsersim.ui.util.JavaFXUtil;
 import org.jboss.tools.cordovasim.eclipse.Activator;
+import org.jboss.tools.cordovasim.eclipse.callbacks.CordovaSimRestartCallback;
+import org.jboss.tools.cordovasim.eclipse.callbacks.StopServerCallback;
 import org.jboss.tools.cordovasim.eclipse.internal.util.ServerUtil;
 import org.jboss.tools.cordovasim.eclipse.launch.CordovaSimLaunchParametersUtil;
 import org.jboss.tools.cordovasim.eclipse.server.internal.ServerCreator;
@@ -181,7 +181,7 @@ public class CordovaSimLauncher {
 			List<String> bundles = getBundles();
 			
 			if (!ExternalProcessLauncher.isGTK2()
-					|| (!BrowserSimUtil.isJavaFxAvailable(jvmPath) && !BrowserSimUtil.isJavaFxAvailable(jrePath))) {
+					|| (!JavaFXUtil.isJavaFXAvailable(jvmPath) && !JavaFXUtil.isJavaFXAvailable(jrePath))) {
 				bundles.add("org.jboss.tools.browsersim.javafx.mock"); //$NON-NLS-1$
 			}
 			
