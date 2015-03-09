@@ -43,7 +43,6 @@ public class StaticResponseServlet extends HttpServlet {
 	private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain"); //$NON-NLS-1$
 		resp.setStatus(HttpServletResponse.SC_OK);
-		
 		resp.getWriter().write(responseString);
 	}
 }

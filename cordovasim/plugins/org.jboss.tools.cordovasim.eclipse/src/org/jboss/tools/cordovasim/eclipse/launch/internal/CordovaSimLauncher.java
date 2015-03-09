@@ -21,8 +21,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -110,7 +110,7 @@ public class CordovaSimLauncher {
 					Server server = ServerCreator.createServer(project, rootFolder, cordovaEngineLocation, port);
 					server.start();
 										
-					Connector connector = server.getConnectors()[0];
+					ServerConnector connector = (ServerConnector) server.getConnectors()[0];
 					port = connector.getLocalPort(); // for the case if port equals 0 is requested (any free port)
 					
 					ServerStorage.getStorage().put(port, server); // Adding server to the ServerStorage
@@ -157,18 +157,7 @@ public class CordovaSimLauncher {
 
 		return bundles;
 	}
-	
-	public static List<String> getJettyBundles() {
-		List<String> bundles = BrowserSimLauncher.getJettyBundles();
-		bundles.addAll(Arrays.asList(
-				"org.eclipse.jetty.client", //$NON-NLS-1$
-				"org.eclipse.jetty.servlets", //$NON-NLS-1$
-				"org.eclipse.jetty.rewrite" //$NON-NLS-1$
-		));
-
-		return bundles;
-	}
-	
+		
 	public static void launchCordovaSim(List<String> parameters) {
 		Activator.getDefault().countLaunchEvent();
 		IVMInstall jvm = BrowserSimLauncher.getSelectedVM();
@@ -185,7 +174,7 @@ public class CordovaSimLauncher {
 				bundles.add("org.jboss.tools.browsersim.javafx.mock"); //$NON-NLS-1$
 			}
 			
-			ExternalProcessLauncher.launchAsExternalProcess(bundles, RESOURCES_BUNDLES, getJettyBundles(),
+			ExternalProcessLauncher.launchAsExternalProcess(bundles, RESOURCES_BUNDLES, BrowserSimLauncher.getJettyBundles(),
 					CORDOVASIM_CALLBACKS, CORDOVASIM_CLASS_NAME, parameters, Messages.CordovaSimLauncher_CORDOVASIM, jvm);
 			
 		}

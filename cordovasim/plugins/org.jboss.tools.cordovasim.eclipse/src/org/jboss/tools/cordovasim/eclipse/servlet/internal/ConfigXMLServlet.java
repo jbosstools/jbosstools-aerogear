@@ -31,11 +31,11 @@ import org.jboss.tools.cordovasim.eclipse.launch.CordovaSimLaunchParametersUtil;
 /**
  * @author Ilya Buziuk (ibuziuk)
  */
-public class ConfigServlet extends HttpServlet {
+public class ConfigXMLServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;	
 	private IProject project;
 
-	public ConfigServlet(IProject project) {
+	public ConfigXMLServlet(IProject project) {
 		this.project = project;
 	}
 
