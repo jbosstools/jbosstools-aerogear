@@ -69,11 +69,7 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 				if( !(toTest instanceof FeedHenryApplication) ){
 					return false;
 				}
-				FeedHenryApplication app = (FeedHenryApplication) toTest;
-				if(app.getType().equals(FeedHenryApplication.APP_TYPE_CORDOVA_ADVANCED)){
-					return true;
-				}
-				return false;
+				return true;
 			}
 		}).setLabel("Select applications:").
 			setSelectionChangeCallback(this).
@@ -85,7 +81,8 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 						return false;
 					}
 					FeedHenryApplication app = (FeedHenryApplication) toTest;
-					return app.findEclipseProject() != null;
+					
+					return !app.getType().equals(FeedHenryApplication.APP_TYPE_CORDOVA_ADVANCED) || app.findEclipseProject() != null;
 				}
 			}).
 			createSelectorUI(workArea);
