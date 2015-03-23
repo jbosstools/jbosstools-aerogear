@@ -165,7 +165,7 @@ public class CordovaImportWizard extends Wizard implements IImportWizard {
 		}
 		HybridProjectCreator projectCreator = new HybridProjectCreator();
 		IProject project = projectCreator.createProject(app.getEclipseProjectName(), location.toURI(), app.getTitle(), app.getTitle(),
-				HybridMobileEngineManager.getDefaultEngine(), monitor);
+				HybridMobileEngineManager.defaultEngines(), monitor);
 		addToWorkingSets(project);
 		openAndSelectConfigFile(project);
 	}

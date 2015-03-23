@@ -36,8 +36,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.thym.core.HybridProject;
 import org.eclipse.thym.core.engine.HybridMobileEngine;
 import org.eclipse.thym.core.engine.HybridMobileLibraryResolver;
-import org.eclipse.thym.core.engine.PlatformLibrary;
-import org.jboss.tools.browsersim.browser.PlatformUtil;
 import org.jboss.tools.cordovasim.eclipse.Activator;
 import org.jboss.tools.cordovasim.eclipse.launch.internal.Messages;
 import org.w3c.dom.Document;
@@ -52,7 +50,6 @@ public class CordovaSimLaunchParametersUtil {
 	private static final String AEROGEAR_HYBRID_NATURE_ID = "org.eclipse.thym.core.HybridAppNature"; //$NON-NLS-1$
 	private static final String ANDROID_NATURE_ID = "com.android.ide.eclipse.adt.AndroidNature"; //$NON-NLS-1$
 	private static final String ANDROID_PLATFORM_ID = "android"; //$NON-NLS-1$
-	private static final String IOS_PLATFORM_ID = "ios"; //$NON-NLS-1$
 			
 	public static IProject validateAndGetProject(String projectString) throws CoreException {
 		IProject project = getProject(projectString);
@@ -204,11 +201,11 @@ public class CordovaSimLaunchParametersUtil {
 	public static String getCordovaEngineLocation(IProject project) {
 		HybridProject hybridProject = HybridProject.getHybridProject(project);
 		if (hybridProject != null) {
-			HybridMobileEngine activeEngine = hybridProject.getActiveEngine();
-			if (activeEngine != null) {
-				PlatformLibrary platformLibrary = getPlatformLibrary(activeEngine);
-				if (platformLibrary != null) {
-					HybridMobileLibraryResolver platformLibraryResolver = platformLibrary.getPlatformLibraryResolver();
+			HybridMobileEngine[] activeEngines = hybridProject.getActiveEngines();
+			if (activeEngines != null && activeEngines.length >0) {
+				HybridMobileEngine platformEngine = getPlatformEngine(activeEngines);
+				if (platformEngine != null) {
+					HybridMobileLibraryResolver platformLibraryResolver = platformEngine.getResolver();
 					if (platformLibraryResolver != null) {
 						URL templateFile = platformLibraryResolver.getTemplateFile(HybridMobileLibraryResolver.PATH_CORDOVA_JS);
 						if (templateFile != null) {
@@ -229,23 +226,26 @@ public class CordovaSimLaunchParametersUtil {
 	public static String getCordovaVersion(IProject project) {
 		HybridProject hybridProject = HybridProject.getHybridProject(project);
 		if (hybridProject != null) {
-			HybridMobileEngine activeEngine = hybridProject.getActiveEngine();
-			if (activeEngine != null) {
+			HybridMobileEngine[] activeEngines = hybridProject.getActiveEngines();
+			HybridMobileEngine activeEngine = getPlatformEngine(activeEngines);
+			// use the same version number as the platform that we are using cordova.js from.
+			if (activeEngine != null ) {
 				return activeEngine.getVersion();
 			}
 		}
 		return null;
 	}
 	
-	private static PlatformLibrary getPlatformLibrary(HybridMobileEngine engine) {
-		PlatformLibrary pl = null;
-		if (engine != null) {
-			pl = engine.getPlatformLib(ANDROID_PLATFORM_ID); // Using android by default
-			if (pl == null && PlatformUtil.OS_MACOSX.equals(PlatformUtil.getOs())) {
-				pl = engine.getPlatformLib(IOS_PLATFORM_ID);
+	private static HybridMobileEngine getPlatformEngine(HybridMobileEngine[] engines) {
+		if(engines == null || engines.length <1){
+			return null;
+		}
+		for (HybridMobileEngine hybridMobileEngine : engines) {
+			if(hybridMobileEngine.getId().equals(ANDROID_PLATFORM_ID)){
+				return hybridMobileEngine;
 			}
 		}
-		return pl;
+		return engines[0]; 
 	}
 	
 	/**
