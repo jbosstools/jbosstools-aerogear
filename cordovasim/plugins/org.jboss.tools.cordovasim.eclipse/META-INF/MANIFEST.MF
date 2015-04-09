@@ -39,5 +39,6 @@ Require-Bundle: org.jboss.tools.browsersim.browser;bundle-version="3.7.0",
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: JBoss by Red Hat
-Export-Package: org.jboss.tools.cordovasim.eclipse.launch
+Export-Package: org.jboss.tools.cordovasim.eclipse.launch,
+ org.jboss.tools.cordovasim.eclipse.server
 Import-Package: org.eclipse.jdt.launching

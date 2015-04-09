@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.cordovasim.eclipse.server.internal;
+package org.jboss.tools.cordovasim.eclipse.server;
 
 import java.io.File;
 import java.io.IOException;

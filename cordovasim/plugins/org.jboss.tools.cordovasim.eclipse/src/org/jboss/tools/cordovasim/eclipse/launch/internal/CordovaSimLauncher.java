@@ -39,7 +39,7 @@ import org.jboss.tools.cordovasim.eclipse.callbacks.CordovaSimRestartCallback;
 import org.jboss.tools.cordovasim.eclipse.callbacks.StopServerCallback;
 import org.jboss.tools.cordovasim.eclipse.internal.util.ServerUtil;
 import org.jboss.tools.cordovasim.eclipse.launch.CordovaSimLaunchParametersUtil;
-import org.jboss.tools.cordovasim.eclipse.server.internal.ServerCreator;
+import org.jboss.tools.cordovasim.eclipse.server.ServerCreator;
 import org.jboss.tools.cordovasim.eclipse.server.internal.ServerStorage;
 
 /**

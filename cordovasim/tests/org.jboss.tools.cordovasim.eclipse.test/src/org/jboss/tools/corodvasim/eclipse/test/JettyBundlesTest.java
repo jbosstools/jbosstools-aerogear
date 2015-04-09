@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributor:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.corodvasim.eclipse.test;
 
 import static org.junit.Assert.assertEquals;
@@ -14,6 +24,9 @@ import org.junit.runners.JUnit4;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
+/**
+ * @author Ilya Buziuk (ibuziuk)
+ */
 @RunWith(JUnit4.class)
 public class JettyBundlesTest {
 	// Current version in TP is 9.2.5
@@ -30,7 +43,7 @@ public class JettyBundlesTest {
 			assertEquals(VERSION, version.toString());
 		}
 	}
-
+	
 	private static List<String> getJettyBundles() {
 		List<String> bundles = BrowserSimLauncher.getJettyBundles();
 		bundles.addAll(Arrays.asList(

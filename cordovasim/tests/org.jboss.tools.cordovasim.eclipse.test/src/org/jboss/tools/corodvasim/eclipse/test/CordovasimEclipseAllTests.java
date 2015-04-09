@@ -15,11 +15,12 @@ import org.junit.runners.Suite;
 
 /**
  * @author Konstantin Marmalyukov (kmarmaliykov)
+ * @author Ilya Buziuk (ibuziuk)
  */
-
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-JettyBundlesTest.class
+JettyBundlesTest.class,
+JettyServerTest.class
 })
 public class CordovasimEclipseAllTests{
 }
