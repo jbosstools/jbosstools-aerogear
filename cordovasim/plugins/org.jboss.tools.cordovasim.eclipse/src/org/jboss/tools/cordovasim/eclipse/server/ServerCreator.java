@@ -57,7 +57,7 @@ public class ServerCreator {
 	private static final String RIPPLE_CORDOVA_FOLDER = "ripple/cordova"; //$NON-NLS-1$
 	private static final String LOCALHOST = "localhost"; //$NON-NLS-1$
 
-	public static Server createServer(final IProject project, final IContainer resourceBase, String cordovaEngineLocation, Integer port) {
+	public static Server createServer(final IProject project, final IContainer resourceBase, final String cordovaEngineLocation, final Integer port) {
 		QueuedThreadPool threadPool = new QueuedThreadPool(100, 10);
 		Server server = new Server(threadPool);
 		server.manage(threadPool);
@@ -66,9 +66,8 @@ public class ServerCreator {
 		connector.setReuseAddress(false);
 		connector.setSoLingerTime(0);  // Linux keeps the port blocked without this line
 		
-		port = (port != null) ? port : 0; // If port is undefined use any free port
 		connector.setHost(LOCALHOST); 
-		connector.setPort(port);
+		connector.setPort(setupPort(port));
 	
 		server.setConnectors(new Connector[] {connector});
 
@@ -155,6 +154,10 @@ public class ServerCreator {
 		
 		server.setHandler(rippleRewriteHandler);
 		return server;
+	}
+	
+	private static int setupPort(final Integer port) {
+		return (port != null) ? port : 0; // If port is undefined use any free port
 	}
 	
 	private static String getResoursePathFromBundle(final String path, final String bundleName) {

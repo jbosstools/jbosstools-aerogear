@@ -33,7 +33,7 @@ public class JettyBundlesTest {
 	private static final String VERSION = "9.2.5.v20141112"; //$NON-NLS-1$
 
 	@Test
-	public void jettyVersionMatches() {
+	public void testJettyVersionMatches() {
 		List<String> bundles = getJettyBundles();
 		for (String bundleName : bundles) {
 			Bundle bundle = Platform.getBundle(bundleName);
