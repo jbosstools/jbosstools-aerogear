@@ -104,8 +104,6 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 		}
 
     	createWorkingSetGroup();
-    	appSelector.retrieveProjects(getContainer());
-	
 		restoreWidgetValues();
 		setPageComplete(false);
 		Dialog.applyDialogFont(workArea);
@@ -182,11 +180,24 @@ public class FHApplicationSelectionPage extends WizardPage implements SelectionC
 	
 	private void restoreWidgetValues() {
 		destinationDirectoryGroup.restoreHistory(getDialogSettings());
-		
 	}
 	
 	void saveWidgetValues(){
 		destinationDirectoryGroup.saveHistory(getDialogSettings());
+	}
+	
+	@Override
+	public void setVisible(boolean visible) {
+		if(visible){
+			getControl().getDisplay().asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					appSelector.retrieveProjects(getContainer());
+				}
+			});
+		}
+		super.setVisible(visible);
 	}
 
 }
