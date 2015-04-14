@@ -21,6 +21,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.feedhenry.ui.internal.FHErrorHandler;
 
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -99,7 +101,8 @@ public class FeedHenry {
 
 			return json;
 		} catch (IOException e) {
-			FeedHenryException fe = new FeedHenryException("Error occured while communicating with the FeedHenry server");
+			FeedHenryException fe = new FeedHenryException(FHErrorHandler.ERROR_CONNECTION_API_CALL,
+					NLS.bind("Unexpected error while communicating with {0}",fhURL.getHost()));
 			fe.initCause(e);
 			throw fe;
 		}

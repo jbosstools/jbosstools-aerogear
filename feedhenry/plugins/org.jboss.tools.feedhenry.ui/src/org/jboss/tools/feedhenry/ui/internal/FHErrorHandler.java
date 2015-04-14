@@ -28,6 +28,7 @@ import org.jboss.tools.feedhenry.ui.cordova.internal.preferences.FHPreferenceCon
 public class FHErrorHandler {
 	
 	public static final int ERROR_INVALID_PREFERENCES = 10;
+	public static final int ERROR_CONNECTION_API_CALL = 15;
 	public static final int ERROR_UNAUTHORIZED = 401;
 	
 	public static boolean handle(Throwable e){
@@ -39,7 +40,7 @@ public class FHErrorHandler {
 			CoreException ce = (CoreException)e;
 			return handle(ce.getStatus());
 		}else if(e instanceof TransportException){
-			displayGitTransportMessage(e.getMessage());
+			displayGitTransportMessage();
 			Status s = new Status(IStatus.INFO, FHPlugin.PLUGIN_ID, e.getMessage(), e);
 			StatusManager.getManager().handle(s,StatusManager.LOG);
 			return false;
@@ -57,15 +58,18 @@ public class FHErrorHandler {
 					+ "Would you like to correct it on preferences now ?");
 		case ERROR_INVALID_PREFERENCES:
 			return displayPreferences("Invalid Preferences","FeedHenry connection preferences are undefined or invalid. Correct preferences now?");
+		case ERROR_CONNECTION_API_CALL:
+			displayConnectionErrorMessage(status);
+			return false;
 		default:
 			StatusManager.getManager().handle(status);
 			return false;
 		}
+		
 	}
 	
 	private static boolean displayPreferences(String title, String message){
-		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-		
+		Shell shell = getActiveShell();
 		boolean define = MessageDialog.openQuestion(shell,title,message);
 		if(define){
 			PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(shell,
@@ -77,11 +81,20 @@ public class FHErrorHandler {
 		return false;
 	
 	}
-	
-	private static void displayGitTransportMessage(String message){
-		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 
+	private static final Shell getActiveShell() {
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		return shell;
+	}
+	
+	private static void displayGitTransportMessage(){
+		Shell shell = getActiveShell();
 		MessageDialog.openError(shell, "Git Communication Error", 
 				"Problem when cloning the application. This can be due to a network problem or missing security credentials. Refer to error log for details.");
+	}
+	
+	private static void displayConnectionErrorMessage(IStatus status){
+		FHPlugin.log(status.getSeverity(), "FeedHenry connection error", status.getException());
+		MessageDialog.openError(getActiveShell(), "Connection Error", status.getMessage());
 	}
 }
