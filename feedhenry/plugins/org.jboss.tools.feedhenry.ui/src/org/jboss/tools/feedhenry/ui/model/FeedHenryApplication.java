@@ -30,9 +30,33 @@ import com.eclipsesource.json.JsonValue;
 public class FeedHenryApplication {
 	
 	/**
-	 * type value for full Cordova applications
+	 * app type for full Cordova applications
 	 */
 	public static final String APP_TYPE_CORDOVA_ADVANCED = "client_advanced_hybrid";
+	/**
+	 *  app type for node.js applications
+	 */
+	public static final String APP_TYPE_CLOUD_NODEJS = "cloud_nodejs";
+	/**
+	 *  app type for web applications
+ 	 */
+	public static final String APP_TYPE_WEB_ADVANCED = "webapp_advanced";
+	/*
+	 * app type for basic web applications
+	 */
+	public static final String APP_TYPE_WEB_BASIC = "webapp_basic";
+	/**
+	 * app type for android
+	 */
+	public static final String APP_TYPE_NATIVE_ANDROID = "client_native_android";
+	/**
+	 * app type for ios
+	 */
+	public static final String APP_TYPE_NATIVE_IOS = "client_native_ios";
+	/**
+	 *  app type for hybrid client
+	 */
+	public static final String APP_TYPE_HYBRID = "client_hybrid";
 	
 	private String guid;
 	private String title;
