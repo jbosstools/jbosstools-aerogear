@@ -12,6 +12,7 @@
 	
 	<packaging>pom</packaging>
 	<modules>
+		<module>org.jboss.tools.aerogear.easymport.feature</module>
 		<module>org.jboss.tools.aerogear.thym.feature</module>
 	</modules>
 	<build>

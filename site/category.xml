@@ -5,6 +5,7 @@
 	<category-def label="JBoss Tools Aerogear Site" name="ODJBoss Tools Aerogear Site"></category-def>
 
 	<feature id="org.jboss.tools.aerogear.thym.feature"><category name="JBoss Tools Aerogear Site"/></feature>
+	<feature id="org.jboss.tools.aerogear.easymport.feature"><category name="JBoss Tools Aerogear Site"/></feature>
 	<feature id="org.jboss.tools.feedhenry"><category name="JBoss Tools Aerogear Site"/></feature>
 	<feature id="org.jboss.tools.feedhenry.test.feature"><category name="JBoss Tools Aerogear Site"/></feature>
 	<feature id="org.jboss.tools.cordovasim.feature"><category name="JBoss Tools Aerogear Site"/></feature>  
@@ -12,6 +13,7 @@
 
 	<!-- Sources -->
 	<feature id="org.jboss.tools.aerogear.thym.feature.source"><category name="JBoss Tools Aerogear Site"/></feature>
+	<feature id="org.jboss.tools.aerogear.easymport.feature.source"><category name="JBoss Tools Aerogear Site"/></feature>
 	<feature id="org.jboss.tools.feedhenry.source"><category name="JBoss Tools Aerogear Site"/></feature>
 	<feature id="org.jboss.tools.feedhenry.test.feature.source"><category name="JBoss Tools Aerogear Site"/></feature>
 	<feature id="org.jboss.tools.cordovasim.feature.source"><category name="JBoss Tools Aerogear Site"/></feature>
