@@ -8,7 +8,7 @@
  * 	Contributors:
  * 		 Red Hat Inc. - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.jboss.tools.feedhenry.ui.model;
+package org.jboss.tools.feedhenry.ui.internal.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,7 +26,7 @@ import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.IStatus;
 import org.jboss.tools.feedhenry.ui.FHPlugin;
 //Copied from thym.core.HttpUtil
-final class HttpUtil {
+public final class HttpUtil {
 	
 	/**
 	 * Set the proxy settings from ProxyService.
@@ -34,7 +34,7 @@ final class HttpUtil {
 	 * 
 	 * @param client
 	 */
-	static void setupProxy(final DefaultHttpClient client ){
+	public static void setupProxy(final DefaultHttpClient client ){
 		client.setRoutePlanner(new HttpRoutePlanner() {
 			
 			/* (non-Javadoc)

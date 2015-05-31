@@ -27,7 +27,7 @@ import org.jboss.tools.feedhenry.ui.FHPlugin;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryApplication;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryProject;
 
-final class FHAppLabelProvider extends LabelProvider implements IFontProvider, IColorProvider{
+final public class FHAppLabelProvider extends LabelProvider implements IFontProvider, IColorProvider{
 	
 	private static final String ICON_PATH_FEEDHENRY = "/icons/obj16/feedhenry_16.png";
 	private static final String ICON_PATH_ANDROID = "/icons/obj16/android_16.png";

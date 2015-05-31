@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IFilter;
@@ -30,9 +31,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.progress.UIJob;
-import org.eclipse.ui.statushandlers.StatusManager;
 import org.jboss.tools.feedhenry.ui.FHPlugin;
 import org.jboss.tools.feedhenry.ui.cordova.internal.preferences.FHPreferences;
 import org.jboss.tools.feedhenry.ui.model.FeedHenry;
@@ -106,13 +104,15 @@ public class FeedHenryApplicationSelector {
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					try {
-						prepareInput(monitor);
+						final SubMonitor sm = SubMonitor.convert(monitor,"Display FeedHenry Projects",100);
+						prepareInput(sm.newChild(70));
 						if(block != null ){
 							Display display = PlatformUI.getWorkbench().getDisplay();
 							display.asyncExec(new Runnable() {
 								@Override
 								public void run() {
 									block.setInput(projects);
+									sm.worked(30);
 								}
 							});
 						}
@@ -217,7 +217,7 @@ public class FeedHenryApplicationSelector {
 				throw new OperationCanceledException();
 			}
 			projects = fh.setFeedHenryURL(new URL(feedHenryURL))
-					.setAPIKey(prefs.getUserAPIKey()).listProjects();
+					.setAPIKey(prefs.getUserAPIKey()).listProjects(monitor);
 		} catch (MalformedURLException e) {
 			throw new CoreException(new Status(IStatus.ERROR, FHPlugin.PLUGIN_ID, FHErrorHandler.ERROR_INVALID_PREFERENCES, NLS.bind("{0} is not a valid URL", feedHenryURL),e));
 		} catch (FeedHenryException e) {

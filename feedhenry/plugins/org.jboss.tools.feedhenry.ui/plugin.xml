@@ -5,7 +5,7 @@
          point="org.eclipse.ui.importWizards">
       <wizard
             category="org.jboss.tools.feedhenry.ui.category"
-            class="org.jboss.tools.feedhenry.ui.cordova.internal.CordovaImportWizard"
+            class="org.jboss.tools.feedhenry.ui.cordova.internal.wizards.CordovaImportWizard"
             icon="icons/obj16/feedhenry_16.png"
             id="org.jboss.tools.feedhenry.ui.cordova.import"
             name="Import Cordova Application">
@@ -96,5 +96,19 @@
           id="org.jboss.tools.feedhenry.ui.keyword"
           label="feedhenry mobile  cordova">
     </keyword>
+ </extension>
+ <extension
+       point="org.eclipse.ui.newWizards">
+    <wizard
+          category="org.jboss.tools.feedhenry.ui.category"
+          class="org.jboss.tools.feedhenry.ui.cordova.internal.wizards.NewApplicationWizard"
+          icon="icons/obj16/feedhenry_16.png"
+          id="org.jboss.tools.feedhenry.ui.newApplication"
+          name="New FeedHenry Application">
+    </wizard>
+    <category
+          id="org.jboss.tools.feedhenry.ui.category"
+          name="FeedHenry">
+    </category>
  </extension>
 </plugin>

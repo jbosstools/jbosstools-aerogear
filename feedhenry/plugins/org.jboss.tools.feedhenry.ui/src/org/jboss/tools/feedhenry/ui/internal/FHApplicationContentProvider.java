@@ -19,7 +19,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryApplication;
 import org.jboss.tools.feedhenry.ui.model.FeedHenryProject;
 
-final class FHApplicationContentProvider implements ITreeContentProvider{
+public final class FHApplicationContentProvider implements ITreeContentProvider{
 	private List<FeedHenryProject> projects;
 	private IFilter filter;
 

@@ -8,7 +8,7 @@
  * 	Contributors:
  * 		 Red Hat Inc. - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.jboss.tools.feedhenry.ui.cordova.internal;
+package org.jboss.tools.feedhenry.ui.cordova.internal.wizards;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
