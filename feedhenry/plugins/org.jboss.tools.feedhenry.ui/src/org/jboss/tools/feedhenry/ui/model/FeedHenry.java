@@ -126,7 +126,7 @@ public class FeedHenry {
 		SubMonitor sm = SubMonitor.convert(monitor,100);
 		 DefaultHttpClient httpClient = new DefaultHttpClient();
 		 HttpUtil.setupProxy(httpClient);
-		 HttpPost post = new HttpPost(this.fhURL.toString()+ api);
+		 HttpPost post = new HttpPost(this.fhURL.toString() + "/" + api);
 		 post.addHeader("X-FH-AUTH-USER", this.apikey);
 		 post.addHeader("Content-Type", "application/json");
 		 post.setEntity(new StringEntity(payload,ContentType.APPLICATION_JSON));
