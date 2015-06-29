@@ -13,7 +13,10 @@ package org.jboss.tools.feedhenry.ui.cordova.internal.wizards;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -29,6 +32,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.osgi.util.NLS;
@@ -59,11 +63,13 @@ public class FHProjectSelectionPage extends WizardPage {
 	private Text remoteName;
 	private Button useDefaultAppName;
 	private Text appName;
+	private final IStructuredSelection initialSelection;
 
-	protected FHProjectSelectionPage() {
+	protected FHProjectSelectionPage(IStructuredSelection selection) {
 		super("FeedHenry Project Selection Page");
 		setTitle("Create FeedHenry Application");
 		setDescription("Create a new Application on FeedHenry platform");
+		this.initialSelection = selection;
 	}
 
 	@Override
@@ -131,7 +137,9 @@ public class FHProjectSelectionPage extends WizardPage {
 		remoteName.setText("feedhenry");
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(remoteName);
 		
+		
 		registerListeners();
+		this.selectProjectFromSelection();
 		Dialog.applyDialogFont(workArea);
 		setPageComplete(false);
 		
@@ -225,6 +233,22 @@ public class FHProjectSelectionPage extends WizardPage {
 			if(FHErrorHandler.handle(e)){
 				retrieveProjects();
 			}	
+		}
+	}
+	
+	private void selectProjectFromSelection(){
+		if(this.initialSelection != null && !this.initialSelection.isEmpty()){
+			Iterator<?> iterator = initialSelection.iterator();
+			while (iterator.hasNext()) {
+				Object object = (Object) iterator.next();
+				if(object instanceof IResource){
+					IProject project = ((IResource)object).getProject();
+					HybridProject hp = HybridProject.getHybridProject(project);
+					if(hp != null ){
+						localProject.setSelection(new StructuredSelection(hp));
+					}
+				}
+			}
 		}
 	}
 

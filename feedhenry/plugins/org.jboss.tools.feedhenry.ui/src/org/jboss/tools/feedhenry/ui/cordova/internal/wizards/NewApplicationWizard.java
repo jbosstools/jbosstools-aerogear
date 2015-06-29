@@ -44,6 +44,7 @@ public class NewApplicationWizard extends Wizard implements INewWizard {
 
 	private static final String DIALOG_STTINGS_KEY = "FeedHenryNewApplicationWizard";
 	private FHProjectSelectionPage page;
+	private IStructuredSelection initialSelection;
 
 	public NewApplicationWizard() {
 		super();
@@ -56,14 +57,13 @@ public class NewApplicationWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		// TODO Auto-generated method stub
-
+		this.initialSelection = selection;
 	}
 	
 	@Override
 	public void addPages() {
 		super.addPages();
-		page = new FHProjectSelectionPage();
+		page = new FHProjectSelectionPage(this.initialSelection);
 		addPage(page);
 	}
 
