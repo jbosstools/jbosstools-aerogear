@@ -33,9 +33,11 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
@@ -55,6 +57,8 @@ public class FHProjectSelectionPage extends WizardPage {
 	private TableViewer projectList;
 	private ComboViewer localProject;
 	private Text remoteName;
+	private Button useDefaultAppName;
+	private Text appName;
 
 	protected FHProjectSelectionPage() {
 		super("FeedHenry Project Selection Page");
@@ -71,7 +75,7 @@ public class FHProjectSelectionPage extends WizardPage {
 		GridDataFactory.fillDefaults().indent(10, 5).grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(workArea); 
 		
 		final Label localProjectLabel = new Label(workArea, SWT.NULL);
-		localProjectLabel.setText("Project:");
+		localProjectLabel.setText("Source project:");
 		GridDataFactory.fillDefaults().applyTo(localProjectLabel);
 		
 		final Combo projectCombo = new Combo(workArea, SWT.SINGLE | SWT.READ_ONLY);
@@ -98,6 +102,26 @@ public class FHProjectSelectionPage extends WizardPage {
 		projectList.setContentProvider(new FHApplicationContentProvider());
 		GridDataFactory.fillDefaults().span(2, 1).grab(true,false).align(SWT.FILL, SWT.CENTER).applyTo(projectList.getTable());
 	
+		
+		Group appNameGrp = new Group(workArea, SWT.NULL);
+		appNameGrp.setText("Application name");
+		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(appNameGrp);
+		GridLayoutFactory.fillDefaults().numColumns(3).applyTo(appNameGrp);
+		
+		useDefaultAppName = new Button(appNameGrp, SWT.CHECK);
+		useDefaultAppName.setText("Use project name");
+		useDefaultAppName.setSelection(true);
+		GridDataFactory.fillDefaults().span(3, 1).applyTo(useDefaultAppName);
+		
+		Label filler = new Label(appNameGrp,SWT.NULL);
+		
+		
+		Label appNameLabel = new Label(appNameGrp, SWT.NULL);
+		appNameLabel.setText("Application name:");
+		GridDataFactory.fillDefaults().applyTo(appNameLabel);
+		
+		appName = new Text(appNameGrp, SWT.SINGLE | SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(appName);
 		
 		final Label remoteLabel = new Label(workArea, SWT.NULL);
 		remoteLabel.setText("Git remote name:");
@@ -153,6 +177,10 @@ public class FHProjectSelectionPage extends WizardPage {
 			setErrorMessage("Please specify a FeedHenry project");
 			return false;
 		}
+		if( !useDefaultAppName.getSelection() && appName.getText().isEmpty()){
+			setErrorMessage("Please specify an application name");
+			return false;
+		}
 		if(remoteName.getText() == null || remoteName.getText().isEmpty()){
 			setErrorMessage("Please specify a Git remote name for FeedHenry repository");
 			return false;
@@ -200,21 +228,48 @@ public class FHProjectSelectionPage extends WizardPage {
 		}
 	}
 
+	/**
+	 * Selected project that exists on the workspace.
+	 * @return project
+	 */
 	HybridProject getHybridProject() {
 		IStructuredSelection selection = (IStructuredSelection) localProject.getSelection();
 		if(selection.isEmpty()) return null;
 		return (HybridProject) selection.getFirstElement();
 	}
-
+		
+	/**
+	 * Selected project on the platform.
+	 * @return FeedHenry platform project
+	 */
 	FeedHenryProject getFeedHenryProject() {
 		IStructuredSelection selection = (IStructuredSelection)projectList.getSelection();
 		if(selection.isEmpty())return null;
 		return (FeedHenryProject) selection.getFirstElement();
 	}
 
+	/**
+	 * Returns the application name. 
+	 * If use default name is selected it 
+	 * returns the name from selected project otherwise returns the 
+	 * user specified name.
+	 * 
+	 * @return application name to be used
+	 */
+	String getApplicationName(){
+		if(useDefaultAppName.getSelection()){
+			return getHybridProject().getAppName();
+		}
+		return appName.getText();
+	}
+
+	/**
+	 * The remote name to be used on git config
+	 * 
+	 * @return remote name
+	 */
 	String getRemoteName() {
 		return remoteName.getText();
 	}
-	
 
 }

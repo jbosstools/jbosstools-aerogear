@@ -52,7 +52,6 @@ public class NewApplicationWizard extends Wizard implements INewWizard {
 		IDialogSettings wbSettings = FHPlugin.getDefault().getDialogSettings();
 		IDialogSettings section= wbSettings.getSection(DIALOG_STTINGS_KEY);
 		setDialogSettings(section);
-
 	}
 
 	@Override
@@ -72,10 +71,12 @@ public class NewApplicationWizard extends Wizard implements INewWizard {
 	public boolean performFinish() {
 		final HybridProject project = page.getHybridProject();
 		final FeedHenryProject FHProject = page.getFeedHenryProject();
+		final String applicationName = page.getApplicationName();
 		final String remoteName = page.getRemoteName();
 		Assert.isNotNull(project);
 		Assert.isNotNull(FHProject);
 		Assert.isNotNull(remoteName);
+		Assert.isNotNull(applicationName);
 		try{
 			getContainer().run(false, true, new IRunnableWithProgress() {
 
@@ -92,11 +93,11 @@ public class NewApplicationWizard extends Wizard implements INewWizard {
 					}
 					try {
 						SubMonitor sm = SubMonitor.convert(monitor, 
-								NLS.bind("Create FeedHenry Application {0} on {1}", new String[]{project.getAppName(), feedHenryURL}), 100);
+								NLS.bind("Create FeedHenry Application {0} on {1}", new String[]{applicationName, feedHenryURL}), 100);
 						Repository repository = GitUtil.getRepository(project.getProject());
 						FeedHenryApplication fha = fh.setFeedHenryURL(new URL(feedHenryURL))
 								.setAPIKey(prefs.getUserAPIKey())
-								.importBareRepo(FHProject.getGuid(), project.getAppName(), FeedHenryApplication.APP_TYPE_CORDOVA_ADVANCED,
+								.importBareRepo(FHProject.getGuid(), applicationName, FeedHenryApplication.APP_TYPE_CORDOVA_ADVANCED,
 										sm.newChild(50));
 						if(repository == null ){ 
 							sm.setTaskName("Create Git repository");
