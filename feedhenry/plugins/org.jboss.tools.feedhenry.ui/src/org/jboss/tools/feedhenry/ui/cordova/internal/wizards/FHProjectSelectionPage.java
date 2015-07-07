@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Red Hat, Inc. 
+ * Copyright (c) 2015 Red Hat, Inc. 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -106,7 +106,7 @@ public class FHProjectSelectionPage extends WizardPage {
 		projectList = new TableViewer(workArea, SWT.SINGLE | SWT.FULL_SELECTION );
 		projectList.setLabelProvider(new FHAppLabelProvider());
 		projectList.setContentProvider(new FHApplicationContentProvider());
-		GridDataFactory.fillDefaults().span(2, 1).grab(true,false).align(SWT.FILL, SWT.CENTER).applyTo(projectList.getTable());
+		GridDataFactory.fillDefaults().span(2, 1).grab(true,false).align(SWT.FILL, SWT.CENTER).hint(SWT.DEFAULT, 100).applyTo(projectList.getTable());
 	
 		
 		Group appNameGrp = new Group(workArea, SWT.NULL);

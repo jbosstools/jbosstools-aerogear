@@ -1,0 +1,7 @@
+{
+  "appid": "__ID_OF_APP_IN_PROJECT__",
+  "appkey": "__APP_API_KEY_OF_APP_IN_PROJECT__",
+  "connectiontag": "__CONNECTION_TAG_TO_USE_FOR_CLOUD__",
+  "host": "__APP_STUDIO_HOST__",
+  "projectid": "__PROJECT_ID__"
+}
