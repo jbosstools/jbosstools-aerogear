@@ -119,14 +119,20 @@ public class FHProjectSelectionPage extends WizardPage {
 		useDefaultAppName.setSelection(true);
 		GridDataFactory.fillDefaults().span(3, 1).applyTo(useDefaultAppName);
 		
-		Label filler = new Label(appNameGrp,SWT.NULL);
-		
+		/*Label filler = */new Label(appNameGrp,SWT.NULL);
 		
 		Label appNameLabel = new Label(appNameGrp, SWT.NULL);
 		appNameLabel.setText("Application name:");
 		GridDataFactory.fillDefaults().applyTo(appNameLabel);
 		
 		appName = new Text(appNameGrp, SWT.SINGLE | SWT.BORDER);
+		appName.setEnabled(false);
+		useDefaultAppName.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				appName.setEnabled(!useDefaultAppName.getSelection());
+			}
+		});
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(appName);
 		
 		final Label remoteLabel = new Label(workArea, SWT.NULL);
