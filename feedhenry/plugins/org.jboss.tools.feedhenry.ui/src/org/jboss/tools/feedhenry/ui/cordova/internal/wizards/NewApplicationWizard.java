@@ -94,11 +94,13 @@ public class NewApplicationWizard extends Wizard implements INewWizard {
 	}
 
 	private static final String DIALOG_SETTINGS_KEY = "FeedHenryNewApplicationWizard";
+	public static final String WIZARD_ID = "org.jboss.tools.feedhenry.ui.newApplication";
 	private FHProjectSelectionPage page;
 	private IStructuredSelection initialSelection;
 
 	public NewApplicationWizard() {
 		super();
+		setWindowTitle("Create FeedHenry Application");
 		setNeedsProgressMonitor(true);
 		setDefaultPageImageDescriptor(FHPlugin.getImageDescriptor(FHPlugin.PLUGIN_ID,"/icons/wizban/fh_wizban.png"));
 		IDialogSettings wbSettings = FHPlugin.getDefault().getDialogSettings();

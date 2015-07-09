@@ -111,4 +111,38 @@
           name="FeedHenry">
     </category>
  </extension>
+ <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
+         <command
+               commandId="org.jboss.tools.feedhenry.ui.command.ConvertToFeedHenryApplication"
+               style="push">
+         </command>
+        <visibleWhen checkEnabled="false">
+          <and>
+            <count value="1"/>
+            <iterate ifEmpty="false" operator="and">
+              <adapt type="org.eclipse.core.resources.IProject">
+                <and>
+                   <test
+                       property="org.eclipse.core.resources.projectNature"
+                        value="org.eclipse.thym.core.HybridAppNature">
+                   </test>
+                </and>
+              </adapt>
+            </iterate>
+          </and>
+        </visibleWhen>
+      </menuContribution>
+   </extension>
+ <extension
+       point="org.eclipse.ui.commands">
+    <command
+          defaultHandler="org.jboss.tools.feedhenry.ui.internal.ConvertToFeedHenryApplicationHandler"
+          id="org.jboss.tools.feedhenry.ui.command.ConvertToFeedHenryApplication"
+          name="Convert to Feedhenry Application">
+    </command>
+ </extension>
 </plugin>
