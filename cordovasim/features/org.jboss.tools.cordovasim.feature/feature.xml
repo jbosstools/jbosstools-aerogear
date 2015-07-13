@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature id="org.jboss.tools.cordovasim.feature" label="%featureName" version="3.7.0.qualifier" provider-name="%providerName">
+<feature id="org.jboss.tools.cordovasim.feature"
+		label="%featureName"
+		version="3.7.0.qualifier"
+		license-feature="org.jboss.tools.foundation.license.feature"
+		license-feature-version="0.0.0"
+		provider-name="%providerName">
 
 	<description url="http://www.jboss.org/tools">
       %description
@@ -9,7 +14,7 @@
       %copyright
    </copyright>
 
-	<license url="%licenseURL">
+	<license>
       %license
    </license>
 

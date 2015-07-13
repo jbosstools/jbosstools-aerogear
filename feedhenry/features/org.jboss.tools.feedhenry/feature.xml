@@ -3,6 +3,8 @@
       id="org.jboss.tools.feedhenry"
       label="%featureName"
       version="1.1.0.qualifier"
+	  license-feature="org.jboss.tools.foundation.license.feature"
+	  license-feature-version="0.0.0"
       provider-name="%providerName">
 
    <description>
@@ -13,7 +15,7 @@
       %copyright
    </copyright>
 
-   <license url="%licenseURL">
+   <license>
       %license
    </license>
 
