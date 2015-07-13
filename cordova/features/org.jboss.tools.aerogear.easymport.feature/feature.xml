@@ -3,6 +3,8 @@
       id="org.jboss.tools.aerogear.easymport.feature"
       label="%featureName"
       version="1.3.0.qualifier"
+	  license-feature="org.jboss.tools.foundation.license.feature"
+	  license-feature-version="0.0.0"
       provider-name="%providerName">
 
    <description>
@@ -13,7 +15,7 @@
       %copyright
    </copyright>
 
-   <license url="%licenseURL">
+   <license>
       %license
    </license>
 
