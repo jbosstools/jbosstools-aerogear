@@ -15,7 +15,7 @@
     <properties>
         <tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-aerogear.git</tycho.scmUrl>
         <thym.reqs.url>http://download.jboss.org/jbosstools/updates/requirements/thym</thym.reqs.url>
-        <thym.version>0.3.0-SNAPSHOT-201506011443</thym.version>
+        <thym.version>0.3.0-SNAPSHOT-201507141315</thym.version>
     </properties>
     <modules>
         <module>cordova</module>
