@@ -11,7 +11,9 @@
 
    <copyright url="http://www.example.com/copyright">%copyright</copyright>
 
-   <license>%license</license>
+	<license url="%licenseURL">
+      %license
+   </license>
 
    <plugin
          id="org.jboss.tools.feedhenry.test"
