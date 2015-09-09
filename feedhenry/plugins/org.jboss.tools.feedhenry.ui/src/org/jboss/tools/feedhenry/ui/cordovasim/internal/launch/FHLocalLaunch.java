@@ -34,7 +34,7 @@ public class FHLocalLaunch extends FHLaunchShortcut {
 			launchConfiguration.setAttribute(CordovaSimLaunchConstants.PROJECT, project.getName());
 			launchConfiguration.setAttribute(CordovaSimLaunchConstants.START_PAGE, getStartPage(project));
 			launchConfiguration.setAttribute(CordovaSimLaunchConstants.FH, getLaunchPrefix());
-			launchConfiguration.setAttribute(CordovaSimLaunchConstants.PROXY, RippleProxy.DISABLED.getValue());
+			launchConfiguration.setAttribute(CordovaSimLaunchConstants.PROXY, RippleProxy.LOCAL.getValue());
 		}
 	}
 
