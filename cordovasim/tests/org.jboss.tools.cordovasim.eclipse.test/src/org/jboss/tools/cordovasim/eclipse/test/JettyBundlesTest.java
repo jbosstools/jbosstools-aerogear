@@ -8,7 +8,7 @@
  * Contributor:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.corodvasim.eclipse.test;
+package org.jboss.tools.cordovasim.eclipse.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,7 +30,7 @@ import org.osgi.framework.Version;
 @RunWith(JUnit4.class)
 public class JettyBundlesTest {
 	// Current version in TP is 9.2.9
-	private static final String VERSION = "9.2.10.v20150310"; //$NON-NLS-1$
+	private static final String VERSION = "9.2.13.v20150730"; //$NON-NLS-1$
 
 	@Test
 	public void testJettyVersionMatches() {
