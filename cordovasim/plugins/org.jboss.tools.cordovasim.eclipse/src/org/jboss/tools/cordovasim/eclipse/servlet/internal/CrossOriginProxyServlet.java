@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.cordovasim.eclipse.servlet.internal;
 
-import java.net.URI;
-
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
@@ -32,26 +31,23 @@ public class CrossOriginProxyServlet extends ProxyServlet {
 	}
 
 	@Override
-	protected URI rewriteURI(HttpServletRequest request) {
-		String proxyTo = getProxyTo(request);
-		if (proxyTo != null) {
-			return URI.create(proxyTo).normalize();
-		} else {
-			return null;
-		}
+	protected String rewriteTarget(HttpServletRequest request) {
+		return getProxyTo(request);
 	}
 
 	@Override
-	protected void customizeProxyRequest(Request proxyRequest, HttpServletRequest request) {
+	protected void sendProxyRequest(HttpServletRequest clientRequest, HttpServletResponse proxyResponse, Request proxyRequest) {
+		System.out.println("Send proxy request");
 		HttpFields headers = proxyRequest.getHeaders();
 		// Removing local "Host" header
 		headers.remove("Host"); //$NON-NLS-1$ 
 		HttpURI url = new HttpURI(proxyRequest.getURI());
 		headers.add("Host", url.getHost()); //$NON-NLS-1$
+		
+		super.sendProxyRequest(clientRequest, proxyResponse, proxyRequest);
 	} 
 
 	private String getProxyTo(HttpServletRequest request) {
 		return request.getParameter(urlParameterName);
 	}
-
 }
