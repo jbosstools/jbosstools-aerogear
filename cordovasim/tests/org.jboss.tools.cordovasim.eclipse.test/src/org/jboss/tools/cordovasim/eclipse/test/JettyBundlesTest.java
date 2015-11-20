@@ -30,7 +30,7 @@ import org.osgi.framework.Version;
 @RunWith(JUnit4.class)
 public class JettyBundlesTest {
 	// Current version in TP is 9.2.9
-	private static final String VERSION = "9.3.2.v20150730"; //$NON-NLS-1$
+	private static final String VERSION = "9.3.5.v20151012"; //$NON-NLS-1$
 
 	@Test
 	public void testJettyVersionMatches() {

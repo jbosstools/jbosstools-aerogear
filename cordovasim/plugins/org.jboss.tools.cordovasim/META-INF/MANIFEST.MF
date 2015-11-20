@@ -4,14 +4,14 @@ Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.jboss.tools.cordovasim
 Bundle-Version: 3.8.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.jboss.tools.browsersim.ui;bundle-version="3.7.0",
- org.jboss.tools.browsersim.browser;bundle-version="3.7.0",
- org.jboss.tools.browsersim.debugger;bundle-version="3.7.0",
- org.jboss.tools.browsersim.eclipse;bundle-version="3.7.0",
- org.jboss.tools.browsersim.javafx.mock;bundle-version="3.7.0";resolution:=optional,
+Require-Bundle: org.jboss.tools.browsersim.ui;bundle-version="3.8.0",
+ org.jboss.tools.browsersim.browser;bundle-version="3.8.0",
+ org.jboss.tools.browsersim.debugger;bundle-version="3.8.0",
+ org.jboss.tools.browsersim.eclipse;bundle-version="3.8.0",
+ org.jboss.tools.browsersim.javafx.mock;bundle-version="3.8.0";resolution:=optional,
  org.eclipse.swt,
- org.eclipse.jetty.server;bundle-version="[9.3.2,9.3.3)",
- org.eclipse.jetty.util;bundle-version="[9.3.2,9.3.3)",
+ org.eclipse.jetty.server;bundle-version="[9.3.5,9.3.6)",
+ org.eclipse.jetty.util;bundle-version="[9.3.5,9.3.6)",
  org.apache.aries.spifly.dynamic.bundle;bundle-version="1.0.2"
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin
