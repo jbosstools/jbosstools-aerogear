@@ -29,8 +29,8 @@ import org.osgi.framework.Version;
  */
 @RunWith(JUnit4.class)
 public class JettyBundlesTest {
-	// Current version in TP is 9.2.9
-	private static final String VERSION = "9.3.5.v20151012"; //$NON-NLS-1$
+	// Current version in TP is 9.3.9.v20160517
+	private static final String VERSION = "9.3.9.v20160517"; //$NON-NLS-1$
 
 	@Test
 	public void testJettyVersionMatches() {
