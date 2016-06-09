@@ -10,8 +10,8 @@ Require-Bundle: org.jboss.tools.browsersim.ui;bundle-version="3.8.0",
  org.jboss.tools.browsersim.eclipse;bundle-version="3.8.0",
  org.jboss.tools.browsersim.javafx.mock;bundle-version="3.8.0";resolution:=optional,
  org.eclipse.swt,
- org.eclipse.jetty.server;bundle-version="[9.3.5,9.3.6)",
- org.eclipse.jetty.util;bundle-version="[9.3.5,9.3.6)",
+ org.eclipse.jetty.server;bundle-version="[9.3.9,9.4)",
+ org.eclipse.jetty.util;bundle-version="[9.3.9,9.4)",
  org.apache.aries.spifly.dynamic.bundle;bundle-version="1.0.2"
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin
