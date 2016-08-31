@@ -12,6 +12,8 @@
 	
 	<properties>
 		<rippleVersion>4.3.0-SNAPSHOT</rippleVersion>
+		<!-- add properties which we'll ignore from the snapshot enforcer rule; note: must start with a pipe (|) so these are appended as OR matches -->
+		<enforceExcludePatternExtras>|rippleVersion</enforceExcludePatternExtras>
 	</properties>
 	
 	<build>

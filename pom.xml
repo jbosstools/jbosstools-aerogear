@@ -16,6 +16,8 @@
         <tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-aerogear.git</tycho.scmUrl>
         <thym.reqs.url>http://download.jboss.org/jbosstools/updates/requirements/thym</thym.reqs.url>
         <thym.version>2.0.0.201607041526</thym.version>
+        <!-- add properties which we'll ignore from the snapshot enforcer rule; note: must start with a pipe (|) so these are appended as OR matches -->
+        <enforceExcludePatternExtras>|thym.version</enforceExcludePatternExtras>
     </properties>
     <modules>
         <module>cordova</module>
