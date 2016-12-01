@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>aerogear</artifactId>
-		<version>1.3.2-SNAPSHOT</version>
+		<version>1.3.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.aerogear</groupId>
 	<artifactId>cordova</artifactId>
 	<name>Aerogear/Cordova</name>
-	<version>1.4.2-SNAPSHOT</version>
+	<version>1.4.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>plugins</module>
