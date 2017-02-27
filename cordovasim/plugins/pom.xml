@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>org.jboss.tools.aerogear</groupId>
 		<artifactId>cordovasim</artifactId>
-		<version>3.8.3-SNAPSHOT</version>
+		<version>3.8.4-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.aerogear.cordovasim</groupId>
 	<artifactId>plugins</artifactId>
-	<version>3.8.3-SNAPSHOT</version>
+	<version>3.8.4-SNAPSHOT</version>
 	<name>Aerogear/Cordovasim plugins</name>
 	<packaging>pom</packaging>
 	<modules>

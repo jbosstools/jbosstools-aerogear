@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.jboss.tools.aerogear.feedhenry</groupId>
 		<artifactId>tests</artifactId>
-		<version>1.2.3-SNAPSHOT</version>
+		<version>1.2.4-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.aerogear.feedhenry.tests</groupId>
 	<artifactId>org.jboss.tools.feedhenry.test</artifactId>
