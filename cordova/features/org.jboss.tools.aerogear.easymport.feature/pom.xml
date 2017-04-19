@@ -8,6 +8,7 @@
 		<version>1.4.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.aerogear.cordova.features</groupId>
-  <artifactId>org.jboss.tools.aerogear.easymport.feature</artifactId>
+	<artifactId>org.jboss.tools.aerogear.easymport.feature</artifactId>
+	<version>1.4.4-SNAPSHOT</version>
 	<packaging>eclipse-feature</packaging>
 </project>
