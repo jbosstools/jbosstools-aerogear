@@ -10,7 +10,7 @@
 	<groupId>org.jboss.tools.aerogear</groupId>
 	<artifactId>feedhenry</artifactId>
 	<name>Aerogear/Feedhenry</name>
-	<version>1.2.4-SNAPSHOT</version>
+	<version>1.2.100-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>plugins</module>

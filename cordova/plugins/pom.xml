@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools.aerogear</groupId>
 		<artifactId>cordova</artifactId>
-		<version>1.4.4-SNAPSHOT</version>
+		<version>1.4.5-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.aerogear.cordova</groupId>
 	<artifactId>plugins</artifactId>
