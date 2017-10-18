@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.thym.core.HybridProject;
 import org.eclipse.thym.core.engine.HybridMobileEngine;
 import org.eclipse.thym.core.engine.HybridMobileLibraryResolver;
+import org.eclipse.thym.core.platform.PlatformConstants;
 import org.jboss.tools.cordovasim.eclipse.Activator;
 import org.jboss.tools.cordovasim.eclipse.launch.internal.Messages;
 import org.w3c.dom.Document;
@@ -201,16 +202,14 @@ public class CordovaSimLaunchParametersUtil {
 	public static String getCordovaEngineLocation(IProject project) {
 		HybridProject hybridProject = HybridProject.getHybridProject(project);
 		if (hybridProject != null) {
-			HybridMobileEngine[] activeEngines = hybridProject.getActiveEngines();
+			HybridMobileEngine[] activeEngines = hybridProject.getEngineManager().getEngines();
 			if (activeEngines != null && activeEngines.length >0) {
 				HybridMobileEngine platformEngine = getPlatformEngine(activeEngines);
 				if (platformEngine != null) {
 					HybridMobileLibraryResolver platformLibraryResolver = platformEngine.getResolver();
 					if (platformLibraryResolver != null) {
-						URL templateFile = platformLibraryResolver.getTemplateFile(HybridMobileLibraryResolver.PATH_CORDOVA_JS);
-						if (templateFile != null) {
-							return templateFile.getFile(); // cordova.js location
-						}
+						String templateCordovaJS = platformLibraryResolver.getTemplateFile(PlatformConstants.FILE_JS_CORDOVA);
+						return project.getProject().getFile(new Path("platforms/").append(templateCordovaJS)).getRawLocation().toOSString();
 					}
 				}
 			}
@@ -226,11 +225,11 @@ public class CordovaSimLaunchParametersUtil {
 	public static String getCordovaVersion(IProject project) {
 		HybridProject hybridProject = HybridProject.getHybridProject(project);
 		if (hybridProject != null) {
-			HybridMobileEngine[] activeEngines = hybridProject.getActiveEngines();
+			HybridMobileEngine[] activeEngines = hybridProject.getEngineManager().getEngines();
 			HybridMobileEngine activeEngine = getPlatformEngine(activeEngines);
 			// use the same version number as the platform that we are using cordova.js from.
 			if (activeEngine != null ) {
-				return activeEngine.getVersion();
+				return activeEngine.getSpec();
 			}
 		}
 		return null;
@@ -241,7 +240,7 @@ public class CordovaSimLaunchParametersUtil {
 			return null;
 		}
 		for (HybridMobileEngine hybridMobileEngine : engines) {
-			if(hybridMobileEngine.getId().equals(ANDROID_PLATFORM_ID)){
+			if(hybridMobileEngine.getName().equals(ANDROID_PLATFORM_ID)){
 				return hybridMobileEngine;
 			}
 		}
