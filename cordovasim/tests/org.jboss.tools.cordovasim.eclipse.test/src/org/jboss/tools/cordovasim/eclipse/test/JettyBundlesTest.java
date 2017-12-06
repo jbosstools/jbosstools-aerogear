@@ -15,6 +15,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Platform;
 import org.jboss.tools.browsersim.eclipse.launcher.BrowserSimLauncher;
@@ -29,8 +31,7 @@ import org.osgi.framework.Version;
  */
 @RunWith(JUnit4.class)
 public class JettyBundlesTest {
-	// Current version in TP is 9.4.6.v20170531
-	private static final String VERSION = "9.4.6.v20170531"; //$NON-NLS-1$
+	private static final String VERSION = "9.4"; //$NON-NLS-1$
 
 	@Test
 	public void testJettyVersionMatches() {
@@ -40,7 +41,10 @@ public class JettyBundlesTest {
 			assertNotNull(bundleName + " not found", bundle);
 			Version version = bundle.getVersion();
 			assertNotNull(version);
-			assertEquals(VERSION, version.toString());
+//			System.out.println("Got version = " + version.toString());
+			String[] versionbits = version.toString().split("\\.");
+//			System.out.println("Got version x.y = " + versionbits[0] + "." + versionbits[1]);
+			assertEquals(VERSION, versionbits[0] + "." + versionbits[1]);
 		}
 	}
 	
