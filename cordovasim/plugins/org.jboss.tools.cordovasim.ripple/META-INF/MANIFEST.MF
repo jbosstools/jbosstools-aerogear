@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Ripple for CordovaSim
 Bundle-SymbolicName: org.jboss.tools.cordovasim.ripple
-Bundle-Version: 3.8.100.qualifier
+Bundle-Version: 3.8.101.qualifier
 Bundle-Vendor: JBoss by Red Hat

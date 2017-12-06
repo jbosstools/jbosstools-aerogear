@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse integration tests on CordovaSim
 Bundle-SymbolicName: org.jboss.tools.cordovasim.eclipse.test
-Bundle-Version: 3.8.100.qualifier
+Bundle-Version: 3.8.101.qualifier
 Bundle-Vendor: JBoss by Red Hat
 Require-Bundle: org.junit,
  org.jboss.tools.browsersim.eclipse,

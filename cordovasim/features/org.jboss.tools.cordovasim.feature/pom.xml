@@ -9,5 +9,7 @@
 	</parent>
 	<groupId>org.jboss.tools.aerogear.cordovasim.features</groupId>
 	<artifactId>org.jboss.tools.cordovasim.feature</artifactId> 
+	<version>3.8.101-SNAPSHOT</version>
+
 	<packaging>eclipse-feature</packaging>
 </project>

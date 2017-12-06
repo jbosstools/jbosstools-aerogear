@@ -9,7 +9,8 @@
 	<groupId>org.jboss.tools.aerogear.cordovasim.plugins</groupId>
 	<artifactId>org.jboss.tools.cordovasim.ripple</artifactId> 
 	<packaging>eclipse-plugin</packaging>
-	
+	<version>3.8.101-SNAPSHOT</version>
+
 	<properties>
 		<rippleVersion>4.3.0-SNAPSHOT</rippleVersion>
 		<!-- add properties which we'll ignore from the snapshot enforcer rule; note: must start with a pipe (|) so these are appended as OR matches -->

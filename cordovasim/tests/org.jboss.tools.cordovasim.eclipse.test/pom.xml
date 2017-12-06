@@ -9,5 +9,7 @@
 	</parent>
 	<groupId>org.jboss.tools.aerogear.cordovasim.tests</groupId>
 	<artifactId>org.jboss.tools.cordovasim.eclipse.test</artifactId>
+	<version>3.8.101-SNAPSHOT</version>
+
 	<packaging>eclipse-test-plugin</packaging>
 </project>
