@@ -9,6 +9,7 @@ hybrid mobile application development. Cordova tools provide Eclipse based tools
 the development of Apache Cordova based hybrid mobile applications by hiding the complexities 
 of multi-platform development and Cordova framewok.
 
+NOTE: This project is deprecated, and will likely be removed from JBoss Tools at some point in the future.
 
 ## Install
 
